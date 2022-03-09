@@ -1,7 +1,6 @@
 import { IAccount } from "../../interfaces/IAccount";
 import { IClientConfig } from "../../interfaces/IClientConfig";
 import { IProvider, ProviderType } from "../../interfaces/IProvider";
-import { JsonRpcResponseData } from "../../interfaces/JsonRpcResponseData";
 import { Client } from "../../web3/Client";
 import * as wasmCli from "assemblyscript/cli/asc";
 import { IStatus } from "../../interfaces/IStatus";
@@ -158,7 +157,7 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
         const web3ClientConfig = {
             providers,
-            retryStrategyOn: false
+            retryStrategyOn: true
         } as IClientConfig;
 
         const web3Client: Client = new Client(web3ClientConfig, baseAccount);
