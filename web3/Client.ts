@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { IProvider } from "../interfaces/IProvider";
+import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
 import {base58checkDecode, base58checkEncode, hashSha256, typedArrayToBuffer, varintEncode} from "../utils/Xbqcrypto";
@@ -12,6 +12,7 @@ import axios, { AxiosResponse, AxiosRequestHeaders } from "axios";
 import { IStatus } from "../interfaces/IStatus";
 import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
+import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 
 export class Client extends EventEmitter {
 	private clientConfig: IClientConfig;
@@ -20,33 +21,54 @@ export class Client extends EventEmitter {
 	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
 		super();
 		this.clientConfig = clientConfig;
-		if (this.clientConfig.providers.length < 1) throw new Error("Cannot initialize web3 with less than one provider. Need at least one");
-		this.clientConfig.defaultProviderIndex = this.clientConfig.defaultProviderIndex || 0;
-		if (this.clientConfig.defaultProviderIndex || 0 > this.clientConfig.providers.length) {
-			throw new Error(`Providers length and index mismatch. Providers: ${this.clientConfig.providers.length}. 
-			Required default index ${this.clientConfig.defaultProviderIndex}`)
+		if (this.getPrivateProviders().length === 0) {
+			throw new Error("Cannot initialize web3 with no private providers. Need at least one");
 		}
-
+		if (this.getPublicProviders().length === 0) {
+			throw new Error("Cannot initialize web3 with no public providers. Need at least one");
+		}
 		if (baseAccount) {
 			this.setBaseAccount(baseAccount);
 		}
 
-		this.getDefaultProvider = this.getDefaultProvider.bind(this);
-		this.getDefaultProviderIndex = this.getDefaultProviderIndex.bind(this);
+		// bind class methods
+		this.getPrivateProviders = this.getPrivateProviders.bind(this);
+		this.getProviderForRpcMethod = this.getProviderForRpcMethod.bind(this);
+		this.getPublicProviders = this.getPublicProviders.bind(this);
 		this.setBaseAccount = this.setBaseAccount.bind(this);
 		this.getBaseAccount = this.getBaseAccount.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
 		this.executeSC = this.executeSC.bind(this);
 		this.signOperation = this.signOperation.bind(this);
 		this.computeBytesCompact = this.computeBytesCompact.bind(this);
+
+		// bind api methods
+		this.getStatus = this.getPrivateProviders.bind(this);
+		this.getAddresses = this.getAddresses.bind(this);
+
+		this.nodeStop = this.nodeStop.bind(this);
 	}
 
-	public getDefaultProvider(): IProvider {
-		return this.clientConfig.providers[this.clientConfig.defaultProviderIndex];
+	public getPrivateProviders(): Array<IProvider> {
+		return this.clientConfig.providers.filter((provider) => provider.type === ProviderType.PRIVATE);
 	}
 
-	public getDefaultProviderIndex(): number {
-		return this.clientConfig.defaultProviderIndex;
+	public getPublicProviders(): Array<IProvider> {
+		return this.clientConfig.providers.filter((provider) => provider.type === ProviderType.PUBLIC);
+	}
+
+	private getProviderForRpcMethod(jsonRpcRequestMethod: JSON_RPC_REQUEST_METHOD): IProvider {
+		switch (jsonRpcRequestMethod) {
+			case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
+			case JSON_RPC_REQUEST_METHOD.GET_STATUS:
+			case JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS: {
+					return this.getPublicProviders()[0]; //choose the first available public provider
+				}
+			case JSON_RPC_REQUEST_METHOD.STOP_NODE: {
+				return this.getPrivateProviders()[0];
+			}
+			default: throw new Error("Unknown Json rpc method")
+		}
 	}
 
 	public setBaseAccount(baseAccount: IAccount): void {
@@ -57,7 +79,7 @@ export class Client extends EventEmitter {
 		return this.baseAccount;
 	}
 
-	private async sendJsonRPCRequest<T>(resource: string, params: Object): Promise<T> {
+	private async sendJsonRPCRequest<T>(resource: JSON_RPC_REQUEST_METHOD, params: Object): Promise<T> {
 		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
 			let resp: AxiosResponse = null;
 
@@ -74,7 +96,7 @@ export class Client extends EventEmitter {
 			};
 		
 			try {
-				resp = await axios.post(this.getDefaultProvider().url, body, headers);
+				resp = await axios.post(this.getProviderForRpcMethod(resource).url, body, headers);
 			} catch (ex) {
 				return resolve({
 					isError: true,
@@ -107,7 +129,7 @@ export class Client extends EventEmitter {
 			throw ex;
 		}
 
-		// rethrow the error
+		// in case of rpc error, rethrow the error
 		if (resp.error && resp.error) {
 			throw resp.error;
 		}
@@ -133,7 +155,7 @@ export class Client extends EventEmitter {
 			},
 			signature,
 		}
-		return await this.sendJsonRPCRequest('send_operations', [[data]]);
+		return await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 	}
 
 	private signOperation(contractData: IContractData, executor?: IAccount) {
@@ -181,7 +203,16 @@ export class Client extends EventEmitter {
 
 	public unban = ipAddrs => { /* TODO */ } // unban a given IP addresses
 	public ban = ipAddrs => { /* TODO */ } // ban a given IP addresses
-	public nodeStop = () => { /* TODO */ } // stops the node
+	
+	// stops the node
+	public async nodeStop(): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.STOP_NODE;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+		}
+	}
 	public nodeGetStakingAddresses = () => { /* TODO */ } // show staking addresses
 	public nodeRemoveStakingAddresses = addresses => { /* TODO */ } // remove staking addresses
 	public nodeAddStakingPrivateKeys = privateKeys => { /* TODO */ } // add staking private keys
@@ -190,19 +221,21 @@ export class Client extends EventEmitter {
 
 	// show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...)
 	public async getStatus(): Promise<IStatus> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<IStatus>(this.sendJsonRPCRequest,['get_status', []]);
+			return await trySafeExecute<IStatus>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
 		} else {
-			return await this.sendJsonRPCRequest('get_status', []);
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
 		}
 	}
 
 	// get info about a list of addresses (balances, block creation, ...)
 	public async getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,['get_addresses', [addresses]]);
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
 		} else {
-			return await this.sendJsonRPCRequest('get_addresses', [addresses])
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [addresses])
 		}
 	} 
 	public getBlocks = blockIds => { /* TODO */ } // show info about a block (content, finality ...)

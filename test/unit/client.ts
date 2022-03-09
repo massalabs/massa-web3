@@ -1,6 +1,6 @@
 import { IAccount } from "../../interfaces/IAccount";
 import { IClientConfig } from "../../interfaces/IClientConfig";
-import { IProvider } from "../../interfaces/IProvider";
+import { IProvider, ProviderType } from "../../interfaces/IProvider";
 import { JsonRpcResponseData } from "../../interfaces/JsonRpcResponseData";
 import { Client } from "../../web3/Client";
 import * as wasmCli from "assemblyscript/cli/asc";
@@ -127,40 +127,55 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
 (async () => {
 
-    await wasmCli.ready;
-    const { stdout: stderr, binary, text } = wasmCli.compileString(SMART_CONTRACT, {
-        optimizeLevel: 3,
-        runtime: "stub",
-    } as wasmCli.CompilerOptions);
+    try {
+        await wasmCli.ready;
+        const { stdout: stderr, binary, text } = wasmCli.compileString(SMART_CONTRACT, {
+            optimizeLevel: 3,
+            runtime: "stub",
+        } as wasmCli.CompilerOptions);
 
-    console.log("binary", binary);
-    console.log("text", text);
+        console.log("binary", binary);
+        console.log("text", text);
 
-    //const sc_data = btoa(binary.toString());
-    //console.log("sc_data", sc_data);
+        //const sc_data = btoa(binary.toString());
+        //console.log("sc_data", sc_data);
 
-    const baseAccount = {
-        publicKey,
-        privateKey,
-    } as IAccount;
+        const baseAccount = {
+            publicKey,
+            privateKey,
+        } as IAccount;
 
-    const providers: Array<IProvider> = [{
-        url: "http://127.0.0.1:33035",
-    } as IProvider];
+        const providers: Array<IProvider> = [
+            {
+                url: "http://127.0.0.1:33035",
+                type: ProviderType.PUBLIC
+            } as IProvider,
+            {
+                url: "http://127.0.0.1:33034",
+                type: ProviderType.PRIVATE
+            } as IProvider
+        ];
 
-    const web3ClientConfig = {
-        providers,
-        defaultProviderIndex: 0,
-        retryStrategyOn: true
-    } as IClientConfig;
+        const web3ClientConfig = {
+            providers,
+            retryStrategyOn: false
+        } as IClientConfig;
 
-    const web3Client: Client = new Client(web3ClientConfig, baseAccount);
-    
-    // get status rpc request
-    //const statusResp: IStatus = await web3Client.getStatus();
-    //console.error("JSON RPC RESPONSE", statusResp);
+        const web3Client: Client = new Client(web3ClientConfig, baseAccount);
+        
+        // get status rpc request
+        //const statusResp: IStatus = await web3Client.getStatus();
+        //console.error("JSON RPC RESPONSE", statusResp);
 
-    // get addresses rpc request
-    const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract]);
-    console.error("Smart contract addresses", addressesResp);
+        // get addresses rpc request
+        //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract, ADDRESSES.smartContract]);
+        //console.error("Smart contract addresses", addressesResp);
+
+        // stop node
+        //await web3Client.nodeStop();
+
+
+    } catch (ex) {
+        console.error("Error = ", ex);
+    }
 })();

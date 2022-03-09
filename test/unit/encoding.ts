@@ -1,9 +1,8 @@
 import {Buffer} from "buffer";
-import { base58checkDecode, base58checkEncode, hashSha256, varintEncode } from "../../utils/Xbqcrypto";
+import { base58checkDecode, base58checkEncode, hashSha256, typedArrayToBuffer, varintEncode } from "../../utils/Xbqcrypto";
 import { BN }  from "bn.js";
 import { ecdsaSign, ecdsaVerify } from "secp256k1";
 import * as secp from "@noble/secp256k1";
-import { typedArrayToBuffer } from "../../web3/Client";
 
 const privateKey: string = "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC";
 const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
