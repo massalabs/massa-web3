@@ -8,6 +8,7 @@ import { BN }  from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
+const XMLHttpRequest = require('xhr2');
 
 export function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
     return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
@@ -17,24 +18,27 @@ export class Client extends EventEmitter {
 	private clientConfig: IClientConfig;
 	private baseAccount: IAccount;
 
-	public constructor(private config: IClientConfig, baseAccount?: IAccount) {
+	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
 		super();
-		if (this.config.providers.length < 1) throw new Error("Cannot initialize web3 with less than one provider. Need at least one");
-		if (this.config.defaultProviderIndex > this.config.providers.length) {
-			throw new Error(`Providers length and index mismatch. Providers: ${this.config.providers.length}. 
-			Required default index ${this.config.defaultProviderIndex}`)
+		this.clientConfig = clientConfig;
+		if (this.clientConfig.providers.length < 1) throw new Error("Cannot initialize web3 with less than one provider. Need at least one");
+		this.clientConfig.defaultProviderIndex = this.clientConfig.defaultProviderIndex || 0;
+		if (this.clientConfig.defaultProviderIndex || 0 > this.clientConfig.providers.length) {
+			throw new Error(`Providers length and index mismatch. Providers: ${this.clientConfig.providers.length}. 
+			Required default index ${this.clientConfig.defaultProviderIndex}`)
 		}
-		this.config.defaultProviderIndex = this.config.defaultProviderIndex || 0;
+
 		if (baseAccount) {
 			this.setBaseAccount(baseAccount);
 		}
+
 		this.getDefaultProvider = this.getDefaultProvider.bind(this);
 		this.getDefaultProviderIndex = this.getDefaultProviderIndex.bind(this);
 		this.setBaseAccount = this.setBaseAccount.bind(this);
 		this.getBaseAccount = this.getBaseAccount.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
 		this.executeSC = this.executeSC.bind(this);
-		this.sigOperation = this.sigOperation.bind(this);
+		this.signOperation = this.signOperation.bind(this);
 		this.computeBytesCompact = this.computeBytesCompact.bind(this);
 	}
 
@@ -61,7 +65,7 @@ export class Client extends EventEmitter {
 				"jsonrpc": "2.0",
 				"method": resource,
 				"params": params,
-				"id": 0
+				"id": 123
 			});
 		
 			const xhr = new XMLHttpRequest();
@@ -111,7 +115,7 @@ export class Client extends EventEmitter {
 	}
 	
 	public async executeSC(contractData: IContractData, executor?: IAccount): Promise<JsonRpcResponseData> {
-		const signature = this.sigOperation(contractData, executor);
+		const signature = this.signOperation(contractData, executor);
 		const data = {
 			content: {
 				expire_period: contractData.expirePeriod,
@@ -131,7 +135,7 @@ export class Client extends EventEmitter {
 		return await this.sendJsonRPCRequest('send_operations', [[data]]);
 	}
 
-	private sigOperation(contractData: IContractData, executor?: IAccount) {
+	private signOperation(contractData: IContractData, executor?: IAccount) {
 		// bytes compaction
 		const bytesCompact: Buffer = this.computeBytesCompact(contractData, 3, executor);
 	

@@ -3,7 +3,7 @@ import { IClientConfig } from "../../interfaces/IClientConfig";
 import { IProvider } from "../../interfaces/IProvider";
 import { JsonRpcResponseData } from "../../interfaces/JsonRpcResponseData";
 import { Client } from "../../web3/Client";
-import { compile, Program, Options, Source, SourceKind, Module } from "assemblyscript";
+import {CompilerOptions, compileString} from "assemblyscript/cli/asc";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -126,25 +126,27 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
 (async () => {
 
-    const program = new Program({
-    } as Options);
-    console.log("PROGRAM ", program);
-    const source = new Source(SourceKind.USER, "./", SMART_CONTRACT);
-    console.log("SOURCE ", source);
-    program.sources = new Array<Source>(source);
-    const compiledWasm: Module = compile(program);
-    console.log("WASM ", compiledWasm);
-    const binary = compiledWasm.toBinary();
-    const text = compiledWasm.toText();
+    /*
+    const { stdout: stderr, binary, text } = compileString(SMART_CONTRACT, {
+        optimizeLevel: 3,
+        runtime: "stub",
+    } as CompilerOptions);
+
+    console.log("binary", binary);
+    console.log("text", text);
+
+    const sc_data = btoa(binary.toString());
+    console.log("sc_data", sc_data);
+    */
 
     const baseAccount = {
         publicKey,
         privateKey,
     } as IAccount;
 
-    const providers: Array<IProvider> = new Array({
+    const providers: Array<IProvider> = [{
         url: "127.0.0.1:33034",
-    } as IProvider);
+    } as IProvider];
 
     const web3ClientConfig = {
         providers,
@@ -155,13 +157,14 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
     const web3Client: Client = new Client(web3ClientConfig, baseAccount);
     
     // get status rpc request
-    await getStatus(web3Client);
+    const status = await getStatus(web3Client);
+    console.error("Massa chain status", status);
 
     // get addresses rpc request
     //await getAddresses(web3Client);
 })();
 
-const getAddresses = async (web3Client: Client): Promise<JsonRpcResponseData> => {
+async function getAddresses(web3Client: Client): Promise<JsonRpcResponseData> {
     let resp: JsonRpcResponseData = null;
     try {
         resp = await web3Client.sendJsonRPCRequest('get_addresses', [[ADDRESSES.smartContract]]);
@@ -171,7 +174,7 @@ const getAddresses = async (web3Client: Client): Promise<JsonRpcResponseData> =>
     return resp;
 }
 
-const getStatus = async (web3Client: Client): Promise<JsonRpcResponseData> => {
+async function getStatus(web3Client: Client): Promise<JsonRpcResponseData> {
     let resp: JsonRpcResponseData = null;
     try {
         resp = await web3Client.sendJsonRPCRequest('get_status', []);

@@ -18,7 +18,7 @@
     "noImplicitThis": false,
     "skipLibCheck": true,
     "strictNullChecks": false,
-    "outDir": "build",
+    "outDir": "dist",
     "types": [
       "node"
     ],
@@ -44,5 +44,5 @@
     "typings/main.d.ts",
     "typings/index.d.ts",
     "typings",
-    "./build/**/*" ]
+    "./dist/**/*" ]
 }
