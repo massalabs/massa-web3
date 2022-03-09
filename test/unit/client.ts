@@ -157,30 +157,10 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
     const web3Client: Client = new Client(web3ClientConfig, baseAccount);
     
     // get status rpc request
-    //const statusResp: JsonRpcResponseData<IStatus> = await getStatus(web3Client);
-    //console.error("JSON RPC RESPONSE", statusResp.result);
+    //const statusResp: IStatus = await web3Client.getStatus();
+    //console.error("JSON RPC RESPONSE", statusResp);
 
     // get addresses rpc request
-    const addressesResp: JsonRpcResponseData<IAddressInfo[]> = await getAddresses(web3Client);
-    console.error("Smart contract addresses", addressesResp.result);
+    const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract]);
+    console.error("Smart contract addresses", addressesResp);
 })();
-
-async function getAddresses(web3Client: Client): Promise<JsonRpcResponseData<Array<IAddressInfo>>> {
-    let resp: JsonRpcResponseData<Array<IAddressInfo>> = null;
-    try {
-        resp = await web3Client.sendJsonRPCRequest('get_addresses', [[ADDRESSES.smartContract]]);
-    } catch (e) {
-        console.error("Got an error when getting addresses", e);
-    }
-    return resp;
-}
-
-async function getStatus(web3Client: Client): Promise<JsonRpcResponseData<IStatus>> {
-    let resp: JsonRpcResponseData<IStatus> = null;
-    try {
-        resp = await web3Client.sendJsonRPCRequest('get_status', []);
-    } catch (e) {
-        console.error("Got an error when getting status", e);
-    }
-    return resp;
-}

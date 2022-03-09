@@ -2,17 +2,16 @@ import { EventEmitter } from "events";
 import { IProvider } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
-import {base58checkDecode, base58checkEncode, hashSha256, varintEncode} from "../utils/Xbqcrypto";
+import {base58checkDecode, base58checkEncode, hashSha256, typedArrayToBuffer, varintEncode} from "../utils/Xbqcrypto";
 import { ecdsaSign, ecdsaVerify } from "secp256k1"
 import { BN }  from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
 import axios, { AxiosResponse, AxiosRequestHeaders } from "axios";
-
-export function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
-    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
-}
+import { IStatus } from "../interfaces/IStatus";
+import { IAddressInfo } from "../interfaces/IAddressInfo";
+import { trySafeExecute } from "../utils/retryExecuteFunction";
 
 export class Client extends EventEmitter {
 	private clientConfig: IClientConfig;
@@ -58,8 +57,8 @@ export class Client extends EventEmitter {
 		return this.baseAccount;
 	}
 
-	public async sendJsonRPCRequest<T>(resource: string, params: Object): Promise<JsonRpcResponseData<T>> {
-		return new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
+	private async sendJsonRPCRequest<T>(resource: string, params: Object): Promise<T> {
+		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
 			let resp: AxiosResponse = null;
 
 			const headers = {
@@ -100,6 +99,20 @@ export class Client extends EventEmitter {
 				error: null
 			} as JsonRpcResponseData<T>);
 		});
+
+		let resp: JsonRpcResponseData<T> = null;
+		try {
+			resp = await promise;
+		} catch (ex) {
+			throw ex;
+		}
+
+		// rethrow the error
+		if (resp.error && resp.error) {
+			throw resp.error;
+		}
+
+		return resp.result;
 	}
 	
 	public async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<JsonRpcResponseData<T>> {
@@ -168,28 +181,44 @@ export class Client extends EventEmitter {
 
 	public unban = ipAddrs => { /* TODO */ } // unban a given IP addresses
 	public ban = ipAddrs => { /* TODO */ } // ban a given IP addresses
-	public node_stop = () => { /* TODO */ } // stops the node
-	public node_get_staking_addresses = () => { /* TODO */ } // show staking addresses
-	public node_remove_staking_addresses = addresses => { /* TODO */ } // remove staking addresses
-	public node_add_staking_private_keys = privateKeys => { /* TODO */ } // add staking private keys
+	public nodeStop = () => { /* TODO */ } // stops the node
+	public nodeGetStakingAddresses = () => { /* TODO */ } // show staking addresses
+	public nodeRemoveStakingAddresses = addresses => { /* TODO */ } // remove staking addresses
+	public nodeAddStakingPrivateKeys = privateKeys => { /* TODO */ } // add staking private keys
 
 	/* web3/public.js node instrumentation relying on public Node API */
-	public get_status = () => { /* TODO */ } // show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...)
-	public get_addresses = addresses => { /* TODO */ } // get info about a list of addresses (balances, block creation, ...)
-	public get_blocks = blockIds => { /* TODO */ } // show info about a block (content, finality ...)
-	public get_endorsements = endorsementIds => { /* TODO */ } // show info about a list of endorsements (content, finality ...)
-	public get_operations = operationIds => { /* TODO */ } // show info about a list of operations = (content, finality ...)
-	public buy_rolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
-	public sell_rolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
-	public send_transaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
-	public send_smart_contract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
-	public read_only_smart_contract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
+
+	// show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...)
+	public async getStatus(): Promise<IStatus> {
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<IStatus>(this.sendJsonRPCRequest,['get_status', []]);
+		} else {
+			return await this.sendJsonRPCRequest('get_status', []);
+		}
+	}
+
+	// get info about a list of addresses (balances, block creation, ...)
+	public async getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>> {
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,['get_addresses', [addresses]]);
+		} else {
+			return await this.sendJsonRPCRequest('get_addresses', [addresses])
+		}
+	} 
+	public getBlocks = blockIds => { /* TODO */ } // show info about a block (content, finality ...)
+	public getEndorsements = endorsementIds => { /* TODO */ } // show info about a list of endorsements (content, finality ...)
+	public getOperations = operationIds => { /* TODO */ } // show info about a list of operations = (content, finality ...)
+	public buyRolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
+	public sellRolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
+	public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
+	public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
+	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
 
 	/* web3/wallet.js module that will under the hood interact with WebExtension, native client or interactively with user */
-	public wallet_info = () => { /* TODO */ } // show wallet info (private keys, public keys, addresses, balances ...)
-	public wallet_generate_private_key = () => { /* TODO */ } // generate a private key and add it into the wallet
-	public wallet_add_private_keys = privateKeys => { /* TODO */ } // add a list of private keys to the wallet
-	public wallet_remove_addresses = addresses => { /* TODO */ } // remove a list of addresses from the wallet
-	public wallet_sign = (address, string) => { /* TODO */ } // sign provided string with given address (address must be in the wallet)
+	public walletInfo = () => { /* TODO */ } // show wallet info (private keys, public keys, addresses, balances ...)
+	public walletGeneratePrivateKey = () => { /* TODO */ } // generate a private key and add it into the wallet
+	public walletAddPrivateKeys = privateKeys => { /* TODO */ } // add a list of private keys to the wallet
+	public walletRemoveAddresses = addresses => { /* TODO */ } // remove a list of addresses from the wallet
+	public walletSign = (address, string) => { /* TODO */ } // sign provided string with given address (address must be in the wallet)
 
 }
