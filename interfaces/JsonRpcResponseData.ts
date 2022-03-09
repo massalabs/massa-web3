@@ -1,5 +1,5 @@
-export interface JsonRpcResponseData {
+export interface JsonRpcResponseData<T> {
 	isError: boolean;
-	result: any;
+	result: T | null;
 	error: Error | null;
 }

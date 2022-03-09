@@ -22,6 +22,7 @@
   "dependencies": {
     "@noble/secp256k1": "1.5.5",
     "assemblyscript": "^0.19.23",
+    "axios": "^0.26.0",
     "bn.js": "^5.2.0",
     "bs58check": "^2.1.2",
     "buffer": "^6.0.3",
@@ -30,8 +31,7 @@
     "node-ts": "^5.1.1",
     "secp256k1": "^4.0.3",
     "uuidv4": "^6.0.0",
-    "varint": "^6.0.0",
-    "xhr2": "^0.2.1"
+    "varint": "^6.0.0"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",

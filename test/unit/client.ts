@@ -3,7 +3,9 @@ import { IClientConfig } from "../../interfaces/IClientConfig";
 import { IProvider } from "../../interfaces/IProvider";
 import { JsonRpcResponseData } from "../../interfaces/JsonRpcResponseData";
 import { Client } from "../../web3/Client";
-import {CompilerOptions, compileString} from "assemblyscript/cli/asc";
+import * as wasmCli from "assemblyscript/cli/asc";
+import { IStatus } from "../../interfaces/IStatus";
+import { IAddressInfo } from "../../interfaces/IAddressInfo";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -115,7 +117,6 @@ function _checkWin(player: string): void {
     }
 }
 `
-
 const fee: number = 0
 const max_gas: number = 1000000
 const gas_price: number = 0
@@ -126,18 +127,17 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
 (async () => {
 
-    /*
-    const { stdout: stderr, binary, text } = compileString(SMART_CONTRACT, {
+    await wasmCli.ready;
+    const { stdout: stderr, binary, text } = wasmCli.compileString(SMART_CONTRACT, {
         optimizeLevel: 3,
         runtime: "stub",
-    } as CompilerOptions);
+    } as wasmCli.CompilerOptions);
 
     console.log("binary", binary);
     console.log("text", text);
 
-    const sc_data = btoa(binary.toString());
-    console.log("sc_data", sc_data);
-    */
+    //const sc_data = btoa(binary.toString());
+    //console.log("sc_data", sc_data);
 
     const baseAccount = {
         publicKey,
@@ -145,7 +145,7 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
     } as IAccount;
 
     const providers: Array<IProvider> = [{
-        url: "127.0.0.1:33034",
+        url: "http://127.0.0.1:33035",
     } as IProvider];
 
     const web3ClientConfig = {
@@ -157,15 +157,16 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
     const web3Client: Client = new Client(web3ClientConfig, baseAccount);
     
     // get status rpc request
-    const status = await getStatus(web3Client);
-    console.error("Massa chain status", status);
+    //const statusResp: JsonRpcResponseData<IStatus> = await getStatus(web3Client);
+    //console.error("JSON RPC RESPONSE", statusResp.result);
 
     // get addresses rpc request
-    //await getAddresses(web3Client);
+    const addressesResp: JsonRpcResponseData<IAddressInfo[]> = await getAddresses(web3Client);
+    console.error("Smart contract addresses", addressesResp.result);
 })();
 
-async function getAddresses(web3Client: Client): Promise<JsonRpcResponseData> {
-    let resp: JsonRpcResponseData = null;
+async function getAddresses(web3Client: Client): Promise<JsonRpcResponseData<Array<IAddressInfo>>> {
+    let resp: JsonRpcResponseData<Array<IAddressInfo>> = null;
     try {
         resp = await web3Client.sendJsonRPCRequest('get_addresses', [[ADDRESSES.smartContract]]);
     } catch (e) {
@@ -174,8 +175,8 @@ async function getAddresses(web3Client: Client): Promise<JsonRpcResponseData> {
     return resp;
 }
 
-async function getStatus(web3Client: Client): Promise<JsonRpcResponseData> {
-    let resp: JsonRpcResponseData = null;
+async function getStatus(web3Client: Client): Promise<JsonRpcResponseData<IStatus>> {
+    let resp: JsonRpcResponseData<IStatus> = null;
     try {
         resp = await web3Client.sendJsonRPCRequest('get_status', []);
     } catch (e) {

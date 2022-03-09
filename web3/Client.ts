@@ -8,7 +8,7 @@ import { BN }  from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
-const XMLHttpRequest = require('xhr2');
+import axios, { AxiosResponse, AxiosRequestHeaders } from "axios";
 
 export function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
     return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
@@ -58,63 +58,51 @@ export class Client extends EventEmitter {
 		return this.baseAccount;
 	}
 
-	public sendJsonRPCRequest(resource: string, params: Object): Promise<JsonRpcResponseData> {
-		return new Promise<JsonRpcResponseData>((resolve, reject) => {
+	public async sendJsonRPCRequest<T>(resource: string, params: Object): Promise<JsonRpcResponseData<T>> {
+		return new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
+			let resp: AxiosResponse = null;
 
-			const data: string = JSON.stringify({
+			const headers = {
+				"Accept": "application/json",
+				'Access-Control-Allow-Origin': '*'
+			} as AxiosRequestHeaders;
+		
+			const body = {
 				"jsonrpc": "2.0",
 				"method": resource,
 				"params": params,
-				"id": 123
-			});
+				"id": 0
+			};
 		
-			const xhr = new XMLHttpRequest();
-		
-			xhr.addEventListener("readystatechange", () => {
-				if (xhr.readyState === 4) {
-					if (xhr.status === 200) {
-						let response: any = null;
-						try {
-							response = JSON.parse(xhr.responseText);
-						} catch (e) {
-							return reject({
-								isError: true,
-								result: null,
-								error: new Error('JSON.parse error: ' + String(e))
-							} as JsonRpcResponseData);
-						}
-						if ("error" in response) {
-							return reject({
-								isError: true,
-								result: null,
-								error: new Error(response.error)
-							} as JsonRpcResponseData);
-						}
-						else {
-							return resolve({
-								isError: false,
-								result: response.result,
-								error: null
-							} as JsonRpcResponseData);
-						}
-					}
-					else {
-						return reject({
-							isError: true,
-							result: null,
-							error: new Error('XMLHttpRequest error: ' + String(xhr.statusText))
-						} as JsonRpcResponseData);
-					}
-				}
-			});
-		
-			xhr.open("POST", this.getDefaultProvider().url);
-			xhr.setRequestHeader("Content-Type", "application/json");
-			xhr.send(data)
+			try {
+				resp = await axios.post(this.getDefaultProvider().url, body, headers);
+			} catch (ex) {
+				return resolve({
+					isError: true,
+					result: null,
+					error: new Error('JSON.parse error: ' + String(ex))
+				} as JsonRpcResponseData<T>);
+			}
+
+			const responseData = resp.data;
+
+			if (responseData.error) {
+				return resolve({
+					isError: true,
+					result: null,
+					error: new Error(responseData.error)
+				} as JsonRpcResponseData<T>);
+			}
+
+			return resolve({
+				isError: false,
+				result: responseData.result as T,
+				error: null
+			} as JsonRpcResponseData<T>);
 		});
 	}
 	
-	public async executeSC(contractData: IContractData, executor?: IAccount): Promise<JsonRpcResponseData> {
+	public async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<JsonRpcResponseData<T>> {
 		const signature = this.signOperation(contractData, executor);
 		const data = {
 			content: {
