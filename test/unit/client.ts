@@ -167,14 +167,19 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         //console.error("JSON RPC RESPONSE", statusResp);
 
         // get addresses rpc request
-        //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract, ADDRESSES.smartContract]);
-        //console.error("Smart contract addresses", addressesResp);
+        const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract]);
+        console.error("Smart contract addresses", addressesResp);
 
         // stop node
         //await web3Client.nodeStop();
 
+        // ban ip address
+        //await web3Client.banIpAddress("192.168.1.1");
+
+        // unban ip address
+        //await web3Client.unbanIpAddress("192.168.1.1");
 
     } catch (ex) {
-        console.error("Error = ", ex);
+        console.error("Error = ", ex.message);
     }
 })();

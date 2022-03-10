@@ -16,7 +16,7 @@ export const trySafeExecute = async <T>(func: Function, args?: any[], retryTimes
 			break;
 		}
 		catch (ex) {
-			const msg = `Failed to execute function. Retrying for ${++failureCounter}th time in 1s.`;
+			const msg = `Failed to execute function ${func.name}. Retrying for ${++failureCounter}th time in 1s.`;
 			console.error(msg);
 			await wait(200 * (failureCounter + 1));
 

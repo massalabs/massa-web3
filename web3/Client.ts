@@ -64,8 +64,10 @@ export class Client extends EventEmitter {
 			case JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS: {
 					return this.getPublicProviders()[0]; //choose the first available public provider
 				}
-			case JSON_RPC_REQUEST_METHOD.STOP_NODE: {
-				return this.getPrivateProviders()[0];
+			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
+			case JSON_RPC_REQUEST_METHOD.BAN:
+			case JSON_RPC_REQUEST_METHOD.UNBAN: {
+				return this.getPrivateProviders()[0]; //choose the first available private provider
 			}
 			default: throw new Error("Unknown Json rpc method")
 		}
@@ -201,8 +203,24 @@ export class Client extends EventEmitter {
 		return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 	}
 
-	public unban = ipAddrs => { /* TODO */ } // unban a given IP addresses
-	public ban = ipAddrs => { /* TODO */ } // ban a given IP addresses
+	// unban a given IP addresses
+	public async unbanIpAddress(ipAddress: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.UNBAN;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[ipAddress]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[ipAddress]])
+		}
+	} 
+	// ban a given IP addresses
+	public async banIpAddress(ipAddress: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.BAN;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[ipAddress]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[ipAddress]])
+		}
+	} 
 	
 	// stops the node
 	public async nodeStop(): Promise<void> {
@@ -213,9 +231,33 @@ export class Client extends EventEmitter {
 			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
 		}
 	}
-	public nodeGetStakingAddresses = () => { /* TODO */ } // show staking addresses
-	public nodeRemoveStakingAddresses = addresses => { /* TODO */ } // remove staking addresses
-	public nodeAddStakingPrivateKeys = privateKeys => { /* TODO */ } // add staking private keys
+	// show staking addresses
+	public async nodeGetStakingAddresses(): Promise<Array<string>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+		}
+	}
+	// remove staking addresses
+	public async nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [addresses]);
+		}
+	}
+	// add staking private keys
+	public async nodeAddStakingPrivateKeys(privateKeys: Array<string>): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [privateKeys]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [privateKeys]);
+		}
+	}
 
 	/* web3/public.js node instrumentation relying on public Node API */
 
@@ -233,9 +275,9 @@ export class Client extends EventEmitter {
 	public async getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[addresses]]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [addresses])
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[addresses]])
 		}
 	} 
 	public getBlocks = blockIds => { /* TODO */ } // show info about a block (content, finality ...)
