@@ -1,5 +1,5 @@
 {
-  "name": "mweb3",
+  "name": "massa-web3",
   "version": "1.0.0",
   "description": "mweb3 - massa's web3 sdk client",
   "main": "dist/index.js",
@@ -13,6 +13,8 @@
   },
   "author": "Evgeni Pirianov",
   "license": "ISC",
+  "repository": "https://github.com/massalabs/massa-web3",
+  "private": false,
   "keywords": [
     "web3",
     "js",
