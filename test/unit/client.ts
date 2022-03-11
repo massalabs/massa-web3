@@ -5,6 +5,8 @@ import { Client } from "../../web3/Client";
 import * as wasmCli from "assemblyscript/cli/asc";
 import { IStatus } from "../../interfaces/IStatus";
 import { IAddressInfo } from "../../interfaces/IAddressInfo";
+import * as fs from "fs";
+import { SmartContractLoader } from "../../web3/SmartContractLoader";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -127,17 +129,25 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 (async () => {
 
     try {
-        await wasmCli.ready;
-        const { stdout: stderr, binary, text } = wasmCli.compileString(SMART_CONTRACT, {
-            optimizeLevel: 3,
-            runtime: "stub",
-        } as wasmCli.CompilerOptions);
 
-        console.log("binary", binary);
-        console.log("text", text);
+        const TEXT = `
+        //import { print } from "massa-sc-std";
+        let x = 7;
+        export function main(_args: string): void {
+            
+        }
+        function add(x: number, y: number): number { return x+y };
+      ` 
 
-        //const sc_data = btoa(binary.toString());
-        //console.log("sc_data", sc_data);
+        const smartContractLoader = new SmartContractLoader();
+        //const compiledData = await smartContractLoader.compileSmartContractFromFile({
+        //    smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-web3/test/unit/myModule.ts",
+        //});
+        const compiledData = await smartContractLoader.compileSmartContractFromString(TEXT);
+        console.log("binary", compiledData.binary);
+        console.log("text", compiledData.text);
+
+
 
         const baseAccount = {
             publicKey,
@@ -167,8 +177,8 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         //console.error("JSON RPC RESPONSE", statusResp);
 
         // get addresses rpc request
-        const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract]);
-        console.error("Smart contract addresses", addressesResp);
+        //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract]);
+        //console.error("Smart contract addresses", addressesResp);
 
         // stop node
         //await web3Client.nodeStop();

@@ -13,6 +13,7 @@ import { IStatus } from "../interfaces/IStatus";
 import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
+import { IBlockInfo } from "../interfaces/IBlockInfo";
 
 export class Client extends EventEmitter {
 	private clientConfig: IClientConfig;
@@ -113,7 +114,7 @@ export class Client extends EventEmitter {
 				return resolve({
 					isError: true,
 					result: null,
-					error: new Error(responseData.error)
+					error: new Error(responseData.error.message)
 				} as JsonRpcResponseData<T>);
 			}
 
@@ -280,13 +281,32 @@ export class Client extends EventEmitter {
 			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[addresses]])
 		}
 	} 
-	public getBlocks = blockIds => { /* TODO */ } // show info about a block (content, finality ...)
-	public getEndorsements = endorsementIds => { /* TODO */ } // show info about a list of endorsements (content, finality ...)
+	
+	//show info about a block (content, finality ...)
+	public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[blockIds]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[blockIds]])
+		}
+	} 
+	// show info about a list of endorsements (content, finality ...)
+	public async getEndorsements(endorsementIds: Array<string>): Promise<Array<IBlockInfo>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[endorsementIds]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[endorsementIds]])
+		}
+	} 
 	public getOperations = operationIds => { /* TODO */ } // show info about a list of operations = (content, finality ...)
-	public buyRolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
-	public sellRolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
-	public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
-	public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
+
+	//SEND OPERATIONS
+	//public buyRolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
+	//public sellRolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
+	//public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
+	//public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
 	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
 
 	/* web3/wallet.js module that will under the hood interact with WebExtension, native client or interactively with user */

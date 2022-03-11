@@ -3,6 +3,7 @@ export enum JSON_RPC_REQUEST_METHOD {
 	GET_STATUS = "get_status",
 	GET_ADDRESSES = "get_addresses",
 	SEND_OPERATIONS = "send_operations",
+	GET_BLOCKS = "get_block",
 
 	// private Api
 	STOP_NODE = "stop_node",
