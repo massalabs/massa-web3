@@ -2,18 +2,19 @@
 Web3 libraries for Massa (web3.js sdk)
 
 ### Requirements
+
 * NodeJS 14+
-* npm /yarn (see package.json)
+* npm / yarn (see package.json)
 
-### Package update
-1. Clone repo
-2. Run `npm run build` in the root folder
-3. Run `npm run test` for integration tests
-4. Release the package to the npm registry
+### Package commands
 
-### Package usage
+1. Run `yarn install` to install all deps
+2. Run `yarn run build` to build distribution content
+3. Run `yarn run test` to run integration and unit tests
 
-In order to instantiate a client, one needs to create a base account and set a list of providers as shown below:
+### Web3 Client initialization
+
+In order to instantiate a web3 client, one needs to create a base account for signing and paying for transactions as well as a list of providers as shown below:
 
 ```ts
 
@@ -43,7 +44,7 @@ In order to instantiate a client, one needs to create a base account and set a l
 
     const web3Client: Client = new Client(web3ClientConfig, baseAccount);
 ```
-Once we have a client instance, it is straightforward to call methods:
+Once there is an initialized client instance, it is straightforward to call methods on it:
 
 ```ts
 
@@ -65,3 +66,12 @@ There are also convenience factories for a straightforward initialization of the
     // a default client (see above)
     const client: Client = ClientFactory.createDefaultClient(providers, baseAccount);
 ```
+
+### Wallet native operations
+//TODO
+
+### Blockchain native operations
+//TODO
+
+### Smart contract operations
+//TODO
