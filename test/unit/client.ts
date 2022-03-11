@@ -7,6 +7,8 @@ import { IStatus } from "../../interfaces/IStatus";
 import { IAddressInfo } from "../../interfaces/IAddressInfo";
 import * as fs from "fs";
 import { SmartContractLoader } from "../../web3/SmartContractLoader";
+import { IBlockInfo } from "../../interfaces/IBlockInfo";
+import { IEndorsement } from "../../interfaces/IEndorsement";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -139,13 +141,13 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         function add(x: number, y: number): number { return x+y };
       ` 
 
-        const smartContractLoader = new SmartContractLoader();
+        //const smartContractLoader = new SmartContractLoader();
         //const compiledData = await smartContractLoader.compileSmartContractFromFile({
         //    smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-web3/test/unit/myModule.ts",
         //});
-        const compiledData = await smartContractLoader.compileSmartContractFromString(TEXT);
-        console.log("binary", compiledData.binary);
-        console.log("text", compiledData.text);
+        //const compiledData = await smartContractLoader.compileSmartContractFromString(TEXT);
+        //console.log("binary", compiledData.binary);
+        //console.log("text", compiledData.text);
 
 
 
@@ -167,18 +169,30 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
         const web3ClientConfig = {
             providers,
-            retryStrategyOn: true
+            retryStrategyOn: false
         } as IClientConfig;
 
         const web3Client: Client = new Client(web3ClientConfig, baseAccount);
         
         // get status rpc request
         //const statusResp: IStatus = await web3Client.getStatus();
-        //console.error("JSON RPC RESPONSE", statusResp);
+        //console.error("JSON RPC RESPONSE", JSON.stringify(statusResp, null, 2));
+
+        // get block
+        //const blocks: Array<IBlockInfo> = await web3Client.getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+        //console.error("JSON RPC RESPONSE", JSON.stringify(blocks, null, 2));
+
+        // get endorsements
+        //const endorsements: Array<IEndorsement> = await web3Client.getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+        //console.error("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
+
+        // get operations
+        const operations: Array<any> = await web3Client.getOperations(["2H2VvVKY9SVWquXRc91uuR6Ty6yxcNz5jQHFsGSWSMe2cZHMin"]);
+        console.error("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses rpc request
-        //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract]);
-        //console.error("Smart contract addresses", addressesResp);
+        //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract, ADDRESSES.currentPlayer]);
+        //console.error("Smart contract addresses", JSON.stringify(addressesResp, null, 2));
 
         // stop node
         //await web3Client.nodeStop();

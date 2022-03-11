@@ -14,6 +14,7 @@ import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { IBlockInfo } from "../interfaces/IBlockInfo";
+import { IEndorsement } from "../interfaces/IEndorsement";
 
 export class Client extends EventEmitter {
 	private clientConfig: IClientConfig;
@@ -43,11 +44,20 @@ export class Client extends EventEmitter {
 		this.signOperation = this.signOperation.bind(this);
 		this.computeBytesCompact = this.computeBytesCompact.bind(this);
 
-		// bind api methods
-		this.getStatus = this.getPrivateProviders.bind(this);
-		this.getAddresses = this.getAddresses.bind(this);
+		// ========== bind api methods ========= //
 
+		// public api methods
+		this.getStatus = this.getStatus.bind(this);
+		this.getAddresses = this.getAddresses.bind(this);
+		this.getBlocks = this.getBlocks.bind(this);
+		this.getEndorsements = this.getEndorsements.bind(this);
+		this.getOperations = this.getOperations.bind(this);
+
+		// private api methods
 		this.nodeStop = this.nodeStop.bind(this);
+		this.banIpAddress = this.banIpAddress.bind(this);
+		this.unbanIpAddress = this.unbanIpAddress.bind(this);
+		this.nodeAddStakingPrivateKeys = this.nodeAddStakingPrivateKeys.bind(this);
 	}
 
 	public getPrivateProviders(): Array<IProvider> {
@@ -62,12 +72,16 @@ export class Client extends EventEmitter {
 		switch (jsonRpcRequestMethod) {
 			case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
 			case JSON_RPC_REQUEST_METHOD.GET_STATUS:
-			case JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS: {
+			case JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS:
+			case JSON_RPC_REQUEST_METHOD.GET_BLOCKS: {
 					return this.getPublicProviders()[0]; //choose the first available public provider
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
 			case JSON_RPC_REQUEST_METHOD.BAN:
-			case JSON_RPC_REQUEST_METHOD.UNBAN: {
+			case JSON_RPC_REQUEST_METHOD.UNBAN:
+			case JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES:
+			case JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES:
+			case JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS: {
 				return this.getPrivateProviders()[0]; //choose the first available private provider
 			}
 			default: throw new Error("Unknown Json rpc method")
@@ -210,7 +224,7 @@ export class Client extends EventEmitter {
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[ipAddress]]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[ipAddress]])
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
 		}
 	} 
 	// ban a given IP addresses
@@ -219,7 +233,7 @@ export class Client extends EventEmitter {
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[ipAddress]]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[ipAddress]])
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
 		}
 	} 
 	
@@ -229,7 +243,7 @@ export class Client extends EventEmitter {
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, []);
 		}
 	}
 	// show staking addresses
@@ -238,7 +252,7 @@ export class Client extends EventEmitter {
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+			return await this.sendJsonRPCRequest<Array<string>>(jsonRpcRequestMethod, []);
 		}
 	}
 	// remove staking addresses
@@ -247,7 +261,7 @@ export class Client extends EventEmitter {
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [addresses]);
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [addresses]);
 		}
 	}
 	// add staking private keys
@@ -256,7 +270,7 @@ export class Client extends EventEmitter {
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [privateKeys]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [privateKeys]);
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [privateKeys]);
 		}
 	}
 
@@ -268,7 +282,7 @@ export class Client extends EventEmitter {
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<IStatus>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+			return await this.sendJsonRPCRequest<IStatus>(jsonRpcRequestMethod, []);
 		}
 	}
 
@@ -276,9 +290,9 @@ export class Client extends EventEmitter {
 	public async getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[addresses]]]);
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[addresses]])
+			return await this.sendJsonRPCRequest<Array<IAddressInfo>>(jsonRpcRequestMethod, [addresses]);
 		}
 	} 
 	
@@ -286,27 +300,35 @@ export class Client extends EventEmitter {
 	public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[blockIds]]]);
+			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [blockIds]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[blockIds]])
+			return await this.sendJsonRPCRequest<Array<IBlockInfo>>(jsonRpcRequestMethod, [blockIds]);
 		}
 	} 
 	// show info about a list of endorsements (content, finality ...)
-	public async getEndorsements(endorsementIds: Array<string>): Promise<Array<IBlockInfo>> {
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
+	public async getEndorsements(endorsementIds: Array<string>): Promise<Array<IEndorsement>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[endorsementIds]]]);
+			return await trySafeExecute<Array<IEndorsement>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [endorsementIds]]);
 		} else {
-			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[endorsementIds]])
+			return await this.sendJsonRPCRequest<Array<IEndorsement>>(jsonRpcRequestMethod, [endorsementIds]);
 		}
 	} 
-	public getOperations = operationIds => { /* TODO */ } // show info about a list of operations = (content, finality ...)
+	// show info about a list of operations = (content, finality ...)
+	public async getOperations(operationIds: Array<string>): Promise<Array<any>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_OPERATIONS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<any>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [operationIds]]);
+		} else {
+			return await this.sendJsonRPCRequest<Array<any>>(jsonRpcRequestMethod, [operationIds]);
+		}
+	}
 
-	//SEND OPERATIONS
-	//public buyRolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
-	//public sellRolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
-	//public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
-	//public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
+	//NATIVE OPERATIONS
+	public buyRolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
+	public sellRolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
+	public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
+	public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
 	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
 
 	/* web3/wallet.js module that will under the hood interact with WebExtension, native client or interactively with user */

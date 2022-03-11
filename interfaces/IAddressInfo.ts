@@ -1,3 +1,18 @@
+interface IProductionStats {
+    cycle: number,
+    is_final: boolean,
+    nok_count: number,
+    ok_count: number,
+};
+
+interface IEndorsementDraws {
+    slot: {
+        period: number,
+        thread: number,
+    },
+    index: number,
+};
+
 export interface IAddressInfo {
     address: string,
     balance: {
@@ -12,26 +27,10 @@ export interface IAddressInfo {
         },
     ],
     blocks_created: [string], // Block ids
-    endorsement_draws: [
-        {
-            slot: {
-                period: number,
-                thread: number,
-            },
-            index: number,
-        },
-    ],
+    endorsement_draws: Array<IEndorsementDraws>,
     involved_in_endorsements: [string], // Endorsement Id
     involved_in_operations: [string], // Operation id
-    production_stats: [
-        // as many items as cached cycles
-        {
-            cycle: number,
-            is_final: boolean,
-            nok_count: number,
-            ok_count: number,
-        },
-    ],
+    production_stats: Array<IProductionStats>,
     rolls: {
         active_rolls: number,
         candidate_rolls: number,
