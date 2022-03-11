@@ -15,6 +15,7 @@ import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { IBlockInfo } from "../interfaces/IBlockInfo";
 import { IEndorsement } from "../interfaces/IEndorsement";
+import { IOperationData } from "../interfaces/IOperationData";
 
 export class Client extends EventEmitter {
 	private clientConfig: IClientConfig;
@@ -315,12 +316,12 @@ export class Client extends EventEmitter {
 		}
 	} 
 	// show info about a list of operations = (content, finality ...)
-	public async getOperations(operationIds: Array<string>): Promise<Array<any>> {
+	public async getOperations(operationIds: Array<string>): Promise<Array<IOperationData>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_OPERATIONS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<any>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [operationIds]]);
+			return await trySafeExecute<Array<IOperationData>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [operationIds]]);
 		} else {
-			return await this.sendJsonRPCRequest<Array<any>>(jsonRpcRequestMethod, [operationIds]);
+			return await this.sendJsonRPCRequest<Array<IOperationData>>(jsonRpcRequestMethod, [operationIds]);
 		}
 	}
 
@@ -330,6 +331,7 @@ export class Client extends EventEmitter {
 	public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
 	public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
 	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
+	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
 
 	/* web3/wallet.js module that will under the hood interact with WebExtension, native client or interactively with user */
 	public walletInfo = () => { /* TODO */ } // show wallet info (private keys, public keys, addresses, balances ...)

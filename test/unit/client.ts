@@ -9,6 +9,7 @@ import * as fs from "fs";
 import { SmartContractLoader } from "../../web3/SmartContractLoader";
 import { IBlockInfo } from "../../interfaces/IBlockInfo";
 import { IEndorsement } from "../../interfaces/IEndorsement";
+import { IOperationData } from "../../interfaces/IOperationData";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -174,6 +175,8 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
         const web3Client: Client = new Client(web3ClientConfig, baseAccount);
         
+        // ============= PUBLIC API ================ //
+
         // get status rpc request
         //const statusResp: IStatus = await web3Client.getStatus();
         //console.error("JSON RPC RESPONSE", JSON.stringify(statusResp, null, 2));
@@ -187,13 +190,14 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         //console.error("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
 
         // get operations
-        const operations: Array<any> = await web3Client.getOperations(["2H2VvVKY9SVWquXRc91uuR6Ty6yxcNz5jQHFsGSWSMe2cZHMin"]);
-        console.error("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
+        //const operations: Array<IOperationData> = await web3Client.getOperations(["2H2VvVKY9SVWquXRc91uuR6Ty6yxcNz5jQHFsGSWSMe2cZHMin"]);
+        //console.error("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses rpc request
         //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract, ADDRESSES.currentPlayer]);
         //console.error("Smart contract addresses", JSON.stringify(addressesResp, null, 2));
 
+        // ============= PRIVATE API ================ //
         // stop node
         //await web3Client.nodeStop();
 
@@ -202,6 +206,16 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
         // unban ip address
         //await web3Client.unbanIpAddress("192.168.1.1");
+
+        // get staking addresses
+        //const stakingAddresses = await web3Client.nodeGetStakingAddresses();
+        //console.error("stakingAddresses", JSON.stringify(stakingAddresses, null, 2));
+
+        // remove staking addresses
+        //await web3Client.nodeRemoveStakingAddresses(["2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp"]);
+
+        // add staking pkeys
+        //await web3Client.nodeAddStakingPrivateKeys(["2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ"]);
 
     } catch (ex) {
         console.error("Error = ", ex.message);
