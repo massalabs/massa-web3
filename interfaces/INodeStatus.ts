@@ -2,7 +2,7 @@ interface NodesMap {
     [name: string]: string
 }
 
-export interface IStatus {
+export interface INodeStatus {
     config: {
       block_reward: string,
       delta_f0: number,

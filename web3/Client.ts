@@ -9,13 +9,15 @@ import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
 import axios, { AxiosResponse, AxiosRequestHeaders } from "axios";
-import { IStatus } from "../interfaces/IStatus";
+import { INodeStatus } from "../interfaces/INodeStatus";
 import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { IBlockInfo } from "../interfaces/IBlockInfo";
 import { IEndorsement } from "../interfaces/IEndorsement";
 import { IOperationData } from "../interfaces/IOperationData";
+import { IClique } from "../interfaces/IClique";
+import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 
 export class Client extends EventEmitter {
 	private clientConfig: IClientConfig;
@@ -48,17 +50,21 @@ export class Client extends EventEmitter {
 		// ========== bind api methods ========= //
 
 		// public api methods
-		this.getStatus = this.getStatus.bind(this);
+		this.getNodeStatus = this.getNodeStatus.bind(this);
 		this.getAddresses = this.getAddresses.bind(this);
 		this.getBlocks = this.getBlocks.bind(this);
 		this.getEndorsements = this.getEndorsements.bind(this);
 		this.getOperations = this.getOperations.bind(this);
+		this.getCliques = this.getCliques.bind(this);
+		this.getStakers = this.getStakers.bind(this);
 
 		// private api methods
 		this.nodeStop = this.nodeStop.bind(this);
 		this.banIpAddress = this.banIpAddress.bind(this);
 		this.unbanIpAddress = this.unbanIpAddress.bind(this);
 		this.nodeAddStakingPrivateKeys = this.nodeAddStakingPrivateKeys.bind(this);
+		this.nodeGetStakingAddresses = this.nodeGetStakingAddresses.bind(this);
+		this.nodeRemoveStakingAddresses = this.nodeRemoveStakingAddresses.bind(this);
 	}
 
 	public getPrivateProviders(): Array<IProvider> {
@@ -74,7 +80,11 @@ export class Client extends EventEmitter {
 			case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
 			case JSON_RPC_REQUEST_METHOD.GET_STATUS:
 			case JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS:
-			case JSON_RPC_REQUEST_METHOD.GET_BLOCKS: {
+			case JSON_RPC_REQUEST_METHOD.GET_OPERATIONS:
+			case JSON_RPC_REQUEST_METHOD.GET_BLOCKS:
+			case JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS:
+			case JSON_RPC_REQUEST_METHOD.GET_CLIQEUS:
+			case JSON_RPC_REQUEST_METHOD.GET_STAKERS: {
 					return this.getPublicProviders()[0]; //choose the first available public provider
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -227,7 +237,8 @@ export class Client extends EventEmitter {
 		} else {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
 		}
-	} 
+	}
+
 	// ban a given IP addresses
 	public async banIpAddress(ipAddress: string): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.BAN;
@@ -247,6 +258,7 @@ export class Client extends EventEmitter {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, []);
 		}
 	}
+
 	// show staking addresses
 	public async nodeGetStakingAddresses(): Promise<Array<string>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES;
@@ -256,6 +268,7 @@ export class Client extends EventEmitter {
 			return await this.sendJsonRPCRequest<Array<string>>(jsonRpcRequestMethod, []);
 		}
 	}
+
 	// remove staking addresses
 	public async nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES;
@@ -265,6 +278,7 @@ export class Client extends EventEmitter {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [addresses]);
 		}
 	}
+
 	// add staking private keys
 	public async nodeAddStakingPrivateKeys(privateKeys: Array<string>): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS;
@@ -278,12 +292,12 @@ export class Client extends EventEmitter {
 	/* web3/public.js node instrumentation relying on public Node API */
 
 	// show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...)
-	public async getStatus(): Promise<IStatus> {
+	public async getNodeStatus(): Promise<INodeStatus> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<IStatus>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+			return await trySafeExecute<INodeStatus>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
 		} else {
-			return await this.sendJsonRPCRequest<IStatus>(jsonRpcRequestMethod, []);
+			return await this.sendJsonRPCRequest<INodeStatus>(jsonRpcRequestMethod, []);
 		}
 	}
 
@@ -305,7 +319,8 @@ export class Client extends EventEmitter {
 		} else {
 			return await this.sendJsonRPCRequest<Array<IBlockInfo>>(jsonRpcRequestMethod, [blockIds]);
 		}
-	} 
+	}
+
 	// show info about a list of endorsements (content, finality ...)
 	public async getEndorsements(endorsementIds: Array<string>): Promise<Array<IEndorsement>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS;
@@ -314,7 +329,8 @@ export class Client extends EventEmitter {
 		} else {
 			return await this.sendJsonRPCRequest<Array<IEndorsement>>(jsonRpcRequestMethod, [endorsementIds]);
 		}
-	} 
+	}
+
 	// show info about a list of operations = (content, finality ...)
 	public async getOperations(operationIds: Array<string>): Promise<Array<IOperationData>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_OPERATIONS;
@@ -322,6 +338,26 @@ export class Client extends EventEmitter {
 			return await trySafeExecute<Array<IOperationData>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [operationIds]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IOperationData>>(jsonRpcRequestMethod, [operationIds]);
+		}
+	}
+
+	// Get cliques
+	public async getCliques(): Promise<Array<IClique>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQEUS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IClique>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+		} else {
+			return await this.sendJsonRPCRequest<Array<IClique>>(jsonRpcRequestMethod, []);
+		}
+	}
+
+	// Returns the active stakers and their roll counts for the current cycle.
+	public async getStakers(): Promise<Array<IStakingAddresses>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKERS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IStakingAddresses>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+		} else {
+			return await this.sendJsonRPCRequest<Array<IStakingAddresses>>(jsonRpcRequestMethod, []);
 		}
 	}
 

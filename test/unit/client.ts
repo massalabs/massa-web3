@@ -3,13 +3,15 @@ import { IClientConfig } from "../../interfaces/IClientConfig";
 import { IProvider, ProviderType } from "../../interfaces/IProvider";
 import { Client } from "../../web3/Client";
 import * as wasmCli from "assemblyscript/cli/asc";
-import { IStatus } from "../../interfaces/IStatus";
+import { INodeStatus } from "../../interfaces/INodeStatus";
 import { IAddressInfo } from "../../interfaces/IAddressInfo";
 import * as fs from "fs";
 import { SmartContractLoader } from "../../web3/SmartContractLoader";
 import { IBlockInfo } from "../../interfaces/IBlockInfo";
 import { IEndorsement } from "../../interfaces/IEndorsement";
 import { IOperationData } from "../../interfaces/IOperationData";
+import { IClique } from "../../interfaces/IClique";
+import { IStakingAddresses } from "../../interfaces/IStakingAddresses";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -178,8 +180,8 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         // ============= PUBLIC API ================ //
 
         // get status rpc request
-        //const statusResp: IStatus = await web3Client.getStatus();
-        //console.error("JSON RPC RESPONSE", JSON.stringify(statusResp, null, 2));
+        //const nodeStatus: INodeStatus = await web3Client.getNodeStatus();
+        //console.error("JSON RPC RESPONSE", JSON.stringify(nodeStatus, null, 2));
 
         // get block
         //const blocks: Array<IBlockInfo> = await web3Client.getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
@@ -190,12 +192,20 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         //console.error("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
 
         // get operations
-        //const operations: Array<IOperationData> = await web3Client.getOperations(["2H2VvVKY9SVWquXRc91uuR6Ty6yxcNz5jQHFsGSWSMe2cZHMin"]);
+        //const operations: Array<IOperationData> = await web3Client.getOperations(["29Z4RrPNwukMFo7B4Tb21rW7JCXGkqeHFbER19zP6Fzn1FLzhm"]);
         //console.error("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses rpc request
         //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract, ADDRESSES.currentPlayer]);
         //console.error("Smart contract addresses", JSON.stringify(addressesResp, null, 2));
+
+        // get cliques
+        //const cliques: Array<IClique> = await web3Client.getCliques();
+        //console.error("JSON RPC RESPONSE", JSON.stringify(cliques, null, 2));
+
+        // get staking addresses
+        //const stakers: Array<IStakingAddresses> = await web3Client.getStakers();
+        //console.error("JSON RPC RESPONSE", JSON.stringify(stakers, null, 2));
 
         // ============= PRIVATE API ================ //
         // stop node
