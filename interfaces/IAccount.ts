@@ -1,4 +1,5 @@
 export interface IAccount {
-	publicKey: string;
-	privateKey: string;
+	address: string  | null;
+	publicKey: string | null;
+	privateKey: string  | null;
 }

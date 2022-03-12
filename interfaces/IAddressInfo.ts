@@ -1,17 +1,21 @@
-interface IProductionStats {
+export interface IProductionStats {
     cycle: number,
     is_final: boolean,
     nok_count: number,
     ok_count: number,
 };
 
-interface IEndorsementDraws {
+export interface IEndorsementDraws {
     slot: {
         period: number,
         thread: number,
     },
     index: number,
 };
+
+export interface ILedgerDatastore {
+    [name: string]: number
+}
 
 export interface IAddressInfo {
     address: string,
@@ -40,8 +44,11 @@ export interface IAddressInfo {
     sce_ledger_info: {
         balance: String // reprensents an amount
         module: null | [number] // stored bytecode
-        datastore: {
-            xxxxxxxxxxxxxxxxxxxxxx: [number] // bytes
-        }
+        datastore: ILedgerDatastore
     }
+  }
+
+  export interface IFullAddressInfo extends IAddressInfo {
+    publicKey: string;
+    privateKey: string;
   }

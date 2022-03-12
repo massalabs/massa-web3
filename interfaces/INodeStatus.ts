@@ -1,4 +1,4 @@
-interface NodesMap {
+export interface NodesMap {
     [name: string]: string
 }
 
