@@ -14,7 +14,7 @@ interface WasmConfig {
 	wasmTextPath?: fs.PathLike;
 }
 
-export class SmartContractLoader {
+export class SmartContractUtils {
 	private isWebAssemblyCliInitialised = false;
 
 	public constructor() {

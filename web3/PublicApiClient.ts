@@ -107,4 +107,14 @@ export class PublicApiClient extends BaseClient {
 			return await this.sendJsonRPCRequest<Array<IStakingAddresses>>(jsonRpcRequestMethod, []);
 		}
 	}
+
+	//NATIVE OPERATIONS
+	public buyRolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
+	public sellRolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
+	public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
+	public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
+	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
+	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
+
+	
 }

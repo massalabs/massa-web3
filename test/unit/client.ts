@@ -4,9 +4,9 @@ import { IProvider, ProviderType } from "../../interfaces/IProvider";
 import { Client } from "../../web3/Client";
 import * as wasmCli from "assemblyscript/cli/asc";
 import { INodeStatus } from "../../interfaces/INodeStatus";
-import { IAddressInfo } from "../../interfaces/IAddressInfo";
+import { IAddressInfo, IFullAddressInfo } from "../../interfaces/IAddressInfo";
 import * as fs from "fs";
-import { SmartContractLoader } from "../../web3/SmartContractLoader";
+import { SmartContractUtils } from "../../web3/SmartContractUtils";
 import { IBlockInfo } from "../../interfaces/IBlockInfo";
 import { IEndorsement } from "../../interfaces/IEndorsement";
 import { IOperationData } from "../../interfaces/IOperationData";
@@ -56,7 +56,7 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         //console.log("text", compiledData.text);
 
 
-
+        // ============= CLIENT ================ //
         const baseAccount = {
             publicKey,
             privateKey,
@@ -83,58 +83,74 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         // ============= PUBLIC API ================ //
 
         // get node status
-        //const nodeStatus: INodeStatus = await web3Client.getNodeStatus();
+        //const nodeStatus: INodeStatus = await web3Client.publicApi().getNodeStatus();
         //console.error("JSON RPC RESPONSE", JSON.stringify(nodeStatus, null, 2));
 
         // get block
-        //const blocks: Array<IBlockInfo> = await web3Client.getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+        //const blocks: Array<IBlockInfo> = await web3Client.publicApi().getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
         //console.error("JSON RPC RESPONSE", JSON.stringify(blocks, null, 2));
 
         // get endorsements
-        //const endorsements: Array<IEndorsement> = await web3Client.getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+        //const endorsements: Array<IEndorsement> = await web3Client.publicApi().getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
         //console.error("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
 
         // get operations
-        //const operations: Array<IOperationData> = await web3Client.getOperations(["29Z4RrPNwukMFo7B4Tb21rW7JCXGkqeHFbER19zP6Fzn1FLzhm"]);
+        //const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["29Z4RrPNwukMFo7B4Tb21rW7JCXGkqeHFbER19zP6Fzn1FLzhm"]);
         //console.error("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses
-        //const addressesResp: Array<IAddressInfo> = await web3Client.getAddresses([ADDRESSES.smartContract, ADDRESSES.currentPlayer]);
+        //const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses([ADDRESSES.smartContract, ADDRESSES.currentPlayer]);
         //console.error("Smart contract addresses", JSON.stringify(addressesResp, null, 2));
 
         // get cliques
-        //const cliques: Array<IClique> = await web3Client.getCliques();
+        //const cliques: Array<IClique> = await web3Client.publicApi().getCliques();
         //console.error("JSON RPC RESPONSE", JSON.stringify(cliques, null, 2));
 
         // get staking addresses
-        //const stakers: Array<IStakingAddresses> = await web3Client.getStakers();
+        //const stakers: Array<IStakingAddresses> = await web3Client.publicApi().getStakers();
         //console.error("JSON RPC RESPONSE", JSON.stringify(stakers, null, 2));
 
         // ============= PRIVATE API ================ //
         // stop node
-        //await web3Client.nodeStop();
+        //await web3Client.privateApi().nodeStop();
 
         // ban ip address
-        //await web3Client.banIpAddress("192.168.1.1");
+        //await web3Client.privateApi().banIpAddress("192.168.1.1");
 
         // unban ip address
-        //await web3Client.unbanIpAddress("192.168.1.1");
+        //await web3Client.privateApi().unbanIpAddress("192.168.1.1");
 
         // get staking addresses
-        //const stakingAddresses = await web3Client.nodeGetStakingAddresses();
+        //const stakingAddresses = await web3Client.privateApi().nodeGetStakingAddresses();
         //console.error("stakingAddresses", JSON.stringify(stakingAddresses, null, 2));
 
         // node sign message
         //const message = "hello world";
         //const msgBuf = new TextEncoder().encode(message);
-        //const signedMessage = await web3Client.nodeSignMessage(msgBuf);
+        //const signedMessage = await web3Client.privateApi().nodeSignMessage(msgBuf);
         //console.error("signedMessage", JSON.stringify(signedMessage, null, 2));
 
         // remove staking addresses
-        //await web3Client.nodeRemoveStakingAddresses(["2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp"]);
+        //await web3Client.privateApi().nodeRemoveStakingAddresses(["2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp"]);
 
         // add staking pkeys
-        //await web3Client.nodeAddStakingPrivateKeys(["2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ"]);
+        //await web3Client.privateApi().nodeAddStakingPrivateKeys(["2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ"]);
+
+        // ============= WALLET ================ //
+
+        // generate new wallet
+        //const newWalletAccout = web3Client.wallet().walletGenerateNewAccount();
+        //console.error("newWalletAccout", JSON.stringify(newWalletAccout, null, 2));
+
+        // get wallet info
+        /*        const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo([{
+            privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
+            publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
+            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
+        }]);
+        console.error("wallet Info", JSON.stringify(walletInfo, null, 2));
+        */
+       
 
     } catch (ex) {
         console.error("Error = ", ex.message);

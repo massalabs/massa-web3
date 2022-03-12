@@ -149,7 +149,7 @@ export class BaseClient extends EventEmitter {
 		return resp.result;
 	}
 	
-	public async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<JsonRpcResponseData<T>> {
+	protected async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<JsonRpcResponseData<T>> {
 		const signature = this.signOperation(contractData, executor);
 		const data = {
 			content: {
@@ -212,15 +212,4 @@ export class BaseClient extends EventEmitter {
 
 		return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 	}
-
-	//NATIVE OPERATIONS
-	public buyRolls = (address, rollCount, fee) => { /* TODO */ } // buy rolls with wallet address
-	public sellRolls = (address, rollCount, fee) => { /* TODO */ } // sell rolls with wallet address
-	public sendTransaction = (senderAddress, receiverAddress, amount, fee) => { /* TODO */ } // send coins from a wallet address
-	public sendSmartContract = (senderAddress, bytecode, maxGas, gasPrice, coins, fee) => { /* TODO */ } // create and send an operation containing byte code
-	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
-	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
-
-
-
 }
