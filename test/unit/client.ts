@@ -139,11 +139,11 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         // ============= WALLET ================ //
 
         // generate new wallet
-        //const newWalletAccout = web3Client.wallet().walletGenerateNewAccount();
-        //console.error("newWalletAccout", JSON.stringify(newWalletAccout, null, 2));
+        //const newWalletAccount = web3Client.wallet().walletGenerateNewAccount();
+        //console.error("newWalletAccount", JSON.stringify(newWalletAccount, null, 2));
 
         // get wallet info
-        /*        const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo([{
+        /*  const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo([{
             privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
             publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
             address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
