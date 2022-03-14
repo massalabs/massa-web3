@@ -115,7 +115,6 @@ Available methods are:
 Wallet operations are accessible under the wallet subclient which is accessible via the wallet() method on the client.
 
 ```ts
-
     // generate new wallet
     const newWalletAccount = web3Client.wallet().walletGenerateNewAccount();
 ```
@@ -124,7 +123,7 @@ Available methods are:
 
 - walletGenerateNewAccount
 
-//TODO
+//TODO: add further
 
 ### Blockchain native operations
 
@@ -144,15 +143,41 @@ Available methods are:
     } as ITransactionData);
 ```
 
-### Smart contract operations
+### Smart contract compilation
+
+Massa sdk provides methods for compiling smart contracts written in Assemblyscript with Typescript either via cli or on the fly. If on the fly With both methods, the returned values are a text and a binary representations of the wasm.
+
+Examples are shown below:
 
 ```ts
-    // generate new wallet
+    // compile smart contract on the fly
+    const SMART_SIMPLE_CONTRACT = `function add(x: number, y: number): number { return x+y };`;
+    const scData: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_SIMPLE_CONTRACT);
+
+    // compile smart contract via cli
+    const scData1: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
+        smartContractFilePath: "...path.ts",
+        wasmBinaryPath: "...path",
+        wasmTextPath: "...path",
+    } as WasmConfig);
+```
+
+### Smart contract calls/execution
+
+Once the smart contract wasm is available, it becomes quite straightforward to send a smart contract operation (a state changing operation):
+
+```ts
+    // execute smart contract operation
     const operationId: Array<string> = await web3Client.executeSC({
         fee: "fee..."
         expirePeriod: "0";
         maxGas: "maxGas...",
         gasPrice: "gasprice...",
-        coins: "coints..."
+        coins: "coins...",
+        contractData: "smart contract data"
     } as IContractData);
+
 ```
+
+Smart contract read operations are also illustrated below:
+// TODO: add a read sc api

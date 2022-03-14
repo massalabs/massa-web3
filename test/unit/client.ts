@@ -6,7 +6,7 @@ import * as wasmCli from "assemblyscript/cli/asc";
 import { INodeStatus } from "../../interfaces/INodeStatus";
 import { IAddressInfo, IFullAddressInfo } from "../../interfaces/IAddressInfo";
 import * as fs from "fs";
-import { SmartContractUtils } from "../../web3/SmartContractUtils";
+import { CompiledSmartContract, SmartContractUtils, WasmConfig } from "../../web3/SmartContractUtils";
 import { IBlockInfo } from "../../interfaces/IBlockInfo";
 import { IEndorsement } from "../../interfaces/IEndorsement";
 import { IOperationData } from "../../interfaces/IOperationData";
@@ -45,17 +45,6 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
     try {
 
-
-
-        //const smartContractLoader = new SmartContractLoader();
-        //const compiledData = await smartContractLoader.compileSmartContractFromFile({
-        //    smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-web3/test/unit/myModule.ts",
-        //});
-        //const compiledData = await smartContractLoader.compileSmartContractFromString(TEXT);
-        //console.log("binary", compiledData.binary);
-        //console.log("text", compiledData.text);
-
-
         // ============= CLIENT ================ //
         const baseAccount = {
             publicKey,
@@ -84,31 +73,31 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
         // get node status
         //const nodeStatus: INodeStatus = await web3Client.publicApi().getNodeStatus();
-        //console.error("JSON RPC RESPONSE", JSON.stringify(nodeStatus, null, 2));
+        //console.log("JSON RPC RESPONSE", JSON.stringify(nodeStatus, null, 2));
 
         // get block
         //const blocks: Array<IBlockInfo> = await web3Client.publicApi().getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
-        //console.error("JSON RPC RESPONSE", JSON.stringify(blocks, null, 2));
+        //console.log("JSON RPC RESPONSE", JSON.stringify(blocks, null, 2));
 
         // get endorsements
         //const endorsements: Array<IEndorsement> = await web3Client.publicApi().getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
-        //console.error("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
+        //console.log("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
 
         // get operations
         //const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["29Z4RrPNwukMFo7B4Tb21rW7JCXGkqeHFbER19zP6Fzn1FLzhm"]);
-        //console.error("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
+        //console.log("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses
         //const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses([ADDRESSES.smartContract, ADDRESSES.currentPlayer]);
-        //console.error("Smart contract addresses", JSON.stringify(addressesResp, null, 2));
+        //console.log("Smart contract addresses", JSON.stringify(addressesResp, null, 2));
 
         // get cliques
         //const cliques: Array<IClique> = await web3Client.publicApi().getCliques();
-        //console.error("JSON RPC RESPONSE", JSON.stringify(cliques, null, 2));
+        //console.log("JSON RPC RESPONSE", JSON.stringify(cliques, null, 2));
 
         // get staking addresses
         //const stakers: Array<IStakingAddresses> = await web3Client.publicApi().getStakers();
-        //console.error("JSON RPC RESPONSE", JSON.stringify(stakers, null, 2));
+        //console.log("JSON RPC RESPONSE", JSON.stringify(stakers, null, 2));
 
         // ============= PRIVATE API ================ //
         // stop node
@@ -122,13 +111,13 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
         // get staking addresses
         //const stakingAddresses = await web3Client.privateApi().nodeGetStakingAddresses();
-        //console.error("stakingAddresses", JSON.stringify(stakingAddresses, null, 2));
+        //console.log("stakingAddresses", JSON.stringify(stakingAddresses, null, 2));
 
         // node sign message
         //const message = "hello world";
         //const msgBuf = new TextEncoder().encode(message);
         //const signedMessage = await web3Client.privateApi().nodeSignMessage(msgBuf);
-        //console.error("signedMessage", JSON.stringify(signedMessage, null, 2));
+        //console.log("signedMessage", JSON.stringify(signedMessage, null, 2));
 
         // remove staking addresses
         //await web3Client.privateApi().nodeRemoveStakingAddresses(["2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp"]);
@@ -140,7 +129,7 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
 
         // generate new wallet
         //const newWalletAccount = web3Client.wallet().walletGenerateNewAccount();
-        //console.error("newWalletAccount", JSON.stringify(newWalletAccount, null, 2));
+        //console.log("newWalletAccount", JSON.stringify(newWalletAccount, null, 2));
 
         // get wallet info
         /*  const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo([{
@@ -148,9 +137,18 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
             publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
             address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
         }]);
-        console.error("wallet Info", JSON.stringify(walletInfo, null, 2));
+        console.log("wallet Info", JSON.stringify(walletInfo, null, 2));
         */
-       
+
+        /*
+        const scData1: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
+            smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-web3/test/unit/myModule.ts",
+        } as WasmConfig);
+        console.log("smart contract data", JSON.stringify(scData1, null, 2));
+        */
+
+        //const scData: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_SIMPLE_CONTRACT);
+        //console.log("smart contract data", JSON.stringify(scData, null, 2));
 
     } catch (ex) {
         console.error("Error = ", ex.message);

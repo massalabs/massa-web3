@@ -3,12 +3,12 @@ import * as wasmCli from "assemblyscript/cli/asc";
 import * as fs from "fs";
 import * as path from "path";
 
-interface CompiledSmartContract {
+export interface CompiledSmartContract {
 	binary: Uint8Array,
 	text: string,
 }
 
-interface WasmConfig {
+export interface WasmConfig {
 	smartContractFilePath: fs.PathLike;
 	wasmBinaryPath?: fs.PathLike;
 	wasmTextPath?: fs.PathLike;

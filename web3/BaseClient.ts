@@ -273,7 +273,7 @@ export class BaseClient extends EventEmitter {
 
 		switch (opTypeId) {
 			case OperationTypeId.ExecuteSC: {
-				
+
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
 				const coinsEncoded = Buffer.from(varintEncode((data as IContractData).coins));
 				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
