@@ -10,6 +10,11 @@ import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
 import axios, { AxiosResponse, AxiosRequestHeaders } from "axios";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
+import { ITransactionData } from "../interfaces/ITransactionData";
+import { OperationTypeId } from "../interfaces/OperationTypes";
+import { IRollsData } from "../interfaces/IRollsData";
+
+type DataType = IContractData | ITransactionData | IRollsData;
 
 export class BaseClient extends EventEmitter {
 	protected clientConfig: IClientConfig;
@@ -36,6 +41,9 @@ export class BaseClient extends EventEmitter {
 		this.getBaseAccount = this.getBaseAccount.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
 		this.executeSC = this.executeSC.bind(this);
+		this.sendTransaction = this.sendTransaction.bind(this);
+		this.sellRolls = this.sellRolls.bind(this);
+		this.buyRolls = this.buyRolls.bind(this);
 		this.signOperation = this.signOperation.bind(this);
 		this.computeBytesCompact = this.computeBytesCompact.bind(this);
 	}
@@ -81,6 +89,7 @@ export class BaseClient extends EventEmitter {
 		return this.baseAccount;
 	}
 
+	// send a JSON rpc request to the node
 	protected async sendJsonRPCRequest<T>(resource: JSON_RPC_REQUEST_METHOD, params: Object): Promise<T> {
 		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
 			let resp: AxiosResponse = null;
@@ -139,7 +148,8 @@ export class BaseClient extends EventEmitter {
 		return resp.result;
 	}
 	
-	protected async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<JsonRpcResponseData<T>> {
+	// create and send an operation containing byte code
+	public async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<Array<string>> {
 		const signature = this.signOperation(contractData, executor);
 		const data = {
 			content: {
@@ -157,20 +167,86 @@ export class BaseClient extends EventEmitter {
 			},
 			signature,
 		}
-		return await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		// returns operation ids
+		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return res.result;
 	}
 
-	private signOperation(contractData: IContractData, executor?: IAccount) {
+	// send coins from a wallet address
+	public async sendTransaction<T>(txData: ITransactionData, executor?: IAccount): Promise<Array<string>> {
+		const signature = this.signOperation(txData, executor);
+		const data = {
+			content: {
+				expire_period: txData.expirePeriod,
+				fee: txData.fee.toString(),
+				op: {
+					Transaction: {
+						amount: txData.amount,
+						recipient_address: txData.recipient_address
+					}
+				},
+				sender_public_key: executor.publicKey || this.baseAccount.publicKey
+			},
+			signature,
+		}
+		// returns operation ids
+		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return res.result;
+	}
+
+	// buy rolls with wallet address
+	public async buyRolls<T>(txData: ITransactionData, executor?: IAccount): Promise<Array<string>> {
+		const signature = this.signOperation(txData, executor);
+		const data = {
+			content: {
+				expire_period: txData.expirePeriod,
+				fee: txData.fee.toString(),
+				op: {
+					RollBuy: {
+						roll_count: txData.amount,
+					}
+				},
+				sender_public_key: executor.publicKey || this.baseAccount.publicKey
+			},
+			signature,
+		}
+		// returns operation ids
+		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return res.result;
+	}
+
+	// sell rolls with wallet address
+	public async sellRolls<T>(txData: ITransactionData, executor?: IAccount): Promise<Array<string>> {
+		const signature = this.signOperation(txData, executor);
+		const data = {
+			content: {
+				expire_period: txData.expirePeriod,
+				fee: txData.fee.toString(),
+				op: {
+					RollSell: {
+						roll_count: txData.amount,
+					}
+				},
+				sender_public_key: executor.publicKey || this.baseAccount.publicKey
+			},
+			signature,
+		}
+		// returns operation ids
+		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return res.result;
+	}
+
+	public signOperation(data: DataType, signer?: IAccount) {
 		// bytes compaction
-		const bytesCompact: Buffer = this.computeBytesCompact(contractData, 3, executor);
+		const bytesCompact: Buffer = this.computeBytesCompact(data, OperationTypeId.ExecuteSC, signer);
 	
 		// Hash byte compact
 		const hashEncodedData: Buffer = hashSha256(bytesCompact);
 	
 		// Signing a digest
 		const digest = new BN(hashEncodedData.valueOf());
-		const privateKeyBase58Decoded = base58checkDecode(executor.privateKey || this.baseAccount.privateKey);
-		const publicKeyBase58Decoded = base58checkDecode(executor.publicKey || this.baseAccount.publicKey);
+		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey || this.baseAccount.privateKey);
+		const publicKeyBase58Decoded = base58checkDecode(signer.publicKey || this.baseAccount.publicKey);
 		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
 		const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
 
@@ -189,17 +265,39 @@ export class BaseClient extends EventEmitter {
 		return base58checkEncode(Buffer.concat([rr, ss]));
 	}
 	
-	private computeBytesCompact(contractData: IContractData,  typeId: number = 3, account?: IAccount): Buffer {
-		const feeEncoded = Buffer.from(varintEncode(contractData.fee));
-		const expirePeriodEncoded = Buffer.from(varintEncode(contractData.expirePeriod));
-		const publicKeyEncoded = base58checkDecode(account.publicKey || this.baseAccount.publicKey)
-		const typeIdEncoded = Buffer.from(varintEncode(typeId));
-		const maxGasEncoded = Buffer.from(varintEncode(contractData.maxGas));
-		const coinsEncoded = Buffer.from(varintEncode(contractData.coins));
-		const gasPriceEncoded = Buffer.from(varintEncode(contractData.gasPrice));
-		const dataLengthEncoded = Buffer.from(varintEncode(contractData.contractData.length));
-		const contractDataEncoded = Uint8Array.from(atob(contractData.contractData), c => c.charCodeAt(0));
+	private computeBytesCompact(data: DataType,  opTypeId: OperationTypeId, account?: IAccount): Buffer {
+		const feeEncoded = Buffer.from(varintEncode(data.fee));
+		const expirePeriodEncoded = Buffer.from(varintEncode(data.expirePeriod));
+		const publicKeyEncoded = base58checkDecode(account.publicKey || this.baseAccount.publicKey);
+		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
-		return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+		switch (opTypeId) {
+			case OperationTypeId.ExecuteSC: {
+				
+				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
+				const coinsEncoded = Buffer.from(varintEncode((data as IContractData).coins));
+				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
+				const dataLengthEncoded = Buffer.from(varintEncode((data as IContractData).contractData.length));
+				const contractDataEncoded = Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0));
+		
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+			}
+			case OperationTypeId.Transaction: {
+				const recepientAddressEncoded = Buffer.from(varintEncode((data as ITransactionData).recipient_address));
+				const transferAmountEncoded = Buffer.from(varintEncode((data as ITransactionData).amount));
+		
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recepientAddressEncoded, transferAmountEncoded]);
+			}
+			case OperationTypeId.RollBuy:
+			case OperationTypeId.RollSell: {
+				const rollAmountEncoded = Buffer.from(varintEncode((data as IRollsData).amount));
+		
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, rollAmountEncoded]);
+			}
+		}
 	}
+
+	//OTHER OPERATIONS (TODO)
+	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
+	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
 }

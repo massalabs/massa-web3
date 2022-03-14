@@ -26,4 +26,11 @@ export interface IExecSmartContractOpType {
     }
 }
 
+export enum OperationTypeId {
+    Transaction = 0,
+    RollBuy = 1,
+    RollSell = 2,
+    ExecuteSC = 3,
+}
+
 export type OpType = ITransactionOpType | IRollSellOpType | IRollBuyOpType | IExecSmartContractOpType;

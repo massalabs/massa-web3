@@ -110,7 +110,7 @@ Available methods are:
 - "nodeAddStakingPrivateKeys" (https://github.com/massalabs/massa/wiki/api#add_staking_private_keys)
 - "nodeSignMessage" (https://github.com/massalabs/massa/wiki/api#node_sign_message)
 
-### Wallet native operations
+### Wallet operations
 
 Wallet operations are accessible under the wallet subclient which is accessible via the wallet() method on the client.
 
@@ -127,7 +127,32 @@ Available methods are:
 //TODO
 
 ### Blockchain native operations
-//TODO
+
+Available methods are:
+
+- "sendTransaction"
+- "buyRolls"
+- "sellRolls"
+
+```ts
+    // send native currency from one wallet to another
+    const operationId: Array<string> = await web3Client.sendTransaction({
+        fee: "fee..."
+        expirePeriod: "0";
+        amount: "amount...",
+        recipient_address: "address...";
+    } as ITransactionData);
+```
 
 ### Smart contract operations
-//TODO
+
+```ts
+    // generate new wallet
+    const operationId: Array<string> = await web3Client.executeSC({
+        fee: "fee..."
+        expirePeriod: "0";
+        maxGas: "maxGas...",
+        gasPrice: "gasprice...",
+        coins: "coints..."
+    } as IContractData);
+```
