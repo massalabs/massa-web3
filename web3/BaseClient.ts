@@ -9,12 +9,17 @@ import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
 import axios, { AxiosResponse, AxiosRequestHeaders } from "axios";
-import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
+import { HTTP_GET_REQUEST_METHOD, JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
 
 type DataType = IContractData | ITransactionData | IRollsData;
+
+const requestHeaders = {
+	"Accept": "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+	'Access-Control-Allow-Origin': '*'
+} as AxiosRequestHeaders;
 
 export class BaseClient extends EventEmitter {
 	protected clientConfig: IClientConfig;
@@ -46,6 +51,7 @@ export class BaseClient extends EventEmitter {
 		this.buyRolls = this.buyRolls.bind(this);
 		this.signOperation = this.signOperation.bind(this);
 		this.computeBytesCompact = this.computeBytesCompact.bind(this);
+		this.sendGetRequest = this.sendGetRequest.bind(this);
 	}
 
 	public getPrivateProviders(): Array<IProvider> {
@@ -56,8 +62,8 @@ export class BaseClient extends EventEmitter {
 		return this.clientConfig.providers.filter((provider) => provider.type === ProviderType.PUBLIC);
 	}
 
-	private getProviderForRpcMethod(jsonRpcRequestMethod: JSON_RPC_REQUEST_METHOD): IProvider {
-		switch (jsonRpcRequestMethod) {
+	private getProviderForRpcMethod(requestMethod: JSON_RPC_REQUEST_METHOD | HTTP_GET_REQUEST_METHOD): IProvider {
+		switch (requestMethod) {
 			case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
 			case JSON_RPC_REQUEST_METHOD.GET_STATUS:
 			case JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS:
@@ -65,7 +71,8 @@ export class BaseClient extends EventEmitter {
 			case JSON_RPC_REQUEST_METHOD.GET_BLOCKS:
 			case JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS:
 			case JSON_RPC_REQUEST_METHOD.GET_CLIQEUS:
-			case JSON_RPC_REQUEST_METHOD.GET_STAKERS: {
+			case JSON_RPC_REQUEST_METHOD.GET_STAKERS:
+			case HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD: {
 					return this.getPublicProviders()[0]; //choose the first available public provider
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -89,16 +96,11 @@ export class BaseClient extends EventEmitter {
 		return this.baseAccount;
 	}
 
-	// send a JSON rpc request to the node
-	protected async sendJsonRPCRequest<T>(resource: JSON_RPC_REQUEST_METHOD, params: Object): Promise<T> {
+	// send a post JSON rpc request to the node
+	protected async sendJsonRPCRequest<T>(resource: JSON_RPC_REQUEST_METHOD, params: Object, is_get: boolean=false): Promise<T> {
 		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
 			let resp: AxiosResponse = null;
 
-			const headers = {
-				"Accept": "application/json",
-				'Access-Control-Allow-Origin': '*'
-			} as AxiosRequestHeaders;
-		
 			const body = {
 				"jsonrpc": "2.0",
 				"method": resource,
@@ -107,7 +109,7 @@ export class BaseClient extends EventEmitter {
 			};
 		
 			try {
-				resp = await axios.post(this.getProviderForRpcMethod(resource).url, body, headers);
+				resp = await axios.post(this.getProviderForRpcMethod(resource).url, body, requestHeaders);
 			} catch (ex) {
 				return resolve({
 					isError: true,
@@ -116,7 +118,7 @@ export class BaseClient extends EventEmitter {
 				} as JsonRpcResponseData<T>);
 			}
 
-			const responseData = resp.data;
+			const responseData: any = resp.data;
 
 			if (responseData.error) {
 				return resolve({
@@ -147,7 +149,44 @@ export class BaseClient extends EventEmitter {
 
 		return resp.result;
 	}
-	
+
+	// send get request method
+	protected async sendGetRequest<T>(resource: HTTP_GET_REQUEST_METHOD): Promise<T> {
+		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
+			let resp: AxiosResponse = null;
+
+			try {
+				resp = await axios.get(this.getProviderForRpcMethod(resource).url + "/info", requestHeaders);
+			} catch (ex) {
+				return resolve({
+					isError: true,
+					result: null,
+					error: new Error('JSON.parse error: ' + String(ex))
+				} as JsonRpcResponseData<T>);
+			}
+
+			return resolve({
+				isError: false,
+				result: resp.data as T,
+				error: null
+			} as JsonRpcResponseData<T>);
+		});
+
+		let resp: JsonRpcResponseData<T> = null;
+		try {
+			resp = await promise;
+		} catch (ex) {
+			throw ex;
+		}
+
+		// in case of rpc error, rethrow the error
+		if (resp.error && resp.error) {
+			throw resp.error;
+		}
+
+		return resp.result;
+	}
+
 	// create and send an operation containing byte code
 	public async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<Array<string>> {
 		const signature = this.signOperation(contractData, executor);

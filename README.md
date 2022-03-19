@@ -89,6 +89,16 @@ Available methods are:
 - "getCliques" (https://github.com/massalabs/massa/wiki/api#get_cliques)
 - "getStakers" (https://github.com/massalabs/massa/wiki/api#get_stakers)
 
+Other public methods include:
+
+- getLatestPeriod
+
+```ts
+    // get latest period info
+    const blocks: Array<IBlockInfo> = await web3Client.publicApi().getLatestPeriodInfo();
+```
+
+
 ### Client private api
 
 Client private api operations are accessible under the private subclient which is accessible via the `privateApi()` method on the client.
@@ -122,8 +132,15 @@ Wallet operations are accessible under the wallet subclient which is accessible 
 Available methods are:
 
 - walletGenerateNewAccount
+- signOperation
+- verifySignedData
 
 //TODO: add further
+
+```ts
+    // sign a given data payload
+    const signature = signOperation(data: DataType, signer?: IAccount);
+```
 
 ### Blockchain native operations
 

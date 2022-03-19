@@ -1,14 +1,15 @@
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { INodeStatus } from "../interfaces/INodeStatus";
-import { IAddressInfo, IFullAddressInfo } from "../interfaces/IAddressInfo";
+import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
-import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
+import { HTTP_GET_REQUEST_METHOD, JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { IBlockInfo } from "../interfaces/IBlockInfo";
 import { IEndorsement } from "../interfaces/IEndorsement";
 import { IOperationData } from "../interfaces/IOperationData";
 import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
+import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
 
 export class PublicApiClient extends BaseClient {
 	public constructor(clientConfig: IClientConfig) {
@@ -24,6 +25,7 @@ export class PublicApiClient extends BaseClient {
 		this.getOperations = this.getOperations.bind(this);
 		this.getCliques = this.getCliques.bind(this);
 		this.getStakers = this.getStakers.bind(this);
+		this.getLatestPeriodInfo = this.getLatestPeriodInfo.bind(this);
 	}
 
 	// show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...)
@@ -50,9 +52,19 @@ export class PublicApiClient extends BaseClient {
 	public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [blockIds]]);
+			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, blockIds]);
 		} else {
-			return await this.sendJsonRPCRequest<Array<IBlockInfo>>(jsonRpcRequestMethod, [blockIds]);
+			return await this.sendJsonRPCRequest<Array<IBlockInfo>>(jsonRpcRequestMethod, blockIds);
+		}
+	}
+
+	//show info about latest period
+	public async getLatestPeriodInfo(): Promise<ILatestPeriodInfo> {
+		const getMethod = HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<ILatestPeriodInfo>(this.sendGetRequest,[getMethod]);
+		} else {
+			return await this.sendGetRequest<ILatestPeriodInfo>(getMethod);
 		}
 	}
 
