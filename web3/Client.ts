@@ -3,19 +3,19 @@ import { IAccount } from "../interfaces/IAccount";
 import { BaseClient } from "./BaseClient";
 import { PrivateApiClient } from "./PrivateApiClient";
 import { PublicApiClient } from "./PublicApiClient";
-import { Wallet } from "./Wallet";
+import { WalletClient } from "./WalletClient";
 import { SmartContractUtils } from "./SmartContractUtils";
 
 export class Client {
 	private smartContractUtils: SmartContractUtils;
 	private privateApiClient: PrivateApiClient;
 	private publicApiClient: PublicApiClient;
-	private massaWallet: Wallet;
+	private massaWallet: WalletClient;
 
 	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
 		this.publicApiClient =  new PublicApiClient(clientConfig);
 		this.privateApiClient =  new PrivateApiClient(clientConfig);
-		this.massaWallet =  new Wallet(clientConfig, baseAccount);
+		this.massaWallet =  new WalletClient(clientConfig, baseAccount);
 		this.smartContractUtils = new SmartContractUtils();
 
 		// exposed and bound class methods
@@ -31,7 +31,7 @@ export class Client {
 	public publicApi(): PublicApiClient {
 		return this.publicApiClient;
 	}
-	public wallet(): Wallet {
+	public wallet(): WalletClient {
 		return this.massaWallet;
 	}
 	public smartContracts(): SmartContractUtils {

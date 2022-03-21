@@ -42,13 +42,12 @@ export class BaseClient extends EventEmitter {
 		this.getPublicProviders = this.getPublicProviders.bind(this);
 		this.getUrlHttpMethod = this.getUrlHttpMethod.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
+		this.sendGetRequest = this.sendGetRequest.bind(this);
 		this.executeSC = this.executeSC.bind(this);
-		this.sendTransaction = this.sendTransaction.bind(this);
 		this.sellRolls = this.sellRolls.bind(this);
 		this.buyRolls = this.buyRolls.bind(this);
 		this.signOperation = this.signOperation.bind(this);
-		this.computeBytesCompact = this.computeBytesCompact.bind(this);
-		this.sendGetRequest = this.sendGetRequest.bind(this);
+		this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
 	}
 
 	public getPrivateProviders(): Array<IProvider> {
@@ -70,7 +69,7 @@ export class BaseClient extends EventEmitter {
 			case JSON_RPC_REQUEST_METHOD.GET_CLIQEUS:
 			case JSON_RPC_REQUEST_METHOD.GET_STAKERS:
 			case HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD: {
-					return this.getPublicProviders()[0]; //choose the first available public provider
+					return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
 			case JSON_RPC_REQUEST_METHOD.BAN:
@@ -79,7 +78,7 @@ export class BaseClient extends EventEmitter {
 			case JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES:
 			case JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS:
 			case JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE: {
-				return this.getPrivateProviders()[0]; //choose the first available private provider
+				return this.getPrivateProviders()[0]; //TODO: choose the first available private provider ?
 			}
 			default: throw new Error("Unknown Json rpc method")
 		}
@@ -209,28 +208,6 @@ export class BaseClient extends EventEmitter {
 		return res.result;
 	}
 
-	// send coins from a wallet address
-	public async sendTransaction<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
-		const signature = this.signOperation(txData, executor);
-		const data = {
-			content: {
-				expire_period: txData.expirePeriod,
-				fee: txData.fee.toString(),
-				op: {
-					Transaction: {
-						amount: txData.amount,
-						recipient_address: txData.recipient_address
-					}
-				},
-				sender_public_key: executor.publicKey
-			},
-			signature,
-		}
-		// returns operation ids
-		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-		return res.result;
-	}
-
 	// buy rolls with wallet address
 	public async buyRolls<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 		const signature = this.signOperation(txData, executor);
@@ -275,7 +252,7 @@ export class BaseClient extends EventEmitter {
 
 	public signOperation(data: DataType, signer: IAccount) {
 		// bytes compaction
-		const bytesCompact: Buffer = this.computeBytesCompact(data, OperationTypeId.ExecuteSC, signer);
+		const bytesCompact: Buffer = this.compactBytesForOperation(data, OperationTypeId.ExecuteSC, signer);
 	
 		// Hash byte compact
 		const hashEncodedData: Buffer = hashSha256(bytesCompact);
@@ -302,7 +279,7 @@ export class BaseClient extends EventEmitter {
 		return base58checkEncode(Buffer.concat([rr, ss]));
 	}
 	
-	private computeBytesCompact(data: DataType, opTypeId: OperationTypeId, account: IAccount): Buffer {
+	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(data.fee));
 		const expirePeriodEncoded = Buffer.from(varintEncode(data.expirePeriod));
 		const publicKeyEncoded = base58checkDecode(account.publicKey);

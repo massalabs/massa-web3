@@ -9,11 +9,13 @@ import { base58checkDecode, base58checkEncode } from "../utils/Xbqcrypto";
 import { BN }  from "bn.js";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
+import { ITransactionData } from "../interfaces/ITransactionData";
+import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
 
 /* web3/Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
-export class Wallet extends BaseClient {
+export class WalletClient extends BaseClient {
 
 	private wallet: Array<IAccount> = [];
 	private baseAccount: IAccount;
@@ -31,9 +33,10 @@ export class Wallet extends BaseClient {
 		this.removeAddressesFromWallet = this.removeAddressesFromWallet.bind(this);
 		this.walletInfo = this.walletInfo.bind(this);
 		this.signMessage = this.signMessage.bind(this);
-		this.getWalletAdressesInfo = this.getWalletAdressesInfo.bind(this);
+		this.getWalletAddressesInfo = this.getWalletAddressesInfo.bind(this);
 		this.setBaseAccount = this.setBaseAccount.bind(this);
 		this.getBaseAccount = this.getBaseAccount.bind(this);
+		this.sendTransaction = this.sendTransaction.bind(this);
 
 		// init wallet with a base account if any
 		if (baseAccount) {
@@ -119,7 +122,7 @@ export class Wallet extends BaseClient {
 			return [];
 		}
 		const addresses: Array<string> = this.wallet.map((account) => account.address);
-		const addressesInfo: Array<IAddressInfo> = await this.getWalletAdressesInfo(addresses);
+		const addressesInfo: Array<IAddressInfo> = await this.getWalletAddressesInfo(addresses);
 
 		if (addressesInfo.length !== this.wallet.length) {
 			throw new Error(`Requested wallets not fully retrieved. Got ${addressesInfo.length}, expected: ${this.wallet.length}`);
@@ -156,10 +159,10 @@ export class Wallet extends BaseClient {
 		if (!signerAccount) {
 			throw new Error(`No signer account ${accountSignerAddress} found in wallet`);
 		}
-		return await Wallet.walletSignMessage(data, signerAccount);
+		return await WalletClient.walletSignMessage(data, signerAccount);
 	}
 
-	private async getWalletAdressesInfo(addresses: Array<string>) {
+	private async getWalletAddressesInfo(addresses: Array<string>) {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
@@ -225,5 +228,27 @@ export class Wallet extends BaseClient {
 			hex,
 			base58Encoded
 		} as ISignature;
+	}
+
+	// send native MAS from a wallet address to another
+	public async sendTransaction<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
+		const signature = this.signOperation(txData, executor);
+		const data = {
+			content: {
+				expire_period: txData.expirePeriod,
+				fee: txData.fee.toString(),
+				op: {
+					Transaction: {
+						amount: txData.amount,
+						recipient_address: txData.recipient_address
+					}
+				},
+				sender_public_key: executor.publicKey
+			},
+			signature,
+		}
+		// returns operation ids
+		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return res.result;
 	}
 }

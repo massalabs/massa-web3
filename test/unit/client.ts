@@ -14,7 +14,7 @@ import { IClique } from "../../interfaces/IClique";
 import { IStakingAddresses } from "../../interfaces/IStakingAddresses";
 import { ClientFactory, DefaultProviderUrls } from "../../web3/ClientFactory";
 import { ILatestPeriodInfo } from "../../interfaces/ILatestPeriodInfo";
-import { Wallet } from "../../web3/Wallet";
+import { WalletClient } from "../../web3/WalletClient";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',

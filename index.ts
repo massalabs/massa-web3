@@ -21,3 +21,7 @@ export { ITransactionOpType, IRollBuyOpType, IRollSellOpType, IExecSmartContract
 // classes
 export { ClientFactory, DefaultProviderUrls } from "./web3/ClientFactory";
 export { Client } from "./web3/Client";
+export { PublicApiClient } from "./web3/PublicApiClient";
+export { PrivateApiClient } from "./web3/PrivateApiClient";
+export { WalletClient } from "./web3/WalletClient";
+export { SmartContractUtils } from "./web3/SmartContractUtils";
