@@ -6,8 +6,8 @@ import { PublicApiClient } from "./PublicApiClient";
 import { IAddressInfo, IFullAddressInfo } from "../interfaces/IAddressInfo";
 
 export class Wallet extends BaseClient {
-	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient) {
-		super(clientConfig);
+	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, baseAccount?: IAccount) {
+		super(clientConfig, baseAccount);
 		
 		// ========== bind wallet methods ========= //
 

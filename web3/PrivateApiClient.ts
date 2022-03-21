@@ -3,10 +3,11 @@ import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ISignedMessage } from "../interfaces/ISignedMessage";
 import { BaseClient } from "./BaseClient";
+import { IAccount } from "../interfaces/IAccount";
 
 export class PrivateApiClient extends BaseClient {
-	public constructor(clientConfig: IClientConfig) {
-		super(clientConfig);
+	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
+		super(clientConfig, baseAccount);
 		
 		// ========== bind api methods ========= //
 

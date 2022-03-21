@@ -10,10 +10,11 @@ import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
 import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
+import { IAccount } from "../interfaces/IAccount";
 
 export class PublicApiClient extends BaseClient {
-	public constructor(clientConfig: IClientConfig) {
-		super(clientConfig);
+	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
+		super(clientConfig, baseAccount);
 		
 		// ========== bind api methods ========= //
 

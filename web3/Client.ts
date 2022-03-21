@@ -7,18 +7,15 @@ import { Wallet } from "./Wallet";
 import { SmartContractUtils } from "./SmartContractUtils";
 
 export class Client {
-
 	private smartContractUtils: SmartContractUtils;
-	private baseClient: BaseClient;
 	private privateApiClient: PrivateApiClient;
 	private publicApiClient: PublicApiClient;
 	private massaWallet: Wallet;
 
 	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
-		this.baseClient = new BaseClient(clientConfig, baseAccount);
-		this.privateApiClient =  new PrivateApiClient(clientConfig);
-		this.publicApiClient =  new PublicApiClient(clientConfig);
-		this.massaWallet =  new Wallet(clientConfig, this.publicApiClient);
+		this.privateApiClient =  new PrivateApiClient(clientConfig, baseAccount);
+		this.publicApiClient =  new PublicApiClient(clientConfig, baseAccount);
+		this.massaWallet =  new Wallet(clientConfig, this.publicApiClient, baseAccount);
 		this.smartContractUtils = new SmartContractUtils();
 
 		// exposed and bound class methods
