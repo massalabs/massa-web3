@@ -11,6 +11,7 @@ import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
+import { OperationTypeId } from "../interfaces/OperationTypes";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
 
@@ -64,22 +65,23 @@ export class WalletClient extends BaseClient {
 	}
 
 	// add a list of private keys to the wallet
-	public addPrivateKeysToWallet(privateKeys: Array<string>): void {
+	public async addPrivateKeysToWallet(privateKeys: Array<string>): Promise<void> {
 		if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
 		}
 		for (const privateKey of privateKeys) {
 			const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKey);
-			const publickey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true);
-			const publicKeyBase58Encoded = base58checkEncode(publickey);
+			const publickey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
+			const publicKeyBase58Encoded: string = base58checkEncode(publickey);
 
-			// TODO: get address
-			const address = "0x0";
-			if (!this.getWalletAccountByAddress(address)) {
+			const address: Uint8Array = await secp.utils.sha256(publickey);
+			const addressBase58Encoded: string = base58checkEncode(address);
+
+			if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
 				this.wallet.push({
-					privateKey: privateKey,
+					privateKey: privateKey, // submitted in base58
 					publicKey: publicKeyBase58Encoded,
-					address: address
+					address: addressBase58Encoded,
 				} as IAccount);
 			}
 		}
@@ -138,17 +140,21 @@ export class WalletClient extends BaseClient {
 	} 
 
 	 // generate a private key and add it into the wallet
-	public static walletGenerateNewAccount = () => {
+	public static async walletGenerateNewAccount() {
 		// generate private key
 		const privateKey: Uint8Array = secp.utils.randomPrivateKey();
 		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
 
-		// generate public key
+		// get public key
 		const publicKey: Uint8Array = secp.getPublicKey(privateKey, true);
 		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
 
+		// get wallet account address
+		const address: Uint8Array = await secp.utils.sha256(publicKey);
+		const addressBase58Encoded: string = base58checkEncode(address);
+
 		return {
-			address: null, // TODO: get the address
+			address: addressBase58Encoded,
 			privateKey: privateKeyBase58Encoded,
 			publicKey: publicKeyBase58Encoded
 		} as IAccount;
@@ -232,20 +238,29 @@ export class WalletClient extends BaseClient {
 
 	// send native MAS from a wallet address to another
 	public async sendTransaction<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
-		const signature = this.signOperation(txData, executor);
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor);
+		console.log("Compacted bytes for op ", bytesCompact)
+
+		// sign payload
+		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		console.log("Signature ", signature)
+
+		//const signature = this.signOperation(txData, executor);
 		const data = {
 			content: {
 				expire_period: txData.expirePeriod,
 				fee: txData.fee.toString(),
 				op: {
 					Transaction: {
-						amount: txData.amount,
-						recipient_address: txData.recipient_address
+						amount: txData.amount.toString(),
+						recipient_address: txData.recipientAddress
 					}
 				},
 				sender_public_key: executor.publicKey
 			},
-			signature,
+			signature: signature.base58Encoded,
 		}
 		// returns operation ids
 		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);

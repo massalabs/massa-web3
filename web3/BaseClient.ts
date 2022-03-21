@@ -282,7 +282,7 @@ export class BaseClient extends EventEmitter {
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(data.fee));
 		const expirePeriodEncoded = Buffer.from(varintEncode(data.expirePeriod));
-		const publicKeyEncoded = base58checkDecode(account.publicKey);
+		const publicKeyEncoded: Buffer = base58checkDecode(account.publicKey);
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
 		switch (opTypeId) {
@@ -297,10 +297,18 @@ export class BaseClient extends EventEmitter {
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 			}
 			case OperationTypeId.Transaction: {
-				const recepientAddressEncoded = Buffer.from(varintEncode((data as ITransactionData).recipient_address));
-				const transferAmountEncoded = Buffer.from(varintEncode((data as ITransactionData).amount));
-		
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recepientAddressEncoded, transferAmountEncoded]);
+				// transfer amount
+				const amount = new BN((data as ITransactionData).amount);
+				const scaleFactor = (new BN(10)).pow(new BN(9));
+				const amountScaled = amount.mul(scaleFactor);
+				const transferAmountEncoded = Buffer.from(varintEncode(amountScaled.toNumber()));
+				//const recipientAddressEncoded = Uint8Array.from(atob((data as ITransactionData).recipientAddress), c => c.charCodeAt(0));
+
+				const recipientAddressEncoded =  base58checkEncode(Buffer.from((data as ITransactionData).recipientAddress));
+				//console.log("XXXXXXXXXXXXX", recipientAddressEncoded);
+
+
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, Buffer.from(recipientAddressEncoded), transferAmountEncoded]);
 			}
 			case OperationTypeId.RollBuy:
 			case OperationTypeId.RollSell: {

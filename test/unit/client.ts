@@ -15,6 +15,7 @@ import { IStakingAddresses } from "../../interfaces/IStakingAddresses";
 import { ClientFactory, DefaultProviderUrls } from "../../web3/ClientFactory";
 import { ILatestPeriodInfo } from "../../interfaces/ILatestPeriodInfo";
 import { WalletClient } from "../../web3/WalletClient";
+import { ITransactionData } from "../../interfaces/ITransactionData";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -139,15 +140,15 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         // ============= WALLET ================ //
 
         // STATIC: generate new wallet
-        //const newWalletAccount = Wallet.walletGenerateNewAccount();
+        //const newWalletAccount = await WalletClient.walletGenerateNewAccount();
         //console.log("new wallet account", JSON.stringify(newWalletAccount, null, 2));
 
         // STATIC: sign random message
-        //const sig = await Wallet.walletSignMessage("hello", baseAccount);
+        //const sig = await WalletClient.walletSignMessage("hello", baseAccount);
         //console.log("signature Info", JSON.stringify(sig, null, 2));
 
         // add account by private key
-        //web3Client.wallet().addPrivateKeysToWallet(["2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC"]);
+        //await web3Client.wallet().addPrivateKeysToWallet(["2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC"]);
 
         // get all accounts in wallet
         //const walletAccounts = web3Client.wallet().getWalletAccounts();
@@ -168,8 +169,16 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo();
         console.log("wallet Info", JSON.stringify(walletInfo, null, 2));
         */
-        
 
+        
+        const opIds = await web3Client.wallet().sendTransaction({
+            fee: 0, // int
+            amount: "1", //MAS
+            expirePeriod: 0,
+            recipientAddress: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
+        } as ITransactionData, baseAccount);
+        console.log("operation ids", JSON.stringify(opIds, null, 2));
+        
 
         
         // ============= SMART CONTRACTS ================ //
