@@ -26,6 +26,7 @@ export class Wallet extends BaseClient {
 		this.addAccountsToWallet = this.addAccountsToWallet.bind(this);
 		this.removeAddressesFromWallet = this.removeAddressesFromWallet.bind(this);
 		this.walletInfo = this.walletInfo.bind(this);
+		this.signMessage = this.signMessage.bind(this);
 
 		// init wallet with a base account if any
 		if (baseAccount) {
@@ -40,21 +41,25 @@ export class Wallet extends BaseClient {
 
 	// get wallet account by an address
 	public getWalletAccountByAddress(address: string): IAccount | undefined {
-		return this.wallet.find((w) => w.address === address);
+		return this.wallet.find((w) => w.address.toLowerCase() === address.toLowerCase()); // ignore case for flexibility
 	}
 
 	// add a list of private keys to the wallet
 	public addPrivateKeysToWallet(privateKeys: Array<string>): void {
-		if (privateKeys.length >= MAX_WALLET_ACCOUNTS) {
+		if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
 		}
 		for (const privateKey of privateKeys) {
-			// get public key and address
-			// check if address already inside wallet, if not push it
+			const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKey);
+			const publickey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true);
+			const publicKeyBase58Encoded = base58checkEncode(publickey);
+
+			// TODO: get address
 			const address = "0x0";
 			if (!this.getWalletAccountByAddress(address)) {
 				this.wallet.push({
 					privateKey: privateKey,
+					publicKey: publicKeyBase58Encoded,
 					address: address
 				} as IAccount);
 			}
@@ -63,7 +68,7 @@ export class Wallet extends BaseClient {
 
 	// add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address)
 	public addAccountsToWallet(accounts: Array<IAccount>): void {
-		if (accounts.length >= MAX_WALLET_ACCOUNTS) {
+		if (accounts.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted accounts: ${accounts.length}`);
 		}
 		for (const account of accounts) {
@@ -119,34 +124,42 @@ export class Wallet extends BaseClient {
 	public static walletGenerateNewAccount = () => {
 		// generate private key
 		const privateKey: Uint8Array = secp.utils.randomPrivateKey();
-		const privateKeyHex: string = secp.utils.bytesToHex(privateKey);
+		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
 
 		// generate public key
-		const publicKey: Uint8Array = secp.getPublicKey(privateKey);
-		const publicKeyHex: string = secp.utils.bytesToHex(publicKey);
+		const publicKey: Uint8Array = secp.getPublicKey(privateKey, true);
+		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
 
 		return {
 			address: null, // TODO: get the address
-			privateKey: privateKeyHex,
-			publicKey: publicKeyHex
+			privateKey: privateKeyBase58Encoded,
+			publicKey: publicKeyBase58Encoded
 		} as IAccount;
 	}
 
+	public async signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature> {
+		const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
+		if (!signerAccount) {
+			throw new Error(`No signer account ${accountSignerAddress} found in wallet`);
+		}
+		return await Wallet.walletSignMessage(data, signerAccount);
+	}
+
 	// sign provided string with given address (address must be in the wallet)
-	public static async walletSign(data: string | Buffer, signer?: IAccount): Promise<ISignature> {
+	public static async walletSignMessage(data: string | Buffer, signer: IAccount): Promise<ISignature> {
 
 		// check private keys to sign the message with
-		if (!signer?.privateKey) {
+		if (!signer.privateKey) {
 			throw new Error("No private key to sign the message with");
 		}
 
 		// check public key to verify the message with
-		if (!signer?.publicKey) {
+		if (!signer.publicKey) {
 			throw new Error("No public key to verify the signed message with");
 		}
 		
     	// cast private key
-		const privateKeyBase58Decoded = base58checkDecode(signer?.privateKey);
+		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
 		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
 
 		// bytes compaction
@@ -166,8 +179,8 @@ export class Wallet extends BaseClient {
 		}
 
 		// verify signature
-		if (signer?.publicKey) {
-			const publicKeyBase58Decoded = base58checkDecode(signer?.publicKey);
+		if (signer.publicKey) {
+			const publicKeyBase58Decoded = base58checkDecode(signer.publicKey);
 			const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
 			const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toBuffer());
 			if (!isVerified) {

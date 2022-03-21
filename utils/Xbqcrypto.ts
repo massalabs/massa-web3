@@ -6,11 +6,11 @@ export function hashSha256(data) {
     return createhash('sha256').update(data).digest()
 }
 
-export function base58checkEncode(data) {
+export function base58checkEncode(data: Buffer | Uint8Array): string {
     return bs58check.encode(data);
 }
 
-export function base58checkDecode(data) {
+export function base58checkDecode(data: string): Buffer {
     return bs58check.decode(data);
 }
 

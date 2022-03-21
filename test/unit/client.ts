@@ -14,6 +14,7 @@ import { IClique } from "../../interfaces/IClique";
 import { IStakingAddresses } from "../../interfaces/IStakingAddresses";
 import { ClientFactory, DefaultProviderUrls } from "../../web3/ClientFactory";
 import { ILatestPeriodInfo } from "../../interfaces/ILatestPeriodInfo";
+import { Wallet } from "../../web3/Wallet";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -137,23 +138,39 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
 
         // ============= WALLET ================ //
 
-        // generate new wallet
-        //const newWalletAccount = web3Client.wallet().walletGenerateNewAccount();
-        //console.log("newWalletAccount", JSON.stringify(newWalletAccount, null, 2));
+        // STATIC: generate new wallet
+        //const newWalletAccount = Wallet.walletGenerateNewAccount();
+        //console.log("new wallet account", JSON.stringify(newWalletAccount, null, 2));
+
+        // STATIC: sign random message
+        //const sig = await Wallet.walletSignMessage("hello", baseAccount);
+        //console.log("signature Info", JSON.stringify(sig, null, 2));
+
+        // add account by private key
+        //web3Client.wallet().addPrivateKeysToWallet(["2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC"]);
+
+        // get all accounts in wallet
+        //const walletAccounts = web3Client.wallet().getWalletAccounts();
+        //console.log("walletAccounts", JSON.stringify(walletAccounts, null, 2));
+
+        // find account in wallet by address
+        //const walletAccount = web3Client.wallet().getWalletAccountByAddress("9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM");
+        //console.log("Found walletAccount", JSON.stringify(walletAccount, null, 2));
 
         // get wallet info
-        /*
-        const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo([{
-            privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
-            publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
-            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
-        }]);
+        /*        await web3Client.wallet().addAccountsToWallet(
+            [{
+                privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
+                publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
+                address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
+            }]
+        );
+        const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo();
         console.log("wallet Info", JSON.stringify(walletInfo, null, 2));
         */
+        
 
-        // sign random message
-        //const sig = await web3Client.wallet().signStringData("hello");
-        //console.log("sig Info", JSON.stringify(sig, null, 2));
+
         
         // ============= SMART CONTRACTS ================ //
         /*
