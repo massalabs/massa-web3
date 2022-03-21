@@ -46,6 +46,7 @@ export class BaseClient extends EventEmitter {
 		this.getPublicProviders = this.getPublicProviders.bind(this);
 		this.setBaseAccount = this.setBaseAccount.bind(this);
 		this.getBaseAccount = this.getBaseAccount.bind(this);
+		this.getUrlHttpMethod = this.getUrlHttpMethod.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
 		this.executeSC = this.executeSC.bind(this);
 		this.sendTransaction = this.sendTransaction.bind(this);
@@ -87,6 +88,15 @@ export class BaseClient extends EventEmitter {
 			case JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE: {
 				return this.getPrivateProviders()[0]; //choose the first available private provider
 			}
+			default: throw new Error("Unknown Json rpc method")
+		}
+	}
+
+	private getUrlHttpMethod(requestMethod: HTTP_GET_REQUEST_METHOD): string {
+		switch (requestMethod) {
+			case HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD: {
+					return this.getPublicProviders()[0] + "/info"; //choose the first available public provider
+				}
 			default: throw new Error("Unknown Json rpc method")
 		}
 	}
@@ -159,7 +169,7 @@ export class BaseClient extends EventEmitter {
 			let resp: AxiosResponse = null;
 
 			try {
-				resp = await axios.get(this.getProviderForRpcMethod(resource).url + "/info", requestHeaders);
+				resp = await axios.get(this.getUrlHttpMethod(resource), requestHeaders);
 			} catch (ex) {
 				return resolve({
 					isError: true,

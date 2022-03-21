@@ -13,8 +13,8 @@ export class Client {
 	private massaWallet: Wallet;
 
 	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
-		this.privateApiClient =  new PrivateApiClient(clientConfig, baseAccount);
 		this.publicApiClient =  new PublicApiClient(clientConfig, baseAccount);
+		this.privateApiClient =  new PrivateApiClient(clientConfig, baseAccount);
 		this.massaWallet =  new Wallet(clientConfig, this.publicApiClient, baseAccount);
 		this.smartContractUtils = new SmartContractUtils();
 

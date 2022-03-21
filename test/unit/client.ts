@@ -132,7 +132,7 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         // remove staking addresses
         //await web3Client.privateApi().nodeRemoveStakingAddresses(["2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp"]);
 
-        // add staking pkeys
+        // add staking private keys
         //await web3Client.privateApi().nodeAddStakingPrivateKeys(["2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ"]);
 
         // ============= WALLET ================ //
@@ -151,10 +151,11 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         console.log("wallet Info", JSON.stringify(walletInfo, null, 2));
         */
 
-        const sig = await web3Client.wallet().signStringData("hello");
-        console.log("sig Info", JSON.stringify(sig, null, 2));
+        // sign random message
+        //const sig = await web3Client.wallet().signStringData("hello");
+        //console.log("sig Info", JSON.stringify(sig, null, 2));
         
-        // ============= WALLET ================ //
+        // ============= SMART CONTRACTS ================ //
         /*
         const scData1: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
             smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-web3/test/unit/myModule.ts",
