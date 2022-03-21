@@ -42,6 +42,7 @@ const coins: number = 0
 const expire_period: number = 0;
 const privateKey: string = "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC";
 const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
+const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
 
 (async () => {
 
@@ -51,6 +52,7 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         const baseAccount = {
             publicKey,
             privateKey,
+            address
         } as IAccount;
 
         const providers: Array<IProvider> = [
@@ -69,14 +71,14 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
             retryStrategyOn: false
         } as IClientConfig;
 
-        let web3Client: Client = new Client(web3ClientConfig, baseAccount);
-        web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, false, baseAccount);
+        //let web3Client: Client = new Client(web3ClientConfig, baseAccount);
+        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, false, baseAccount);
         
         // ============= PUBLIC API ================ //
 
         // get latest period
-        const latestPeriodInfo: ILatestPeriodInfo = await web3Client.publicApi().getLatestPeriodInfo();
-        console.log("Latest Period Info", JSON.stringify(latestPeriodInfo, null, 2));
+        //const latestPeriodInfo: ILatestPeriodInfo = await web3Client.publicApi().getLatestPeriodInfo();
+        //console.log("Latest Period Info", JSON.stringify(latestPeriodInfo, null, 2));
 
         // get node status
         //const nodeStatus: INodeStatus = await web3Client.publicApi().getNodeStatus();
@@ -91,11 +93,11 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         //console.log("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
 
         // get operations
-        //const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["bGNwTmRwrntHa2AinWTgNGmkfMmCjdab2awho3KpHeLkmAhWx"]);
+        //const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["29Z4RrPNwukMFo7B4Tb21rW7JCXGkqeHFbER19zP6Fzn1FLzhm"]);
         //console.log("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses
-        //const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses([ADDRESSES.smartContract, ADDRESSES.currentPlayer]);
+        //const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses(["2GcahavufBH9tqVH6SjkSCPXRbqpiCwwSfwFAf3veKiJmiHubK"]);
         //console.log("Smart contract addresses", JSON.stringify(addressesResp, null, 2));
 
         // get cliques
@@ -148,8 +150,11 @@ const publicKey: string = "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR";
         }]);
         console.log("wallet Info", JSON.stringify(walletInfo, null, 2));
         */
-        
 
+        const sig = await web3Client.wallet().signStringData("hello");
+        console.log("sig Info", JSON.stringify(sig, null, 2));
+        
+        // ============= WALLET ================ //
         /*
         const scData1: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
             smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-web3/test/unit/myModule.ts",

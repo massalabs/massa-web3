@@ -13,6 +13,8 @@ import { HTTP_GET_REQUEST_METHOD, JSON_RPC_REQUEST_METHOD } from "../interfaces/
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
+import * as secp from "@noble/secp256k1";
+import { ISignature } from "../interfaces/ISignature";
 
 type DataType = IContractData | ITransactionData | IRollsData;
 
@@ -52,6 +54,7 @@ export class BaseClient extends EventEmitter {
 		this.signOperation = this.signOperation.bind(this);
 		this.computeBytesCompact = this.computeBytesCompact.bind(this);
 		this.sendGetRequest = this.sendGetRequest.bind(this);
+		this.signStringData = this.signStringData.bind(this);
 	}
 
 	public getPrivateProviders(): Array<IProvider> {
@@ -275,6 +278,59 @@ export class BaseClient extends EventEmitter {
 		return res.result;
 	}
 
+	public async signStringData(data: string | Buffer, signer?: IAccount): Promise<ISignature> {
+
+		// check private keys to sign the message with
+		if (!signer?.privateKey || !this.baseAccount?.privateKey) {
+			throw new Error("No private key to sign the message with");
+		}
+		
+    	// cast private key
+		const privateKeyBase58Decoded = base58checkDecode(signer?.privateKey || this.baseAccount.privateKey);
+		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
+
+		// bytes compaction
+		const bytesCompact: Buffer = Buffer.from(data);
+		// Hash byte compact
+		const messageHashDigest: Uint8Array = await secp.utils.sha256(bytesCompact);
+
+		// sign the digest
+		const sig = await secp.sign(messageHashDigest, base58PrivateKey.toBuffer(), {
+			der: false,
+			recovered: true
+		});
+
+		// check sig length
+		if (sig[0].length != 64) {
+			throw new Error(`Invalid signature length. Expected 64, got ${sig[0].length}`);
+		}
+
+		// verify signature
+		if (signer?.publicKey || this.baseAccount.publicKey) {
+			const publicKeyBase58Decoded = base58checkDecode(signer?.publicKey || this.baseAccount.publicKey);
+			const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
+			const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toBuffer());
+			if (!isVerified) {
+				throw new Error(`Signature could not be verified with public key. Please inspect`);
+			}
+		}
+
+		// extract sig vector
+		const r: Uint8Array = sig[0].slice(0,32);
+		const s: Uint8Array = sig[0].slice(32, 64);
+		const v: number = sig[1];
+		const hex = secp.utils.bytesToHex(sig[0]);
+		const base58Encoded = base58checkEncode(Buffer.concat([r, s]));
+		
+		return {
+			r,
+			s,
+			v,
+			hex,
+			base58Encoded
+		} as ISignature;
+	}
+
 	public signOperation(data: DataType, signer?: IAccount) {
 		// bytes compaction
 		const bytesCompact: Buffer = this.computeBytesCompact(data, OperationTypeId.ExecuteSC, signer);
@@ -284,8 +340,8 @@ export class BaseClient extends EventEmitter {
 	
 		// Signing a digest
 		const digest = new BN(hashEncodedData.valueOf());
-		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey || this.baseAccount.privateKey);
-		const publicKeyBase58Decoded = base58checkDecode(signer.publicKey || this.baseAccount.publicKey);
+		const privateKeyBase58Decoded = base58checkDecode(signer?.privateKey || this.baseAccount.privateKey);
+		const publicKeyBase58Decoded = base58checkDecode(signer?.publicKey || this.baseAccount.publicKey);
 		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
 		const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
 
@@ -307,7 +363,7 @@ export class BaseClient extends EventEmitter {
 	private computeBytesCompact(data: DataType,  opTypeId: OperationTypeId, account?: IAccount): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(data.fee));
 		const expirePeriodEncoded = Buffer.from(varintEncode(data.expirePeriod));
-		const publicKeyEncoded = base58checkDecode(account.publicKey || this.baseAccount.publicKey);
+		const publicKeyEncoded = base58checkDecode(account?.publicKey || this.baseAccount.publicKey);
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
 		switch (opTypeId) {
