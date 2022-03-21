@@ -13,8 +13,8 @@ import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
 import { IAccount } from "../interfaces/IAccount";
 
 export class PublicApiClient extends BaseClient {
-	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
-		super(clientConfig, baseAccount);
+	public constructor(clientConfig: IClientConfig) {
+		super(clientConfig);
 		
 		// ========== bind api methods ========= //
 

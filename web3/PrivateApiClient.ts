@@ -6,8 +6,8 @@ import { BaseClient } from "./BaseClient";
 import { IAccount } from "../interfaces/IAccount";
 
 export class PrivateApiClient extends BaseClient {
-	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
-		super(clientConfig, baseAccount);
+	public constructor(clientConfig: IClientConfig) {
+		super(clientConfig);
 		
 		// ========== bind api methods ========= //
 

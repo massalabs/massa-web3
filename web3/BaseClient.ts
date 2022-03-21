@@ -25,9 +25,8 @@ const requestHeaders = {
 
 export class BaseClient extends EventEmitter {
 	protected clientConfig: IClientConfig;
-	protected baseAccount: IAccount;
 
-	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
+	public constructor(clientConfig: IClientConfig) {
 		super();
 		this.clientConfig = clientConfig;
 		if (this.getPrivateProviders().length === 0) {
@@ -36,16 +35,11 @@ export class BaseClient extends EventEmitter {
 		if (this.getPublicProviders().length === 0) {
 			throw new Error("Cannot initialize web3 with no public providers. Need at least one");
 		}
-		if (baseAccount) {
-			this.setBaseAccount(baseAccount);
-		}
 
 		// bind class methods
 		this.getPrivateProviders = this.getPrivateProviders.bind(this);
 		this.getProviderForRpcMethod = this.getProviderForRpcMethod.bind(this);
 		this.getPublicProviders = this.getPublicProviders.bind(this);
-		this.setBaseAccount = this.setBaseAccount.bind(this);
-		this.getBaseAccount = this.getBaseAccount.bind(this);
 		this.getUrlHttpMethod = this.getUrlHttpMethod.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
 		this.executeSC = this.executeSC.bind(this);
@@ -55,7 +49,6 @@ export class BaseClient extends EventEmitter {
 		this.signOperation = this.signOperation.bind(this);
 		this.computeBytesCompact = this.computeBytesCompact.bind(this);
 		this.sendGetRequest = this.sendGetRequest.bind(this);
-		this.signStringData = this.signStringData.bind(this);
 	}
 
 	public getPrivateProviders(): Array<IProvider> {
@@ -99,14 +92,6 @@ export class BaseClient extends EventEmitter {
 				}
 			default: throw new Error("Unknown Json rpc method")
 		}
-	}
-
-	public setBaseAccount(baseAccount: IAccount): void {
-		this.baseAccount = baseAccount;
-	}
-
-	public getBaseAccount(): IAccount {
-		return this.baseAccount;
 	}
 
 	// send a post JSON rpc request to the node
@@ -201,7 +186,7 @@ export class BaseClient extends EventEmitter {
 	}
 
 	// create and send an operation containing byte code
-	public async executeSC<T>(contractData: IContractData, executor?: IAccount): Promise<Array<string>> {
+	public async executeSC<T>(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
 		const signature = this.signOperation(contractData, executor);
 		const data = {
 			content: {
@@ -215,7 +200,7 @@ export class BaseClient extends EventEmitter {
 						gas_price: contractData.gasPrice.toString()
 					}
 				},
-				sender_public_key: executor.publicKey || this.baseAccount.publicKey
+				sender_public_key: executor.publicKey
 			},
 			signature,
 		}
@@ -225,7 +210,7 @@ export class BaseClient extends EventEmitter {
 	}
 
 	// send coins from a wallet address
-	public async sendTransaction<T>(txData: ITransactionData, executor?: IAccount): Promise<Array<string>> {
+	public async sendTransaction<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 		const signature = this.signOperation(txData, executor);
 		const data = {
 			content: {
@@ -237,7 +222,7 @@ export class BaseClient extends EventEmitter {
 						recipient_address: txData.recipient_address
 					}
 				},
-				sender_public_key: executor.publicKey || this.baseAccount.publicKey
+				sender_public_key: executor.publicKey
 			},
 			signature,
 		}
@@ -247,7 +232,7 @@ export class BaseClient extends EventEmitter {
 	}
 
 	// buy rolls with wallet address
-	public async buyRolls<T>(txData: ITransactionData, executor?: IAccount): Promise<Array<string>> {
+	public async buyRolls<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 		const signature = this.signOperation(txData, executor);
 		const data = {
 			content: {
@@ -258,7 +243,7 @@ export class BaseClient extends EventEmitter {
 						roll_count: txData.amount,
 					}
 				},
-				sender_public_key: executor.publicKey || this.baseAccount.publicKey
+				sender_public_key: executor.publicKey
 			},
 			signature,
 		}
@@ -268,7 +253,7 @@ export class BaseClient extends EventEmitter {
 	}
 
 	// sell rolls with wallet address
-	public async sellRolls<T>(txData: ITransactionData, executor?: IAccount): Promise<Array<string>> {
+	public async sellRolls<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 		const signature = this.signOperation(txData, executor);
 		const data = {
 			content: {
@@ -279,7 +264,7 @@ export class BaseClient extends EventEmitter {
 						roll_count: txData.amount,
 					}
 				},
-				sender_public_key: executor.publicKey || this.baseAccount.publicKey
+				sender_public_key: executor.publicKey
 			},
 			signature,
 		}
@@ -288,60 +273,7 @@ export class BaseClient extends EventEmitter {
 		return res.result;
 	}
 
-	public async signStringData(data: string | Buffer, signer?: IAccount): Promise<ISignature> {
-
-		// check private keys to sign the message with
-		if (!signer?.privateKey || !this.baseAccount?.privateKey) {
-			throw new Error("No private key to sign the message with");
-		}
-		
-    	// cast private key
-		const privateKeyBase58Decoded = base58checkDecode(signer?.privateKey || this.baseAccount.privateKey);
-		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
-
-		// bytes compaction
-		const bytesCompact: Buffer = Buffer.from(data);
-		// Hash byte compact
-		const messageHashDigest: Uint8Array = await secp.utils.sha256(bytesCompact);
-
-		// sign the digest
-		const sig = await secp.sign(messageHashDigest, base58PrivateKey.toBuffer(), {
-			der: false,
-			recovered: true
-		});
-
-		// check sig length
-		if (sig[0].length != 64) {
-			throw new Error(`Invalid signature length. Expected 64, got ${sig[0].length}`);
-		}
-
-		// verify signature
-		if (signer?.publicKey || this.baseAccount.publicKey) {
-			const publicKeyBase58Decoded = base58checkDecode(signer?.publicKey || this.baseAccount.publicKey);
-			const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
-			const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toBuffer());
-			if (!isVerified) {
-				throw new Error(`Signature could not be verified with public key. Please inspect`);
-			}
-		}
-
-		// extract sig vector
-		const r: Uint8Array = sig[0].slice(0,32);
-		const s: Uint8Array = sig[0].slice(32, 64);
-		const v: number = sig[1];
-		const hex = secp.utils.bytesToHex(sig[0]);
-		const base58Encoded = base58checkEncode(Buffer.concat([r, s]));
-		
-		return {
-			r,
-			s,
-			v,
-			hex,
-			base58Encoded
-		} as ISignature;
-	}
-
-	public signOperation(data: DataType, signer?: IAccount) {
+	public signOperation(data: DataType, signer: IAccount) {
 		// bytes compaction
 		const bytesCompact: Buffer = this.computeBytesCompact(data, OperationTypeId.ExecuteSC, signer);
 	
@@ -350,8 +282,8 @@ export class BaseClient extends EventEmitter {
 	
 		// Signing a digest
 		const digest = new BN(hashEncodedData.valueOf());
-		const privateKeyBase58Decoded = base58checkDecode(signer?.privateKey || this.baseAccount.privateKey);
-		const publicKeyBase58Decoded = base58checkDecode(signer?.publicKey || this.baseAccount.publicKey);
+		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
+		const publicKeyBase58Decoded = base58checkDecode(signer.publicKey);
 		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
 		const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
 
@@ -370,10 +302,10 @@ export class BaseClient extends EventEmitter {
 		return base58checkEncode(Buffer.concat([rr, ss]));
 	}
 	
-	private computeBytesCompact(data: DataType,  opTypeId: OperationTypeId, account?: IAccount): Buffer {
+	private computeBytesCompact(data: DataType, opTypeId: OperationTypeId, account: IAccount): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(data.fee));
 		const expirePeriodEncoded = Buffer.from(varintEncode(data.expirePeriod));
-		const publicKeyEncoded = base58checkDecode(account?.publicKey || this.baseAccount.publicKey);
+		const publicKeyEncoded = base58checkDecode(account.publicKey);
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
 		switch (opTypeId) {

@@ -7,15 +7,19 @@ import { IAddressInfo, IFullAddressInfo } from "../interfaces/IAddressInfo";
 import { ISignature } from "../interfaces/ISignature";
 import { base58checkDecode, base58checkEncode } from "../utils/Xbqcrypto";
 import { BN }  from "bn.js";
+import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
+import { trySafeExecute } from "../utils/retryExecuteFunction";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
 
+/* web3/Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class Wallet extends BaseClient {
 
 	private wallet: Array<IAccount> = [];
+	private baseAccount: IAccount;
 
-	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, baseAccount?: IAccount) {
-		super(clientConfig, baseAccount);
+	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
+		super(clientConfig);
 		
 		// ========== bind wallet methods ========= //
 
@@ -27,11 +31,23 @@ export class Wallet extends BaseClient {
 		this.removeAddressesFromWallet = this.removeAddressesFromWallet.bind(this);
 		this.walletInfo = this.walletInfo.bind(this);
 		this.signMessage = this.signMessage.bind(this);
+		this.getWalletAdressesInfo = this.getWalletAdressesInfo.bind(this);
+		this.setBaseAccount = this.setBaseAccount.bind(this);
+		this.getBaseAccount = this.getBaseAccount.bind(this);
 
 		// init wallet with a base account if any
 		if (baseAccount) {
+			this.setBaseAccount(baseAccount);
 			this.addAccountsToWallet([baseAccount]);
 		}
+	}
+
+	public setBaseAccount(baseAccount: IAccount): void {
+		this.baseAccount = baseAccount;
+	}
+
+	public getBaseAccount(): IAccount {
+		return this.baseAccount;
 	}
 
 	// get all accounts under a wallet
@@ -97,15 +113,13 @@ export class Wallet extends BaseClient {
 		}
 	}
 
-	/* web3/wallet.js module that will under the hood interact with WebExtension, native client or interactively with user */
-
 	// show wallet info (private keys, public keys, addresses, balances ...)
 	public async walletInfo(): Promise<Array<IFullAddressInfo>> {
 		if (this.wallet.length === 0) {
 			return [];
 		}
 		const addresses: Array<string> = this.wallet.map((account) => account.address);
-		const addressesInfo: Array<IAddressInfo> = await this.publicApiClient.getAddresses(addresses);
+		const addressesInfo: Array<IAddressInfo> = await this.getWalletAdressesInfo(addresses);
 
 		if (addressesInfo.length !== this.wallet.length) {
 			throw new Error(`Requested wallets not fully retrieved. Got ${addressesInfo.length}, expected: ${this.wallet.length}`);
@@ -143,6 +157,15 @@ export class Wallet extends BaseClient {
 			throw new Error(`No signer account ${accountSignerAddress} found in wallet`);
 		}
 		return await Wallet.walletSignMessage(data, signerAccount);
+	}
+
+	private async getWalletAdressesInfo(addresses: Array<string>) {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
+		} else {
+			return await this.sendJsonRPCRequest<Array<IAddressInfo>>(jsonRpcRequestMethod, [addresses]);
+		}
 	}
 
 	// sign provided string with given address (address must be in the wallet)
