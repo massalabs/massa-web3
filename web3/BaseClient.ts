@@ -2,8 +2,7 @@ import { EventEmitter } from "events";
 import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
-import {base58checkDecode, base58checkEncode, hashSha256, typedArrayToBuffer, varintEncode} from "../utils/Xbqcrypto";
-import { ecdsaSign, ecdsaVerify } from "secp256k1"
+import {base58checkDecode, varintEncode} from "../utils/Xbqcrypto";
 import { BN }  from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
@@ -13,8 +12,6 @@ import { HTTP_GET_REQUEST_METHOD, JSON_RPC_REQUEST_METHOD } from "../interfaces/
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
-import * as secp from "@noble/secp256k1";
-import { ISignature } from "../interfaces/ISignature";
 
 type DataType = IContractData | ITransactionData | IRollsData;
 
@@ -44,9 +41,6 @@ export class BaseClient extends EventEmitter {
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
 		this.sendGetRequest = this.sendGetRequest.bind(this);
 		this.executeSC = this.executeSC.bind(this);
-		this.sellRolls = this.sellRolls.bind(this);
-		this.buyRolls = this.buyRolls.bind(this);
-		this.signOperation = this.signOperation.bind(this);
 		this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
 	}
 
@@ -115,7 +109,6 @@ export class BaseClient extends EventEmitter {
 				} as JsonRpcResponseData<T>);
 			}
 
-			console.log("RESP ", resp);
 			const responseData: any = resp.data;
 
 			if (responseData.error) {
@@ -187,10 +180,10 @@ export class BaseClient extends EventEmitter {
 
 	// create and send an operation containing byte code
 	public async executeSC<T>(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
-		const signature = this.signOperation(contractData, executor);
+		const signature = null; //this.signOperation(contractData, executor, 0);
 		const data = {
 			content: {
-				expire_period: contractData.expirePeriod,
+				//expire_period: contractData.expirePeriod,
 				fee: contractData.fee.toString(),
 				op: {
 					ExecuteSC: {
@@ -209,77 +202,6 @@ export class BaseClient extends EventEmitter {
 		return res.result;
 	}
 
-	// buy rolls with wallet address
-	public async buyRolls<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
-		const signature = this.signOperation(txData, executor);
-		const data = {
-			content: {
-				expire_period: txData.expirePeriod,
-				fee: txData.fee.toString(),
-				op: {
-					RollBuy: {
-						roll_count: txData.amount,
-					}
-				},
-				sender_public_key: executor.publicKey
-			},
-			signature,
-		}
-		// returns operation ids
-		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-		return res.result;
-	}
-
-	// sell rolls with wallet address
-	public async sellRolls<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
-		const signature = this.signOperation(txData, executor);
-		const data = {
-			content: {
-				expire_period: txData.expirePeriod,
-				fee: txData.fee.toString(),
-				op: {
-					RollSell: {
-						roll_count: txData.amount,
-					}
-				},
-				sender_public_key: executor.publicKey
-			},
-			signature,
-		}
-		// returns operation ids
-		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-		return res.result;
-	}
-
-	public signOperation(data: DataType, signer: IAccount) {
-		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(data, OperationTypeId.ExecuteSC, signer);
-	
-		// Hash byte compact
-		const hashEncodedData: Buffer = hashSha256(bytesCompact);
-	
-		// Signing a digest
-		const digest = new BN(hashEncodedData.valueOf());
-		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
-		const publicKeyBase58Decoded = base58checkDecode(signer.publicKey);
-		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
-		const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
-
-		const sig = ecdsaSign(digest.toBuffer(), base58PrivateKey.toBuffer());
-
-		const isSigOk: boolean = ecdsaVerify(sig.signature, digest.toBuffer(), base58PublicKey.toBuffer());
-		if (!isSigOk) {
-			throw new Error("Malformed signature");
-		}
-
-		const r: Uint8Array = sig.signature.slice(0, 32);
-		const s: Uint8Array = sig.signature.slice(32, 64);
-		const rr: Uint8Array = Buffer.from(typedArrayToBuffer(r).toString(), "hex").valueOf();
-		const ss: Uint8Array = Buffer.from(typedArrayToBuffer(s).toString(), "hex").valueOf();
-
-		return base58checkEncode(Buffer.concat([rr, ss]));
-	}
-
 	protected scaleAmount(inputAmount: number | string): number {
 		const amount = new BN(inputAmount);
 		const scaleFactor = (new BN(10)).pow(new BN(9));
@@ -287,9 +209,9 @@ export class BaseClient extends EventEmitter {
 		return amountScaled.toNumber();
 	}
 	
-	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount): Buffer {
+	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
-		const expirePeriodEncoded = Buffer.from(varintEncode(data.expirePeriod));
+		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
 		const publicKeyEncoded: Buffer = base58checkDecode(account.publicKey);
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 

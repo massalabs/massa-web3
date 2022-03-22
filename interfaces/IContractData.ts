@@ -3,6 +3,5 @@ export interface IContractData {
 	maxGas: number;
 	gasPrice: number;
 	coins: number;
-	expirePeriod: number;
 	contractData: string
 }

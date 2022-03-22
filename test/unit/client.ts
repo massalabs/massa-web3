@@ -16,6 +16,7 @@ import { ClientFactory, DefaultProviderUrls } from "../../web3/ClientFactory";
 import { ILatestPeriodInfo } from "../../interfaces/ILatestPeriodInfo";
 import { WalletClient } from "../../web3/WalletClient";
 import { ITransactionData } from "../../interfaces/ITransactionData";
+import { IRollsData } from "../../interfaces/IRollsData";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -170,18 +171,29 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         console.log("wallet Info", JSON.stringify(walletInfo, null, 2));
         */
 
-        
-        const latestPeriodInfo: ILatestPeriodInfo = await web3Client.publicApi().getLatestPeriodInfo();
-        console.log("Latest Period Info", JSON.stringify(latestPeriodInfo, null, 2));
-
+        /*
         const opIds = await web3Client.wallet().sendTransaction({
             fee: 0, // int
             amount: "1", //MAS
-            expirePeriod: latestPeriodInfo.last_period + 5,
             recipientAddress: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
         } as ITransactionData, baseAccount);
         console.log("operation ids", JSON.stringify(opIds, null, 2));
+        */
         
+        const opIds = await web3Client.wallet().buyRolls({
+            fee: 0, // int
+            amount: 1, //ROLLS
+        } as IRollsData, baseAccount);
+        console.log("operation ids", JSON.stringify(opIds, null, 2));
+
+
+        /*
+        const opIds = await web3Client.wallet().sellRolls({
+            fee: 0, // int
+            amount: 1, //ROLLS
+        } as IRollsData, baseAccount);
+        console.log("operation ids", JSON.stringify(opIds, null, 2));
+        */
 
         
         // ============= SMART CONTRACTS ================ //

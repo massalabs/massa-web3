@@ -9,10 +9,13 @@ import { BN }  from "bn.js";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { ITransactionData } from "../interfaces/ITransactionData";
-import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
+import { PublicApiClient } from "./PublicApiClient";
+import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
+import { IRollsData } from "../interfaces/IRollsData";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
+const PERIOD_OFFSET = 5;
 
 /* web3/Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class WalletClient extends BaseClient {
@@ -20,7 +23,7 @@ export class WalletClient extends BaseClient {
 	private wallet: Array<IAccount> = [];
 	private baseAccount: IAccount;
 
-	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
+	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, baseAccount?: IAccount) {
 		super(clientConfig);
 		
 		// ========== bind wallet methods ========= //
@@ -37,6 +40,8 @@ export class WalletClient extends BaseClient {
 		this.setBaseAccount = this.setBaseAccount.bind(this);
 		this.getBaseAccount = this.getBaseAccount.bind(this);
 		this.sendTransaction = this.sendTransaction.bind(this);
+		this.sellRolls = this.sellRolls.bind(this);
+		this.buyRolls = this.buyRolls.bind(this);
 
 		// init wallet with a base account if any
 		if (baseAccount) {
@@ -238,21 +243,87 @@ export class WalletClient extends BaseClient {
 	// send native MAS from a wallet address to another
 	public async sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 
+		// get latest period info
+		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
+		const expiryPeriod: number = latestPeriodInfo.last_period + PERIOD_OFFSET;
+
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor);
+		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor, expiryPeriod);
 
 		// sign payload
 		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
 
-		//const signature = this.signOperation(txData, executor);
+		// prepare tx data
 		const data = {
 			content: {
-				expire_period: txData.expirePeriod,
+				expire_period: expiryPeriod,
 				fee: txData.fee.toString(),
 				op: {
 					Transaction: {
 						amount: txData.amount.toString(),
 						recipient_address: txData.recipientAddress
+					}
+				},
+				sender_public_key: executor.publicKey
+			},
+			signature: signature.base58Encoded,
+		}
+		// returns operation ids
+		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return opIds;
+	}
+
+	// buy rolls with wallet address
+	public async buyRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
+
+		// get latest period info
+		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
+		const expiryPeriod: number = latestPeriodInfo.last_period + PERIOD_OFFSET;
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollBuy, executor, expiryPeriod);
+
+		// sign payload
+		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+
+		const data = {
+			content: {
+				expire_period: expiryPeriod,
+				fee: txData.fee.toString(),
+				op: {
+					RollBuy: {
+						roll_count: txData.amount,
+					}
+				},
+				sender_public_key: executor.publicKey
+			},
+			signature: signature.base58Encoded,
+		}
+		// returns operation ids
+		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return opIds;
+	}
+
+	// sell rolls with wallet address
+	public async sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
+
+		// get latest period info
+		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
+		const expiryPeriod: number = latestPeriodInfo.last_period + PERIOD_OFFSET;
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollSell, executor, expiryPeriod);
+
+		// sign payload
+		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+
+		const data = {
+			content: {
+				expire_period: expiryPeriod,
+				fee: txData.fee.toString(),
+				op: {
+					RollSell: {
+						roll_count: txData.amount,
 					}
 				},
 				sender_public_key: executor.publicKey

@@ -15,7 +15,7 @@ export class Client {
 	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
 		this.publicApiClient =  new PublicApiClient(clientConfig);
 		this.privateApiClient =  new PrivateApiClient(clientConfig);
-		this.massaWallet =  new WalletClient(clientConfig, baseAccount);
+		this.massaWallet =  new WalletClient(clientConfig, this.publicApiClient, baseAccount);
 		this.smartContractUtils = new SmartContractUtils();
 
 		// exposed and bound class methods
