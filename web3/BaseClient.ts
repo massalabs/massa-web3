@@ -87,7 +87,7 @@ export class BaseClient extends EventEmitter {
 	private getUrlHttpMethod(requestMethod: HTTP_GET_REQUEST_METHOD): string {
 		switch (requestMethod) {
 			case HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD: {
-					return this.getPublicProviders()[0] + "/info"; //choose the first available public provider
+					return this.getPublicProviders()[0].url + "/info"; //choose the first available public provider
 				}
 			default: throw new Error("Unknown Json rpc method")
 		}
@@ -115,6 +115,7 @@ export class BaseClient extends EventEmitter {
 				} as JsonRpcResponseData<T>);
 			}
 
+			console.log("RESP ", resp);
 			const responseData: any = resp.data;
 
 			if (responseData.error) {
@@ -278,9 +279,16 @@ export class BaseClient extends EventEmitter {
 
 		return base58checkEncode(Buffer.concat([rr, ss]));
 	}
+
+	protected scaleAmount(inputAmount: number | string): number {
+		const amount = new BN(inputAmount);
+		const scaleFactor = (new BN(10)).pow(new BN(9));
+		const amountScaled = amount.mul(scaleFactor);
+		return amountScaled.toNumber();
+	}
 	
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount): Buffer {
-		const feeEncoded = Buffer.from(varintEncode(data.fee));
+		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
 		const expirePeriodEncoded = Buffer.from(varintEncode(data.expirePeriod));
 		const publicKeyEncoded: Buffer = base58checkDecode(account.publicKey);
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
@@ -298,23 +306,18 @@ export class BaseClient extends EventEmitter {
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount
-				const amount = new BN((data as ITransactionData).amount);
-				const scaleFactor = (new BN(10)).pow(new BN(9));
-				const amountScaled = amount.mul(scaleFactor);
-				const transferAmountEncoded = Buffer.from(varintEncode(amountScaled.toNumber()));
-				//const recipientAddressEncoded = Uint8Array.from(atob((data as ITransactionData).recipientAddress), c => c.charCodeAt(0));
+				const transferAmountEncoded = Buffer.from(varintEncode(this.scaleAmount((data as ITransactionData).amount)));
+				// recipient
+				const recipientAddressEncoded =  base58checkDecode((data as ITransactionData).recipientAddress);
 
-				const recipientAddressEncoded =  base58checkEncode(Buffer.from((data as ITransactionData).recipientAddress));
-				//console.log("XXXXXXXXXXXXX", recipientAddressEncoded);
-
-
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, Buffer.from(recipientAddressEncoded), transferAmountEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
 			}
 			case OperationTypeId.RollBuy:
 			case OperationTypeId.RollSell: {
-				const rollAmountEncoded = Buffer.from(varintEncode((data as IRollsData).amount));
+				const amount = new BN((data as IRollsData).amount);
+				const rollsAmountEncoded = Buffer.from(varintEncode(amount.toNumber()));
 		
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, rollAmountEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, rollsAmountEncoded]);
 			}
 		}
 	}

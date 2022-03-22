@@ -73,7 +73,7 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
             retryStrategyOn: false
         } as IClientConfig;
 
-        //let web3Client: Client = new Client(web3ClientConfig, baseAccount);
+        //const web3Client: Client = new Client(web3ClientConfig, baseAccount);
         const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, false, baseAccount);
         
         // ============= PUBLIC API ================ //
@@ -171,10 +171,13 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         */
 
         
+        const latestPeriodInfo: ILatestPeriodInfo = await web3Client.publicApi().getLatestPeriodInfo();
+        console.log("Latest Period Info", JSON.stringify(latestPeriodInfo, null, 2));
+
         const opIds = await web3Client.wallet().sendTransaction({
             fee: 0, // int
             amount: "1", //MAS
-            expirePeriod: 0,
+            expirePeriod: latestPeriodInfo.last_period + 5,
             recipientAddress: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
         } as ITransactionData, baseAccount);
         console.log("operation ids", JSON.stringify(opIds, null, 2));

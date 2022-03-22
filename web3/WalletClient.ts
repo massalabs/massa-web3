@@ -2,7 +2,6 @@ import { IClientConfig } from "../interfaces/IClientConfig";
 import { IAccount } from "../interfaces/IAccount";
 import * as secp from "@noble/secp256k1";
 import { BaseClient } from "./BaseClient";
-import { PublicApiClient } from "./PublicApiClient";
 import { IAddressInfo, IFullAddressInfo } from "../interfaces/IAddressInfo";
 import { ISignature } from "../interfaces/ISignature";
 import { base58checkDecode, base58checkEncode } from "../utils/Xbqcrypto";
@@ -222,7 +221,7 @@ export class WalletClient extends BaseClient {
 
 		// extract sig vector
 		const r: Uint8Array = sig[0].slice(0,32);
-		const s: Uint8Array = sig[0].slice(32, 64);
+		const s: Uint8Array = sig[0].slice(32);
 		const v: number = sig[1];
 		const hex = secp.utils.bytesToHex(sig[0]);
 		const base58Encoded = base58checkEncode(Buffer.concat([r, s]));
@@ -237,15 +236,13 @@ export class WalletClient extends BaseClient {
 	}
 
 	// send native MAS from a wallet address to another
-	public async sendTransaction<T>(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
+	public async sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor);
-		console.log("Compacted bytes for op ", bytesCompact)
 
 		// sign payload
 		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
-		console.log("Signature ", signature)
 
 		//const signature = this.signOperation(txData, executor);
 		const data = {
@@ -263,7 +260,7 @@ export class WalletClient extends BaseClient {
 			signature: signature.base58Encoded,
 		}
 		// returns operation ids
-		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-		return res.result;
+		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return opIds;
 	}
 }

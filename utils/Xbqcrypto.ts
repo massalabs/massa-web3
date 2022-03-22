@@ -14,11 +14,11 @@ export function base58checkDecode(data: string): Buffer {
     return bs58check.decode(data);
 }
 
-export function varintEncode(data) {
+export function varintEncode(data: number): [number] {
     return varint.encode(data)
 }
 
-export function varintDecode(data) {
+export function varintDecode(data: [number]): number {
     return varint.decode(data)
 }
 
