@@ -2,6 +2,15 @@
 import * as wasmCli from "assemblyscript/cli/asc";
 import * as fs from "fs";
 import * as path from "path";
+import { IAccount } from "../interfaces/IAccount";
+import { IClientConfig } from "../interfaces/IClientConfig";
+import { IContractData } from "../interfaces/IContractData";
+import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
+import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
+import { OperationTypeId } from "../interfaces/OperationTypes";
+import { BaseClient } from "./BaseClient";
+import { PublicApiClient } from "./PublicApiClient";
+import { WalletClient } from "./WalletClient";
 
 export interface CompiledSmartContract {
 	binary: Uint8Array,
@@ -14,29 +23,32 @@ export interface WasmConfig {
 	wasmTextPath?: fs.PathLike;
 }
 
-export class SmartContractUtils {
-	private isWebAssemblyCliInitialised = false;
+export class SmartContractsClient extends BaseClient {
+	private isWebAssemblyCliInitialized = false;
 
-	public constructor() {
+	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, private readonly walletClient: WalletClient) {
+		super(clientConfig);
+
 		// bind class methods
 		this.initWebAssemblyCli = this.initWebAssemblyCli.bind(this);
 		this.compileSmartContractFromString = this.compileSmartContractFromString.bind(this);
 		this.compileSmartContractFromFile = this.compileSmartContractFromFile.bind(this);
+		this.executeSC = this.executeSC.bind(this);
 	}
 
 	private async initWebAssemblyCli(): Promise<void> {
 		try {
 			await wasmCli.ready;
 		} catch (ex) {
-			console.error("Error initialising wasm cli", ex);
+			console.error("Error initializing wasm cli", ex);
 			throw ex;
 		}
-		this.isWebAssemblyCliInitialised = true;
+		this.isWebAssemblyCliInitialized = true;
 	}
 
 	public async compileSmartContractFromString(smartContractContent: string): Promise<CompiledSmartContract> {
 
-		if (!this.isWebAssemblyCliInitialised) {
+		if (!this.isWebAssemblyCliInitialized) {
 			await this.initWebAssemblyCli();
 		}
 
@@ -68,7 +80,7 @@ export class SmartContractUtils {
 
 	public async compileSmartContractFromFile(config: WasmConfig): Promise<CompiledSmartContract> {
 
-		if (!this.isWebAssemblyCliInitialised) {
+		if (!this.isWebAssemblyCliInitialized) {
 			await this.initWebAssemblyCli();
 		}
 
@@ -124,4 +136,41 @@ export class SmartContractUtils {
 			text: textFileContents
 		} as CompiledSmartContract;
 	}
+
+	// create and send an operation containing byte code
+	public async executeSC(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
+		// get latest period info
+		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
+		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, executor, expiryPeriod);
+
+		// sign payload
+		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+
+		const data = {
+			content: {
+				expire_period: expiryPeriod,
+				fee: contractData.fee.toString(),
+				op: {
+					ExecuteSC: {
+						data: Array.from(atob(contractData.contractData), c => c.charCodeAt(0)),
+						max_gas: contractData.maxGas,
+						coins: contractData.coins.toString(),
+						gas_price: contractData.gasPrice.toString()
+					}
+				},
+				sender_public_key: executor.publicKey
+			},
+			signature: signature.base58Encoded,
+		}
+		// returns operation ids
+		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return opIds;
+	}
+
+	//OTHER OPERATIONS (TODO)
+	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
+	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
 }

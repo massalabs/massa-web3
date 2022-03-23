@@ -6,7 +6,7 @@ import * as wasmCli from "assemblyscript/cli/asc";
 import { INodeStatus } from "../../interfaces/INodeStatus";
 import { IAddressInfo, IFullAddressInfo } from "../../interfaces/IAddressInfo";
 import * as fs from "fs";
-import { CompiledSmartContract, SmartContractUtils, WasmConfig } from "../../web3/SmartContractUtils";
+import { CompiledSmartContract, SmartContractsClient, WasmConfig } from "../../web3/SmartContractsClient";
 import { IBlockInfo } from "../../interfaces/IBlockInfo";
 import { IEndorsement } from "../../interfaces/IEndorsement";
 import { IOperationData } from "../../interfaces/IOperationData";
@@ -71,7 +71,7 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
 
         const web3ClientConfig = {
             providers,
-            retryStrategyOn: false
+            retryStrategyOn: false,
         } as IClientConfig;
 
         //const web3Client: Client = new Client(web3ClientConfig, baseAccount);
@@ -96,8 +96,8 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         //console.log("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
 
         // get operations
-        //const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["29Z4RrPNwukMFo7B4Tb21rW7JCXGkqeHFbER19zP6Fzn1FLzhm"]);
-        //console.log("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
+        const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["N9KTqSgG1Ux3jV5HxtjHEjeVR245GhpYfKmnyPsrJHT3que82"]);
+        console.log("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses
         //const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses(["2GcahavufBH9tqVH6SjkSCPXRbqpiCwwSfwFAf3veKiJmiHubK"]);
@@ -180,12 +180,13 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         console.log("operation ids", JSON.stringify(opIds, null, 2));
         */
         
+        /*
         const opIds = await web3Client.wallet().buyRolls({
             fee: 0, // int
             amount: 1, //ROLLS
         } as IRollsData, baseAccount);
         console.log("operation ids", JSON.stringify(opIds, null, 2));
-
+        */
 
         /*
         const opIds = await web3Client.wallet().sellRolls({

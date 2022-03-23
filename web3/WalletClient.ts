@@ -15,7 +15,6 @@ import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
 import { IRollsData } from "../interfaces/IRollsData";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
-const PERIOD_OFFSET = 5;
 
 /* web3/Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class WalletClient extends BaseClient {
@@ -75,10 +74,10 @@ export class WalletClient extends BaseClient {
 		}
 		for (const privateKey of privateKeys) {
 			const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKey);
-			const publickey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
-			const publicKeyBase58Encoded: string = base58checkEncode(publickey);
+			const publicKey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
+			const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
 
-			const address: Uint8Array = await secp.utils.sha256(publickey);
+			const address: Uint8Array = await secp.utils.sha256(publicKey);
 			const addressBase58Encoded: string = base58checkEncode(address);
 
 			if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
@@ -245,7 +244,7 @@ export class WalletClient extends BaseClient {
 
 		// get latest period info
 		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
-		const expiryPeriod: number = latestPeriodInfo.last_period + PERIOD_OFFSET;
+		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
 
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor, expiryPeriod);
@@ -278,7 +277,7 @@ export class WalletClient extends BaseClient {
 
 		// get latest period info
 		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
-		const expiryPeriod: number = latestPeriodInfo.last_period + PERIOD_OFFSET;
+		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
 
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollBuy, executor, expiryPeriod);
@@ -309,7 +308,7 @@ export class WalletClient extends BaseClient {
 
 		// get latest period info
 		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
-		const expiryPeriod: number = latestPeriodInfo.last_period + PERIOD_OFFSET;
+		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
 
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollSell, executor, expiryPeriod);

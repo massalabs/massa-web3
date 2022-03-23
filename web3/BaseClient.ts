@@ -13,12 +13,14 @@ import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
 
-type DataType = IContractData | ITransactionData | IRollsData;
+export type DataType = IContractData | ITransactionData | IRollsData;
 
 const requestHeaders = {
 	"Accept": "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 	'Access-Control-Allow-Origin': '*'
 } as AxiosRequestHeaders;
+
+export const PERIOD_OFFSET = 5;
 
 export class BaseClient extends EventEmitter {
 	protected clientConfig: IClientConfig;
@@ -26,6 +28,7 @@ export class BaseClient extends EventEmitter {
 	public constructor(clientConfig: IClientConfig) {
 		super();
 		this.clientConfig = clientConfig;
+		this.clientConfig.periodOffset = this.clientConfig.periodOffset | PERIOD_OFFSET;
 		if (this.getPrivateProviders().length === 0) {
 			throw new Error("Cannot initialize web3 with no private providers. Need at least one");
 		}
@@ -40,7 +43,6 @@ export class BaseClient extends EventEmitter {
 		this.getUrlHttpMethod = this.getUrlHttpMethod.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
 		this.sendGetRequest = this.sendGetRequest.bind(this);
-		this.executeSC = this.executeSC.bind(this);
 		this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
 	}
 
@@ -178,30 +180,7 @@ export class BaseClient extends EventEmitter {
 		return resp.result;
 	}
 
-	// create and send an operation containing byte code
-	public async executeSC<T>(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
-		const signature = null; //this.signOperation(contractData, executor, 0);
-		const data = {
-			content: {
-				//expire_period: contractData.expirePeriod,
-				fee: contractData.fee.toString(),
-				op: {
-					ExecuteSC: {
-						data: Array.from(atob(contractData.contractData), c => c.charCodeAt(0)),
-						max_gas: contractData.maxGas,
-						coins: contractData.coins.toString(),
-						gas_price: contractData.gasPrice.toString()
-					}
-				},
-				sender_public_key: executor.publicKey
-			},
-			signature,
-		}
-		// returns operation ids
-		const res: JsonRpcResponseData<Array<string>> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-		return res.result;
-	}
-
+	// scale an amount to blockchain precision
 	protected scaleAmount(inputAmount: number | string): number {
 		const amount = new BN(inputAmount);
 		const scaleFactor = (new BN(10)).pow(new BN(9));
@@ -209,6 +188,7 @@ export class BaseClient extends EventEmitter {
 		return amountScaled.toNumber();
 	}
 	
+	// compact bytes payload per operation
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
 		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
@@ -243,8 +223,4 @@ export class BaseClient extends EventEmitter {
 			}
 		}
 	}
-
-	//OTHER OPERATIONS (TODO)
-	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
-	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
 }
