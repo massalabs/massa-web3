@@ -5,6 +5,7 @@ import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 import { SmartContractsClient } from "./SmartContractsClient";
 
+/** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 export class Client {
 	private publicApiClient: PublicApiClient;
 	private privateApiClient: PrivateApiClient;
@@ -24,15 +25,22 @@ export class Client {
 		this.smartContracts = this.smartContracts.bind(this);
 	}
 
+	/** Private Api related RPC methods */
 	public privateApi(): PrivateApiClient {
 		return this.privateApiClient;
 	}
+
+	/** Public Api related RPC methods */
 	public publicApi(): PublicApiClient {
 		return this.publicApiClient;
 	}
+
+	/** Wallet related methods */
 	public wallet(): WalletClient {
 		return this.walletClient;
 	}
+
+	/** Smart Contracts related methods */
 	public smartContracts(): SmartContractsClient {
 		return this.smartContractsClient;
 	}

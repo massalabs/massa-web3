@@ -10,8 +10,9 @@ import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
 import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
-import { IAccount } from "../interfaces/IAccount";
 
+
+/** Public Api Client for interacting with the massa network */
 export class PublicApiClient extends BaseClient {
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
@@ -29,7 +30,7 @@ export class PublicApiClient extends BaseClient {
 		this.getLatestPeriodInfo = this.getLatestPeriodInfo.bind(this);
 	}
 
-	// show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...)
+	/** Show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...) */
 	public async getNodeStatus(): Promise<INodeStatus> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS;
 		if (this.clientConfig.retryStrategyOn) {
@@ -39,7 +40,7 @@ export class PublicApiClient extends BaseClient {
 		}
 	}
 
-	// get info about a list of addresses (balances, block creation, ...)
+	/** Get info about a list of addresses (balances, block creation, ...) */
 	public async getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
@@ -49,7 +50,7 @@ export class PublicApiClient extends BaseClient {
 		}
 	} 
 	
-	//show info about a block (content, finality ...)
+	/** Show info about a block (content, finality ...) */
 	public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
 		if (this.clientConfig.retryStrategyOn) {
@@ -59,7 +60,7 @@ export class PublicApiClient extends BaseClient {
 		}
 	}
 
-	//show info about latest period
+	/** Show info about latest period */
 	public async getLatestPeriodInfo(): Promise<ILatestPeriodInfo> {
 		const getMethod = HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD;
 		if (this.clientConfig.retryStrategyOn) {
@@ -69,7 +70,7 @@ export class PublicApiClient extends BaseClient {
 		}
 	}
 
-	// show info about a list of endorsements (content, finality ...)
+	/** Show info about a list of endorsements (content, finality ...) */
 	public async getEndorsements(endorsementIds: Array<string>): Promise<Array<IEndorsement>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS;
 		if (this.clientConfig.retryStrategyOn) {
@@ -79,7 +80,7 @@ export class PublicApiClient extends BaseClient {
 		}
 	}
 
-	// show info about a list of operations = (content, finality ...)
+	/** Show info about a list of operations = (content, finality ...) */
 	public async getOperations(operationIds: Array<string>): Promise<Array<IOperationData>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_OPERATIONS;
 		if (this.clientConfig.retryStrategyOn) {
@@ -89,7 +90,7 @@ export class PublicApiClient extends BaseClient {
 		}
 	}
 
-	// Get cliques
+	/** Get cliques */
 	public async getCliques(): Promise<Array<IClique>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQEUS;
 		if (this.clientConfig.retryStrategyOn) {
@@ -99,7 +100,7 @@ export class PublicApiClient extends BaseClient {
 		}
 	}
 
-	// Returns the active stakers and their roll counts for the current cycle.
+	/** Returns the active stakers and their roll counts for the current cycle */
 	public async getStakers(): Promise<Array<IStakingAddresses>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKERS;
 		if (this.clientConfig.retryStrategyOn) {

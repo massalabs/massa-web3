@@ -22,11 +22,11 @@ const requestHeaders = {
 
 export const PERIOD_OFFSET = 5;
 
-export class BaseClient extends EventEmitter {
+/**  Base Client which is to be extended by other clients as it provides core methods */
+export class BaseClient {
 	protected clientConfig: IClientConfig;
 
 	public constructor(clientConfig: IClientConfig) {
-		super();
 		this.clientConfig = clientConfig;
 		this.clientConfig.periodOffset = this.clientConfig.periodOffset | PERIOD_OFFSET;
 		if (this.getPrivateProviders().length === 0) {
@@ -46,14 +46,17 @@ export class BaseClient extends EventEmitter {
 		this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
 	}
 
-	public getPrivateProviders(): Array<IProvider> {
+	/** return all private providers */
+	protected getPrivateProviders(): Array<IProvider> {
 		return this.clientConfig.providers.filter((provider) => provider.type === ProviderType.PRIVATE);
 	}
 
-	public getPublicProviders(): Array<IProvider> {
+	/** return all public providers */
+	protected getPublicProviders(): Array<IProvider> {
 		return this.clientConfig.providers.filter((provider) => provider.type === ProviderType.PUBLIC);
 	}
 
+	/** find provider for a concrete rpc method */
 	private getProviderForRpcMethod(requestMethod: JSON_RPC_REQUEST_METHOD | HTTP_GET_REQUEST_METHOD): IProvider {
 		switch (requestMethod) {
 			case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
@@ -80,7 +83,8 @@ export class BaseClient extends EventEmitter {
 		}
 	}
 
-	private getUrlHttpMethod(requestMethod: HTTP_GET_REQUEST_METHOD): string {
+	/** send a get http method to the node */
+	protected getUrlHttpMethod(requestMethod: HTTP_GET_REQUEST_METHOD): string {
 		switch (requestMethod) {
 			case HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD: {
 					return this.getPublicProviders()[0].url + "/info"; //choose the first available public provider
@@ -89,7 +93,7 @@ export class BaseClient extends EventEmitter {
 		}
 	}
 
-	// send a post JSON rpc request to the node
+	/** send a post JSON rpc request to the node */
 	protected async sendJsonRPCRequest<T>(resource: JSON_RPC_REQUEST_METHOD, params: Object, is_get: boolean=false): Promise<T> {
 		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
 			let resp: AxiosResponse = null;
@@ -143,7 +147,7 @@ export class BaseClient extends EventEmitter {
 		return resp.result;
 	}
 
-	// send get request method
+	/** send get request method */
 	protected async sendGetRequest<T>(resource: HTTP_GET_REQUEST_METHOD): Promise<T> {
 		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
 			let resp: AxiosResponse = null;
@@ -180,7 +184,7 @@ export class BaseClient extends EventEmitter {
 		return resp.result;
 	}
 
-	// scale an amount to blockchain precision
+	/** scale an amount to blockchain precision */
 	protected scaleAmount(inputAmount: number | string): number {
 		const amount = new BN(inputAmount);
 		const scaleFactor = (new BN(10)).pow(new BN(9));
@@ -188,7 +192,7 @@ export class BaseClient extends EventEmitter {
 		return amountScaled.toNumber();
 	}
 	
-	// compact bytes payload per operation
+	/** compact bytes payload per operation */
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
 		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
@@ -210,12 +214,13 @@ export class BaseClient extends EventEmitter {
 				// transfer amount
 				const transferAmountEncoded = Buffer.from(varintEncode(this.scaleAmount((data as ITransactionData).amount)));
 				// recipient
-				const recipientAddressEncoded =  base58checkDecode((data as ITransactionData).recipientAddress);
+				const recipientAddressEncoded = base58checkDecode((data as ITransactionData).recipientAddress);
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
 			}
 			case OperationTypeId.RollBuy:
 			case OperationTypeId.RollSell: {
+				// rolls amount
 				const amount = new BN((data as IRollsData).amount);
 				const rollsAmountEncoded = Buffer.from(varintEncode(amount.toNumber()));
 		

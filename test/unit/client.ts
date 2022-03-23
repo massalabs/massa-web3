@@ -17,6 +17,7 @@ import { ILatestPeriodInfo } from "../../interfaces/ILatestPeriodInfo";
 import { WalletClient } from "../../web3/WalletClient";
 import { ITransactionData } from "../../interfaces/ITransactionData";
 import { IRollsData } from "../../interfaces/IRollsData";
+import { IContractData } from "../../interfaces/IContractData";
 
 const ADDRESSES = {
     currentPlayer: '2PnbfdjnrBPe6LYVixwQtmq6PoGguXiDnZCVCBmcThmt9JwLoF',
@@ -69,12 +70,14 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
             } as IProvider
         ];
 
+        /*
         const web3ClientConfig = {
             providers,
             retryStrategyOn: false,
         } as IClientConfig;
+        const web3Client: Client = new Client(web3ClientConfig, baseAccount);
+        */
 
-        //const web3Client: Client = new Client(web3ClientConfig, baseAccount);
         const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, false, baseAccount);
         
         // ============= PUBLIC API ================ //
@@ -96,8 +99,8 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         //console.log("JSON RPC RESPONSE", JSON.stringify(endorsements, null, 2));
 
         // get operations
-        const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["N9KTqSgG1Ux3jV5HxtjHEjeVR245GhpYfKmnyPsrJHT3que82"]);
-        console.log("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
+        //const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["N9KTqSgG1Ux3jV5HxtjHEjeVR245GhpYfKmnyPsrJHT3que82"]);
+        //console.log("JSON RPC RESPONSE", JSON.stringify(operations, null, 2));
 
         // get addresses
         //const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses(["2GcahavufBH9tqVH6SjkSCPXRbqpiCwwSfwFAf3veKiJmiHubK"]);
@@ -199,14 +202,23 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         
         // ============= SMART CONTRACTS ================ //
         /*
-        const scData1: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
+        const compiledSc: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
             smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-web3/test/unit/myModule.ts",
         } as WasmConfig);
-        console.log("smart contract data", JSON.stringify(scData1, null, 2));
+        console.log("smart contract data", JSON.stringify(compiledSc, null, 2));
         */
 
-        //const scData: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_SIMPLE_CONTRACT);
+        const scData: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_SIMPLE_CONTRACT);
         //console.log("smart contract data", JSON.stringify(scData, null, 2));
+
+        const opIds = await web3Client.smartContracts().executeSC({
+            fee: 0,
+            maxGas: 100000,
+            gasPrice: 0,
+            coins: 0,
+            contractData: null
+        } as IContractData, baseAccount);
+        console.log("operation ids", JSON.stringify(opIds, null, 2));
 
     } catch (ex) {
         console.error("Error = ", ex.message);

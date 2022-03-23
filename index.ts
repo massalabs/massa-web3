@@ -1,4 +1,4 @@
-// interfaces
+/** Exposed interfaces */
 export { IAccount } from "./interfaces/IAccount";
 export { IAddressInfo } from "./interfaces/IAddressInfo";
 export { IBlockInfo } from "./interfaces/IBlockInfo";
@@ -18,7 +18,7 @@ export { ITransactionData } from "./interfaces/ITransactionData";
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";
 export { ITransactionOpType, IRollBuyOpType, IRollSellOpType, IExecSmartContractOpType, OperationTypeId, OpType } from "./interfaces/OperationTypes";
 
-// classes
+/** Exposed clients and factories */
 export { ClientFactory, DefaultProviderUrls } from "./web3/ClientFactory";
 export { Client } from "./web3/Client";
 export { PublicApiClient } from "./web3/PublicApiClient";

@@ -23,6 +23,7 @@ export interface WasmConfig {
 	wasmTextPath?: fs.PathLike;
 }
 
+/** Smart Contracts Client which enables compilation, deployment and streaming of events */
 export class SmartContractsClient extends BaseClient {
 	private isWebAssemblyCliInitialized = false;
 
@@ -36,6 +37,7 @@ export class SmartContractsClient extends BaseClient {
 		this.executeSC = this.executeSC.bind(this);
 	}
 
+	/** initializes the webassembly cli under the hood */
 	private async initWebAssemblyCli(): Promise<void> {
 		try {
 			await wasmCli.ready;
@@ -46,6 +48,7 @@ export class SmartContractsClient extends BaseClient {
 		this.isWebAssemblyCliInitialized = true;
 	}
 
+	/** compile smart contract on the fly using the assemblyscript smart contract code as a string */
 	public async compileSmartContractFromString(smartContractContent: string): Promise<CompiledSmartContract> {
 
 		if (!this.isWebAssemblyCliInitialized) {
@@ -78,6 +81,7 @@ export class SmartContractsClient extends BaseClient {
 		} as CompiledSmartContract;
 	}
 
+	/** compile smart contract from a physical assemblyscript file */
 	public async compileSmartContractFromFile(config: WasmConfig): Promise<CompiledSmartContract> {
 
 		if (!this.isWebAssemblyCliInitialized) {
@@ -137,7 +141,7 @@ export class SmartContractsClient extends BaseClient {
 		} as CompiledSmartContract;
 	}
 
-	// create and send an operation containing byte code
+	/** create and send an operation containing byte code */
 	public async executeSC(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
 		// get latest period info
 		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();

@@ -3,8 +3,8 @@ import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ISignedMessage } from "../interfaces/ISignedMessage";
 import { BaseClient } from "./BaseClient";
-import { IAccount } from "../interfaces/IAccount";
 
+/** Private Api Client for interacting with a massa node */
 export class PrivateApiClient extends BaseClient {
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
@@ -21,7 +21,7 @@ export class PrivateApiClient extends BaseClient {
 		this.nodeSignMessage = this.nodeSignMessage.bind(this);
 	}
 
-	// unban a given IP addresses
+	/** Unban a given IP addresses */
 	public async unbanIpAddress(ipAddress: string): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.UNBAN;
 		if (this.clientConfig.retryStrategyOn) {
@@ -31,7 +31,7 @@ export class PrivateApiClient extends BaseClient {
 		}
 	}
 
-	// ban a given IP addresses
+	/** Ban a given IP addresses */
 	public async banIpAddress(ipAddress: string): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.BAN;
 		if (this.clientConfig.retryStrategyOn) {
@@ -41,7 +41,7 @@ export class PrivateApiClient extends BaseClient {
 		}
 	} 
 	
-	// stops the node
+	/** Stops the node */
 	public async nodeStop(): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.STOP_NODE;
 		if (this.clientConfig.retryStrategyOn) {
@@ -51,7 +51,7 @@ export class PrivateApiClient extends BaseClient {
 		}
 	}
 
-	// node signs a message
+	/** Node signs a message */
 	public async nodeSignMessage(message: Uint8Array): Promise<ISignedMessage> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE;
 		if (this.clientConfig.retryStrategyOn) {
@@ -61,7 +61,7 @@ export class PrivateApiClient extends BaseClient {
 		}
 	}
 
-	// show staking addresses
+	/** Show staking addresses */
 	public async nodeGetStakingAddresses(): Promise<Array<string>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
@@ -71,7 +71,7 @@ export class PrivateApiClient extends BaseClient {
 		}
 	}
 
-	// remove staking addresses
+	/** Remove staking addresses */
 	public async nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
@@ -81,7 +81,7 @@ export class PrivateApiClient extends BaseClient {
 		}
 	}
 
-	// add staking private keys
+	/** Add staking private keys */
 	public async nodeAddStakingPrivateKeys(privateKeys: Array<string>): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS;
 		if (this.clientConfig.retryStrategyOn) {

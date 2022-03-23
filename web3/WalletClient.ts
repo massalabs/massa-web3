@@ -16,7 +16,7 @@ import { IRollsData } from "../interfaces/IRollsData";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
 
-/* web3/Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
+/** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class WalletClient extends BaseClient {
 
 	private wallet: Array<IAccount> = [];
@@ -49,25 +49,27 @@ export class WalletClient extends BaseClient {
 		}
 	}
 
+	/** set the default (base) account */
 	public setBaseAccount(baseAccount: IAccount): void {
 		this.baseAccount = baseAccount;
 	}
 
+	/** get the default (base) account */
 	public getBaseAccount(): IAccount {
 		return this.baseAccount;
 	}
 
-	// get all accounts under a wallet
+	/** get all accounts under a wallet */
 	public getWalletAccounts(): Array<IAccount> {
 		return this.wallet;
 	}
 
-	// get wallet account by an address
+	/** get wallet account by an address */
 	public getWalletAccountByAddress(address: string): IAccount | undefined {
 		return this.wallet.find((w) => w.address.toLowerCase() === address.toLowerCase()); // ignore case for flexibility
 	}
 
-	// add a list of private keys to the wallet
+	/** add a list of private keys to the wallet */
 	public async addPrivateKeysToWallet(privateKeys: Array<string>): Promise<void> {
 		if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
@@ -90,7 +92,7 @@ export class WalletClient extends BaseClient {
 		}
 	}
 
-	// add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address)
+	/** add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address) */
 	public addAccountsToWallet(accounts: Array<IAccount>): void {
 		if (accounts.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted accounts: ${accounts.length}`);
@@ -111,7 +113,7 @@ export class WalletClient extends BaseClient {
 		}
 	}
 
-	// remove a list of addresses from the wallet
+	/** remove a list of addresses from the wallet */
 	public removeAddressesFromWallet(addresses: Array<string>): void {
 		for (const address of addresses) {
 			const index = this.wallet.findIndex((w) => w.address === address);
@@ -121,7 +123,7 @@ export class WalletClient extends BaseClient {
 		}
 	}
 
-	// show wallet info (private keys, public keys, addresses, balances ...)
+	/** show wallet info (private keys, public keys, addresses, balances ...) */
 	public async walletInfo(): Promise<Array<IFullAddressInfo>> {
 		if (this.wallet.length === 0) {
 			return [];
@@ -142,7 +144,7 @@ export class WalletClient extends BaseClient {
 		});
 	} 
 
-	 // generate a private key and add it into the wallet
+	 /** generate a private key and add it into the wallet */
 	public static async walletGenerateNewAccount() {
 		// generate private key
 		const privateKey: Uint8Array = secp.utils.randomPrivateKey();
@@ -163,6 +165,7 @@ export class WalletClient extends BaseClient {
 		} as IAccount;
 	}
 
+	/** sign random message data with an already added wallet account */
 	public async signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature> {
 		const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
 		if (!signerAccount) {
@@ -171,7 +174,8 @@ export class WalletClient extends BaseClient {
 		return await WalletClient.walletSignMessage(data, signerAccount);
 	}
 
-	private async getWalletAddressesInfo(addresses: Array<string>) {
+	/** get wallet addresses info */
+	private async getWalletAddressesInfo(addresses: Array<string>): Promise<Array<IAddressInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
@@ -180,7 +184,7 @@ export class WalletClient extends BaseClient {
 		}
 	}
 
-	// sign provided string with given address (address must be in the wallet)
+	/** sign provided string with given address (address must be in the wallet) */
 	public static async walletSignMessage(data: string | Buffer, signer: IAccount): Promise<ISignature> {
 
 		// check private keys to sign the message with
@@ -239,7 +243,7 @@ export class WalletClient extends BaseClient {
 		} as ISignature;
 	}
 
-	// send native MAS from a wallet address to another
+	/** send native MAS from a wallet address to another */
 	public async sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 
 		// get latest period info
@@ -272,7 +276,7 @@ export class WalletClient extends BaseClient {
 		return opIds;
 	}
 
-	// buy rolls with wallet address
+	/** buy rolls with wallet address */
 	public async buyRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
 
 		// get latest period info
@@ -303,7 +307,7 @@ export class WalletClient extends BaseClient {
 		return opIds;
 	}
 
-	// sell rolls with wallet address
+	/** sell rolls with wallet address */
 	public async sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
 
 		// get latest period info
