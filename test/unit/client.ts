@@ -220,7 +220,7 @@ const address: string = "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM";
         decode: var u8 = new Uint8Array(Buffer.from(b64, 'base64'))
         */
 
-        const pathToWasm = "/home/evgeni/Documents/development/massa/massa-sc-examples/build/helloworld.wasm"; //UPDATE!!!
+        const pathToWasm = "/Users/adrien/dev/massa-sc-examples/build/helloworld.wasm"; //UPDATE!!!
         const wasmFile: Buffer = fs.readFileSync(pathToWasm);
         const b64: string = Buffer.from(wasmFile).toString('base64');
         console.log("smart contract data", b64);

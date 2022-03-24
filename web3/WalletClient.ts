@@ -199,7 +199,6 @@ export class WalletClient extends BaseClient {
 		
     	// cast private key
 		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
-		const base58PrivateKey = new BN(privateKeyBase58Decoded, 16);
 
 		// bytes compaction
 		const bytesCompact: Buffer = Buffer.from(data);
@@ -207,7 +206,7 @@ export class WalletClient extends BaseClient {
 		const messageHashDigest: Uint8Array = await secp.utils.sha256(bytesCompact);
 
 		// sign the digest
-		const sig = await secp.sign(messageHashDigest, base58PrivateKey.toBuffer(), {
+		const sig = await secp.sign(messageHashDigest, privateKeyBase58Decoded, {
 			der: false,
 			recovered: true
 		});

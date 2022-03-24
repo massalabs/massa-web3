@@ -103,7 +103,7 @@ export class BaseClient {
 				"params": params,
 				"id": 0
 			};
-		
+
 			try {
 				resp = await axios.post(this.getProviderForRpcMethod(resource).url, body, requestHeaders);
 			} catch (ex) {
@@ -206,8 +206,8 @@ export class BaseClient {
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
 				const coinsEncoded = Buffer.from(varintEncode((data as IContractData).coins));
 				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
-				const dataLengthEncoded = Buffer.from(varintEncode((data as IContractData).contractData.length));
 				const contractDataEncoded = Buffer.from(decodedBin); //Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0)); //(data as IContractData).contractData; //Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0)); //ascii --> binary
+				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 			}
 			case OperationTypeId.Transaction: {
