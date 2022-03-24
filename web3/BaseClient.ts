@@ -7,7 +7,7 @@ import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
 import axios, { AxiosResponse, AxiosRequestHeaders } from "axios";
-import { HTTP_GET_REQUEST_METHOD, JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
+import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
@@ -39,9 +39,7 @@ export class BaseClient {
 		this.getPrivateProviders = this.getPrivateProviders.bind(this);
 		this.getProviderForRpcMethod = this.getProviderForRpcMethod.bind(this);
 		this.getPublicProviders = this.getPublicProviders.bind(this);
-		this.getUrlHttpMethod = this.getUrlHttpMethod.bind(this);
 		this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
-		this.sendGetRequest = this.sendGetRequest.bind(this);
 		this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
 	}
 
@@ -56,7 +54,7 @@ export class BaseClient {
 	}
 
 	/** find provider for a concrete rpc method */
-	private getProviderForRpcMethod(requestMethod: JSON_RPC_REQUEST_METHOD | HTTP_GET_REQUEST_METHOD): IProvider {
+	private getProviderForRpcMethod(requestMethod: JSON_RPC_REQUEST_METHOD): IProvider {
 		switch (requestMethod) {
 			case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
 			case JSON_RPC_REQUEST_METHOD.GET_STATUS:
@@ -65,8 +63,7 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.GET_BLOCKS:
 			case JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS:
 			case JSON_RPC_REQUEST_METHOD.GET_CLIQEUS:
-			case JSON_RPC_REQUEST_METHOD.GET_STAKERS:
-			case HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD: {
+			case JSON_RPC_REQUEST_METHOD.GET_STAKERS: {
 					return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -78,16 +75,6 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE: {
 				return this.getPrivateProviders()[0]; //TODO: choose the first available private provider ?
 			}
-			default: throw new Error("Unknown Json rpc method")
-		}
-	}
-
-	/** send a get http method to the node */
-	protected getUrlHttpMethod(requestMethod: HTTP_GET_REQUEST_METHOD): string {
-		switch (requestMethod) {
-			case HTTP_GET_REQUEST_METHOD.GET_LATEST_PERIOD: {
-					return this.getPublicProviders()[0].url + "/info"; //choose the first available public provider
-				}
 			default: throw new Error("Unknown Json rpc method")
 		}
 	}
@@ -127,43 +114,6 @@ export class BaseClient {
 			return resolve({
 				isError: false,
 				result: responseData.result as T,
-				error: null
-			} as JsonRpcResponseData<T>);
-		});
-
-		let resp: JsonRpcResponseData<T> = null;
-		try {
-			resp = await promise;
-		} catch (ex) {
-			throw ex;
-		}
-
-		// in case of rpc error, rethrow the error
-		if (resp.error && resp.error) {
-			throw resp.error;
-		}
-
-		return resp.result;
-	}
-
-	/** send get request method */
-	protected async sendGetRequest<T>(resource: HTTP_GET_REQUEST_METHOD): Promise<T> {
-		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
-			let resp: AxiosResponse = null;
-
-			try {
-				resp = await axios.get(this.getUrlHttpMethod(resource), requestHeaders);
-			} catch (ex) {
-				return resolve({
-					isError: true,
-					result: null,
-					error: new Error('JSON.parse error: ' + String(ex))
-				} as JsonRpcResponseData<T>);
-			}
-
-			return resolve({
-				isError: false,
-				result: resp.data as T,
 				error: null
 			} as JsonRpcResponseData<T>);
 		});

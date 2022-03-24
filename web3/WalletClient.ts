@@ -11,8 +11,8 @@ import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { PublicApiClient } from "./PublicApiClient";
-import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
 import { IRollsData } from "../interfaces/IRollsData";
+import { INodeStatus } from "../interfaces/INodeStatus";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
 
@@ -245,9 +245,9 @@ export class WalletClient extends BaseClient {
 	/** send native MAS from a wallet address to another */
 	public async sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
 
-		// get latest period info
-		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
-		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor, expiryPeriod);
@@ -278,9 +278,9 @@ export class WalletClient extends BaseClient {
 	/** buy rolls with wallet address */
 	public async buyRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
 
-		// get latest period info
-		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
-		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollBuy, executor, expiryPeriod);
@@ -309,9 +309,9 @@ export class WalletClient extends BaseClient {
 	/** sell rolls with wallet address */
 	public async sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
 
-		// get latest period info
-		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
-		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollSell, executor, expiryPeriod);

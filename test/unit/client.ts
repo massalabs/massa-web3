@@ -12,7 +12,6 @@ import { IOperationData } from "../../interfaces/IOperationData";
 import { IClique } from "../../interfaces/IClique";
 import { IStakingAddresses } from "../../interfaces/IStakingAddresses";
 import { ClientFactory, DefaultProviderUrls } from "../../web3/ClientFactory";
-import { ILatestPeriodInfo } from "../../interfaces/ILatestPeriodInfo";
 import { WalletClient } from "../../web3/WalletClient";
 import { ITransactionData } from "../../interfaces/ITransactionData";
 import { IRollsData } from "../../interfaces/IRollsData";
@@ -68,10 +67,6 @@ function add(x: number, y: number): number { return x+y };
         const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, false, baseAccount);
         
         // ============= PUBLIC API ================ //
-
-        // get latest period
-        //const latestPeriodInfo: ILatestPeriodInfo = await web3Client.publicApi().getLatestPeriodInfo();
-        //console.log("Latest Period Info", JSON.stringify(latestPeriodInfo, null, 2));
 
         // get node status
         const nodeStatus: INodeStatus = await web3Client.publicApi().getNodeStatus();

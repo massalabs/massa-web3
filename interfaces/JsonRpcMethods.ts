@@ -18,7 +18,3 @@ export enum JSON_RPC_REQUEST_METHOD {
 	ADD_STAKING_PRIVATE_KEYS = "add_staking_private_keys",
 	NODE_SIGN_MESSAGE = "node_sign_message",
 }
-
-export enum HTTP_GET_REQUEST_METHOD {
-	GET_LATEST_PERIOD = "/info",
-}

@@ -6,7 +6,6 @@ export { IClientConfig } from "./interfaces/IClientConfig";
 export { IClique } from "./interfaces/IClique";
 export { IContractData } from "./interfaces/IContractData";
 export { IEndorsement } from "./interfaces/IEndorsement";
-export { ILatestPeriodInfo } from "./interfaces/ILatestPeriodInfo";
 export { INodeStatus } from "./interfaces/INodeStatus";
 export { IOperationData } from "./interfaces/IOperationData";
 export { IProvider } from "./interfaces/IProvider";

@@ -4,7 +4,6 @@ import * as path from "path";
 import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
-import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
@@ -173,9 +172,9 @@ export class SmartContractsClient extends BaseClient {
 
 	/** create and send an operation containing byte code */
 	public async deploySmartContract(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
-		// get latest period info
-		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
-		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// get the block size
 		const nodeStatus: INodeStatus = await this.publicApiClient.getNodeStatus();
