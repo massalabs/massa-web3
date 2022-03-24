@@ -26,10 +26,10 @@
       "node_modules/@types"
     ],
     "lib": [
-      "es7","es6","dom","es2017","es2015","esnext.asynciterable"
+      "es7","es6","dom", "es2015", "es2017", "es2018", "es2019", "es2020", "es2021", "esnext", "esnext.asynciterable"
     ]
   },
-  "lib": ["es7","es6","dom","es2017","es2015","esnext.asynciterable"],
+  "lib": ["es7","es6","dom", "es2015", "es2017", "es2018", "es2019", "es2020", "es2021", "esnext", "esnext.asynciterable"],
   "files": [
     "./node_modules/@types/node/index.d.ts"
   ],
