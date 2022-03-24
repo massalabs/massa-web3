@@ -1,4 +1,3 @@
-import { EventEmitter } from "events";
 import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
@@ -202,12 +201,13 @@ export class BaseClient {
 		switch (opTypeId) {
 			case OperationTypeId.ExecuteSC: {
 
+				const decodedBin = new Uint8Array(Buffer.from((data as IContractData).contractData, 'base64'))
+
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
 				const coinsEncoded = Buffer.from(varintEncode((data as IContractData).coins));
 				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
 				const dataLengthEncoded = Buffer.from(varintEncode((data as IContractData).contractData.length));
-				const contractDataEncoded = Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0));
-		
+				const contractDataEncoded = Buffer.from(decodedBin); //Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0)); //(data as IContractData).contractData; //Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0)); //ascii --> binary
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 			}
 			case OperationTypeId.Transaction: {

@@ -3,5 +3,5 @@ export interface IContractData {
 	maxGas: number;
 	gasPrice: number;
 	coins: number;
-	contractData: string
+	contractData: string;
 }

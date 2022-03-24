@@ -1,4 +1,3 @@
-
 import * as wasmCli from "assemblyscript/cli/asc";
 import * as fs from "fs";
 import * as path from "path";
@@ -6,6 +5,7 @@ import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { ILatestPeriodInfo } from "../interfaces/ILatestPeriodInfo";
+import { INodeStatus } from "../interfaces/INodeStatus";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { BaseClient } from "./BaseClient";
@@ -147,11 +147,24 @@ export class SmartContractsClient extends BaseClient {
 		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
 		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
 
+		// get the block size
+		const nodeStatus: INodeStatus = await this.publicApiClient.getNodeStatus();
+		if (contractData.contractData.length > nodeStatus.config.max_block_size / 2) {
+			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
+		}
+
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, executor, expiryPeriod);
 
 		// sign payload
 		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		//console.log("SIGNATURE ", signature);
+		//console.log("UINT8ARRAY ", contractData.contractData);
+		//console.log("RPC POST DATA ", Array.from(atob(contractData.contractData), c => c.charCodeAt(0)));
+		//console.log("ATOB ", Uint8Array.from(atob(contractData.contractData), c => c.charCodeAt(0)));
+
+
+        const decodedBin = new Uint8Array(Buffer.from(contractData.contractData, 'base64'))
 
 		const data = {
 			content: {
@@ -159,7 +172,7 @@ export class SmartContractsClient extends BaseClient {
 				fee: contractData.fee.toString(),
 				op: {
 					ExecuteSC: {
-						data: Array.from(atob(contractData.contractData), c => c.charCodeAt(0)),
+						data: Array.from(decodedBin), //Array.from(atob(contractData.contractData), c => c.charCodeAt(0)),  //Array.from(contractData.contractData),   //Array.from(atob(contractData.contractData), c => c.charCodeAt(0)), //ascii --> binary
 						max_gas: contractData.maxGas,
 						coins: contractData.coins.toString(),
 						gas_price: contractData.gasPrice.toString()
@@ -175,6 +188,6 @@ export class SmartContractsClient extends BaseClient {
 	}
 
 	//OTHER OPERATIONS (TODO)
-	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optionnal. Nothing is really executed on chain
+	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optional. Nothing is really executed on chain
 	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
 }
