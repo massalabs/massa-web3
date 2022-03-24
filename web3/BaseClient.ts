@@ -201,13 +201,22 @@ export class BaseClient {
 		switch (opTypeId) {
 			case OperationTypeId.ExecuteSC: {
 
-				const decodedBin = new Uint8Array(Buffer.from((data as IContractData).contractData, 'base64'))
+				// revert base64 sc data to binary
+				const decodedScBinaryCode = new Uint8Array(Buffer.from((data as IContractData).contractDataBase64, 'base64'))
 
+				// max gas
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
+
+				// coins to send
 				const coinsEncoded = Buffer.from(varintEncode((data as IContractData).coins));
+
+				// gas price
 				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
-				const contractDataEncoded = Buffer.from(decodedBin); //Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0)); //(data as IContractData).contractData; //Uint8Array.from(atob((data as IContractData).contractData), c => c.charCodeAt(0)); //ascii --> binary
+
+				// contract data
+				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
+
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 			}
 			case OperationTypeId.Transaction: {

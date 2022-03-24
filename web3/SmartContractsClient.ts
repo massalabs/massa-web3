@@ -13,8 +13,9 @@ import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 
 export interface CompiledSmartContract {
-	binary: Uint8Array,
-	text: string,
+	binary: Uint8Array;
+	text: string;
+	base64: string;
 }
 
 export interface WasmConfig {
@@ -33,8 +34,9 @@ export class SmartContractsClient extends BaseClient {
 		// bind class methods
 		this.initWebAssemblyCli = this.initWebAssemblyCli.bind(this);
 		this.compileSmartContractFromString = this.compileSmartContractFromString.bind(this);
-		this.compileSmartContractFromFile = this.compileSmartContractFromFile.bind(this);
-		this.executeSC = this.executeSC.bind(this);
+		this.compileSmartContractFromSourceFile = this.compileSmartContractFromSourceFile.bind(this);
+		this.compileSmartContractFromWasmFile = this.compileSmartContractFromWasmFile.bind(this);
+		this.deploySmartContract = this.deploySmartContract.bind(this);
 	}
 
 	/** initializes the webassembly cli under the hood */
@@ -75,21 +77,24 @@ export class SmartContractsClient extends BaseClient {
 			throw ex;
 		}
 
+		const base64: string = Buffer.from(compiledData.binary).toString('base64');
+
 		return {
 			binary: compiledData.binary,
-			text: compiledData.text
+			text: compiledData.text,
+			base64
 		} as CompiledSmartContract;
 	}
 
-	/** compile smart contract from a physical assemblyscript file */
-	public async compileSmartContractFromFile(config: WasmConfig): Promise<CompiledSmartContract> {
+	/** compile smart contract from a physical assemblyscript (.ts) file */
+	public async compileSmartContractFromSourceFile(config: WasmConfig): Promise<CompiledSmartContract> {
 
 		if (!this.isWebAssemblyCliInitialized) {
 			await this.initWebAssemblyCli();
 		}
 
 		if (!fs.existsSync(config.smartContractFilePath)) {
-			throw new Error(`Smart contract file ${config.smartContractFilePath} does not exist`);
+			throw new Error(`Smart contract file ${config.smartContractFilePath} [TYPESCRIPT] does not exist`);
 		}
 		const smartContractFilePath = config.smartContractFilePath.toString();
 
@@ -134,22 +139,47 @@ export class SmartContractsClient extends BaseClient {
 		const binaryArrayBuffer = fs.readFileSync(binaryFileToCreate, {});
         const binaryFileContents = new Uint8Array(binaryArrayBuffer);
         const textFileContents = fs.readFileSync(textFileToCreate, {encoding: "utf8"});
+		const base64: string = Buffer.from(binaryFileContents).toString('base64');
         
 		return {
 			binary: binaryFileContents,
-			text: textFileContents
+			text: textFileContents,
+			base64
+		} as CompiledSmartContract;
+	}
+
+	/** compile smart contract from a physical assemblyscript file */
+	public async compileSmartContractFromWasmFile(wasmFilePath: fs.PathLike): Promise<CompiledSmartContract> {
+
+		if (!this.isWebAssemblyCliInitialized) {
+			await this.initWebAssemblyCli();
+		}
+
+		if (!fs.existsSync(wasmFilePath)) {
+			throw new Error(`Wasm contract file ${wasmFilePath} does not exist`);
+		}
+		const wasmFilePathStr = wasmFilePath.toString();
+
+		const binaryArrayBuffer: Buffer = fs.readFileSync(wasmFilePathStr, {});
+		const binaryFileContents = new Uint8Array(binaryArrayBuffer);
+		const base64: string = Buffer.from(binaryFileContents).toString('base64');
+
+		return {
+			binary: binaryFileContents,
+			text: null,
+			base64
 		} as CompiledSmartContract;
 	}
 
 	/** create and send an operation containing byte code */
-	public async executeSC(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
+	public async deploySmartContract(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
 		// get latest period info
 		const latestPeriodInfo: ILatestPeriodInfo = await this.publicApiClient.getLatestPeriodInfo();
 		const expiryPeriod: number = latestPeriodInfo.last_period + this.clientConfig.periodOffset;
 
 		// get the block size
 		const nodeStatus: INodeStatus = await this.publicApiClient.getNodeStatus();
-		if (contractData.contractData.length > nodeStatus.config.max_block_size / 2) {
+		if (contractData.contractDataBase64.length > nodeStatus.config.max_block_size / 2) {
 			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
 		}
 
@@ -158,13 +188,9 @@ export class SmartContractsClient extends BaseClient {
 
 		// sign payload
 		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
-		//console.log("SIGNATURE ", signature);
-		//console.log("UINT8ARRAY ", contractData.contractData);
-		//console.log("RPC POST DATA ", Array.from(atob(contractData.contractData), c => c.charCodeAt(0)));
-		//console.log("ATOB ", Uint8Array.from(atob(contractData.contractData), c => c.charCodeAt(0)));
 
-
-        const decodedBin = new Uint8Array(Buffer.from(contractData.contractData, 'base64'))
+		// revert base64 sc data to binary
+        const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, 'base64'))
 
 		const data = {
 			content: {
@@ -172,7 +198,7 @@ export class SmartContractsClient extends BaseClient {
 				fee: contractData.fee.toString(),
 				op: {
 					ExecuteSC: {
-						data: Array.from(decodedBin), //Array.from(atob(contractData.contractData), c => c.charCodeAt(0)),  //Array.from(contractData.contractData),   //Array.from(atob(contractData.contractData), c => c.charCodeAt(0)), //ascii --> binary
+						data: Array.from(decodedScBinaryCode),
 						max_gas: contractData.maxGas,
 						coins: contractData.coins.toString(),
 						gas_price: contractData.gasPrice.toString()
