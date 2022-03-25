@@ -227,7 +227,7 @@ export class SmartContractsClient extends BaseClient {
 		};
 
 		// returns filtered events
-		const filteredEvents: Array<IEvent> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT, [[data]]);
+		const filteredEvents: Array<IEvent> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT, [data]);
 		return filteredEvents;
 	}
 

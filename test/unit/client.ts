@@ -18,6 +18,7 @@ import { IContractData } from "../../interfaces/IContractData";
 import { IEventFilter } from "../../interfaces/IEventFilter";
 import { IEvent } from "../../interfaces/IEvent";
 import { ISlot } from "../../interfaces/ISlot";
+import { EventPoller, ON_EVENT } from "../../web3/EventPoller";
 
 const SMART_CONTRACT_EXAMPLE = `
 import { print } from "massa-sc-std";
@@ -159,6 +160,7 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
 
 const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
     // compile smart contract
+    /*
     const compiledScFromSource: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
         smartContractFilePath: "helloworld.ts",
     } as WasmConfig);
@@ -176,9 +178,10 @@ const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
         contractDataBase64: compiledScFromSource.base64
     } as IContractData, baseAccount);
     console.log("Deploy Smart Contract Op Ids", JSON.stringify(opIds, null, 2));
+    */
 
     // fetch smart contract events
-    const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents({
+    const eventsFilter = {
         start: {
             period: 0,
             thread: 0
@@ -187,11 +190,21 @@ const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
             period: 0,
             thread: 0
         } as ISlot,
-        original_caller_address: null,
+        original_caller_address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
         original_operation_id: null,
-        emitter_address: "bZCowmTWsuoWVBmuTVBzZd1kDaacevsqBbCUTKYrsjLAbmr3z"
-    } as IEventFilter);
-    console.log("Filtered Events: ", JSON.stringify(events, null, 2));
+        emitter_address: null
+    } as IEventFilter;
+
+
+    //const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
+    //console.log("Filtered Events: ", JSON.stringify(events, null, 2));
+
+    // poll smart contract events
+    const eventPoller = new EventPoller(eventsFilter, 5000, web3Client.smartContracts());
+    eventPoller.startPolling();
+    eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("DATA RECEIVED", data));
+
+
 }
 
 const getLocalClient = (): Client => {
@@ -213,7 +226,7 @@ const getTestnetClient = (): Client => {
     try {
 
         // ============= CLIENT ===================== //
-        //const web3Client: Client = getTestnetClient();
+        const web3Client: Client = getTestnetClient();
         // OR
         //const web3Client: Client = getLocalClient();
         
@@ -231,7 +244,7 @@ const getTestnetClient = (): Client => {
         
         
         // ============= SMART CONTRACTS ============ //
-        //await testGroupSmartContracts(web3Client);
+        await testGroupSmartContracts(web3Client);
 
     } catch (ex) {
         console.error("Error = ", ex.message);

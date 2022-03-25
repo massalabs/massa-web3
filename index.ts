@@ -26,4 +26,5 @@ export { Client } from "./web3/Client";
 export { PublicApiClient } from "./web3/PublicApiClient";
 export { PrivateApiClient } from "./web3/PrivateApiClient";
 export { WalletClient } from "./web3/WalletClient";
+export { EventPoller } from "./web3/EventPoller";
 export { SmartContractsClient } from "./web3/SmartContractsClient";
