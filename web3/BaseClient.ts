@@ -63,7 +63,8 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.GET_BLOCKS:
 			case JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS:
 			case JSON_RPC_REQUEST_METHOD.GET_CLIQEUS:
-			case JSON_RPC_REQUEST_METHOD.GET_STAKERS: {
+			case JSON_RPC_REQUEST_METHOD.GET_STAKERS:
+			case JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT: {
 					return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:

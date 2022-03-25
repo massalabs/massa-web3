@@ -8,6 +8,7 @@ export enum JSON_RPC_REQUEST_METHOD {
 	GET_OPERATIONS = "get_operations",
 	GET_CLIQEUS = "get_cliques",
 	GET_STAKERS = "get_stakers",
+	GET_FILTERED_SC_OUTPUT_EVENT = "get_filtered_sc_output_event",
 
 	// private Api
 	STOP_NODE = "stop_node",

@@ -170,9 +170,9 @@ const scData: CompiledSmartContract = await web3Client.smartContracts().compileS
 
 // compile smart contract via cli
 const scData1: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
-    smartContractFilePath: "...path.ts",
-    wasmBinaryPath: "...path",
-    wasmTextPath: "...path",
+    smartContractFilePath: "path_to_assemblyscript_fole",
+    wasmBinaryPath: "path_to_generated_binary_file",
+    wasmTextPath: "path_to_generated_text_file",
 } as WasmConfig);
 ```
 

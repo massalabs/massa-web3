@@ -4,6 +4,8 @@ import * as path from "path";
 import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
+import { IEvent } from "../interfaces/IEvent";
+import { IEventFilter } from "../interfaces/IEventFilter";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
@@ -36,6 +38,7 @@ export class SmartContractsClient extends BaseClient {
 		this.compileSmartContractFromSourceFile = this.compileSmartContractFromSourceFile.bind(this);
 		this.compileSmartContractFromWasmFile = this.compileSmartContractFromWasmFile.bind(this);
 		this.deploySmartContract = this.deploySmartContract.bind(this);
+		this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
 	}
 
 	/** initializes the webassembly cli under the hood */
@@ -212,7 +215,22 @@ export class SmartContractsClient extends BaseClient {
 		return opIds;
 	}
 
+	/** get filtered smart contract events */
+	public async getFilteredScOutputEvents(eventFilterData: IEventFilter): Promise<Array<IEvent>> {
+
+		const data = {
+			start: eventFilterData.start,
+			end: eventFilterData.end,
+			emitter_address: eventFilterData.emitter_address,
+			original_caller_address: eventFilterData.original_caller_address,
+			original_operation_id: eventFilterData.original_operation_id,
+		};
+
+		// returns filtered events
+		const filteredEvents: Array<IEvent> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT, [[data]]);
+		return filteredEvents;
+	}
+
 	//OTHER OPERATIONS (TODO)
-	public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optional. Nothing is really executed on chain
-	public getFilteredScOutputEvents = (startSlot, endSlot, emitterAddress, originalCallerAddress, operationId)  => { /* TODO */ }
+	//public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optional. Nothing is really executed on chain
 }

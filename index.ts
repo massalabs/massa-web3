@@ -1,5 +1,8 @@
 /** Exposed interfaces */
 export { IAccount } from "./interfaces/IAccount";
+export { IEvent } from "./interfaces/IEvent";
+export { IEventFilter } from "./interfaces/IEventFilter";
+export { ISlot } from "./interfaces/ISlot";
 export { IAddressInfo } from "./interfaces/IAddressInfo";
 export { IBlockInfo } from "./interfaces/IBlockInfo";
 export { IClientConfig } from "./interfaces/IClientConfig";
