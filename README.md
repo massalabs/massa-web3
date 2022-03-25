@@ -22,7 +22,8 @@ import { Client } from "massa_web3/web3/Client";
 
 const baseAccount = {
     publicKey: "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
-    privateKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR"
+    privateKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
+    address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM"
 } as IAccount;
 
 const providers: Array<IProvider> = [
@@ -39,6 +40,7 @@ const providers: Array<IProvider> = [
 const web3ClientConfig = {
     providers,
     retryStrategyOn: true // activate the backoff retry strategy
+    periodOffset: 3       // set an offset of a few periods (default = 5)
 } as IClientConfig;
 
 const web3Client: Client = new Client(web3ClientConfig, baseAccount);
@@ -55,13 +57,25 @@ const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddre
 There are also convenience factories for a straightforward initialization of the client:
 
 ```ts
-import { ClientFactory, Client, DefaultProviderUrls } from "massa_web3/web3/Client";
+import { ClientFactory, Client, DefaultProviderUrls } from "massa_web3/web3/ClientFactory";
 
 // a testnet client
-const client: Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, baseAccount);
+const testnetClient: Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, baseAccount);
 
-// a default client (see above)
-const client: Client = ClientFactory.createDefaultClient(providers, baseAccount);
+// a custom client (see above)
+const customClient: Client = ClientFactory.createCustomClient(providers, baseAccount);
+```
+
+### Client exposed APIs
+
+The client exposes several APIs which could be used on its (also initialized as stand-alone) own if one needs to:
+
+```ts
+web3Client.publicApi()      -> sub-client for public api                    (interface: PublicApiClient)
+web3Client.privateApi()     -> sub-client for private api                   (interface: PrivateApiClient)
+web3Client.wallet()         -> sub-client for wallet-related operations     (interface: WalletClient)
+web3Client.smartContracts() -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
+
 ```
 
 ### Client public API
@@ -78,23 +92,33 @@ const blocks: Array<IBlockInfo> = await web3Client.publicApi().getBlocks(["q2XVw
 Available methods are:
 
 - `getNodeStatus` (https://github.com/massalabs/massa/wiki/api#get_status)
+    ```ts
+        const nodeStatus: INodeStatus = await web3Client.publicApi().getNodeStatus();
+    ```
 - `getAddresses` (https://github.com/massalabs/massa/wiki/api#get_addresses)
-- `send_operations` (https://github.com/massalabs/massa/wiki/api#send_operations)
-- `getBlock` (https://github.com/massalabs/massa/wiki/api#get_block)
+    ```ts
+        const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses(["2GcahavufBH9tqVH6SjkSCPXRbqpiCwwSfwFAf3veKiJmiHubK"]);
+    ```
+- `getBlocks` (https://github.com/massalabs/massa/wiki/api#get_block)
+    ```ts
+        const blocks: Array<IBlockInfo> = await web3Client.publicApi().getBlocks(["nKifcnGbd9zu8nu1hb94XEmMGwgoWbjj3DutzrobeHDdUtEuM"]);
+    ```
 - `getEndorsements` (https://github.com/massalabs/massa/wiki/api#get_endorsements)
+    ```ts
+        const endorsements: Array<IEndorsement> = await web3Client.publicApi().getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+    ```
 - `getOperations` (https://github.com/massalabs/massa/wiki/api#get_operations)
+    ```ts
+        const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["z1cNsWAdgvoASq5RnN6MRbqqo634RRJbgwV9n3jNx3rQrQKTt"]);
+    ```
 - `getCliques` (https://github.com/massalabs/massa/wiki/api#get_cliques)
+    ```ts
+        const cliques: Array<IClique> = await web3Client.publicApi().getCliques();
+    ```
 - `getStakers` (https://github.com/massalabs/massa/wiki/api#get_stakers)
-
-Other public methods include:
-
-- getLatestPeriod
-
-```ts
-// get latest period info
-const blocks: Array<IBlockInfo> = await web3Client.publicApi().getLatestPeriodInfo();
-```
-
+    ```ts
+        const stakers: Array<IStakingAddresses> = await web3Client.publicApi().getStakers();
+    ```
 
 ### Client private API
 
@@ -110,16 +134,41 @@ await web3Client.privateApi().nodeStop();
 Available methods are:
 
 - `stopNode` (https://github.com/massalabs/massa/wiki/api#stop_node)
+    ```ts
+        await web3Client.privateApi().nodeStop();
+    ```
 - `ban` (https://github.com/massalabs/massa/wiki/api#ban)
+    ```ts
+        await web3Client.privateApi().banIpAddress("192.168.1.1");
+    ```
 - `unban` (https://github.com/massalabs/massa/wiki/api#unban)
+    ```ts
+        await web3Client.privateApi().unbanIpAddress("192.168.1.1");
+    ```
 - `nodeGetStakingAddresses` (https://github.com/massalabs/massa/wiki/api#get_staking_addresses)
+    ```ts
+        const stakingAddresses = await web3Client.privateApi().nodeGetStakingAddresses();
+    ```
 - `nodeRemoveStakingAddresses` (https://github.com/massalabs/massa/wiki/api#remove_staking_addresses)
+    ```ts
+        await web3Client.privateApi().nodeRemoveStakingAddresses(["2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp"]);
+    ```
 - `nodeAddStakingPrivateKeys` (https://github.com/massalabs/massa/wiki/api#add_staking_private_keys)
+    ```ts
+        await web3Client.privateApi().nodeAddStakingPrivateKeys(["2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ"]);
+    ```
 - `nodeSignMessage` (https://github.com/massalabs/massa/wiki/api#node_sign_message)
+    ```ts
+        const message = "hello world";
+        const msgBuf = new TextEncoder().encode(message);
+        const signedMessage = await web3Client.privateApi().nodeSignMessage(msgBuf);
+    ```
 
 ### Wallet operations
 
 Wallet operations are accessible under the wallet sub-client which is accessible via the wallet() method on the client.
+
+Example:
 
 ```ts
 // generate new wallet
@@ -129,69 +178,140 @@ const newWalletAccount = web3Client.wallet().walletGenerateNewAccount();
 Available methods are:
 
 - `walletGenerateNewAccount`
-- `signOperation`
-- `verifySignedData`
-
-//TODO: add further
-
-```ts
-// sign a given data payload
-const signature = signOperation(data: DataType, signer?: IAccount);
-```
-
-### Blockchain native operations
-
-Available methods are:
-
+    ```ts
+        const newWalletAccount = await WalletClient.walletGenerateNewAccount();
+    ```
+- `walletSignMessage`
+    ```ts
+        const sig = await WalletClient.walletSignMessage("hello", baseAccount);
+    ```
+- `addPrivateKeysToWallet`
+    ```ts
+        await web3Client.wallet().addPrivateKeysToWallet(["2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC"]);
+    ```
+- `getWalletAccounts`
+    ```ts
+        const walletAccounts = web3Client.wallet().getWalletAccounts();
+    ```
+- `getWalletAccountByAddress`
+    ```ts
+        const walletAccount = web3Client.wallet().getWalletAccountByAddress("9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM");
+    ```
+- `addAccountsToWallet`
+    ```ts
+    await web3Client.wallet().addAccountsToWallet(
+        [{
+            privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
+            publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
+            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
+        }]
+    );
+    ```
+- `walletInfo`
+    ```ts
+        const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo();
+    ```
 - `sendTransaction`
+    ```ts
+        const sendTxIds = await web3Client.wallet().sendTransaction({
+            fee: 0, // int
+            amount: "1", //MAS
+            recipientAddress: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
+        } as ITransactionData, baseAccount);
+    ```
 - `buyRolls`
+    ```ts
+        const buyRollsIds = await web3Client.wallet().buyRolls({
+            fee: 0, // int
+            amount: 1, //ROLLS
+        } as IRollsData, baseAccount);
+    ```
 - `sellRolls`
+    ```ts
+        const sellRollsIds = await web3Client.wallet().sellRolls({
+            fee: 0, // int
+            amount: 1, //ROLLS
+        } as IRollsData, baseAccount);
+    ```
 
-```ts
-// send native currency from one wallet to another
-const operationId: Array<string> = await web3Client.sendTransaction({
-    fee: "fee..."
-    expirePeriod: "0";
-    amount: "amount...",
-    recipient_address: "address...";
-} as ITransactionData);
-```
 
 ### Smart contract compilation
 
-Massa SDK provides methods for compiling smart contracts written in AssemblyScript with TypeScript, either via CLI or on the fly. If on the fly With both methods, the returned values are a text and a binary representation of the WASM.
+Massa SDK provides methods for compiling smart contracts written in AssemblyScript with TypeScript, either via CLI or on the fly. With both methods, the returned values are a text, a binary and a base64 representation of the WASM.
 
 Examples are shown below:
 
 ```ts
-// compile smart contract on the fly
-const SMART_SIMPLE_CONTRACT = `function add(x: number, y: number): number { return x+y };`;
-const scData: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_SIMPLE_CONTRACT);
 
-// compile smart contract via cli
-const scData1: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromFile({
-    smartContractFilePath: "path_to_assemblyscript_fole",
-    wasmBinaryPath: "path_to_generated_binary_file",
-    wasmTextPath: "path_to_generated_text_file",
-} as WasmConfig);
+    const SMART_CONTRACT_EXAMPLE = `export function add(x: number, y: number): number { return x+y };`;
+
+    // compile smart contract from a typescript file with assemblycode
+    const compiledScFromSource: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
+        smartContractFilePath: "helloworld.ts",
+    } as WasmConfig);
+
+    // compile smart contract from a .wasm file
+    const compiledScFromFile: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromWasmFile("helloworld.wasm");
+
+    // compile smart contract on the fly
+    const compiledScFromString: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
 ```
 
-### Smart contract calls/execution
+### Smart contract deployment
 
-Once the smart contract WASM is available, it becomes quite straightforward to send a smart contract operation (a state changing operation):
+Once the smart contract WASM is available, it becomes quite straightforward to deploy a smart contract operation (a state changing operation):
 
 ```ts
-// execute smart contract operation
-const operationId: Array<string> = await web3Client.executeSC({
-    fee: "fee..."
-    expirePeriod: "0";
-    maxGas: "maxGas...",
-    gasPrice: "gasprice...",
-    coins: "coins...",
-    contractData: "smart contract data"
-} as IContractData);
+    // deploy smart contract
+    const opIds = await web3Client.smartContracts().deploySmartContract({ //address:bZCowmTWsuoWVBmuTVBzZd1kDaacevsqBbCUTKYrsjLAbmr3z  114341
+        fee: 0,
+        maxGas: 2000000,
+        gasPrice: 0,
+        coins: 0,
+        contractDataBase64: compiledScFromSource.base64
+    } as IContractData, baseAccount);
 ```
 
-Smart contract read operations are also illustrated below:
+### Smart contract event fetching
 
-<!-- TODO: add a read SC API -->
+Smart contracts can emit events which the client could easily fetch via the code below. The second parameter in the call represents the refresh interval which we can set in order to poll the events
+
+```ts
+    // poll smart contract events
+    const eventsFilter = {
+        start: {
+            period: 0,
+            thread: 0
+        } as ISlot,
+        end:  {
+            period: 0,
+            thread: 0
+        } as ISlot,
+        original_caller_address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+        original_operation_id: null,
+        emitter_address: null
+    } as IEventFilter;
+
+    const eventPoller = new EventPoller(eventsFilter, 5000, web3Client.smartContracts());
+    eventPoller.startPolling();
+    eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("EVENT(S) RECEIVED", data));
+
+    //...
+
+    // cleanup and finish
+    eventPoller.stopPolling();
+```
+
+The latter could easily be employed in smart contracts where we need to e.g. get the contract address. For example, this contract would emit the address at creation:
+
+```ts
+import { call, print, create_sc, generate_event } from "massa-sc-std";
+
+export function main(_args: string): i32 {
+    const sc_address = createContract();
+    call(sc_address, "initialize", "", 0);
+    print("Initialized, address:" + sc_address);
+    generate_event(`Address:${sc_address}`); //emit an event with the address
+    ...
+}
+```

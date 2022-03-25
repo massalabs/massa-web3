@@ -124,7 +124,7 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
     const walletAccount = web3Client.wallet().getWalletAccountByAddress("9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM");
     console.log("Found Wallet Account:", JSON.stringify(walletAccount, null, 2));
 
-    // get wallet info
+    // add accounts to wallet
     await web3Client.wallet().addAccountsToWallet(
         [{
             privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
@@ -132,6 +132,8 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
             address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
         }]
     );
+
+    // get wallet info
     const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo();
     console.log("Wallet Info: ", JSON.stringify(walletInfo, null, 2));
 
@@ -202,7 +204,7 @@ const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
     // poll smart contract events
     const eventPoller = new EventPoller(eventsFilter, 5000, web3Client.smartContracts());
     eventPoller.startPolling();
-    eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("DATA RECEIVED", data));
+    eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("EVENTS RECEIVED", data));
 
 
 }
