@@ -78,7 +78,12 @@ export class SmartContractsClient extends BaseClient {
 			console.error(`Wasm from string compilation error`, ex);
 			throw ex;
 		}
-
+		if (!compiledData || !compiledData.binary) {
+			throw new Error("No binary file created in the compilation");
+		}
+		if (!compiledData || !compiledData.text) {
+			throw new Error("No text file created in the compilation");
+		}
 		const base64: string = Buffer.from(compiledData.binary).toString('base64');
 
 		return {
