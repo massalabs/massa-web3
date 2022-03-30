@@ -79,7 +79,7 @@ export class PublicApiClient extends BaseClient {
 
 	/** Get cliques */
 	public async getCliques(): Promise<Array<IClique>> {
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQEUS;
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQUES;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<Array<IClique>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
 		} else {

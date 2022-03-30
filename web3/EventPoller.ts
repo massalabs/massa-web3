@@ -3,7 +3,6 @@ import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { Timeout } from "../utils/Timeout";
 import { SmartContractsClient } from "./SmartContractsClient";
-import { WalletClient } from "./WalletClient";
 
 export const ON_EVENT = "ON_EVENT";
 
@@ -38,5 +37,22 @@ export class EventPoller extends EventEmitter {
 
 	public startPolling(): void {
 		this.timeoutId = new Timeout(this.pollIntervalMillis, () => this.callback());
+	}
+
+	public static async getEventsAsync(eventsFilter: IEventFilter,
+										pollIntervalMillis: number,
+										smartContractsClient: SmartContractsClient): Promise<Array<IEvent>> {
+		const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, smartContractsClient);
+		eventPoller.startPolling();
+		return new Promise((resolve, reject) => {
+			eventPoller.on(ON_EVENT, (data: [IEvent]) => {
+				eventPoller.stopPolling();
+				return resolve(data)
+			});
+			eventPoller.on("error", (e) => {
+				eventPoller.stopPolling();
+				return reject(e);
+			});
+		});
 	}
 }

@@ -6,9 +6,11 @@ import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
+import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
+import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { BaseClient } from "./BaseClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
@@ -39,6 +41,7 @@ export class SmartContractsClient extends BaseClient {
 		this.compileSmartContractFromWasmFile = this.compileSmartContractFromWasmFile.bind(this);
 		this.deploySmartContract = this.deploySmartContract.bind(this);
 		this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
+		this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
 	}
 
 	/** initializes the webassembly cli under the hood */
@@ -72,7 +75,7 @@ export class SmartContractsClient extends BaseClient {
 				noColors: false,
 				traceResolution: true,
 				exportTable: true,
-				exportRuntime: true
+				exportRuntime: true,
 			} as wasmCli.CompilerOptions);
 		} catch (ex) {
 			console.error(`Wasm from string compilation error`, ex);
@@ -197,6 +200,9 @@ export class SmartContractsClient extends BaseClient {
 		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
 
 		// revert base64 sc data to binary
+		if (!contractData.contractDataBase64) {
+			throw new Error(`Contract base64 encoded data required. Got null`);
+		}
         const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, 'base64'))
 
 		const data = {
@@ -231,11 +237,39 @@ export class SmartContractsClient extends BaseClient {
 			original_operation_id: eventFilterData.original_operation_id,
 		};
 
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT;
+
 		// returns filtered events
-		const filteredEvents: Array<IEvent> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT, [data]);
-		return filteredEvents;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [data]]);
+		} else {
+			return await this.sendJsonRPCRequest<Array<IEvent>>(jsonRpcRequestMethod, [data]);
+		}
 	}
 
-	//OTHER OPERATIONS (TODO)
-	//public readonlySmartContract = (bytecode, maxGas, gasPrice, address) => { /* TODO */ } // execute byte code, address is optional. Nothing is really executed on chain
+	/** Read-only smart contracts */
+	public async executeReadOnlySmartContract(contractData: IContractData): Promise<Array<IExecuteReadOnlyResponse>> {
+
+		if (!contractData.contractDataBinary) {
+			throw new Error(`Contract binary data required. Got null`);
+		}
+
+		if (!contractData.address) {
+			throw new Error(`Contract address required. Got null`);
+		}
+
+		const data = {
+			max_gas: contractData.maxGas,
+			simulated_gas_price: contractData.gasPrice.toString(),
+			bytecode: Array.from(contractData.contractDataBinary),
+			address: contractData.address,
+		};
+
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
+		} else {
+			return await this.sendJsonRPCRequest<Array<IExecuteReadOnlyResponse>>(jsonRpcRequestMethod, [[data]]);
+		}
+	}
 }

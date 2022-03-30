@@ -262,7 +262,7 @@ Once the smart contract WASM is available, it becomes quite straightforward to d
 
 ```ts
 // deploy smart contract
-const opIds = await web3Client.smartContracts().deploySmartContract({ //address:bZCowmTWsuoWVBmuTVBzZd1kDaacevsqBbCUTKYrsjLAbmr3z  114341
+const opIds = await web3Client.smartContracts().deploySmartContract({
     fee: 0,
     maxGas: 2000000,
     gasPrice: 0,
@@ -299,6 +299,13 @@ eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("EVENT(S) RECEIVED", da
 
 // cleanup and finish
 eventPoller.stopPolling();
+```
+
+Alternatively, one could make direct use of an async promise for doing the latter:
+
+```ts
+const events: Array<IEvent> = await EventPoller.getEventsAsync(eventsFilter, 5000, web3Client.smartContracts());
+console.log("Events", events);
 ```
 
 The latter could easily be employed in smart contracts where we need to e.g. get the contract address. For example, this contract would emit the address at creation:

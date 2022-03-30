@@ -19,6 +19,7 @@ import { IEventFilter } from "../../interfaces/IEventFilter";
 import { IEvent } from "../../interfaces/IEvent";
 import { ISlot } from "../../interfaces/ISlot";
 import { EventPoller, ON_EVENT } from "../../web3/EventPoller";
+import { IExecuteReadOnlyResponse } from "../../interfaces/IExecuteReadOnlyResponse";
 
 const SMART_CONTRACT_EXAMPLE = `
 import { print } from "massa-sc-std";
@@ -162,25 +163,26 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
 
 const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
     // compile smart contract
-    /*
     const compiledScFromSource: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
-        smartContractFilePath: "helloworld.ts",
+        smartContractFilePath: "path_to.ts",
     } as WasmConfig);
+    console.log("Compiled from .ts: ", JSON.stringify(compiledScFromSource, null, 2));
 
-    const compiledScFromFile: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromWasmFile("helloworld.wasm");
+    const compiledScFromFile: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromWasmFile("path_to.wasm");
+    console.log("Compiled from file: ", JSON.stringify(compiledScFromFile, null, 2));
 
     const compiledScFromString: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
+    console.log("Compiled from string: ", JSON.stringify(compiledScFromString, null, 2));
 
     // deploy smart contract
-    const opIds = await web3Client.smartContracts().deploySmartContract({ //address:bZCowmTWsuoWVBmuTVBzZd1kDaacevsqBbCUTKYrsjLAbmr3z  114341
+    const opIds = await web3Client.smartContracts().deploySmartContract({
         fee: 0,
-        maxGas: 2000000,
+        maxGas: 200000,
         gasPrice: 0,
         coins: 0,
-        contractDataBase64: compiledScFromSource.base64
+        contractDataBase64: compiledScFromFile.base64
     } as IContractData, baseAccount);
     console.log("Deploy Smart Contract Op Ids", JSON.stringify(opIds, null, 2));
-    */
 
     // fetch smart contract events
     const eventsFilter = {
@@ -192,21 +194,33 @@ const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
             period: 0,
             thread: 0
         } as ISlot,
-        original_caller_address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+        original_caller_address: null,
         original_operation_id: null,
-        emitter_address: null
+        emitter_address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
     } as IEventFilter;
 
-
-    //const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
-    //console.log("Filtered Events: ", JSON.stringify(events, null, 2));
+    // get filtered events
+    const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
+    console.log("Filtered Events: ", JSON.stringify(events, null, 2));
 
     // poll smart contract events
     const eventPoller = new EventPoller(eventsFilter, 5000, web3Client.smartContracts());
     eventPoller.startPolling();
-    eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("EVENTS RECEIVED", data));
+    eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("Events Received", data));
+    
+    const eventsAsync: Array<IEvent> = await EventPoller.getEventsAsync(eventsFilter, 5000, web3Client.smartContracts());
+    console.log("Events Received", eventsAsync)
 
-
+    const readOnlyResponse: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().executeReadOnlySmartContract({
+        fee: 0,
+        maxGas: 200000,
+        gasPrice: 0,
+        coins: 0,
+        contractDataBase64: compiledScFromFile.base64,
+        contractDataBinary: compiledScFromFile.binary,
+        address: "TAkCGKH8it8HVrBbG8vG8ZKJBEYng4Xvp8uMBk4vfH5WX3RHg"
+    } as IContractData);
+    console.log("Readonly response: ", JSON.stringify(readOnlyResponse, null, 2));
 }
 
 const getLocalClient = (): Client => {
@@ -224,25 +238,24 @@ const getTestnetClient = (): Client => {
 }
 
 (async () => {
-
     try {
 
         // ============= CLIENT ===================== //
-        const web3Client: Client = getTestnetClient();
+        //const web3Client: Client = getTestnetClient();
         // OR
-        //const web3Client: Client = getLocalClient();
+        const web3Client: Client = getLocalClient();
         
 
         // ============= PUBLIC API ================= //
-        //await testGroupPublicApi(web3Client);
+        await testGroupPublicApi(web3Client);
 
 
         // ============= PRIVATE API ================ //
-        //await testGroupPrivateApi(web3Client);
+        await testGroupPrivateApi(web3Client);
 
         
         // ============= WALLET ===================== //
-        //await testGroupWallet(web3Client);
+        await testGroupWallet(web3Client);
         
         
         // ============= SMART CONTRACTS ============ //

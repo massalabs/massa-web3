@@ -9,7 +9,8 @@
     "upgrade": "npm run up && npm run check && npm run build",
     "build": "rimraf dist/* && tsc -d",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts",
-    "test-client": "ts-node ./test/unit/client.ts"
+    "test-unit-client": "ts-node ./test/unit/client.ts",
+    "test-sc-example": "ts-node ./examples/sc.ts"
   },
   "author": "Massa Labs <info@massa.net>",
   "contributors": [

@@ -3,5 +3,8 @@ export interface IContractData {
 	maxGas: number;
 	gasPrice: number;
 	coins: number;
-	contractDataBase64: string;
+	contractDataBase64?: string;
+	contractDataText?: string;
+	contractDataBinary?: Uint8Array;
+	address?: string;
 }

@@ -62,9 +62,10 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.GET_OPERATIONS:
 			case JSON_RPC_REQUEST_METHOD.GET_BLOCKS:
 			case JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS:
-			case JSON_RPC_REQUEST_METHOD.GET_CLIQEUS:
+			case JSON_RPC_REQUEST_METHOD.GET_CLIQUES:
 			case JSON_RPC_REQUEST_METHOD.GET_STAKERS:
-			case JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT: {
+			case JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
+			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST: {
 					return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -81,7 +82,7 @@ export class BaseClient {
 	}
 
 	/** send a post JSON rpc request to the node */
-	protected async sendJsonRPCRequest<T>(resource: JSON_RPC_REQUEST_METHOD, params: Object, is_get: boolean=false): Promise<T> {
+	protected async sendJsonRPCRequest<T>(resource: JSON_RPC_REQUEST_METHOD, params: Object): Promise<T> {
 		const promise = new Promise<JsonRpcResponseData<T>>(async (resolve, reject) => {
 			let resp: AxiosResponse = null;
 
