@@ -7,12 +7,20 @@ import { ISlot } from "../interfaces/ISlot";
 import { Client } from "../web3/Client";
 import { ClientFactory, DefaultProviderUrls } from "../web3/ClientFactory";
 import { CompiledSmartContract } from "../web3/SmartContractsClient";
+import { print, create_sc, call, generate_event } from "massa-sc-std";
+import * as Handlebars from "handlebars";
 
-const SMART_CONTRACT =
-`export function add(text: string): string { return "hello" + text; };`;
+const SMART_CONTRACT = `
+import { print } from "massa-sc-std";
+
+export function say_hello(text: string): string {
+    const res = "hello" + text;
+    //print(res);
+    return res;
+};`;
 
 const SMART_CONTRACT_DEPLOYER = `
-import { include_base64, print, create_sc, call, generate_event } from "massa-sc-std";
+import { print, create_sc, call, generate_event } from "massa-sc-std";
 
 function createSimpleSc(): string {
     const bytes = {{contractCode}};
@@ -29,16 +37,23 @@ export function main(_args: string): i32 {
 }
 `;
 
+const READ_ONLY_SMART_CONTRACT = `
+import { call, print, generate_event } from "massa-sc-std";
+ 
+export function main(_args: string): string {
+    const addr = {{contractAddress}};
+    const func = "say_hello"; // Replace the function
+    const args = "john";
+    const result = call(addr, func, args, 0);
+    generate_event(result);
+    return "0"
+}`;
+
 const baseAccount = {
     publicKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
     privateKey: "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
     address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM"
 } as IAccount;
-
-const getTestnetClient = (): Client => {
-    const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, false, baseAccount);
-    return web3Client;
-}
 
 const eventsFilter = {
     start: {
@@ -57,34 +72,44 @@ const eventsFilter = {
 (async () => {
 
     try {
+        // init client
+        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, baseAccount);
 
-        // ============= CLIENT ===================== //
-        const web3Client: Client = getTestnetClient();
+        // EXPERIMENTAL
+        const output = await web3Client.smartContracts().onthefly(SMART_CONTRACT);
+        //console.log("XXXXXXXXXXXXXXXX ", output);
 
-        // ============= SC ===================== //
-        // compile smart contract
+        // FROM TS file
+        //const output: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
+        //  smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-sc-examples/assembly/helloworld.ts"  
+        //});
+        //console.log("XXXXXXXXXXXXXXXX: ", output.base64);
+
+        // compile smart contracts on the fly
         /*
-        const compiledSc: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
-            smartContractFilePath: "/home/evgeni/Documents/development/massa/massa-sc-examples/assembly/mytest.ts",
-        } as WasmConfig);
+        const compiledBaseSc: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT);
+        console.log("Basic Smart Contract Compiled: ", compiledBaseSc.base64);
+
+        const template = Handlebars.compile(SMART_CONTRACT_DEPLOYER, {
+            noEscape: true
+        } as CompileOptions);
+        const data = { "contractCode": compiledBaseSc.base64 };
+        const base64DeployerContract = template(data, {} as Handlebars.RuntimeOptions);
+
+        const compiledSc: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(base64DeployerContract);
+        console.log("Compiled from string: ", JSON.stringify(compiledSc, null, 2));
         */
-
-        //const compiledSc: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromWasmFile("/home/evgeni/Documents/development/massa/massa-sc-examples/build/mytest.wasm");
-        //console.log("Compiled from string: ", JSON.stringify(compiledSc, null, 2));
-
-        //const compiledSc: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
-        //console.log("Compiled from string: ", JSON.stringify(compiledSc, null, 2));
 
         // deploy smart contract
         /*
-        const opIds = await web3Client.smartContracts().deploySmartContract({
+        const txId = await web3Client.smartContracts().deploySmartContract({
             fee: 0,
             maxGas: 200000,
             gasPrice: 0,
             coins: 0,
             contractDataBase64: compiledSc.base64
         } as IContractData, baseAccount);
-        console.log("Deploy Smart Contract Op Ids", JSON.stringify(opIds, null, 2));
+        console.log("Deploy Smart Contract Op Ids", JSON.stringify(txId, null, 2));
         */
 
         // poll smart contract events

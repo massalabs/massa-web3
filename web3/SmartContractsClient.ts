@@ -1,6 +1,7 @@
 import * as wasmCli from "assemblyscript/cli/asc";
 import * as fs from "fs";
 import * as path from "path";
+import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
@@ -8,12 +9,17 @@ import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
 import { INodeStatus } from "../interfaces/INodeStatus";
+import { IOperationData } from "../interfaces/IOperationData";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
+import { wait } from "../utils/Wait";
 import { BaseClient } from "./BaseClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
+
+const TX_POLL_INTERVAL_MS = 10000;
+const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
 export interface CompiledSmartContract {
 	binary: Uint8Array;
@@ -42,6 +48,8 @@ export class SmartContractsClient extends BaseClient {
 		this.deploySmartContract = this.deploySmartContract.bind(this);
 		this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
 		this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
+		this.awaitFinalOperationStatus = this.awaitFinalOperationStatus.bind(this);
+		this.getOperationStatus = this.getOperationStatus.bind(this);
 	}
 
 	/** initializes the webassembly cli under the hood */
@@ -181,6 +189,69 @@ export class SmartContractsClient extends BaseClient {
 		} as CompiledSmartContract;
 	}
 
+	// ----------------------------------------------------------------
+
+	/** compile smart contract from a physical assemblyscript (.ts) file */
+	public async onthefly(smartContractContent: string): Promise<any> {
+
+		if (!this.isWebAssemblyCliInitialized) {
+			await this.initWebAssemblyCli();
+		}
+
+		const sources = { "input.ts": smartContractContent };
+		console.log(sources);
+		const output = Object.create({
+			stdout: wasmCli.createMemoryStream(),
+			stderr: wasmCli.createMemoryStream()
+		});
+
+		const argv = [
+			...Object.keys(sources),
+			"-O3",
+			"--runtime", "stub",
+			"--binaryFile", "module.wasm",
+			"--textFile", "module.wat",
+			"--sourceMap"
+		];
+		console.log("argv ", argv);
+
+		try {
+			wasmCli.main(argv, {
+					stdout: output.stdout,
+					stderr: output.stderr,
+					
+					readFile: (name, baseDir) => {
+						console.log("READFILE (name, basedir) ", name, baseDir, Object.prototype.hasOwnProperty.call(sources, name));
+						return Object.prototype.hasOwnProperty.call(sources, name) ? sources[name] : null;
+					},
+					
+					writeFile: (name, contents, baseDir) => {
+						console.log(`>>> WRITE:${name} >>>\n${contents.length}`);
+						output[name] = contents;
+					},
+					listFiles(dirname, baseDir) {
+						return [];
+					}
+					
+				} as wasmCli.APIOptions,
+				(err) => { 
+					console.log(`>>> STDOUT >>>\n${output.stdout.toString()}`);
+					console.log(`>>> STDERR >>>\n${output.stderr.toString()}`);
+					if (err) {
+					  console.log(">>> THROWN >>>");
+					  console.log(err);
+					}
+					return 0;
+				}
+			);
+		} catch (ex) {
+			console.error(`Wasm compilation error`, ex);
+			throw ex;
+		}
+        
+		return output;
+	}
+
 	/** create and send an operation containing byte code */
 	public async deploySmartContract(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
 		// get next period info
@@ -270,6 +341,50 @@ export class SmartContractsClient extends BaseClient {
 			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IExecuteReadOnlyResponse>>(jsonRpcRequestMethod, [[data]]);
+		}
+	}
+
+	private async getOperationStatus(opId: string): Promise<EOperationStatus> {
+		const operationData: Array<IOperationData> = await this.publicApiClient.getOperations([opId]);
+		if (!operationData || operationData.length === 0) return EOperationStatus.PENDING;
+		const opData = operationData[0];
+		if (opData.in_pool) {
+			return EOperationStatus.PENDING;
+		} else if (opData.is_final) {
+			return EOperationStatus.SUCCESS;
+		} else {
+			return EOperationStatus.FAIL;
+		}
+	}
+
+	public async awaitFinalOperationStatus(opId: string): Promise<EOperationStatus> {
+		let errCounter = 0;
+		let pendingCounter = 0;
+		while (true) {
+			let status = EOperationStatus.PENDING;
+			try {
+				status = await this.getOperationStatus(opId);
+			}
+			catch (ex) {
+				if (++errCounter > 100) {
+					const msg = `Failed to retrieve the tx status after 10 failed attempts for operation id: ${opId}.`;
+					console.error(msg, ex);
+					throw ex;
+				}
+
+				await wait(TX_POLL_INTERVAL_MS);
+			}
+
+			if (status == EOperationStatus.SUCCESS || status == EOperationStatus.FAIL)
+				return status;
+
+			if (++pendingCounter > 1000) {
+				const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT}ms.`;
+				console.warn(msg);
+				throw new Error(msg);
+			}
+
+			await wait(TX_POLL_INTERVAL_MS);
 		}
 	}
 }
