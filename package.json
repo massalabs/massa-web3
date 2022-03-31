@@ -1,6 +1,6 @@
 {
   "name": "massa-web3",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "mweb3 - massa's web3 sdk client",
   "main": "dist/index.js",
   "scripts": {
