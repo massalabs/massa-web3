@@ -45,6 +45,7 @@ export class SmartContractsClient extends BaseClient {
 		this.compileSmartContractFromString = this.compileSmartContractFromString.bind(this);
 		this.compileSmartContractFromSourceFile = this.compileSmartContractFromSourceFile.bind(this);
 		this.compileSmartContractFromWasmFile = this.compileSmartContractFromWasmFile.bind(this);
+		this.compileSmartContractOnTheFly = this.compileSmartContractOnTheFly.bind(this);
 		this.deploySmartContract = this.deploySmartContract.bind(this);
 		this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
 		this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
@@ -89,6 +90,10 @@ export class SmartContractsClient extends BaseClient {
 			console.error(`Wasm from string compilation error`, ex);
 			throw ex;
 		}
+
+		console.log(`>>> STDOUT >>>\n${compiledData.stdout.toString()}`);
+		console.log(`>>> STDERR >>>\n${compiledData.stderr.toString()}`);
+
 		if (!compiledData || !compiledData.binary) {
 			throw new Error("No binary file created in the compilation");
 		}
@@ -192,7 +197,7 @@ export class SmartContractsClient extends BaseClient {
 	// ----------------------------------------------------------------
 
 	/** compile smart contract from a physical assemblyscript (.ts) file */
-	public async onthefly(smartContractContent: string): Promise<any> {
+	public async compileSmartContractOnTheFly(smartContractContent: string): Promise<any> {
 
 		if (!this.isWebAssemblyCliInitialized) {
 			await this.initWebAssemblyCli();
@@ -209,8 +214,8 @@ export class SmartContractsClient extends BaseClient {
 			...Object.keys(sources),
 			"-O3",
 			"--runtime", "stub",
-			"--binaryFile", "module.wasm",
-			"--textFile", "module.wat",
+			"--binaryFile", "binary",
+			"--textFile", "text",
 			"--sourceMap"
 		];
 		console.log("argv ", argv);

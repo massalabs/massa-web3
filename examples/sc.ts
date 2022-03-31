@@ -7,15 +7,16 @@ import { ISlot } from "../interfaces/ISlot";
 import { Client } from "../web3/Client";
 import { ClientFactory, DefaultProviderUrls } from "../web3/ClientFactory";
 import { CompiledSmartContract } from "../web3/SmartContractsClient";
-import { print, create_sc, call, generate_event } from "massa-sc-std";
 import * as Handlebars from "handlebars";
+//import { print, create_sc, call, generate_event } from "massa-sc-std";
+
 
 const SMART_CONTRACT = `
-import { print } from "massa-sc-std";
+import { print } from "../node_modules/massa-sc-std";
+//import { JSON } from "json-as";
 
 export function say_hello(text: string): string {
     const res = "hello" + text;
-    //print(res);
     return res;
 };`;
 
@@ -76,8 +77,25 @@ const eventsFilter = {
         const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, baseAccount);
 
         // EXPERIMENTAL
-        const output = await web3Client.smartContracts().onthefly(SMART_CONTRACT);
-        //console.log("XXXXXXXXXXXXXXXX ", output);
+        //const output = await web3Client.smartContracts().compileSmartContractOnTheFly(SMART_CONTRACT);
+        //console.log("SC compiled on the fly: ", output);
+
+        // FROM STRING
+        const output: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT);
+        console.log("SC compiled from string: ", output);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // FROM TS file
         //const output: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
