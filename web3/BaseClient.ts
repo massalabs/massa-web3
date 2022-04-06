@@ -171,6 +171,32 @@ export class BaseClient {
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 			}
+			case OperationTypeId.CallSC: {
+				// max gas
+				const maxGasEncoded = Buffer.from(varintEncode((data as ICallData).maxGas));
+
+				// parallel coins to send
+				const parallelCoinsEncoded = Buffer.from(varintEncode((data as ICallData).parallelCoins));
+
+				// sequential coins to send
+				const sequentialCoinsEncoded = Buffer.from(varintEncode((data as ICallData).sequentialCoins));
+
+				// gas price
+				const gasPriceEncoded = Buffer.from(varintEncode((data as ICallData).gasPrice));
+
+				// target address
+				const targetAddressEncoded = base58checkDecode((data as ICallData).targetAddress);
+
+				// target function name and name length
+				const functionNameEncoded = new Uint8Array(Buffer.from((data as ICallData).functionName, 'utf8'))
+				const functionNameLengthEncoded = Buffer.from(varintEncode(functionNameEncoded.length));
+
+				// parameter
+				const parameterEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, 'utf8'))
+				const parameterLengthEncoded = Buffer.from(varintEncode(parameterEncoded.length));
+
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parameterLengthEncoded, parameterEncoded]);
+			}
 			case OperationTypeId.Transaction: {
 				// transfer amount
 				const transferAmountEncoded = Buffer.from(varintEncode(this.scaleAmount((data as ITransactionData).amount)));
