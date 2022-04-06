@@ -47,7 +47,7 @@ const providers: Array<IProvider> = [
 ];
 
 const testGroupPublicApi = async (web3Client: Client): Promise<void> => {
-        
+
         // get node status
         const nodeStatus: INodeStatus = await web3Client.publicApi().getNodeStatus();
         console.log("getNodeStatus::JSON RPC RESPONSE", JSON.stringify(nodeStatus, null, 2));
@@ -75,10 +75,10 @@ const testGroupPublicApi = async (web3Client: Client): Promise<void> => {
         // get staking addresses
         const stakers: Array<IStakingAddresses> = await web3Client.publicApi().getStakers();
         console.log("getStakers::JSON RPC RESPONSE", JSON.stringify(stakers, null, 2));
-}
+};
 
 const testGroupPrivateApi = async (web3Client: Client): Promise<void> => {
-        
+
     // stop node
     await web3Client.privateApi().nodeStop();
 
@@ -103,7 +103,7 @@ const testGroupPrivateApi = async (web3Client: Client): Promise<void> => {
 
     // add staking private keys
     await web3Client.privateApi().nodeAddStakingPrivateKeys(["2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ"]);
-}
+};
 
 const testGroupWallet = async (web3Client: Client): Promise<void> => {
     // STATIC: generate new wallet
@@ -141,25 +141,25 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
     // send native transaction between two wallet accounts
     const sendTxIds = await web3Client.wallet().sendTransaction({
         fee: 0, // int
-        amount: "1", //MAS
+        amount: "1", // MAS
         recipientAddress: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
     } as ITransactionData, baseAccount);
     console.log("sendTxIds", JSON.stringify(sendTxIds, null, 2));
-    
+
     // buy rolls
     const buyRollsIds = await web3Client.wallet().buyRolls({
         fee: 0, // int
-        amount: 1, //ROLLS
+        amount: 1, // ROLLS
     } as IRollsData, baseAccount);
     console.log("buyRollsIds", JSON.stringify(buyRollsIds, null, 2));
 
     // send rolls
     const sellRollsIds = await web3Client.wallet().sellRolls({
         fee: 0, // int
-        amount: 1, //ROLLS
+        amount: 1, // ROLLS
     } as IRollsData, baseAccount);
     console.log("sellRollsIds", JSON.stringify(sellRollsIds, null, 2));
-}
+};
 
 const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
     // compile smart contract
@@ -207,9 +207,9 @@ const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
     const eventPoller = new EventPoller(eventsFilter, 5000, web3Client.smartContracts());
     eventPoller.startPolling();
     eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("Events Received", data));
-    
+
     const eventsAsync: Array<IEvent> = await EventPoller.getEventsAsync(eventsFilter, 5000, web3Client.smartContracts());
-    console.log("Events Received", eventsAsync)
+    console.log("Events Received", eventsAsync);
 
     const readOnlyResponse: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().executeReadOnlySmartContract({
         fee: 0,
@@ -221,7 +221,7 @@ const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
         address: "TAkCGKH8it8HVrBbG8vG8ZKJBEYng4Xvp8uMBk4vfH5WX3RHg"
     } as IContractData);
     console.log("Readonly response: ", JSON.stringify(readOnlyResponse, null, 2));
-}
+};
 
 const getLocalClient = (): Client => {
     const web3ClientConfig = {
@@ -230,21 +230,21 @@ const getLocalClient = (): Client => {
     } as IClientConfig;
     const web3Client: Client = new Client(web3ClientConfig, baseAccount);
     return web3Client;
-}
+};
 
 const getTestnetClient = (): Client => {
     const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, false, baseAccount);
     return web3Client;
-}
+};
 
 (async () => {
     try {
 
         // ============= CLIENT ===================== //
-        //const web3Client: Client = getTestnetClient();
+        // const web3Client: Client = getTestnetClient();
         // OR
         const web3Client: Client = getLocalClient();
-        
+
 
         // ============= PUBLIC API ================= //
         await testGroupPublicApi(web3Client);
@@ -253,11 +253,11 @@ const getTestnetClient = (): Client => {
         // ============= PRIVATE API ================ //
         await testGroupPrivateApi(web3Client);
 
-        
+
         // ============= WALLET ===================== //
         await testGroupWallet(web3Client);
-        
-        
+
+
         // ============= SMART CONTRACTS ============ //
         await testGroupSmartContracts(web3Client);
 

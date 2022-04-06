@@ -24,7 +24,7 @@ export class WalletClient extends BaseClient {
 
 	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, baseAccount?: IAccount) {
 		super(clientConfig);
-		
+
 		// ========== bind wallet methods ========= //
 
 		// wallet methods
@@ -140,9 +140,9 @@ export class WalletClient extends BaseClient {
 				publicKey: this.wallet[index].publicKey,
 				privateKey: this.wallet[index].privateKey,
 				...info
-			} as IFullAddressInfo
+			} as IFullAddressInfo;
 		});
-	} 
+	}
 
 	 /** generate a private key and add it into the wallet */
 	public static async walletGenerateNewAccount() {
@@ -178,7 +178,7 @@ export class WalletClient extends BaseClient {
 	private async getWalletAddressesInfo(addresses: Array<string>): Promise<Array<IAddressInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [addresses]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IAddressInfo>>(jsonRpcRequestMethod, [addresses]);
 		}
@@ -196,7 +196,7 @@ export class WalletClient extends BaseClient {
 		if (!signer.publicKey) {
 			throw new Error("No public key to verify the signed message with");
 		}
-		
+
     	// cast private key
 		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
 
@@ -227,12 +227,12 @@ export class WalletClient extends BaseClient {
 		}
 
 		// extract sig vector
-		const r: Uint8Array = sig[0].slice(0,32);
+		const r: Uint8Array = sig[0].slice(0, 32);
 		const s: Uint8Array = sig[0].slice(32);
 		const v: number = sig[1];
 		const hex = secp.utils.bytesToHex(sig[0]);
 		const base58Encoded = base58checkEncode(Buffer.concat([r, s]));
-		
+
 		return {
 			r,
 			s,
@@ -269,7 +269,7 @@ export class WalletClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
@@ -300,7 +300,7 @@ export class WalletClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
@@ -331,7 +331,7 @@ export class WalletClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
