@@ -30,7 +30,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.deploySmartContract = this.deploySmartContract.bind(this);
         this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
         this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
-        this.awaitFinalOperationStatus = this.awaitFinalOperationStatus.bind(this);
+        this.awaitRequiredOperationStatus = this.awaitRequiredOperationStatus.bind(this);
         this.getOperationStatus = this.getOperationStatus.bind(this);
     }
     /** initializes the webassembly cli under the hood */
@@ -349,26 +349,28 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
     getOperationStatus(opId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const operationData = yield this.publicApiClient.getOperations([opId]);
+            console.log(operationData);
             if (!operationData || operationData.length === 0)
-                return EOperationStatus_1.EOperationStatus.PENDING;
+                return EOperationStatus_1.EOperationStatus.NOT_FOUND;
             const opData = operationData[0];
+            if (opData.is_final) {
+                return EOperationStatus_1.EOperationStatus.FINAL;
+            }
+            if (opData.in_blocks.length > 0) {
+                return EOperationStatus_1.EOperationStatus.INCLUDED_PENDING;
+            }
             if (opData.in_pool) {
-                return EOperationStatus_1.EOperationStatus.PENDING;
+                return EOperationStatus_1.EOperationStatus.AWAITING_INCLUSION;
             }
-            else if (opData.is_final) {
-                return EOperationStatus_1.EOperationStatus.SUCCESS;
-            }
-            else {
-                return EOperationStatus_1.EOperationStatus.FAIL;
-            }
+            return EOperationStatus_1.EOperationStatus.INCONSISTENT;
         });
     }
-    awaitFinalOperationStatus(opId) {
+    awaitRequiredOperationStatus(opId, requiredStatus) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             let errCounter = 0;
             let pendingCounter = 0;
             while (true) {
-                let status = EOperationStatus_1.EOperationStatus.PENDING;
+                let status = EOperationStatus_1.EOperationStatus.NOT_FOUND;
                 try {
                     status = yield this.getOperationStatus(opId);
                 }
@@ -380,8 +382,9 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                     }
                     yield (0, Wait_1.wait)(TX_POLL_INTERVAL_MS);
                 }
-                if (status == EOperationStatus_1.EOperationStatus.SUCCESS || status == EOperationStatus_1.EOperationStatus.FAIL)
+                if (status == requiredStatus) {
                     return status;
+                }
                 if (++pendingCounter > 1000) {
                     const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT}ms.`;
                     console.warn(msg);

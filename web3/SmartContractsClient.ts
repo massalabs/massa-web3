@@ -50,7 +50,7 @@ export class SmartContractsClient extends BaseClient {
 		this.deploySmartContract = this.deploySmartContract.bind(this);
 		this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
 		this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
-		this.awaitFinalOperationStatus = this.awaitFinalOperationStatus.bind(this);
+		this.awaitRequiredOperationStatus = this.awaitRequiredOperationStatus.bind(this);
 		this.getOperationStatus = this.getOperationStatus.bind(this);
 	}
 
@@ -397,24 +397,29 @@ export class SmartContractsClient extends BaseClient {
 		}
 	}
 
-	private async getOperationStatus(opId: string): Promise<EOperationStatus> {
+	public async getOperationStatus(opId: string): Promise<EOperationStatus> {
 		const operationData: Array<IOperationData> = await this.publicApiClient.getOperations([opId]);
-		if (!operationData || operationData.length === 0) return EOperationStatus.PENDING;
+		console.log(operationData);
+		if (!operationData || operationData.length === 0) return EOperationStatus.NOT_FOUND;
 		const opData = operationData[0];
-		if (opData.in_pool) {
-			return EOperationStatus.PENDING;
-		} else if (opData.is_final) {
-			return EOperationStatus.SUCCESS;
-		} else {
-			return EOperationStatus.FAIL;
+		if (opData.is_final) {
+			return EOperationStatus.FINAL;
 		}
+		if (opData.in_blocks.length > 0) {
+			return EOperationStatus.INCLUDED_PENDING;
+		}
+		if (opData.in_pool) {
+			return EOperationStatus.AWAITING_INCLUSION;
+		}
+
+		return EOperationStatus.INCONSISTENT;
 	}
 
-	public async awaitFinalOperationStatus(opId: string): Promise<EOperationStatus> {
+	public async awaitRequiredOperationStatus(opId: string, requiredStatus: EOperationStatus): Promise<EOperationStatus> {
 		let errCounter = 0;
 		let pendingCounter = 0;
 		while (true) {
-			let status = EOperationStatus.PENDING;
+			let status = EOperationStatus.NOT_FOUND;
 			try {
 				status = await this.getOperationStatus(opId);
 			}
@@ -428,8 +433,9 @@ export class SmartContractsClient extends BaseClient {
 				await wait(TX_POLL_INTERVAL_MS);
 			}
 
-			if (status == EOperationStatus.SUCCESS || status == EOperationStatus.FAIL)
+			if (status == requiredStatus) {
 				return status;
+			}
 
 			if (++pendingCounter > 1000) {
 				const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT}ms.`;

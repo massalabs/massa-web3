@@ -26,6 +26,18 @@ export interface IExecSmartContractOpType {
     }
 }
 
+export interface ICallSmartContractOpType {
+    CallSC: {
+        gas_price: string;
+        max_gas: number;
+        parallel_coins: string;
+        param: string;
+        sequential_coins: string;
+        target_addr: string;
+        target_func: string;
+    }
+}
+
 export enum OperationTypeId {
     Transaction = 0,
     RollBuy = 1,
@@ -34,4 +46,4 @@ export enum OperationTypeId {
     CallSC = 4,
 }
 
-export type OpType = ITransactionOpType | IRollSellOpType | IRollBuyOpType | IExecSmartContractOpType;
+export type OpType = ITransactionOpType | IRollSellOpType | IRollBuyOpType | IExecSmartContractOpType | ICallSmartContractOpType;

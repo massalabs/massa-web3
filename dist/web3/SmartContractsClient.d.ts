@@ -45,6 +45,6 @@ export declare class SmartContractsClient extends BaseClient {
     getFilteredScOutputEvents(eventFilterData: IEventFilter): Promise<Array<IEvent>>;
     /** Read-only smart contracts */
     executeReadOnlySmartContract(contractData: IContractData): Promise<Array<IExecuteReadOnlyResponse>>;
-    private getOperationStatus;
-    awaitFinalOperationStatus(opId: string): Promise<EOperationStatus>;
+    getOperationStatus(opId: string): Promise<EOperationStatus>;
+    awaitRequiredOperationStatus(opId: string, requiredStatus: EOperationStatus): Promise<EOperationStatus>;
 }

@@ -8,6 +8,7 @@ export { IBlockInfo } from "./interfaces/IBlockInfo";
 export { IClientConfig } from "./interfaces/IClientConfig";
 export { IClique } from "./interfaces/IClique";
 export { IContractData } from "./interfaces/IContractData";
+export { ICallData } from "./interfaces/ICallData";
 export { IEndorsement } from "./interfaces/IEndorsement";
 export { INodeStatus } from "./interfaces/INodeStatus";
 export { IOperationData } from "./interfaces/IOperationData";
