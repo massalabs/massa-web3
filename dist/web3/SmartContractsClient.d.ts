@@ -2,6 +2,7 @@
 import * as fs from "fs";
 import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { IAccount } from "../interfaces/IAccount";
+import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { IEvent } from "../interfaces/IEvent";
@@ -38,6 +39,8 @@ export declare class SmartContractsClient extends BaseClient {
     compileSmartContractOnTheFly(smartContractContent: string): Promise<any>;
     /** create and send an operation containing byte code */
     deploySmartContract(contractData: IContractData, executor: IAccount): Promise<Array<string>>;
+    /** call smart contract method */
+    callSmartContract(callData: ICallData, executor: IAccount): Promise<Array<string>>;
     /** get filtered smart contract events */
     getFilteredScOutputEvents(eventFilterData: IEventFilter): Promise<Array<IEvent>>;
     /** Read-only smart contracts */

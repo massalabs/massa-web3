@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { IAccount } from "../interfaces/IAccount";
+import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { IEvent } from "../interfaces/IEvent";
@@ -264,8 +265,7 @@ export class SmartContractsClient extends BaseClient {
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// get the block size
-		const nodeStatus: INodeStatus = await this.publicApiClient.getNodeStatus();
-		if (contractData.contractDataBase64.length > nodeStatus.config.max_block_size / 2) {
+		if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
 			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
 		}
 
@@ -291,6 +291,54 @@ export class SmartContractsClient extends BaseClient {
 						max_gas: contractData.maxGas,
 						coins: contractData.coins.toString(),
 						gas_price: contractData.gasPrice.toString()
+					}
+				},
+				sender_public_key: executor.publicKey
+			},
+			signature: signature.base58Encoded,
+		}
+		// returns operation ids
+		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+		return opIds;
+	}
+
+	/** call smart contract method */
+	public async callSmartContract(callData: ICallData, executor: IAccount): Promise<Array<string>> {
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+
+		// check if the param payload is already stringified
+		let stringifiedParamPayload = callData.parameter;
+		try {
+			// if this call succeeds it means the payload is already a stringified json
+			JSON.parse(callData.parameter);
+		} catch (e) {
+			// payload is not a stringified json, also stringify
+			stringifiedParamPayload = JSON.stringify(callData.parameter);
+		}
+		callData.parameter = stringifiedParamPayload;
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, executor, expiryPeriod);
+
+		// sign payload
+		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+
+		// request data
+		const data = {
+			content: {
+				expire_period: expiryPeriod,
+				fee: callData.fee.toString(),
+				op: {
+					CallSC: {
+						max_gas: callData.maxGas,
+						gas_price: callData.gasPrice.toString(),
+						parallel_coins: callData.parallelCoins.toString(),
+						sequential_coins: callData.sequentialCoins.toString(),
+						target_addr: callData.targetAddress,
+						target_func: callData.functionName,
+						param: callData.parameter,
 					}
 				},
 				sender_public_key: executor.publicKey

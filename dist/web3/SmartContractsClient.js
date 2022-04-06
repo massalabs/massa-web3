@@ -66,7 +66,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                     traceResolution: true,
                     exportTable: true,
                     exportRuntime: true,
-                    lib: ["./node_modules/massa-sc-std"]
                 });
             }
             catch (ex) {
@@ -224,8 +223,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
             const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
             // get the block size
-            const nodeStatus = yield this.publicApiClient.getNodeStatus();
-            if (contractData.contractDataBase64.length > nodeStatus.config.max_block_size / 2) {
+            if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
                 console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
             }
             // bytes compaction
@@ -247,6 +245,52 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                             max_gas: contractData.maxGas,
                             coins: contractData.coins.toString(),
                             gas_price: contractData.gasPrice.toString()
+                        }
+                    },
+                    sender_public_key: executor.publicKey
+                },
+                signature: signature.base58Encoded,
+            };
+            // returns operation ids
+            const opIds = yield this.sendJsonRPCRequest(JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+            return opIds;
+        });
+    }
+    /** call smart contract method */
+    callSmartContract(callData, executor) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // get next period info
+            const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
+            const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+            // check if the param payload is already stringified
+            let stringifiedParamPayload = callData.parameter;
+            try {
+                // if this call succeeds it means the payload is already a stringified json
+                JSON.parse(callData.parameter);
+            }
+            catch (e) {
+                // payload is not a stringified json, also stringify
+                stringifiedParamPayload = JSON.stringify(callData.parameter);
+            }
+            callData.parameter = stringifiedParamPayload;
+            // bytes compaction
+            const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, executor, expiryPeriod);
+            // sign payload
+            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, executor);
+            // request data
+            const data = {
+                content: {
+                    expire_period: expiryPeriod,
+                    fee: callData.fee.toString(),
+                    op: {
+                        CallSC: {
+                            max_gas: callData.maxGas,
+                            gas_price: callData.gasPrice.toString(),
+                            parallel_coins: callData.parallelCoins.toString(),
+                            sequential_coins: callData.sequentialCoins.toString(),
+                            target_addr: callData.targetAddress,
+                            target_func: callData.functionName,
+                            param: callData.parameter,
                         }
                     },
                     sender_public_key: executor.publicKey

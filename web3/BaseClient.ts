@@ -11,8 +11,9 @@ import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
+import { ICallData } from "../interfaces/ICallData";
 
-export type DataType = IContractData | ITransactionData | IRollsData;
+export type DataType = IContractData | ITransactionData | IRollsData | ICallData;
 
 const requestHeaders = {
 	"Accept": "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -192,10 +193,10 @@ export class BaseClient {
 				const functionNameLengthEncoded = Buffer.from(varintEncode(functionNameEncoded.length));
 
 				// parameter
-				const parameterEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, 'utf8'))
-				const parameterLengthEncoded = Buffer.from(varintEncode(parameterEncoded.length));
+				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, 'utf8'))
+				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parameterLengthEncoded, parameterEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount

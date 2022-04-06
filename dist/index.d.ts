@@ -11,7 +11,7 @@ export { IContractData } from "./interfaces/IContractData";
 export { IEndorsement } from "./interfaces/IEndorsement";
 export { INodeStatus } from "./interfaces/INodeStatus";
 export { IOperationData } from "./interfaces/IOperationData";
-export { IProvider } from "./interfaces/IProvider";
+export { IProvider, ProviderType } from "./interfaces/IProvider";
 export { IRollsData } from "./interfaces/IRollsData";
 export { ISignature } from "./interfaces/ISignature";
 export { ISignedMessage } from "./interfaces/ISignedMessage";

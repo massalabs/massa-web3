@@ -144,6 +144,25 @@ class BaseClient {
                 const dataLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(contractDataEncoded.length));
                 return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
             }
+            case OperationTypes_1.OperationTypeId.CallSC: {
+                // max gas
+                const maxGasEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.maxGas));
+                // parallel coins to send
+                const parallelCoinsEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.parallelCoins));
+                // sequential coins to send
+                const sequentialCoinsEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.sequentialCoins));
+                // gas price
+                const gasPriceEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.gasPrice));
+                // target address
+                const targetAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.targetAddress);
+                // target function name and name length
+                const functionNameEncoded = new Uint8Array(buffer_1.Buffer.from(data.functionName, 'utf8'));
+                const functionNameLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(functionNameEncoded.length));
+                // parameter
+                const parametersEncoded = new Uint8Array(buffer_1.Buffer.from(data.parameter, 'utf8'));
+                const parametersLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(parametersEncoded.length));
+                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
+            }
             case OperationTypes_1.OperationTypeId.Transaction: {
                 // transfer amount
                 const transferAmountEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(this.scaleAmount(data.amount)));

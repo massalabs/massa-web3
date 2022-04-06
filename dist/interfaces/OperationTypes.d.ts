@@ -26,6 +26,7 @@ export declare enum OperationTypeId {
     Transaction = 0,
     RollBuy = 1,
     RollSell = 2,
-    ExecuteSC = 3
+    ExecuteSC = 3,
+    CallSC = 4
 }
 export declare type OpType = ITransactionOpType | IRollSellOpType | IRollBuyOpType | IExecSmartContractOpType;
