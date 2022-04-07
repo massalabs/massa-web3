@@ -8,7 +8,7 @@ import { BaseClient } from "./BaseClient";
 export class PrivateApiClient extends BaseClient {
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
-		
+
 		// ========== bind api methods ========= //
 
 		// private api methods
@@ -25,7 +25,7 @@ export class PrivateApiClient extends BaseClient {
 	public async unbanIpAddress(ipAddress: string): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.UNBAN;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[ipAddress]]]);
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[ipAddress]]]);
 		} else {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
 		}
@@ -35,17 +35,17 @@ export class PrivateApiClient extends BaseClient {
 	public async banIpAddress(ipAddress: string): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.BAN;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[ipAddress]]]);
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[ipAddress]]]);
 		} else {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
 		}
-	} 
-	
+	}
+
 	/** Stops the node */
 	public async nodeStop(): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.STOP_NODE;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, []]);
 		} else {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, []);
 		}
@@ -55,7 +55,7 @@ export class PrivateApiClient extends BaseClient {
 	public async nodeSignMessage(message: Uint8Array): Promise<ISignedMessage> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<ISignedMessage>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+			return await trySafeExecute<ISignedMessage>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, []]);
 		} else {
 			return await this.sendJsonRPCRequest<ISignedMessage>(jsonRpcRequestMethod, []);
 		}
@@ -65,7 +65,7 @@ export class PrivateApiClient extends BaseClient {
 	public async nodeGetStakingAddresses(): Promise<Array<string>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+			return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, []]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<string>>(jsonRpcRequestMethod, []);
 		}
@@ -75,7 +75,7 @@ export class PrivateApiClient extends BaseClient {
 	public async nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [addresses]]);
 		} else {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [addresses]);
 		}
@@ -85,7 +85,7 @@ export class PrivateApiClient extends BaseClient {
 	public async nodeAddStakingPrivateKeys(privateKeys: Array<string>): Promise<void> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<void>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [privateKeys]]);
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [privateKeys]]);
 		} else {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [privateKeys]);
 		}

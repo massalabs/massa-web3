@@ -1,5 +1,5 @@
 export interface NodesMap {
-    [name: string]: string
+    [name: string]: string;
 }
 
 export interface INodeStatus {
@@ -16,8 +16,8 @@ export interface INodeStatus {
       roll_price: string,
       t0: number,
       thread_count: number
-    },
-    connected_nodes: NodesMap,
+    };
+    connected_nodes: NodesMap;
     consensus_stats: {
       clique_count: 1,
       end_timespan: number,
@@ -26,20 +26,20 @@ export interface INodeStatus {
       staker_count: number,
       stale_block_count: number,
       start_timespan: number
-    },
-    current_cycle: number,
-    current_time: number,
-    last_slot: { period: number, thread: number },
+    };
+    current_cycle: number;
+    current_time: number;
+    last_slot: { period: number, thread: number };
     network_stats: {
       active_node_count: number,
       banned_peer_count: number,
       in_connection_count: number,
       known_peer_count: number,
       out_connection_count: number
-    },
-    next_slot: { period: number, thread: number },
-    node_id: string,
-    node_ip: string | null,
-    pool_stats: { endorsement_count: number, operation_count: number },
-    version: string
+    };
+    next_slot: { period: number, thread: number };
+    node_id: string;
+    node_ip: string | null;
+    pool_stats: { endorsement_count: number, operation_count: number };
+    version: string;
   }

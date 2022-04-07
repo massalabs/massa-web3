@@ -1,7 +1,7 @@
 import { OpType } from "./OperationTypes";
 
 export interface IBlockInfo {
-    id: string // BlockId,
+    id: string; // BlockId,
     content: null | {
         is_final: boolean,
         is_stale: boolean,
@@ -38,8 +38,8 @@ export interface IBlockInfo {
             signature: string
           }
         ]
-      },
-      is_final: boolean,
-      is_in_blockclique: boolean,
-      is_stale: boolean
+      };
+      is_final: boolean;
+      is_in_blockclique: boolean;
+      is_stale: boolean;
   }

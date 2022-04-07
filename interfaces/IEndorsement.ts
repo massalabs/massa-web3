@@ -1,10 +1,10 @@
 export interface IEndorsement {
-    id: string, // EndorsementId,
-    in_pool: boolean,
-    in_blocks: [string], // BlockId,
-    is_final: boolean,
+    id: string; // EndorsementId,
+    in_pool: boolean;
+    in_blocks: [string]; // BlockId,
+    is_final: boolean;
     endorsement: {
-        content:{
+        content: {
             sender_public_key: string,
             slot: {
                 period: number,
@@ -14,5 +14,5 @@ export interface IEndorsement {
             endorsed_block: string // BlockId,
         }
         signature: string
-    }
+    };
   }
