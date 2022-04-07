@@ -6,11 +6,13 @@ import { IAccount } from "../interfaces/IAccount";
 import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
+import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { IOperationData } from "../interfaces/IOperationData";
+import { IReadData } from "../interfaces/IReadData";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
@@ -52,6 +54,8 @@ export class SmartContractsClient extends BaseClient {
 		this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
 		this.awaitRequiredOperationStatus = this.awaitRequiredOperationStatus.bind(this);
 		this.getOperationStatus = this.getOperationStatus.bind(this);
+		this.callSmartContract = this.callSmartContract.bind(this);
+		this.readSmartContract = this.readSmartContract.bind(this);
 	}
 
 	/** initializes the webassembly cli under the hood */
@@ -324,7 +328,6 @@ export class SmartContractsClient extends BaseClient {
 
 		// sign payload
 		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
-
 		// request data
 		const data = {
 			content: {
@@ -346,8 +349,43 @@ export class SmartContractsClient extends BaseClient {
 			signature: signature.base58Encoded,
 		}
 		// returns operation ids
-		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-		return opIds;
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+		}
+	}
+
+	/** read smart contract method */
+	public async readSmartContract(readData: IReadData): Promise<Array<IContractReadOperationData>> {
+		// check if the param payload is already stringified
+		let stringifiedParamPayload = readData.parameter;
+		try {
+			// if this call succeeds it means the payload is already a stringified json
+			JSON.parse(readData.parameter);
+		} catch (e) {
+			// payload is not a stringified json, also stringify
+			stringifiedParamPayload = JSON.stringify(readData.parameter);
+		}
+		readData.parameter = stringifiedParamPayload;
+
+		// request data
+		const data = {
+			max_gas: readData.maxGas,
+			simulated_gas_price: readData.simulatedGasPrice.toString(),
+			target_address: readData.targetAddress,
+			target_function: readData.targetFunction,
+			parameter: "undefined",
+			caller_address: readData.callerAddress
+		}
+		// returns operation ids
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IContractReadOperationData>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+		}
 	}
 
 	/** get filtered smart contract events */

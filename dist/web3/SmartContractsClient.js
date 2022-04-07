@@ -32,6 +32,8 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
         this.awaitRequiredOperationStatus = this.awaitRequiredOperationStatus.bind(this);
         this.getOperationStatus = this.getOperationStatus.bind(this);
+        this.callSmartContract = this.callSmartContract.bind(this);
+        this.readSmartContract = this.readSmartContract.bind(this);
     }
     /** initializes the webassembly cli under the hood */
     initWebAssemblyCli() {
@@ -298,8 +300,46 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                 signature: signature.base58Encoded,
             };
             // returns operation ids
-            const opIds = yield this.sendJsonRPCRequest(JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-            return opIds;
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
+            if (this.clientConfig.retryStrategyOn) {
+                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+            }
+            else {
+                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+            }
+        });
+    }
+    /** read smart contract method */
+    readSmartContract(readData) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // check if the param payload is already stringified
+            let stringifiedParamPayload = readData.parameter;
+            try {
+                // if this call succeeds it means the payload is already a stringified json
+                JSON.parse(readData.parameter);
+            }
+            catch (e) {
+                // payload is not a stringified json, also stringify
+                stringifiedParamPayload = JSON.stringify(readData.parameter);
+            }
+            readData.parameter = stringifiedParamPayload;
+            // request data
+            const data = {
+                max_gas: readData.maxGas,
+                simulated_gas_price: readData.simulatedGasPrice.toString(),
+                target_address: readData.targetAddress,
+                target_function: readData.targetFunction,
+                parameter: "undefined",
+                caller_address: readData.callerAddress
+            };
+            // returns operation ids
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
+            if (this.clientConfig.retryStrategyOn) {
+                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+            }
+            else {
+                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+            }
         });
     }
     /** get filtered smart contract events */

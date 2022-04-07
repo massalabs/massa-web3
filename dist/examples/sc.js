@@ -32,7 +32,7 @@ const baseAccount = {
         // await included_pending state
         const status = yield web3Client.smartContracts().awaitRequiredOperationStatus(deploymentOperationId, EOperationStatus_1.EOperationStatus.INCLUDED_PENDING);
         // wait around 20 secs fo the events to be fetchable
-        yield (0, Wait_1.wait)(20000);
+        yield (0, Wait_1.wait)(40000);
         console.log("=======> Deploy Smart Contract Status", status);
         // poll smart contract events for the opId
         const eventsFilter = {
@@ -69,7 +69,19 @@ const baseAccount = {
         console.log("=======> Call Smart Contract Op Id = ", callScOperationId);
         // get information about transaction
         const opData = yield web3Client.publicApi().getOperations([callScOperationId]);
-        console.log("=======> Call Smart Contract Tx Summary = ", opData);
+        console.log("=======> Get Operations Smart Contract Tx Summary = ", opData);
+        // finally get some read state
+        const readTxId = yield web3Client.smartContracts().readSmartContract({
+            fee: 0,
+            maxGas: 200000,
+            simulatedGasPrice: 0,
+            targetAddress: scAddress,
+            targetFunction: "getGameState",
+            parameter: "undefined",
+            callerAddress: baseAccount.address
+        });
+        const readScOperationId = readTxId[0];
+        console.log("=======> Read Smart Contract Op Id = ", readScOperationId);
     }
     catch (ex) {
         console.error("Error = ", ex.message);
