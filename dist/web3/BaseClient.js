@@ -52,7 +52,8 @@ class BaseClient {
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_CLIQUES:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_STAKERS:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
-            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST: {
+            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
+            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL: {
                 return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
             }
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -143,6 +144,25 @@ class BaseClient {
                 const contractDataEncoded = buffer_1.Buffer.from(decodedScBinaryCode);
                 const dataLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(contractDataEncoded.length));
                 return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+            }
+            case OperationTypes_1.OperationTypeId.CallSC: {
+                // max gas
+                const maxGasEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.maxGas));
+                // parallel coins to send
+                const parallelCoinsEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.parallelCoins));
+                // sequential coins to send
+                const sequentialCoinsEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.sequentialCoins));
+                // gas price
+                const gasPriceEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.gasPrice));
+                // target address
+                const targetAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.targetAddress);
+                // target function name and name length
+                const functionNameEncoded = new Uint8Array(buffer_1.Buffer.from(data.functionName, 'utf8'));
+                const functionNameLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(functionNameEncoded.length));
+                // parameter
+                const parametersEncoded = new Uint8Array(buffer_1.Buffer.from(data.parameter, 'utf8'));
+                const parametersLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(parametersEncoded.length));
+                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
             }
             case OperationTypes_1.OperationTypeId.Transaction: {
                 // transfer amount

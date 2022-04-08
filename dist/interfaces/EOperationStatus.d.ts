@@ -1,5 +1,7 @@
 export declare enum EOperationStatus {
-    PENDING = 0,
-    SUCCESS = 1,
-    FAIL = 2
+    INCLUDED_PENDING = 0,
+    AWAITING_INCLUSION = 1,
+    FINAL = 2,
+    INCONSISTENT = 3,
+    NOT_FOUND = 4
 }

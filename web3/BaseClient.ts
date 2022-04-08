@@ -11,8 +11,9 @@ import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
+import { ICallData } from "../interfaces/ICallData";
 
-export type DataType = IContractData | ITransactionData | IRollsData;
+export type DataType = IContractData | ITransactionData | IRollsData | ICallData;
 
 const requestHeaders = {
 	"Accept": "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -65,8 +66,9 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.GET_CLIQUES:
 			case JSON_RPC_REQUEST_METHOD.GET_STAKERS:
 			case JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
-			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST: {
-					return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
+			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
+			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL: {
+					return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
 			case JSON_RPC_REQUEST_METHOD.BAN:
@@ -170,6 +172,32 @@ export class BaseClient {
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+			}
+			case OperationTypeId.CallSC: {
+				// max gas
+				const maxGasEncoded = Buffer.from(varintEncode((data as ICallData).maxGas));
+
+				// parallel coins to send
+				const parallelCoinsEncoded = Buffer.from(varintEncode((data as ICallData).parallelCoins));
+
+				// sequential coins to send
+				const sequentialCoinsEncoded = Buffer.from(varintEncode((data as ICallData).sequentialCoins));
+
+				// gas price
+				const gasPriceEncoded = Buffer.from(varintEncode((data as ICallData).gasPrice));
+
+				// target address
+				const targetAddressEncoded = base58checkDecode((data as ICallData).targetAddress);
+
+				// target function name and name length
+				const functionNameEncoded = new Uint8Array(Buffer.from((data as ICallData).functionName, 'utf8'))
+				const functionNameLengthEncoded = Buffer.from(varintEncode(functionNameEncoded.length));
+
+				// parameter
+				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, 'utf8'))
+				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
+
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount

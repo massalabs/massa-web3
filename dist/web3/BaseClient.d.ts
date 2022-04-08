@@ -8,7 +8,8 @@ import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
-export declare type DataType = IContractData | ITransactionData | IRollsData;
+import { ICallData } from "../interfaces/ICallData";
+export declare type DataType = IContractData | ITransactionData | IRollsData | ICallData;
 export declare const PERIOD_OFFSET = 5;
 /**  Base Client which is to be extended by other clients as it provides core methods */
 export declare class BaseClient {

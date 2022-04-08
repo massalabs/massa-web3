@@ -3,13 +3,16 @@ import * as fs from "fs";
 import * as path from "path";
 import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { IAccount } from "../interfaces/IAccount";
+import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
+import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { IOperationData } from "../interfaces/IOperationData";
+import { IReadData } from "../interfaces/IReadData";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
@@ -49,8 +52,10 @@ export class SmartContractsClient extends BaseClient {
 		this.deploySmartContract = this.deploySmartContract.bind(this);
 		this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
 		this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
-		this.awaitFinalOperationStatus = this.awaitFinalOperationStatus.bind(this);
+		this.awaitRequiredOperationStatus = this.awaitRequiredOperationStatus.bind(this);
 		this.getOperationStatus = this.getOperationStatus.bind(this);
+		this.callSmartContract = this.callSmartContract.bind(this);
+		this.readSmartContract = this.readSmartContract.bind(this);
 	}
 
 	/** initializes the webassembly cli under the hood */
@@ -264,8 +269,7 @@ export class SmartContractsClient extends BaseClient {
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// get the block size
-		const nodeStatus: INodeStatus = await this.publicApiClient.getNodeStatus();
-		if (contractData.contractDataBase64.length > nodeStatus.config.max_block_size / 2) {
+		if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
 			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
 		}
 
@@ -300,6 +304,88 @@ export class SmartContractsClient extends BaseClient {
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
+	}
+
+	/** call smart contract method */
+	public async callSmartContract(callData: ICallData, executor: IAccount): Promise<Array<string>> {
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+
+		// check if the param payload is already stringified
+		let stringifiedParamPayload = callData.parameter;
+		try {
+			// if this call succeeds it means the payload is already a stringified json
+			JSON.parse(callData.parameter);
+		} catch (e) {
+			// payload is not a stringified json, also stringify
+			stringifiedParamPayload = JSON.stringify(callData.parameter);
+		}
+		callData.parameter = stringifiedParamPayload;
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, executor, expiryPeriod);
+
+		// sign payload
+		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		// request data
+		const data = {
+			content: {
+				expire_period: expiryPeriod,
+				fee: callData.fee.toString(),
+				op: {
+					CallSC: {
+						max_gas: callData.maxGas,
+						gas_price: callData.gasPrice.toString(),
+						parallel_coins: callData.parallelCoins.toString(),
+						sequential_coins: callData.sequentialCoins.toString(),
+						target_addr: callData.targetAddress,
+						target_func: callData.functionName,
+						param: callData.parameter,
+					}
+				},
+				sender_public_key: executor.publicKey
+			},
+			signature: signature.base58Encoded,
+		}
+		// returns operation ids
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+		}
+	}
+
+	/** read smart contract method */
+	public async readSmartContract(readData: IReadData): Promise<Array<IContractReadOperationData>> {
+		// check if the param payload is already stringified
+		let stringifiedParamPayload = readData.parameter;
+		try {
+			// if this call succeeds it means the payload is already a stringified json
+			JSON.parse(readData.parameter);
+		} catch (e) {
+			// payload is not a stringified json, also stringify
+			stringifiedParamPayload = JSON.stringify(readData.parameter);
+		}
+		readData.parameter = stringifiedParamPayload;
+
+		// request data
+		const data = {
+			max_gas: readData.maxGas,
+			simulated_gas_price: readData.simulatedGasPrice.toString(),
+			target_address: readData.targetAddress,
+			target_function: readData.targetFunction,
+			parameter: "undefined",
+			caller_address: readData.callerAddress
+		}
+		// returns operation ids
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IContractReadOperationData>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+		}
 	}
 
 	/** get filtered smart contract events */
@@ -341,7 +427,7 @@ export class SmartContractsClient extends BaseClient {
 			address: contractData.address,
 		};
 
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST;
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
 		} else {
@@ -349,24 +435,29 @@ export class SmartContractsClient extends BaseClient {
 		}
 	}
 
-	private async getOperationStatus(opId: string): Promise<EOperationStatus> {
+	public async getOperationStatus(opId: string): Promise<EOperationStatus> {
 		const operationData: Array<IOperationData> = await this.publicApiClient.getOperations([opId]);
-		if (!operationData || operationData.length === 0) return EOperationStatus.PENDING;
+		console.log(operationData);
+		if (!operationData || operationData.length === 0) return EOperationStatus.NOT_FOUND;
 		const opData = operationData[0];
-		if (opData.in_pool) {
-			return EOperationStatus.PENDING;
-		} else if (opData.is_final) {
-			return EOperationStatus.SUCCESS;
-		} else {
-			return EOperationStatus.FAIL;
+		if (opData.is_final) {
+			return EOperationStatus.FINAL;
 		}
+		if (opData.in_blocks.length > 0) {
+			return EOperationStatus.INCLUDED_PENDING;
+		}
+		if (opData.in_pool) {
+			return EOperationStatus.AWAITING_INCLUSION;
+		}
+
+		return EOperationStatus.INCONSISTENT;
 	}
 
-	public async awaitFinalOperationStatus(opId: string): Promise<EOperationStatus> {
+	public async awaitRequiredOperationStatus(opId: string, requiredStatus: EOperationStatus): Promise<EOperationStatus> {
 		let errCounter = 0;
 		let pendingCounter = 0;
 		while (true) {
-			let status = EOperationStatus.PENDING;
+			let status = EOperationStatus.NOT_FOUND;
 			try {
 				status = await this.getOperationStatus(opId);
 			}
@@ -380,8 +471,9 @@ export class SmartContractsClient extends BaseClient {
 				await wait(TX_POLL_INTERVAL_MS);
 			}
 
-			if (status == EOperationStatus.SUCCESS || status == EOperationStatus.FAIL)
+			if (status == requiredStatus) {
 				return status;
+			}
 
 			if (++pendingCounter > 1000) {
 				const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT}ms.`;

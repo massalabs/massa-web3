@@ -30,8 +30,10 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.deploySmartContract = this.deploySmartContract.bind(this);
         this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
         this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
-        this.awaitFinalOperationStatus = this.awaitFinalOperationStatus.bind(this);
+        this.awaitRequiredOperationStatus = this.awaitRequiredOperationStatus.bind(this);
         this.getOperationStatus = this.getOperationStatus.bind(this);
+        this.callSmartContract = this.callSmartContract.bind(this);
+        this.readSmartContract = this.readSmartContract.bind(this);
     }
     /** initializes the webassembly cli under the hood */
     initWebAssemblyCli() {
@@ -66,7 +68,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                     traceResolution: true,
                     exportTable: true,
                     exportRuntime: true,
-                    lib: ["./node_modules/massa-sc-std"]
                 });
             }
             catch (ex) {
@@ -224,8 +225,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
             const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
             // get the block size
-            const nodeStatus = yield this.publicApiClient.getNodeStatus();
-            if (contractData.contractDataBase64.length > nodeStatus.config.max_block_size / 2) {
+            if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
                 console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
             }
             // bytes compaction
@@ -256,6 +256,90 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // returns operation ids
             const opIds = yield this.sendJsonRPCRequest(JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
             return opIds;
+        });
+    }
+    /** call smart contract method */
+    callSmartContract(callData, executor) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // get next period info
+            const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
+            const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+            // check if the param payload is already stringified
+            let stringifiedParamPayload = callData.parameter;
+            try {
+                // if this call succeeds it means the payload is already a stringified json
+                JSON.parse(callData.parameter);
+            }
+            catch (e) {
+                // payload is not a stringified json, also stringify
+                stringifiedParamPayload = JSON.stringify(callData.parameter);
+            }
+            callData.parameter = stringifiedParamPayload;
+            // bytes compaction
+            const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, executor, expiryPeriod);
+            // sign payload
+            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, executor);
+            // request data
+            const data = {
+                content: {
+                    expire_period: expiryPeriod,
+                    fee: callData.fee.toString(),
+                    op: {
+                        CallSC: {
+                            max_gas: callData.maxGas,
+                            gas_price: callData.gasPrice.toString(),
+                            parallel_coins: callData.parallelCoins.toString(),
+                            sequential_coins: callData.sequentialCoins.toString(),
+                            target_addr: callData.targetAddress,
+                            target_func: callData.functionName,
+                            param: callData.parameter,
+                        }
+                    },
+                    sender_public_key: executor.publicKey
+                },
+                signature: signature.base58Encoded,
+            };
+            // returns operation ids
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
+            if (this.clientConfig.retryStrategyOn) {
+                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+            }
+            else {
+                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+            }
+        });
+    }
+    /** read smart contract method */
+    readSmartContract(readData) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // check if the param payload is already stringified
+            let stringifiedParamPayload = readData.parameter;
+            try {
+                // if this call succeeds it means the payload is already a stringified json
+                JSON.parse(readData.parameter);
+            }
+            catch (e) {
+                // payload is not a stringified json, also stringify
+                stringifiedParamPayload = JSON.stringify(readData.parameter);
+            }
+            readData.parameter = stringifiedParamPayload;
+            // request data
+            const data = {
+                max_gas: readData.maxGas,
+                simulated_gas_price: readData.simulatedGasPrice.toString(),
+                target_address: readData.targetAddress,
+                target_function: readData.targetFunction,
+                parameter: "undefined",
+                caller_address: readData.callerAddress
+            };
+            // returns operation ids
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
+            if (this.clientConfig.retryStrategyOn) {
+                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+            }
+            else {
+                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+            }
         });
     }
     /** get filtered smart contract events */
@@ -293,7 +377,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                 bytecode: Array.from(contractData.contractDataBinary),
                 address: contractData.address,
             };
-            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST;
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
             if (this.clientConfig.retryStrategyOn) {
                 return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
             }
@@ -305,26 +389,28 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
     getOperationStatus(opId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const operationData = yield this.publicApiClient.getOperations([opId]);
+            console.log(operationData);
             if (!operationData || operationData.length === 0)
-                return EOperationStatus_1.EOperationStatus.PENDING;
+                return EOperationStatus_1.EOperationStatus.NOT_FOUND;
             const opData = operationData[0];
+            if (opData.is_final) {
+                return EOperationStatus_1.EOperationStatus.FINAL;
+            }
+            if (opData.in_blocks.length > 0) {
+                return EOperationStatus_1.EOperationStatus.INCLUDED_PENDING;
+            }
             if (opData.in_pool) {
-                return EOperationStatus_1.EOperationStatus.PENDING;
+                return EOperationStatus_1.EOperationStatus.AWAITING_INCLUSION;
             }
-            else if (opData.is_final) {
-                return EOperationStatus_1.EOperationStatus.SUCCESS;
-            }
-            else {
-                return EOperationStatus_1.EOperationStatus.FAIL;
-            }
+            return EOperationStatus_1.EOperationStatus.INCONSISTENT;
         });
     }
-    awaitFinalOperationStatus(opId) {
+    awaitRequiredOperationStatus(opId, requiredStatus) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             let errCounter = 0;
             let pendingCounter = 0;
             while (true) {
-                let status = EOperationStatus_1.EOperationStatus.PENDING;
+                let status = EOperationStatus_1.EOperationStatus.NOT_FOUND;
                 try {
                     status = yield this.getOperationStatus(opId);
                 }
@@ -336,8 +422,9 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                     }
                     yield (0, Wait_1.wait)(TX_POLL_INTERVAL_MS);
                 }
-                if (status == EOperationStatus_1.EOperationStatus.SUCCESS || status == EOperationStatus_1.EOperationStatus.FAIL)
+                if (status == requiredStatus) {
                     return status;
+                }
                 if (++pendingCounter > 1000) {
                     const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT}ms.`;
                     console.warn(msg);
