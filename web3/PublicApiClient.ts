@@ -14,7 +14,7 @@ import { BaseClient } from "./BaseClient";
 export class PublicApiClient extends BaseClient {
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
-		
+
 		// ========== bind api methods ========= //
 
 		// public api methods
@@ -31,7 +31,7 @@ export class PublicApiClient extends BaseClient {
 	public async getNodeStatus(): Promise<INodeStatus> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<INodeStatus>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+			return await trySafeExecute<INodeStatus>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, []]);
 		} else {
 			return await this.sendJsonRPCRequest<INodeStatus>(jsonRpcRequestMethod, []);
 		}
@@ -41,17 +41,17 @@ export class PublicApiClient extends BaseClient {
 	public async getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [addresses]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IAddressInfo>>(jsonRpcRequestMethod, [addresses]);
 		}
-	} 
-	
+	}
+
 	/** Show info about a block (content, finality ...) */
 	public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, blockIds]);
+			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, blockIds]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IBlockInfo>>(jsonRpcRequestMethod, blockIds);
 		}
@@ -61,7 +61,7 @@ export class PublicApiClient extends BaseClient {
 	public async getEndorsements(endorsementIds: Array<string>): Promise<Array<IEndorsement>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IEndorsement>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [endorsementIds]]);
+			return await trySafeExecute<Array<IEndorsement>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [endorsementIds]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IEndorsement>>(jsonRpcRequestMethod, [endorsementIds]);
 		}
@@ -71,7 +71,7 @@ export class PublicApiClient extends BaseClient {
 	public async getOperations(operationIds: Array<string>): Promise<Array<IOperationData>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_OPERATIONS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IOperationData>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [operationIds]]);
+			return await trySafeExecute<Array<IOperationData>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [operationIds]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IOperationData>>(jsonRpcRequestMethod, [operationIds]);
 		}
@@ -81,7 +81,7 @@ export class PublicApiClient extends BaseClient {
 	public async getCliques(): Promise<Array<IClique>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQUES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IClique>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+			return await trySafeExecute<Array<IClique>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, []]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IClique>>(jsonRpcRequestMethod, []);
 		}
@@ -91,9 +91,9 @@ export class PublicApiClient extends BaseClient {
 	public async getStakers(): Promise<Array<IStakingAddresses>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKERS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IStakingAddresses>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, []]);
+			return await trySafeExecute<Array<IStakingAddresses>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, []]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IStakingAddresses>>(jsonRpcRequestMethod, []);
 		}
-	}	
+	}
 }

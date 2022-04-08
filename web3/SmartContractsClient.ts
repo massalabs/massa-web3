@@ -105,7 +105,7 @@ export class SmartContractsClient extends BaseClient {
 		if (!compiledData || !compiledData.text) {
 			throw new Error("No text file created in the compilation");
 		}
-		const base64: string = Buffer.from(compiledData.binary).toString('base64');
+		const base64: string = Buffer.from(compiledData.binary).toString("base64");
 
 		return {
 			binary: compiledData.binary,
@@ -167,8 +167,8 @@ export class SmartContractsClient extends BaseClient {
 		const binaryArrayBuffer = fs.readFileSync(binaryFileToCreate, {});
         const binaryFileContents = new Uint8Array(binaryArrayBuffer);
         const textFileContents = fs.readFileSync(textFileToCreate, {encoding: "utf8"});
-		const base64: string = Buffer.from(binaryFileContents).toString('base64');
-        
+		const base64: string = Buffer.from(binaryFileContents).toString("base64");
+
 		return {
 			binary: binaryFileContents,
 			text: textFileContents,
@@ -190,7 +190,7 @@ export class SmartContractsClient extends BaseClient {
 
 		const binaryArrayBuffer: Buffer = fs.readFileSync(wasmFilePathStr, {});
 		const binaryFileContents = new Uint8Array(binaryArrayBuffer);
-		const base64: string = Buffer.from(binaryFileContents).toString('base64');
+		const base64: string = Buffer.from(binaryFileContents).toString("base64");
 
 		return {
 			binary: binaryFileContents,
@@ -229,12 +229,12 @@ export class SmartContractsClient extends BaseClient {
 			wasmCli.main(argv, {
 					stdout: output.stdout,
 					stderr: output.stderr,
-					
+
 					readFile: (name, baseDir) => {
 						console.log("READFILE (name, basedir) ", name, baseDir, Object.prototype.hasOwnProperty.call(sources, name));
 						return Object.prototype.hasOwnProperty.call(sources, name) ? sources[name] : null;
 					},
-					
+
 					writeFile: (name, contents, baseDir) => {
 						console.log(`>>> WRITE:${name} >>>\n${contents.length}`);
 						output[name] = contents;
@@ -242,9 +242,9 @@ export class SmartContractsClient extends BaseClient {
 					listFiles(dirname, baseDir) {
 						return [];
 					}
-					
+
 				} as wasmCli.APIOptions,
-				(err) => { 
+				(err) => {
 					console.log(`>>> STDOUT >>>\n${output.stdout.toString()}`);
 					console.log(`>>> STDERR >>>\n${output.stderr.toString()}`);
 					if (err) {
@@ -258,7 +258,7 @@ export class SmartContractsClient extends BaseClient {
 			console.error(`Wasm compilation error`, ex);
 			throw ex;
 		}
-        
+
 		return output;
 	}
 
@@ -283,7 +283,7 @@ export class SmartContractsClient extends BaseClient {
 		if (!contractData.contractDataBase64) {
 			throw new Error(`Contract base64 encoded data required. Got null`);
 		}
-        const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, 'base64'))
+        const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, "base64"));
 
 		const data = {
 			content: {
@@ -300,7 +300,7 @@ export class SmartContractsClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
@@ -403,7 +403,7 @@ export class SmartContractsClient extends BaseClient {
 
 		// returns filtered events
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [data]]);
+			return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IEvent>>(jsonRpcRequestMethod, [data]);
 		}
@@ -429,7 +429,7 @@ export class SmartContractsClient extends BaseClient {
 
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
+			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IExecuteReadOnlyResponse>>(jsonRpcRequestMethod, [[data]]);
 		}

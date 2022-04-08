@@ -1,7 +1,7 @@
 import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
-import {base58checkDecode, varintEncode} from "../utils/Xbqcrypto";
+import { base58checkDecode, varintEncode } from "../utils/Xbqcrypto";
 import { BN }  from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
@@ -17,7 +17,7 @@ export type DataType = IContractData | ITransactionData | IRollsData | ICallData
 
 const requestHeaders = {
 	"Accept": "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-	'Access-Control-Allow-Origin': '*'
+	"Access-Control-Allow-Origin": "*"
 } as AxiosRequestHeaders;
 
 export const PERIOD_OFFSET = 5;
@@ -77,9 +77,9 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES:
 			case JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS:
 			case JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE: {
-				return this.getPrivateProviders()[0]; //TODO: choose the first available private provider ?
+				return this.getPrivateProviders()[0]; // TODO: choose the first available private provider ?
 			}
-			default: throw new Error("Unknown Json rpc method")
+			default: throw new Error("Unknown Json rpc method");
 		}
 	}
 
@@ -101,7 +101,7 @@ export class BaseClient {
 				return resolve({
 					isError: true,
 					result: null,
-					error: new Error('JSON.parse error: ' + String(ex))
+					error: new Error("JSON.parse error: " + String(ex))
 				} as JsonRpcResponseData<T>);
 			}
 
@@ -144,7 +144,7 @@ export class BaseClient {
 		const amountScaled = amount.mul(scaleFactor);
 		return amountScaled.toNumber();
 	}
-	
+
 	/** compact bytes payload per operation */
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
@@ -156,7 +156,7 @@ export class BaseClient {
 			case OperationTypeId.ExecuteSC: {
 
 				// revert base64 sc data to binary
-				const decodedScBinaryCode = new Uint8Array(Buffer.from((data as IContractData).contractDataBase64, 'base64'))
+				const decodedScBinaryCode = new Uint8Array(Buffer.from((data as IContractData).contractDataBase64, "base64"));
 
 				// max gas
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
@@ -212,7 +212,7 @@ export class BaseClient {
 				// rolls amount
 				const amount = new BN((data as IRollsData).amount);
 				const rollsAmountEncoded = Buffer.from(varintEncode(amount.toNumber()));
-		
+
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, rollsAmountEncoded]);
 			}
 		}
