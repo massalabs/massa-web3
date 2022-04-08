@@ -9,7 +9,7 @@ export enum JSON_RPC_REQUEST_METHOD {
 	GET_CLIQUES = "get_cliques",
 	GET_STAKERS = "get_stakers",
 	GET_FILTERED_SC_OUTPUT_EVENT = "get_filtered_sc_output_event",
-	EXECUTE_READ_ONLY_REQUEST = "execute_read_only_request",
+	EXECUTE_READ_ONLY_BYTECODE = "execute_read_only_bytecode",
 	EXECUTE_READ_ONLY_CALL = "execute_read_only_call",
 
 	// private Api

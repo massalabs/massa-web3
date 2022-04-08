@@ -377,7 +377,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                 bytecode: Array.from(contractData.contractDataBinary),
                 address: contractData.address,
             };
-            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST;
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
             if (this.clientConfig.retryStrategyOn) {
                 return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
             }

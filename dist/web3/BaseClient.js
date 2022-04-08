@@ -52,7 +52,7 @@ class BaseClient {
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_CLIQUES:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_STAKERS:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
-            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST:
+            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL: {
                 return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
             }

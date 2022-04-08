@@ -427,7 +427,7 @@ export class SmartContractsClient extends BaseClient {
 			address: contractData.address,
 		};
 
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST;
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
 		} else {
