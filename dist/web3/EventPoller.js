@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventPoller = exports.ON_EVENT = void 0;
 const tslib_1 = require("tslib");
-const stream_1 = require("stream");
+const events_1 = require("events");
 const Timeout_1 = require("../utils/Timeout");
 exports.ON_EVENT = "ON_EVENT";
 /** Smart Contracts Event Poller */
-class EventPoller extends stream_1.EventEmitter {
+class EventPoller extends events_1.EventEmitter {
     constructor(eventsFilter, pollIntervalMillis, smartContractsClient) {
         super();
         this.eventsFilter = eventsFilter;
