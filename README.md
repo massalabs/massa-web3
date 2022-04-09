@@ -292,33 +292,6 @@ Available methods are:
     );
     ```
 
-### Smart contract compilation
-
-Massa SDK provides methods for compiling smart contracts written in AssemblyScript with TypeScript, either via CLI or on the fly. With both methods, the returned values are a text, a binary and a base64 representation of the WASM.
-
-Examples are shown below:
-
-```ts
-const SMART_CONTRACT_EXAMPLE = `export function add(x: number, y: number): number { return x+y };`;
-
-// compile smart contract from a typescript file with assemblycode
-const compiledScFromSource: CompiledSmartContract = await web3Client
-    .smartContracts()
-    .compileSmartContractFromSourceFile({
-        smartContractFilePath: "helloworld.ts",
-    } as WasmConfig);
-
-// compile smart contract from a .wasm file
-const compiledScFromFile: CompiledSmartContract = await web3Client
-    .smartContracts()
-    .compileSmartContractFromWasmFile("helloworld.wasm");
-
-// compile smart contract on the fly
-const compiledScFromString: CompiledSmartContract = await web3Client
-    .smartContracts()
-    .compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
-```
-
 ### Smart contract deployment
 
 Once the smart contract WASM is available, it becomes quite straightforward to deploy a smart contract operation (a state changing operation):
@@ -336,6 +309,7 @@ const opIds = await web3Client.smartContracts().deploySmartContract(
     baseAccount
 );
 ```
+The compiledScFromSource is the base64 compiled smart contract code that could easily be obtained using massa's https://www.npmjs.com/package/massa-sc-utils
 
 ### Smart contract event fetching
 

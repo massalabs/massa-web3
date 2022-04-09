@@ -11,7 +11,7 @@ const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
 const requestHeaders = {
     "Accept": "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    'Access-Control-Allow-Origin': '*'
+    "Access-Control-Allow-Origin": "*"
 };
 exports.PERIOD_OFFSET = 5;
 /**  Base Client which is to be extended by other clients as it provides core methods */
@@ -54,7 +54,7 @@ class BaseClient {
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL: {
-                return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
+                return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
             }
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.STOP_NODE:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.BAN:
@@ -63,7 +63,7 @@ class BaseClient {
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE: {
-                return this.getPrivateProviders()[0]; //TODO: choose the first available private provider ?
+                return this.getPrivateProviders()[0]; // TODO: choose the first available private provider ?
             }
             default: throw new Error("Unknown Json rpc method");
         }
@@ -86,7 +86,7 @@ class BaseClient {
                     return resolve({
                         isError: true,
                         result: null,
-                        error: new Error('JSON.parse error: ' + String(ex))
+                        error: new Error("JSON.parse error: " + String(ex))
                     });
                 }
                 const responseData = resp.data;
@@ -133,7 +133,7 @@ class BaseClient {
         switch (opTypeId) {
             case OperationTypes_1.OperationTypeId.ExecuteSC: {
                 // revert base64 sc data to binary
-                const decodedScBinaryCode = new Uint8Array(buffer_1.Buffer.from(data.contractDataBase64, 'base64'));
+                const decodedScBinaryCode = new Uint8Array(buffer_1.Buffer.from(data.contractDataBase64, "base64"));
                 // max gas
                 const maxGasEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.maxGas));
                 // coins to send
@@ -157,10 +157,10 @@ class BaseClient {
                 // target address
                 const targetAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.targetAddress);
                 // target function name and name length
-                const functionNameEncoded = new Uint8Array(buffer_1.Buffer.from(data.functionName, 'utf8'));
+                const functionNameEncoded = new Uint8Array(buffer_1.Buffer.from(data.functionName, "utf8"));
                 const functionNameLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(functionNameEncoded.length));
                 // parameter
-                const parametersEncoded = new Uint8Array(buffer_1.Buffer.from(data.parameter, 'utf8'));
+                const parametersEncoded = new Uint8Array(buffer_1.Buffer.from(data.parameter, "utf8"));
                 const parametersLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(parametersEncoded.length));
                 return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
             }

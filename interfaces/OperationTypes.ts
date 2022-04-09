@@ -35,7 +35,7 @@ export interface ICallSmartContractOpType {
         sequential_coins: string;
         target_addr: string;
         target_func: string;
-    }
+    };
 }
 
 export enum OperationTypeId {

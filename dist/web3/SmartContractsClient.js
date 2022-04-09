@@ -2,9 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmartContractsClient = void 0;
 const tslib_1 = require("tslib");
-const wasmCli = require("assemblyscript/cli/asc");
-const fs = require("fs");
-const path = require("path");
 const EOperationStatus_1 = require("../interfaces/EOperationStatus");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
@@ -22,11 +19,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.walletClient = walletClient;
         this.isWebAssemblyCliInitialized = false;
         // bind class methods
-        this.initWebAssemblyCli = this.initWebAssemblyCli.bind(this);
-        this.compileSmartContractFromString = this.compileSmartContractFromString.bind(this);
-        this.compileSmartContractFromSourceFile = this.compileSmartContractFromSourceFile.bind(this);
-        this.compileSmartContractFromWasmFile = this.compileSmartContractFromWasmFile.bind(this);
-        this.compileSmartContractOnTheFly = this.compileSmartContractOnTheFly.bind(this);
         this.deploySmartContract = this.deploySmartContract.bind(this);
         this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
         this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
@@ -34,189 +26,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.getOperationStatus = this.getOperationStatus.bind(this);
         this.callSmartContract = this.callSmartContract.bind(this);
         this.readSmartContract = this.readSmartContract.bind(this);
-    }
-    /** initializes the webassembly cli under the hood */
-    initWebAssemblyCli() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            try {
-                yield wasmCli.ready;
-            }
-            catch (ex) {
-                console.error("Error initializing wasm cli", ex);
-                throw ex;
-            }
-            this.isWebAssemblyCliInitialized = true;
-        });
-    }
-    /** compile smart contract on the fly using the assemblyscript smart contract code as a string */
-    compileSmartContractFromString(smartContractContent) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!this.isWebAssemblyCliInitialized) {
-                yield this.initWebAssemblyCli();
-            }
-            let compiledData = null;
-            try {
-                const virtualFiles = { "input.ts": smartContractContent };
-                compiledData = wasmCli.compileString(virtualFiles, {
-                    optimize: true,
-                    optimizeLevel: 3,
-                    runtime: "stub",
-                    transform: "json-as/transform",
-                    measure: true,
-                    debug: true,
-                    noColors: false,
-                    traceResolution: true,
-                    exportTable: true,
-                    exportRuntime: true,
-                });
-            }
-            catch (ex) {
-                console.error(`Wasm from string compilation error`, ex);
-                throw ex;
-            }
-            console.log(`>>> STDOUT >>>\n${compiledData.stdout.toString()}`);
-            console.log(`>>> STDERR >>>\n${compiledData.stderr.toString()}`);
-            if (!compiledData || !compiledData.binary) {
-                throw new Error("No binary file created in the compilation");
-            }
-            if (!compiledData || !compiledData.text) {
-                throw new Error("No text file created in the compilation");
-            }
-            const base64 = Buffer.from(compiledData.binary).toString('base64');
-            return {
-                binary: compiledData.binary,
-                text: compiledData.text,
-                base64
-            };
-        });
-    }
-    /** compile smart contract from a physical assemblyscript (.ts) file */
-    compileSmartContractFromSourceFile(config) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!this.isWebAssemblyCliInitialized) {
-                yield this.initWebAssemblyCli();
-            }
-            if (!fs.existsSync(config.smartContractFilePath)) {
-                throw new Error(`Smart contract file ${config.smartContractFilePath} [TYPESCRIPT] does not exist`);
-            }
-            const smartContractFilePath = config.smartContractFilePath.toString();
-            const par = path.parse(smartContractFilePath);
-            const [smartContractFileName, smartContractExtName, smartContractDir] = [par.name, par.ext, par.dir];
-            if (!smartContractExtName.includes("ts")) {
-                throw new Error(`Smart contract extension ${smartContractExtName} is not a typescript one`);
-            }
-            const binaryFileToCreate = `${config.wasmBinaryPath || smartContractDir}/${smartContractFileName}.wasm`;
-            const textFileToCreate = `${config.wasmTextPath || smartContractDir}/${smartContractFileName}.wat`;
-            try {
-                wasmCli.main([
-                    smartContractFilePath,
-                    "--binaryFile", binaryFileToCreate,
-                    "--textFile", textFileToCreate,
-                    "--transform", "json-as/transform",
-                    "--exportRuntime",
-                    "--target", "release",
-                    "--optimize",
-                    "--sourceMap",
-                    "--measure"
-                ], {
-                    stdout: process.stdout,
-                    stderr: process.stderr
-                });
-            }
-            catch (ex) {
-                console.error(`Wasm compilation error`, ex);
-                throw ex;
-            }
-            if (!fs.existsSync(binaryFileToCreate)) {
-                throw new Error(`Compiled wasm file (.wasm) ${binaryFileToCreate} does not exist`);
-            }
-            if (!fs.existsSync(textFileToCreate)) {
-                throw new Error(`Compiled text file (.wat) ${textFileToCreate} does not exist`);
-            }
-            const binaryArrayBuffer = fs.readFileSync(binaryFileToCreate, {});
-            const binaryFileContents = new Uint8Array(binaryArrayBuffer);
-            const textFileContents = fs.readFileSync(textFileToCreate, { encoding: "utf8" });
-            const base64 = Buffer.from(binaryFileContents).toString('base64');
-            return {
-                binary: binaryFileContents,
-                text: textFileContents,
-                base64
-            };
-        });
-    }
-    /** compile smart contract from a physical assemblyscript file */
-    compileSmartContractFromWasmFile(wasmFilePath) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!this.isWebAssemblyCliInitialized) {
-                yield this.initWebAssemblyCli();
-            }
-            if (!fs.existsSync(wasmFilePath)) {
-                throw new Error(`Wasm contract file ${wasmFilePath} does not exist`);
-            }
-            const wasmFilePathStr = wasmFilePath.toString();
-            const binaryArrayBuffer = fs.readFileSync(wasmFilePathStr, {});
-            const binaryFileContents = new Uint8Array(binaryArrayBuffer);
-            const base64 = Buffer.from(binaryFileContents).toString('base64');
-            return {
-                binary: binaryFileContents,
-                text: null,
-                base64
-            };
-        });
-    }
-    // ----------------------------------------------------------------
-    /** compile smart contract from a physical assemblyscript (.ts) file */
-    compileSmartContractOnTheFly(smartContractContent) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!this.isWebAssemblyCliInitialized) {
-                yield this.initWebAssemblyCli();
-            }
-            const sources = { "input.ts": smartContractContent };
-            console.log(sources);
-            const output = Object.create({
-                stdout: wasmCli.createMemoryStream(),
-                stderr: wasmCli.createMemoryStream()
-            });
-            const argv = [
-                ...Object.keys(sources),
-                "-O3",
-                "--runtime", "stub",
-                "--binaryFile", "binary",
-                "--textFile", "text",
-                "--sourceMap"
-            ];
-            console.log("argv ", argv);
-            try {
-                wasmCli.main(argv, {
-                    stdout: output.stdout,
-                    stderr: output.stderr,
-                    readFile: (name, baseDir) => {
-                        console.log("READFILE (name, basedir) ", name, baseDir, Object.prototype.hasOwnProperty.call(sources, name));
-                        return Object.prototype.hasOwnProperty.call(sources, name) ? sources[name] : null;
-                    },
-                    writeFile: (name, contents, baseDir) => {
-                        console.log(`>>> WRITE:${name} >>>\n${contents.length}`);
-                        output[name] = contents;
-                    },
-                    listFiles(dirname, baseDir) {
-                        return [];
-                    }
-                }, (err) => {
-                    console.log(`>>> STDOUT >>>\n${output.stdout.toString()}`);
-                    console.log(`>>> STDERR >>>\n${output.stderr.toString()}`);
-                    if (err) {
-                        console.log(">>> THROWN >>>");
-                        console.log(err);
-                    }
-                    return 0;
-                });
-            }
-            catch (ex) {
-                console.error(`Wasm compilation error`, ex);
-                throw ex;
-            }
-            return output;
-        });
     }
     /** create and send an operation containing byte code */
     deploySmartContract(contractData, executor) {
@@ -236,7 +45,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             if (!contractData.contractDataBase64) {
                 throw new Error(`Contract base64 encoded data required. Got null`);
             }
-            const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, 'base64'));
+            const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, "base64"));
             const data = {
                 content: {
                     expire_period: expiryPeriod,

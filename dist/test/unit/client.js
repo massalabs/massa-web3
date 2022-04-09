@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const IProvider_1 = require("../../interfaces/IProvider");
 const Client_1 = require("../../web3/Client");
+const massa_sc_utils_1 = require("massa-sc-utils");
 const ClientFactory_1 = require("../../web3/ClientFactory");
 const WalletClient_1 = require("../../web3/WalletClient");
 const EventPoller_1 = require("../../web3/EventPoller");
@@ -105,25 +106,27 @@ const testGroupWallet = (web3Client) => tslib_1.__awaiter(void 0, void 0, void 0
     // buy rolls
     const buyRollsIds = yield web3Client.wallet().buyRolls({
         fee: 0,
-        amount: 1, //ROLLS
+        amount: 1, // ROLLS
     }, baseAccount);
     console.log("buyRollsIds", JSON.stringify(buyRollsIds, null, 2));
     // send rolls
     const sellRollsIds = yield web3Client.wallet().sellRolls({
         fee: 0,
-        amount: 1, //ROLLS
+        amount: 1, // ROLLS
     }, baseAccount);
     console.log("sellRollsIds", JSON.stringify(sellRollsIds, null, 2));
 });
 const testGroupSmartContracts = (web3Client) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    // construct a sc utils
+    const utils = new massa_sc_utils_1.SmartContractUtils();
     // compile smart contract
-    const compiledScFromSource = yield web3Client.smartContracts().compileSmartContractFromSourceFile({
+    const compiledScFromSource = yield utils.compileSmartContractFromSourceFile({
         smartContractFilePath: "path_to.ts",
     });
     console.log("Compiled from .ts: ", JSON.stringify(compiledScFromSource, null, 2));
-    const compiledScFromFile = yield web3Client.smartContracts().compileSmartContractFromWasmFile("path_to.wasm");
+    const compiledScFromFile = yield utils.compileSmartContractFromWasmFile("path_to.wasm");
     console.log("Compiled from file: ", JSON.stringify(compiledScFromFile, null, 2));
-    const compiledScFromString = yield web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
+    const compiledScFromString = yield utils.compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
     console.log("Compiled from string: ", JSON.stringify(compiledScFromString, null, 2));
     // deploy smart contract
     const opIds = yield web3Client.smartContracts().deploySmartContract({
@@ -183,7 +186,7 @@ const getTestnetClient = () => {
 (() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
         // ============= CLIENT ===================== //
-        //const web3Client: Client = getTestnetClient();
+        // const web3Client: Client = getTestnetClient();
         // OR
         const web3Client = getLocalClient();
         // ============= PUBLIC API ================= //

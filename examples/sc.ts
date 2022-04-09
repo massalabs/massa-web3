@@ -3,7 +3,7 @@ import { IContractData } from "../interfaces/IContractData";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { ISlot } from "../interfaces/ISlot";
 import { ClientFactory, DefaultProviderUrls } from "../web3/ClientFactory";
-import { CompiledSmartContract } from "../web3/SmartContractsClient";
+import { SmartContractUtils, ICompiledSmartContract } from "massa-sc-utils";
 import { IEvent } from "../interfaces/IEvent";
 import { EventPoller } from "../web3/EventPoller";
 import { ICallData } from "../interfaces/ICallData";
@@ -23,8 +23,11 @@ const baseAccount = {
         // init client
         const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
 
+        // construct a sc utils
+        const utils = new SmartContractUtils();
+
         // compile sc from wasm file ready for deployment
-        const compiledSc: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromWasmFile("/home/evgeni/Documents/development/massa/massa-sc-examples/build/create_tictactoe.wasm");
+        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("path_to_create_tictactoe.wasm"); // TODO: please change acc. to your design
         if (!compiledSc.base64) {
             throw new Error("No bytecode to deploy. Check AS compiler");
         }
@@ -85,7 +88,7 @@ const baseAccount = {
         // get information about transaction
         const opData = await web3Client.publicApi().getOperations([callScOperationId]);
         console.log("=======> Get Operations Smart Contract Tx Summary = ", opData);
-        
+
         // finally get some read state
         const readTxId = await web3Client.smartContracts().readSmartContract({
             fee: 0,

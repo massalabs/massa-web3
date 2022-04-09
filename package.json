@@ -10,7 +10,8 @@
     "build": "rimraf dist/* && tsc -d",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts",
     "test-unit-client": "ts-node ./test/unit/client.ts",
-    "test-sc-example": "ts-node ./examples/sc.ts"
+    "test-sc-example": "ts-node ./examples/sc.ts",
+    "fix-lint": "tslint -c tslint.json '**/*.ts' --fix"
   },
   "author": "Massa Labs <info@massa.net>",
   "contributors": [
@@ -29,7 +30,6 @@
   ],
   "dependencies": {
     "@noble/secp256k1": "1.5.5",
-    "assemblyscript": "^0.19.23",
     "axios": "^0.26.1",
     "bn.js": "^5.2.0",
     "bs58check": "^2.1.2",
@@ -38,7 +38,8 @@
     "node-ts": "^5.1.2",
     "secp256k1": "^4.0.3",
     "uuidv4": "^6.2.12",
-    "varint": "^6.0.0"
+    "varint": "^6.0.0",
+    "massa-sc-utils": "^2.1.0"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",

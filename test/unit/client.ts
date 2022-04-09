@@ -4,7 +4,7 @@ import { IProvider, ProviderType } from "../../interfaces/IProvider";
 import { Client } from "../../web3/Client";
 import { INodeStatus } from "../../interfaces/INodeStatus";
 import { IAddressInfo, IFullAddressInfo } from "../../interfaces/IAddressInfo";
-import { CompiledSmartContract, WasmConfig } from "../../web3/SmartContractsClient";
+import { SmartContractUtils, ICompiledSmartContract, IWasmConfig } from "massa-sc-utils";
 import { IBlockInfo } from "../../interfaces/IBlockInfo";
 import { IEndorsement } from "../../interfaces/IEndorsement";
 import { IOperationData } from "../../interfaces/IOperationData";
@@ -162,16 +162,19 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
 };
 
 const testGroupSmartContracts = async (web3Client: Client): Promise<void> => {
+    // construct a sc utils
+    const utils = new SmartContractUtils();
+
     // compile smart contract
-    const compiledScFromSource: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
+    const compiledScFromSource: ICompiledSmartContract = await utils.compileSmartContractFromSourceFile({
         smartContractFilePath: "path_to.ts",
-    } as WasmConfig);
+    } as IWasmConfig);
     console.log("Compiled from .ts: ", JSON.stringify(compiledScFromSource, null, 2));
 
-    const compiledScFromFile: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromWasmFile("path_to.wasm");
+    const compiledScFromFile: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("path_to.wasm");
     console.log("Compiled from file: ", JSON.stringify(compiledScFromFile, null, 2));
 
-    const compiledScFromString: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
+    const compiledScFromString: ICompiledSmartContract = await utils.compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
     console.log("Compiled from string: ", JSON.stringify(compiledScFromString, null, 2));
 
     // deploy smart contract

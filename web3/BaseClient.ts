@@ -68,7 +68,7 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
 			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
 			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL: {
-					return this.getPublicProviders()[0]; //TODO: choose the first available public provider ?
+					return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
 			case JSON_RPC_REQUEST_METHOD.BAN:
@@ -190,11 +190,11 @@ export class BaseClient {
 				const targetAddressEncoded = base58checkDecode((data as ICallData).targetAddress);
 
 				// target function name and name length
-				const functionNameEncoded = new Uint8Array(Buffer.from((data as ICallData).functionName, 'utf8'))
+				const functionNameEncoded = new Uint8Array(Buffer.from((data as ICallData).functionName, "utf8"));
 				const functionNameLengthEncoded = Buffer.from(varintEncode(functionNameEncoded.length));
 
 				// parameter
-				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, 'utf8'))
+				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, "utf8"));
 				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);

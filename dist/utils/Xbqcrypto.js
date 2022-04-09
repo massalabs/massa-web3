@@ -5,7 +5,7 @@ const varint = require("varint");
 const createhash = require("create-hash");
 const bs58check = require("bs58check");
 function hashSha256(data) {
-    return createhash('sha256').update(data).digest();
+    return createhash("sha256").update(data).digest();
 }
 exports.hashSha256 = hashSha256;
 function base58checkEncode(data) {

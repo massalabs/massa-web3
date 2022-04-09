@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const ClientFactory_1 = require("../web3/ClientFactory");
+const massa_sc_utils_1 = require("massa-sc-utils");
 const EventPoller_1 = require("../web3/EventPoller");
 const EOperationStatus_1 = require("../interfaces/EOperationStatus");
 const Wait_1 = require("../utils/Wait");
@@ -14,8 +15,10 @@ const baseAccount = {
     try {
         // init client
         const web3Client = ClientFactory_1.ClientFactory.createDefaultClient(ClientFactory_1.DefaultProviderUrls.LABNET, true, baseAccount);
+        // construct a sc utils
+        const utils = new massa_sc_utils_1.SmartContractUtils();
         // compile sc from wasm file ready for deployment
-        const compiledSc = yield web3Client.smartContracts().compileSmartContractFromWasmFile("/home/evgeni/Documents/development/massa/massa-sc-examples/build/create_tictactoe.wasm");
+        const compiledSc = yield utils.compileSmartContractFromWasmFile("path_to_create_tictactoe.wasm"); // TODO: please change acc. to your design
         if (!compiledSc.base64) {
             throw new Error("No bytecode to deploy. Check AS compiler");
         }
