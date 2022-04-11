@@ -31,6 +31,7 @@
   "dependencies": {
     "@noble/secp256k1": "1.5.5",
     "axios": "^0.26.1",
+    "base58check": "^2.0.0",
     "bn.js": "^5.2.0",
     "bs58check": "^2.1.2",
     "buffer": "^6.0.3",

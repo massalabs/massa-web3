@@ -191,7 +191,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             if (signer.publicKey) {
                 const publicKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.publicKey);
                 const base58PublicKey = new bn_js_1.BN(publicKeyBase58Decoded, 16);
-                const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toBuffer());
+                const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toArrayLike(Buffer, "be", 33));
                 if (!isVerified) {
                     throw new Error(`Signature could not be verified with public key. Please inspect`);
                 }
