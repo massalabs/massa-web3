@@ -24,4 +24,7 @@ export declare class PublicApiClient extends BaseClient {
     getCliques(): Promise<Array<IClique>>;
     /** Returns the active stakers and their roll counts for the current cycle */
     getStakers(): Promise<Array<IStakingAddresses>>;
+    getParallelBalance(address: string): Promise<number>;
+    getSequentialBalance(address: string): Promise<number>;
+    getDatastoreEntry(address: string, key: string): Promise<number>;
 }

@@ -41,8 +41,13 @@ export interface IAddressInfo {
         final_rolls: number,
     };
     thread: number;
-    sce_ledger_info: {
-        balance: String // reprensents an amount
+    final_sce_ledger_info: {
+        balance: String // represents an amount
+        module: null | [number] // stored bytecode
+        datastore: ILedgerDatastore
+    };
+    candidate_sce_ledger_info: {
+        balance: String // represents an amount
         module: null | [number] // stored bytecode
         datastore: ILedgerDatastore
     };

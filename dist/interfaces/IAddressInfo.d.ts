@@ -38,7 +38,12 @@ export interface IAddressInfo {
         final_rolls: number;
     };
     thread: number;
-    sce_ledger_info: {
+    final_sce_ledger_info: {
+        balance: String;
+        module: null | [number];
+        datastore: ILedgerDatastore;
+    };
+    candidate_sce_ledger_info: {
         balance: String;
         module: null | [number];
         datastore: ILedgerDatastore;
