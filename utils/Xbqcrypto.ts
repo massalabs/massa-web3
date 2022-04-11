@@ -7,7 +7,7 @@ export function hashSha256(data) {
 }
 
 export function base58checkEncode(data: Buffer | Uint8Array): string {
-    return bs58check.encode(data);
+    return bs58check.encode(data.slice(1), data[0].toString(16).padStart(2, '0'));
 }
 
 export function base58checkDecode(data: string): Buffer {
