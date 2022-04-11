@@ -187,14 +187,14 @@ export class BaseClient {
 				const gasPriceEncoded = Buffer.from(varintEncode((data as ICallData).gasPrice));
 
 				// target address
-				const targetAddressEncoded = base58checkDecode((data as ICallData).targetAddress);
+				const targetAddressEncoded = Buffer.from(base58checkDecode((data as ICallData).targetAddress));
 
 				// target function name and name length
-				const functionNameEncoded = new Uint8Array(Buffer.from((data as ICallData).functionName, "utf8"));
+				const functionNameEncoded = Buffer.from((data as ICallData).functionName, "utf8");
 				const functionNameLengthEncoded = Buffer.from(varintEncode(functionNameEncoded.length));
 
 				// parameter
-				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, "utf8"));
+				const parametersEncoded = Buffer.from((data as ICallData).parameter, "utf8");
 				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);

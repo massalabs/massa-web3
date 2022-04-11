@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.typedArrayToBuffer = exports.varintDecode = exports.varintEncode = exports.base58checkDecode = exports.base58checkEncode = exports.hashSha256 = void 0;
 const varint = require("varint");
 const createhash = require("create-hash");
-const bs58check = require("bs58check");
+const bs58check = require("base58check");
 function hashSha256(data) {
     return createhash("sha256").update(data).digest();
 }
@@ -13,7 +13,8 @@ function base58checkEncode(data) {
 }
 exports.base58checkEncode = base58checkEncode;
 function base58checkDecode(data) {
-    return bs58check.decode(data);
+    let decoded = bs58check.decode(data);
+    return Buffer.concat([decoded.prefix, decoded.data]);
 }
 exports.base58checkDecode = base58checkDecode;
 function varintEncode(data) {

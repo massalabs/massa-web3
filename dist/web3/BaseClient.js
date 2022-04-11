@@ -155,12 +155,12 @@ class BaseClient {
                 // gas price
                 const gasPriceEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.gasPrice));
                 // target address
-                const targetAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.targetAddress);
+                const targetAddressEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.base58checkDecode)(data.targetAddress));
                 // target function name and name length
-                const functionNameEncoded = new Uint8Array(buffer_1.Buffer.from(data.functionName, "utf8"));
+                const functionNameEncoded = buffer_1.Buffer.from(data.functionName, "utf8");
                 const functionNameLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(functionNameEncoded.length));
                 // parameter
-                const parametersEncoded = new Uint8Array(buffer_1.Buffer.from(data.parameter, "utf8"));
+                const parametersEncoded = buffer_1.Buffer.from(data.parameter, "utf8");
                 const parametersLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(parametersEncoded.length));
                 return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
             }
