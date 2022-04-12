@@ -206,7 +206,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
     getOperationStatus(opId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const operationData = yield this.publicApiClient.getOperations([opId]);
-            console.log(operationData);
             if (!operationData || operationData.length === 0)
                 return EOperationStatus_1.EOperationStatus.NOT_FOUND;
             const opData = operationData[0];

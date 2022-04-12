@@ -218,7 +218,6 @@ export class SmartContractsClient extends BaseClient {
 
 	public async getOperationStatus(opId: string): Promise<EOperationStatus> {
 		const operationData: Array<IOperationData> = await this.publicApiClient.getOperations([opId]);
-		console.log(operationData);
 		if (!operationData || operationData.length === 0) return EOperationStatus.NOT_FOUND;
 		const opData = operationData[0];
 		if (opData.is_final) {

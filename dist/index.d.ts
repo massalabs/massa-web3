@@ -22,6 +22,7 @@ export { IBalance } from "./interfaces/IBalance";
 export { IContractReadOperationData } from "./interfaces/IContractReadOperationData";
 export { IExecuteReadOnlyResponse, ISCOutputEvent, IEventExecutionContext } from "./interfaces/IExecuteReadOnlyResponse";
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";
+export { EOperationStatus } from "./interfaces/EOperationStatus";
 export { ITransactionOpType, IRollBuyOpType, IRollSellOpType, IExecSmartContractOpType, OperationTypeId, OpType } from "./interfaces/OperationTypes";
 /** Exposed clients and factories */
 export { ClientFactory, DefaultProviderUrls } from "./web3/ClientFactory";

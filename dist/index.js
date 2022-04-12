@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SmartContractsClient = exports.EventPoller = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.ProviderType = void 0;
+exports.SmartContractsClient = exports.EventPoller = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
 var IProvider_1 = require("./interfaces/IProvider");
 Object.defineProperty(exports, "ProviderType", { enumerable: true, get: function () { return IProvider_1.ProviderType; } });
+var EOperationStatus_1 = require("./interfaces/EOperationStatus");
+Object.defineProperty(exports, "EOperationStatus", { enumerable: true, get: function () { return EOperationStatus_1.EOperationStatus; } });
 var OperationTypes_1 = require("./interfaces/OperationTypes");
 Object.defineProperty(exports, "OperationTypeId", { enumerable: true, get: function () { return OperationTypes_1.OperationTypeId; } });
 /** Exposed clients and factories */
