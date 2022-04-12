@@ -1,5 +1,4 @@
 import { generateUUID } from "./UUID";
-import { clearTimeout, clearInterval } from "timers";
 
 export class Timeout {
 	constructor(timeoutMil: number, callback: () => void) {
@@ -59,7 +58,6 @@ export class Interval {
 	public getId(): string {
 		if (!this.id)
 			this.id = generateUUID();
-
 		return this.id;
 	}
 
