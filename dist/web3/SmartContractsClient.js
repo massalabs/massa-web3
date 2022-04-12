@@ -74,17 +74,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // get next period info
             const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
             const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-            // check if the param payload is already stringified
-            let stringifiedParamPayload = callData.parameter;
-            try {
-                // if this call succeeds it means the payload is already a stringified json
-                JSON.parse(callData.parameter);
-            }
-            catch (e) {
-                // payload is not a stringified json, also stringify
-                stringifiedParamPayload = JSON.stringify(callData.parameter);
-            }
-            callData.parameter = stringifiedParamPayload;
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, executor, expiryPeriod);
             // sign payload
@@ -122,17 +111,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
     /** read smart contract method */
     readSmartContract(readData) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // check if the param payload is already stringified
-            let stringifiedParamPayload = readData.parameter;
-            try {
-                // if this call succeeds it means the payload is already a stringified json
-                JSON.parse(readData.parameter);
-            }
-            catch (e) {
-                // payload is not a stringified json, also stringify
-                stringifiedParamPayload = JSON.stringify(readData.parameter);
-            }
-            readData.parameter = stringifiedParamPayload;
             // request data
             const data = {
                 max_gas: readData.maxGas,
@@ -194,7 +172,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             const addressInfo = addresses.at(0);
             const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashSha256)(key)));
             const data = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-            let res = "";
+            const res = "";
             for (let i = 0; i < data.toString().length; ++i) {
                 res.concat(String.fromCharCode(parseInt(data[i])));
             }

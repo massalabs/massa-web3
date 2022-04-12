@@ -9,12 +9,12 @@ function hashSha256(data) {
 }
 exports.hashSha256 = hashSha256;
 function base58checkEncode(data) {
-    let bufData = Buffer.from(data);
-    return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, '0'));
+    const bufData = Buffer.from(data);
+    return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, "0"));
 }
 exports.base58checkEncode = base58checkEncode;
 function base58checkDecode(data) {
-    let decoded = base58check.decode(data);
+    const decoded = base58check.decode(data);
     return Buffer.concat([decoded.prefix, decoded.data]);
 }
 exports.base58checkDecode = base58checkDecode;

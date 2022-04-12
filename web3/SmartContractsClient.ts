@@ -90,17 +90,6 @@ export class SmartContractsClient extends BaseClient {
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
-		// check if the param payload is already stringified
-		let stringifiedParamPayload = callData.parameter;
-		try {
-			// if this call succeeds it means the payload is already a stringified json
-			JSON.parse(callData.parameter);
-		} catch (e) {
-			// payload is not a stringified json, also stringify
-			stringifiedParamPayload = JSON.stringify(callData.parameter);
-		}
-		callData.parameter = stringifiedParamPayload;
-
 		// bytes compaction
 		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, executor, expiryPeriod);
 
@@ -137,17 +126,6 @@ export class SmartContractsClient extends BaseClient {
 
 	/** read smart contract method */
 	public async readSmartContract(readData: IReadData): Promise<Array<IContractReadOperationData>> {
-		// check if the param payload is already stringified
-		let stringifiedParamPayload = readData.parameter;
-		try {
-			// if this call succeeds it means the payload is already a stringified json
-			JSON.parse(readData.parameter);
-		} catch (e) {
-			// payload is not a stringified json, also stringify
-			stringifiedParamPayload = JSON.stringify(readData.parameter);
-		}
-		readData.parameter = stringifiedParamPayload;
-
 		// request data
 		const data = {
 			max_gas: readData.maxGas,
@@ -205,9 +183,9 @@ export class SmartContractsClient extends BaseClient {
 		const addressInfo: IAddressInfo = addresses.at(0);
 		const base58EncodedKey: string = base58checkEncode(Buffer.from(hashSha256(key)));
 		const data: number = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-		let res: string = "";
-		for(let i= 0 ; i < data.toString().length ; ++i) {
-			res.concat(String.fromCharCode(parseInt(data[i])))
+		const res: string = "";
+		for (let i = 0 ; i < data.toString().length ; ++i) {
+			res.concat(String.fromCharCode(parseInt(data[i])));
 		}
 		return res;
 	}

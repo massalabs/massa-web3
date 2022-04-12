@@ -7,12 +7,12 @@ export function hashSha256(data) {
 }
 
 export function base58checkEncode(data: Buffer | Uint8Array): string {
-    let bufData = Buffer.from(data);
-    return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, '0'));
+    const bufData = Buffer.from(data);
+    return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, "0"));
 }
 
 export function base58checkDecode(data: string): Buffer {
-    let decoded = base58check.decode(data);
+    const decoded = base58check.decode(data);
     return Buffer.concat([decoded.prefix, decoded.data]);
 }
 
