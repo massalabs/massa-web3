@@ -9,7 +9,8 @@ function hashSha256(data) {
 }
 exports.hashSha256 = hashSha256;
 function base58checkEncode(data) {
-    return base58check.encode(data.slice(1), data[0].toString(16).padStart(2, '0'));
+    let bufData = Buffer.from(data);
+    return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, '0'));
 }
 exports.base58checkEncode = base58checkEncode;
 function base58checkDecode(data) {

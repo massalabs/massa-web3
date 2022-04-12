@@ -1,5 +1,7 @@
 import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { IAccount } from "../interfaces/IAccount";
+import { IAddressInfo } from "../interfaces/IAddressInfo";
+import { IBalance } from "../interfaces/IBalance";
 import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
@@ -14,6 +16,7 @@ import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { wait } from "../utils/Wait";
+import { base58checkEncode, hashSha256 } from "../utils/Xbqcrypto";
 import { BaseClient } from "./BaseClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
@@ -23,8 +26,6 @@ const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
 export class SmartContractsClient extends BaseClient {
-	private isWebAssemblyCliInitialized = false;
-
 	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, private readonly walletClient: WalletClient) {
 		super(clientConfig);
 
@@ -36,6 +37,7 @@ export class SmartContractsClient extends BaseClient {
 		this.getOperationStatus = this.getOperationStatus.bind(this);
 		this.callSmartContract = this.callSmartContract.bind(this);
 		this.readSmartContract = this.readSmartContract.bind(this);
+		this.getParallelBalance = this.getParallelBalance.bind(this);
 	}
 
 	/** create and send an operation containing byte code */
@@ -164,6 +166,17 @@ export class SmartContractsClient extends BaseClient {
 		}
 	}
 
+	/** Returns the parallel balance which is the smart contract side balance  */
+	public async getParallelBalance(address: string): Promise<IBalance | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+		if (addresses.length === 0) return null;
+		const addressInfo: IAddressInfo = addresses.at(0);
+		return {
+			candidate: addressInfo.candidate_sce_ledger_info.balance,
+			final: addressInfo.final_sce_ledger_info.balance
+		} as IBalance;
+	}
+
 	/** get filtered smart contract events */
 	public async getFilteredScOutputEvents(eventFilterData: IEventFilter): Promise<Array<IEvent>> {
 
@@ -183,6 +196,20 @@ export class SmartContractsClient extends BaseClient {
 		} else {
 			return await this.sendJsonRPCRequest<Array<IEvent>>(jsonRpcRequestMethod, [data]);
 		}
+	}
+
+	/** Returns the smart contract data storage */
+	public async getDatastoreEntry(address: string, key: string): Promise<string | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+		if (addresses.length === 0) return null;
+		const addressInfo: IAddressInfo = addresses.at(0);
+		const base58EncodedKey: string = base58checkEncode(Buffer.from(hashSha256(key)));
+		const data: number = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+		let res: string = "";
+		for(let i= 0 ; i < data.toString().length ; ++i) {
+			res.concat(String.fromCharCode(parseInt(data[i])))
+		}
+		return res;
 	}
 
 	/** Read-only smart contracts */

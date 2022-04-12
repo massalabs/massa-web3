@@ -5,6 +5,8 @@ const UUID_1 = require("./UUID");
 const timers_1 = require("timers");
 class Timeout {
     constructor(timeoutMil, callback) {
+        this.getId = this.getId.bind(this);
+        this.clear = this.clear.bind(this);
         const that = this;
         this.isCleared = false;
         this.isCalled = false;
@@ -30,6 +32,8 @@ class Timeout {
 exports.Timeout = Timeout;
 class Interval {
     constructor(timeoutMil, callback) {
+        this.getId = this.getId.bind(this);
+        this.clear = this.clear.bind(this);
         const that = this;
         this.isCleared = false;
         this.isCalled = false;
@@ -47,7 +51,7 @@ class Interval {
     }
     clear() {
         if (!this.isCleared) {
-            clearInterval(this.intervalHook);
+            (0, timers_1.clearInterval)(this.intervalHook);
             this.isCleared = true;
         }
     }

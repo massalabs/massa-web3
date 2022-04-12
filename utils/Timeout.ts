@@ -1,8 +1,11 @@
 import { generateUUID } from "./UUID";
-import { clearTimeout } from "timers";
+import { clearTimeout, clearInterval } from "timers";
 
 export class Timeout {
 	constructor(timeoutMil: number, callback: () => void) {
+		this.getId = this.getId.bind(this);
+		this.clear = this.clear.bind(this);
+
 		const that = this;
 		this.isCleared = false;
 		this.isCalled = false;
@@ -35,6 +38,9 @@ export class Timeout {
 
 export class Interval {
 	constructor(timeoutMil: number, callback: () => void) {
+		this.getId = this.getId.bind(this);
+		this.clear = this.clear.bind(this);
+
 		const that = this;
 		this.isCleared = false;
 		this.isCalled = false;

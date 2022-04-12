@@ -7,6 +7,7 @@ const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const Wait_1 = require("../utils/Wait");
+const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const BaseClient_1 = require("./BaseClient");
 const WalletClient_1 = require("./WalletClient");
 const TX_POLL_INTERVAL_MS = 10000;
@@ -17,7 +18,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         super(clientConfig);
         this.publicApiClient = publicApiClient;
         this.walletClient = walletClient;
-        this.isWebAssemblyCliInitialized = false;
         // bind class methods
         this.deploySmartContract = this.deploySmartContract.bind(this);
         this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
@@ -26,6 +26,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.getOperationStatus = this.getOperationStatus.bind(this);
         this.callSmartContract = this.callSmartContract.bind(this);
         this.readSmartContract = this.readSmartContract.bind(this);
+        this.getParallelBalance = this.getParallelBalance.bind(this);
     }
     /** create and send an operation containing byte code */
     deploySmartContract(contractData, executor) {
@@ -151,6 +152,19 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             }
         });
     }
+    /** Returns the parallel balance which is the smart contract side balance  */
+    getParallelBalance(address) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const addresses = yield this.publicApiClient.getAddresses([address]);
+            if (addresses.length === 0)
+                return null;
+            const addressInfo = addresses.at(0);
+            return {
+                candidate: addressInfo.candidate_sce_ledger_info.balance,
+                final: addressInfo.final_sce_ledger_info.balance
+            };
+        });
+    }
     /** get filtered smart contract events */
     getFilteredScOutputEvents(eventFilterData) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -169,6 +183,22 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             else {
                 return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
+        });
+    }
+    /** Returns the smart contract data storage */
+    getDatastoreEntry(address, key) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const addresses = yield this.publicApiClient.getAddresses([address]);
+            if (addresses.length === 0)
+                return null;
+            const addressInfo = addresses.at(0);
+            const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashSha256)(key)));
+            const data = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+            let res = "";
+            for (let i = 0; i < data.toString().length; ++i) {
+                res.concat(String.fromCharCode(parseInt(data[i])));
+            }
+            return res;
         });
     }
     /** Read-only smart contracts */

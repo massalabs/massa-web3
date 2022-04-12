@@ -9,7 +9,6 @@ import { IOperationData } from "../interfaces/IOperationData";
 import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
-import { base58checkEncode } from "../utils/Xbqcrypto";
 
 /** Public Api Client for interacting with the massa network */
 export class PublicApiClient extends BaseClient {
@@ -26,9 +25,6 @@ export class PublicApiClient extends BaseClient {
 		this.getOperations = this.getOperations.bind(this);
 		this.getCliques = this.getCliques.bind(this);
 		this.getStakers = this.getStakers.bind(this);
-		this.getParallelBalance = this.getParallelBalance.bind(this);
-		this.getSequentialBalance = this.getSequentialBalance.bind(this);
-		this.getDatastoreEntry = this.getDatastoreEntry.bind(this);
 	}
 
 	/** Show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...) */
@@ -99,24 +95,5 @@ export class PublicApiClient extends BaseClient {
 		} else {
 			return await this.sendJsonRPCRequest<Array<IStakingAddresses>>(jsonRpcRequestMethod, []);
 		}
-	}
-
-	public async getParallelBalance(address: string): Promise<number> {
-		const addresses: Array<IAddressInfo> = await this.getAddresses([address]);
-		const addressInfo: IAddressInfo = addresses.at(0);
-		return parseFloat(addressInfo.balance.final_balance);
-	}
-
-	public async getSequentialBalance(address: string): Promise<number> {
-		const addresses: Array<IAddressInfo> = await this.getAddresses([address]);
-		const addressInfo: IAddressInfo = addresses.at(0);
-		return parseFloat(addressInfo.balance.candidate_balance);
-	}
-
-	public async getDatastoreEntry(address: string, key: string): Promise<number> {
-		const addresses: Array<IAddressInfo> = await this.getAddresses([address]);
-		const addressInfo: IAddressInfo = addresses.at(0);
-		const base58EncodedAddress: string = base58checkEncode(Buffer.from(address));
-		return addressInfo.candidate_sce_ledger_info.datastore[base58EncodedAddress];
 	}
 }

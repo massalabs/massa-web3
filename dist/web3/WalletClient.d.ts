@@ -7,6 +7,7 @@ import { ISignature } from "../interfaces/ISignature";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { PublicApiClient } from "./PublicApiClient";
 import { IRollsData } from "../interfaces/IRollsData";
+import { IBalance } from "../interfaces/IBalance";
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export declare class WalletClient extends BaseClient {
     private readonly publicApiClient;
@@ -31,12 +32,16 @@ export declare class WalletClient extends BaseClient {
     walletInfo(): Promise<Array<IFullAddressInfo>>;
     /** generate a private key and add it into the wallet */
     static walletGenerateNewAccount(): Promise<IAccount>;
+    /** generate a private key and add it into the wallet */
+    static getAccountFromPrivateKey(privateKeyBase58: string): Promise<IAccount>;
     /** sign random message data with an already added wallet account */
     signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature>;
     /** get wallet addresses info */
     private getWalletAddressesInfo;
     /** sign provided string with given address (address must be in the wallet) */
     static walletSignMessage(data: string | Buffer, signer: IAccount): Promise<ISignature>;
+    /** Returns the account sequential balance - the consensus side balance  */
+    getAccountSequentialBalance(address: string): Promise<IBalance | null>;
     /** send native MAS from a wallet address to another */
     sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>>;
     /** buy rolls with wallet address */

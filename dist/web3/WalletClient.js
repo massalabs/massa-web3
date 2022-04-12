@@ -31,6 +31,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         this.sendTransaction = this.sendTransaction.bind(this);
         this.sellRolls = this.sellRolls.bind(this);
         this.buyRolls = this.buyRolls.bind(this);
+        this.getAccountSequentialBalance = this.getAccountSequentialBalance.bind(this);
         // init wallet with a base account if any
         if (baseAccount) {
             this.setBaseAccount(baseAccount);
@@ -139,6 +140,24 @@ class WalletClient extends BaseClient_1.BaseClient {
             };
         });
     }
+    /** generate a private key and add it into the wallet */
+    static getAccountFromPrivateKey(privateKeyBase58) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // get private key
+            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58);
+            // get public key
+            const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
+            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+            // get wallet account address
+            const address = yield secp.utils.sha256(publicKey);
+            const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+            return {
+                address: addressBase58Encoded,
+                privateKey: privateKeyBase58,
+                publicKey: publicKeyBase58Encoded
+            };
+        });
+    }
     /** sign random message data with an already added wallet account */
     signMessage(data, accountSignerAddress) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -208,6 +227,19 @@ class WalletClient extends BaseClient_1.BaseClient {
                 v,
                 hex,
                 base58Encoded
+            };
+        });
+    }
+    /** Returns the account sequential balance - the consensus side balance  */
+    getAccountSequentialBalance(address) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const addresses = yield this.publicApiClient.getAddresses([address]);
+            if (addresses.length === 0)
+                return null;
+            const addressInfo = addresses.at(0);
+            return {
+                candidate: addressInfo.ledger_info.candidate_ledger_info.balance,
+                final: addressInfo.ledger_info.final_ledger_info.balance
             };
         });
     }

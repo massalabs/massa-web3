@@ -38,13 +38,22 @@ export interface IAddressInfo {
         final_rolls: number;
     };
     thread: number;
+    ledger_info: {
+        candidate_ledger_info: {
+            balance: string;
+        };
+        final_ledger_info: {
+            balance: string;
+        };
+        locked_balance: string;
+    };
     final_sce_ledger_info: {
-        balance: String;
+        balance: string;
         module: null | [number];
         datastore: ILedgerDatastore;
     };
     candidate_sce_ledger_info: {
-        balance: String;
+        balance: string;
         module: null | [number];
         datastore: ILedgerDatastore;
     };

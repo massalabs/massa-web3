@@ -13,6 +13,7 @@ import { OperationTypeId } from "../interfaces/OperationTypes";
 import { PublicApiClient } from "./PublicApiClient";
 import { IRollsData } from "../interfaces/IRollsData";
 import { INodeStatus } from "../interfaces/INodeStatus";
+import { IBalance } from "../interfaces/IBalance";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
 
@@ -41,6 +42,7 @@ export class WalletClient extends BaseClient {
 		this.sendTransaction = this.sendTransaction.bind(this);
 		this.sellRolls = this.sellRolls.bind(this);
 		this.buyRolls = this.buyRolls.bind(this);
+		this.getAccountSequentialBalance = this.getAccountSequentialBalance.bind(this);
 
 		// init wallet with a base account if any
 		if (baseAccount) {
@@ -165,6 +167,26 @@ export class WalletClient extends BaseClient {
 		} as IAccount;
 	}
 
+	/** generate a private key and add it into the wallet */
+	public static async getAccountFromPrivateKey(privateKeyBase58: string): Promise<IAccount> {
+		// get private key
+		const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKeyBase58);
+
+		// get public key
+		const publicKey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
+		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+
+		// get wallet account address
+		const address: Uint8Array = await secp.utils.sha256(publicKey);
+		const addressBase58Encoded: string = base58checkEncode(address);
+
+		return {
+			address: addressBase58Encoded,
+			privateKey: privateKeyBase58,
+			publicKey: publicKeyBase58Encoded
+		} as IAccount;
+	}
+
 	/** sign random message data with an already added wallet account */
 	public async signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature> {
 		const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
@@ -240,6 +262,17 @@ export class WalletClient extends BaseClient {
 			hex,
 			base58Encoded
 		} as ISignature;
+	}
+
+	/** Returns the account sequential balance - the consensus side balance  */
+	public async getAccountSequentialBalance(address: string): Promise<IBalance | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+		if (addresses.length === 0) return null;
+		const addressInfo: IAddressInfo = addresses.at(0);
+		return {
+			candidate: addressInfo.ledger_info.candidate_ledger_info.balance,
+			final: addressInfo.ledger_info.final_ledger_info.balance
+		} as IBalance;
 	}
 
 	/** send native MAS from a wallet address to another */

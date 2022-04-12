@@ -5,7 +5,6 @@ const tslib_1 = require("tslib");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const BaseClient_1 = require("./BaseClient");
-const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 /** Public Api Client for interacting with the massa network */
 class PublicApiClient extends BaseClient_1.BaseClient {
     constructor(clientConfig) {
@@ -19,9 +18,6 @@ class PublicApiClient extends BaseClient_1.BaseClient {
         this.getOperations = this.getOperations.bind(this);
         this.getCliques = this.getCliques.bind(this);
         this.getStakers = this.getStakers.bind(this);
-        this.getParallelBalance = this.getParallelBalance.bind(this);
-        this.getSequentialBalance = this.getSequentialBalance.bind(this);
-        this.getDatastoreEntry = this.getDatastoreEntry.bind(this);
     }
     /** Show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...) */
     getNodeStatus() {
@@ -105,28 +101,6 @@ class PublicApiClient extends BaseClient_1.BaseClient {
             else {
                 return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
             }
-        });
-    }
-    getParallelBalance(address) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const addresses = yield this.getAddresses([address]);
-            const addressInfo = addresses.at(0);
-            return parseFloat(addressInfo.balance.final_balance);
-        });
-    }
-    getSequentialBalance(address) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const addresses = yield this.getAddresses([address]);
-            const addressInfo = addresses.at(0);
-            return parseFloat(addressInfo.balance.candidate_balance);
-        });
-    }
-    getDatastoreEntry(address, key) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const addresses = yield this.getAddresses([address]);
-            const addressInfo = addresses.at(0);
-            const base58EncodedAddress = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from(address));
-            return addressInfo.candidate_sce_ledger_info.datastore[base58EncodedAddress];
         });
     }
 }
