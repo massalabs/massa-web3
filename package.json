@@ -17,7 +17,8 @@
     "test-sc-example": "ts-node ./examples/sc.ts",
     "fix-lint": "tslint -c tslint.json '**/*.ts' --fix",
     "gen-bundle": "browserify dist/index.js --standalone massa > bundle.js",
-    "uglify-bundle": "uglifyjs --compress --mangle -- bundle.js > bundle-minified.js"
+    "uglify-bundle": "uglifyjs --compress --mangle -- bundle.js > bundle.min.js",
+    "uglify-bundle-optimum": "node minify.js"
   },
   "author": "Massa Labs <info@massa.net>",
   "contributors": [
@@ -46,7 +47,6 @@
     "node-ts": "^5.1.2",
     "secp256k1": "^4.0.3",
     "uglify-js": "^3.15.4",
-    "uuidv4": "^6.2.12",
     "varint": "^6.0.0"
   },
   "devDependencies": {

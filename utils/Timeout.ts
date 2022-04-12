@@ -1,8 +1,6 @@
-import { generateUUID } from "./UUID";
 
 export class Timeout {
 	constructor(timeoutMil: number, callback: () => void) {
-		this.getId = this.getId.bind(this);
 		this.clear = this.clear.bind(this);
 
 		const that = this;
@@ -15,17 +13,9 @@ export class Timeout {
 			}
 		}, timeoutMil);
 	}
-	private id: string;
 	private isCleared: boolean;
 	private isCalled: boolean;
 	private timeoutHook: NodeJS.Timer;
-
-	public getId(): string {
-		if (!this.id)
-			this.id = generateUUID();
-
-		return this.id;
-	}
 
 	public clear(): void {
 		if (!this.isCleared) {
@@ -37,7 +27,6 @@ export class Timeout {
 
 export class Interval {
 	constructor(timeoutMil: number, callback: () => void) {
-		this.getId = this.getId.bind(this);
 		this.clear = this.clear.bind(this);
 
 		const that = this;
@@ -50,16 +39,9 @@ export class Interval {
 			}
 		}, timeoutMil);
 	}
-	private id: string;
 	private isCleared: boolean;
 	private isCalled: boolean;
 	private intervalHook: NodeJS.Timer;
-
-	public getId(): string {
-		if (!this.id)
-			this.id = generateUUID();
-		return this.id;
-	}
 
 	public clear(): void {
 		if (!this.isCleared) {

@@ -1,10 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Interval = exports.Timeout = void 0;
-const UUID_1 = require("./UUID");
 class Timeout {
     constructor(timeoutMil, callback) {
-        this.getId = this.getId.bind(this);
         this.clear = this.clear.bind(this);
         const that = this;
         this.isCleared = false;
@@ -16,11 +14,6 @@ class Timeout {
             }
         }, timeoutMil);
     }
-    getId() {
-        if (!this.id)
-            this.id = (0, UUID_1.generateUUID)();
-        return this.id;
-    }
     clear() {
         if (!this.isCleared) {
             clearTimeout(this.timeoutHook);
@@ -31,7 +24,6 @@ class Timeout {
 exports.Timeout = Timeout;
 class Interval {
     constructor(timeoutMil, callback) {
-        this.getId = this.getId.bind(this);
         this.clear = this.clear.bind(this);
         const that = this;
         this.isCleared = false;
@@ -42,11 +34,6 @@ class Interval {
                 callback();
             }
         }, timeoutMil);
-    }
-    getId() {
-        if (!this.id)
-            this.id = (0, UUID_1.generateUUID)();
-        return this.id;
     }
     clear() {
         if (!this.isCleared) {
