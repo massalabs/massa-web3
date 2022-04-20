@@ -1,10 +1,11 @@
 # massa-web3
+
 Web3 libraries for Massa (web3.js SDK)
 
 ### Requirements
 
-* NodeJS 14+
-* npm / yarn (see package.json)
+-   NodeJS 14+
+-   npm / yarn (see package.json)
 
 ### Package commands
 
@@ -21,8 +22,8 @@ import { IAccount, IClientConfig, IProvider, ProviderType } from "massa_web3/int
 import { Client } from "massa_web3/web3/Client";
 
 const baseAccount = {
-    publicKey: "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
-    privateKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
+    privateKey: "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
+    publicKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
     address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM"
 } as IAccount;
 
@@ -39,31 +40,44 @@ const providers: Array<IProvider> = [
 
 const web3ClientConfig = {
     providers,
-    retryStrategyOn: true // activate the backoff retry strategy
+    retryStrategyOn: true,// activate the backoff retry strategy
     periodOffset: 3       // set an offset of a few periods (default = 5)
 } as IClientConfig;
 
 const web3Client: Client = new Client(web3ClientConfig, baseAccount);
 ```
+
 Once there is an initialized client instance, it is straightforward to call methods on it:
 
 ```ts
 import { IStatus, IAddressInfo } from "massa_web3/interfaces";
 
 const nodeStatusResp: IStatus = await web3Client.getStatus();
-const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses(["some_address"]);
+const addressesResp: Array<IAddressInfo> = await web3Client
+    .publicApi()
+    .getAddresses(["some_address"]);
 ```
 
 There are also convenience factories for a straightforward initialization of the client:
 
 ```ts
-import { ClientFactory, Client, DefaultProviderUrls } from "massa_web3/web3/ClientFactory";
+import {
+    ClientFactory,
+    Client,
+    DefaultProviderUrls,
+} from "massa_web3/web3/ClientFactory";
 
 // a testnet client
-const testnetClient: Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, baseAccount);
+const testnetClient: Client = ClientFactory.createDefaultClient(
+    DefaultProviderUrls.TESTNET,
+    baseAccount
+);
 
 // a custom client (see above)
-const customClient: Client = ClientFactory.createCustomClient(providers, baseAccount);
+const customClient: Client = ClientFactory.createCustomClient(
+    providers,
+    baseAccount
+);
 ```
 
 ### Client exposed APIs
@@ -86,38 +100,52 @@ Example:
 
 ```ts
 // get block info
-const blocks: Array<IBlockInfo> = await web3Client.publicApi().getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+const blocks: Array<IBlockInfo> = await web3Client
+    .publicApi()
+    .getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
 ```
 
 Available methods are:
 
-- `getNodeStatus` (https://github.com/massalabs/massa/wiki/api#get_status)
+-   `getNodeStatus` (https://github.com/massalabs/massa/wiki/api#get_status)
     ```ts
-    const nodeStatus: INodeStatus = await web3Client.publicApi().getNodeStatus();
+    const nodeStatus: INodeStatus = await web3Client
+        .publicApi()
+        .getNodeStatus();
     ```
-- `getAddresses` (https://github.com/massalabs/massa/wiki/api#get_addresses)
+-   `getAddresses` (https://github.com/massalabs/massa/wiki/api#get_addresses)
     ```ts
-    const addressesResp: Array<IAddressInfo> = await web3Client.publicApi().getAddresses(["2GcahavufBH9tqVH6SjkSCPXRbqpiCwwSfwFAf3veKiJmiHubK"]);
+    const addressesResp: Array<IAddressInfo> = await web3Client
+        .publicApi()
+        .getAddresses(["2GcahavufBH9tqVH6SjkSCPXRbqpiCwwSfwFAf3veKiJmiHubK"]);
     ```
-- `getBlocks` (https://github.com/massalabs/massa/wiki/api#get_block)
+-   `getBlocks` (https://github.com/massalabs/massa/wiki/api#get_block)
     ```ts
-    const blocks: Array<IBlockInfo> = await web3Client.publicApi().getBlocks(["nKifcnGbd9zu8nu1hb94XEmMGwgoWbjj3DutzrobeHDdUtEuM"]);
+    const blocks: Array<IBlockInfo> = await web3Client
+        .publicApi()
+        .getBlocks(["nKifcnGbd9zu8nu1hb94XEmMGwgoWbjj3DutzrobeHDdUtEuM"]);
     ```
-- `getEndorsements` (https://github.com/massalabs/massa/wiki/api#get_endorsements)
+-   `getEndorsements` (https://github.com/massalabs/massa/wiki/api#get_endorsements)
     ```ts
-    const endorsements: Array<IEndorsement> = await web3Client.publicApi().getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+    const endorsements: Array<IEndorsement> = await web3Client
+        .publicApi()
+        .getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
     ```
-- `getOperations` (https://github.com/massalabs/massa/wiki/api#get_operations)
+-   `getOperations` (https://github.com/massalabs/massa/wiki/api#get_operations)
     ```ts
-    const operations: Array<IOperationData> = await web3Client.publicApi().getOperations(["z1cNsWAdgvoASq5RnN6MRbqqo634RRJbgwV9n3jNx3rQrQKTt"]);
+    const operations: Array<IOperationData> = await web3Client
+        .publicApi()
+        .getOperations(["z1cNsWAdgvoASq5RnN6MRbqqo634RRJbgwV9n3jNx3rQrQKTt"]);
     ```
-- `getCliques` (https://github.com/massalabs/massa/wiki/api#get_cliques)
+-   `getCliques` (https://github.com/massalabs/massa/wiki/api#get_cliques)
     ```ts
     const cliques: Array<IClique> = await web3Client.publicApi().getCliques();
     ```
-- `getStakers` (https://github.com/massalabs/massa/wiki/api#get_stakers)
+-   `getStakers` (https://github.com/massalabs/massa/wiki/api#get_stakers)
     ```ts
-    const stakers: Array<IStakingAddresses> = await web3Client.publicApi().getStakers();
+    const stakers: Array<IStakingAddresses> = await web3Client
+        .publicApi()
+        .getStakers();
     ```
 
 ### Client private API
@@ -133,31 +161,41 @@ await web3Client.privateApi().nodeStop();
 
 Available methods are:
 
-- `stopNode` (https://github.com/massalabs/massa/wiki/api#stop_node)
+-   `stopNode` (https://github.com/massalabs/massa/wiki/api#stop_node)
     ```ts
     await web3Client.privateApi().nodeStop();
     ```
-- `ban` (https://github.com/massalabs/massa/wiki/api#ban)
+-   `ban` (https://github.com/massalabs/massa/wiki/api#ban)
     ```ts
     await web3Client.privateApi().banIpAddress("192.168.1.1");
     ```
-- `unban` (https://github.com/massalabs/massa/wiki/api#unban)
+-   `unban` (https://github.com/massalabs/massa/wiki/api#unban)
     ```ts
     await web3Client.privateApi().unbanIpAddress("192.168.1.1");
     ```
-- `nodeGetStakingAddresses` (https://github.com/massalabs/massa/wiki/api#get_staking_addresses)
+-   `nodeGetStakingAddresses` (https://github.com/massalabs/massa/wiki/api#get_staking_addresses)
     ```ts
-    const stakingAddresses = await web3Client.privateApi().nodeGetStakingAddresses();
+    const stakingAddresses = await web3Client
+        .privateApi()
+        .nodeGetStakingAddresses();
     ```
-- `nodeRemoveStakingAddresses` (https://github.com/massalabs/massa/wiki/api#remove_staking_addresses)
+-   `nodeRemoveStakingAddresses` (https://github.com/massalabs/massa/wiki/api#remove_staking_addresses)
     ```ts
-    await web3Client.privateApi().nodeRemoveStakingAddresses(["2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp"]);
+    await web3Client
+        .privateApi()
+        .nodeRemoveStakingAddresses([
+            "2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp",
+        ]);
     ```
-- `nodeAddStakingPrivateKeys` (https://github.com/massalabs/massa/wiki/api#add_staking_private_keys)
+-   `nodeAddStakingPrivateKeys` (https://github.com/massalabs/massa/wiki/api#add_staking_private_keys)
     ```ts
-    await web3Client.privateApi().nodeAddStakingPrivateKeys(["2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ"]);
+    await web3Client
+        .privateApi()
+        .nodeAddStakingPrivateKeys([
+            "2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ",
+        ]);
     ```
-- `nodeSignMessage` (https://github.com/massalabs/massa/wiki/api#node_sign_message)
+-   `nodeSignMessage` (https://github.com/massalabs/massa/wiki/api#node_sign_message)
     ```ts
     const message = "hello world";
     const msgBuf = new TextEncoder().encode(message);
@@ -175,86 +213,103 @@ Example:
 const newWalletAccount = web3Client.wallet().walletGenerateNewAccount();
 ```
 
-Available methods are:
+Available class methods are:
 
-- `walletGenerateNewAccount`
+-   `addPrivateKeysToWallet`
     ```ts
-    const newWalletAccount = await WalletClient.walletGenerateNewAccount();
+    await web3Client
+        .wallet()
+        .addPrivateKeysToWallet([
+            "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
+        ]);
     ```
-- `walletSignMessage`
+-   `removeAddressesFromWallet`
     ```ts
-    const sig = await WalletClient.walletSignMessage("hello", baseAccount);
+    await web3Client
+        .wallet()
+        .removeAddressesFromWallet([
+            "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+        ]);
     ```
-- `addPrivateKeysToWallet`
+-   `getWalletAccounts`
     ```ts
-    await web3Client.wallet().addPrivateKeysToWallet(["2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC"]);
+    const walletAccounts: Array<IAccount> = web3Client.wallet().getWalletAccounts();
     ```
-- `getWalletAccounts`
+-   `getWalletAccountByAddress`
     ```ts
-    const walletAccounts = web3Client.wallet().getWalletAccounts();
+    const walletAccount: IAccount | undefined = web3Client
+        .wallet()
+        .getWalletAccountByAddress(
+            "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM"
+        );
     ```
-- `getWalletAccountByAddress`
+-   `addAccountsToWallet`
     ```ts
-    const walletAccount = web3Client.wallet().getWalletAccountByAddress("9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM");
-    ```
-- `addAccountsToWallet`
-    ```ts
-    await web3Client.wallet().addAccountsToWallet(
-        [{
+    await web3Client.wallet().addAccountsToWallet([
+        {
             privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
             publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
-            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
-        }]
+            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2",
+        },
+    ]);
+    ```
+-   `walletInfo`
+    ```ts
+    const walletInfo: Array<IFullAddressInfo> = await web3Client
+        .wallet()
+        .walletInfo();
+    ```
+-   `sendTransaction`
+    ```ts
+    const sendTxIds: Array<string> = await web3Client.wallet().sendTransaction(
+        {
+            fee: 0, // int
+            amount: "1", //MAS
+            recipientAddress:
+                "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2",
+        } as ITransactionData,
+        baseAccount
     );
     ```
-- `walletInfo`
+-   `buyRolls`
     ```ts
-    const walletInfo: Array<IFullAddressInfo> = await web3Client.wallet().walletInfo();
+    const buyRollsIds: Array<string> = await web3Client.wallet().buyRolls(
+        {
+            fee: 0, // int
+            amount: 1, //ROLLS
+        } as IRollsData,
+        baseAccount
+    );
     ```
-- `sendTransaction`
+-   `sellRolls`
     ```ts
-    const sendTxIds = await web3Client.wallet().sendTransaction({
-        fee: 0, // int
-        amount: "1", //MAS
-        recipientAddress: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
-    } as ITransactionData, baseAccount);
+    const sellRollsIds: Array<string> = await web3Client.wallet().sellRolls(
+        {
+            fee: 0, // int
+            amount: 1, //ROLLS
+        } as IRollsData,
+        baseAccount
+    );
     ```
-- `buyRolls`
+-   `getAccountSequentialBalance`
     ```ts
-    const buyRollsIds = await web3Client.wallet().buyRolls({
-        fee: 0, // int
-        amount: 1, //ROLLS
-    } as IRollsData, baseAccount);
-    ```
-- `sellRolls`
-    ```ts
-    const sellRollsIds = await web3Client.wallet().sellRolls({
-        fee: 0, // int
-        amount: 1, //ROLLS
-    } as IRollsData, baseAccount);
+    const balance: IBalance = await web3Client.wallet().getAccountSequentialBalance("9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM");
     ```
 
+In addition to the class methods, there are also static methods for direct use:
 
-### Smart contract compilation
-
-Massa SDK provides methods for compiling smart contracts written in AssemblyScript with TypeScript, either via CLI or on the fly. With both methods, the returned values are a text, a binary and a base64 representation of the WASM.
-
-Examples are shown below:
-
-```ts
-const SMART_CONTRACT_EXAMPLE = `export function add(x: number, y: number): number { return x+y };`;
-
-// compile smart contract from a typescript file with assemblycode
-const compiledScFromSource: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromSourceFile({
-    smartContractFilePath: "helloworld.ts",
-} as WasmConfig);
-
-// compile smart contract from a .wasm file
-const compiledScFromFile: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromWasmFile("helloworld.wasm");
-
-// compile smart contract on the fly
-const compiledScFromString: CompiledSmartContract = await web3Client.smartContracts().compileSmartContractFromString(SMART_CONTRACT_EXAMPLE);
-```
+-   `getAccountFromPrivateKey`
+    ```ts
+    const account: IAccount = await WalletClient.getAccountFromPrivateKey("2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC");
+    ```
+-   `walletGenerateNewAccount`
+    ```ts
+    const newWalletAccount: IAccount = await WalletClient.walletGenerateNewAccount();
+    ```
+-   `walletSignMessage`
+    ```ts
+    const sig: ISignature = await WalletClient.walletSignMessage("hello", baseAccount);
+    ```
 
 ### Smart contract deployment
 
@@ -262,40 +317,72 @@ Once the smart contract WASM is available, it becomes quite straightforward to d
 
 ```ts
 // deploy smart contract
-const opIds = await web3Client.smartContracts().deploySmartContract({
-    fee: 0,
-    maxGas: 2000000,
-    gasPrice: 0,
-    coins: 0,
-    contractDataBase64: compiledScFromSource.base64
-} as IContractData, baseAccount);
+const opIds = await web3Client.smartContracts().deploySmartContract(
+    {
+        fee: 0,
+        maxGas: 2000000,
+        gasPrice: 0,
+        coins: 0,
+        contractDataBase64: compiledScFromSource.base64,
+    } as IContractData,
+    baseAccount
+);
+```
+The compiledScFromSource is the base64 compiled smart contract code that could easily be obtained using massa's https://www.npmjs.com/package/massa-sc-utils
+
+### Smart contract event fetching and polling
+
+Emitted smart contract events could directly be fetched 
+
+```ts
+const eventsFilter = {
+    start: {
+        period: 0,
+        thread: 0,
+    } as ISlot,
+    end: {
+        period: 0,
+        thread: 0,
+    } as ISlot,
+    original_caller_address:
+        "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+    original_operation_id: null,
+    emitter_address: null,
+} as IEventFilter;
+
+const filteredEvents: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventFilterData);
 ```
 
-### Smart contract event fetching
-
-Smart contracts can emit events which the client could easily fetch via the code below. The second parameter in the call represents the refresh interval which we can set in order to poll the events
+Events could also be polled. The second parameter in the call represents the refresh interval which we can set in order to poll the events:
 
 ```ts
 // poll smart contract events
 const eventsFilter = {
     start: {
         period: 0,
-        thread: 0
+        thread: 0,
     } as ISlot,
-    end:  {
+    end: {
         period: 0,
-        thread: 0
+        thread: 0,
     } as ISlot,
-    original_caller_address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+    original_caller_address:
+        "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
     original_operation_id: null,
-    emitter_address: null
+    emitter_address: null,
 } as IEventFilter;
 
-const eventPoller = new EventPoller(eventsFilter, 5000, web3Client.smartContracts());
+const eventPoller = new EventPoller(
+    eventsFilter,
+    5000, //in milliseconds
+    web3Client.smartContracts()
+);
 eventPoller.startPolling();
-eventPoller.on(ON_EVENT, (data: [IEvent]) => console.log("EVENT(S) RECEIVED", data));
+eventPoller.on(ON_EVENT, (data: [IEvent]) =>
+    console.log("EVENT(S) RECEIVED", data)
+);
 
-//...
+//...do some work...
 
 // cleanup and finish
 eventPoller.stopPolling();
@@ -304,7 +391,11 @@ eventPoller.stopPolling();
 Alternatively, one could make direct use of an async promise for doing the latter:
 
 ```ts
-const events: Array<IEvent> = await EventPoller.getEventsAsync(eventsFilter, 5000, web3Client.smartContracts());
+const events: Array<IEvent> = await EventPoller.getEventsAsync(
+    eventsFilter,
+    5000, //in milliseconds
+    web3Client.smartContracts()
+);
 console.log("Events", events);
 ```
 
@@ -320,4 +411,90 @@ export function main(_args: string): i32 {
     generate_event(`Address:${sc_address}`); //emit an event with the address
     ...
 }
+```
+### Smart contract blockchain status
+
+Smart contracts undergo various transaction statuses before they reach block finality on chain. The public enum describing these statuses is:
+
+```ts
+EOperationStatus {
+	INCLUDED_PENDING,
+	AWAITING_INCLUSION,
+	FINAL,
+	INCONSISTENT,
+	NOT_FOUND
+}
+```
+
+The current smart contract status could be easily obtained via:
+
+```ts
+const status: EOperationStatus = await web3Client.smartContracts().getOperationStatus(deploymentOperationId);
+```
+
+There are however cases when one would require to await a given status and that could be done via. It is important to note here that the algorithm will giv up after a certain amount of time or a limited error count. These values have proven to be sufficient for most standard cases.
+
+```ts
+const status: EOperationStatus = await web3Client.smartContracts().awaitRequiredOperationStatus(deploymentOperationId, EOperationStatus.INCLUDED_PENDING);
+```
+
+### Smart contract balance
+
+Smart contract balances could be easily obtained via usign the `getParallelBalance` method:
+
+```ts
+const balance: IBalance|null = await web3Client.smartContracts().getParallelBalance(contractAddress);
+```
+
+### Smart contract read and write calls
+
+Smart contract data could be read via `readSmartContract` method:
+
+```ts
+const data: Array<IContractReadOperationData> = await web3Client.smartContracts().readSmartContract({
+            fee: 0,
+            maxGas: 200000,
+            simulatedGasPrice: 0,
+            targetAddress: scAddress,
+            targetFunction: "getGameState",
+            parameter: "some_stringified_data",
+            callerAddress: baseAccount.address
+        } as IReadData);
+```
+
+Smart contract data could be written via `callSmartContract` method:
+
+```ts
+const data: Array<string> = await web3Client.smartContracts().callSmartContract({
+            fee: 0,
+            gasPrice: 0,
+            maxGas: 200000,
+            parallelCoins: 0,
+            sequentialCoins: 0,
+            targetAddress: scAddress,
+            functionName: "play",
+            parameter: JSON.stringify({index : 1}),
+        } as ICallData, baseAccount);
+```
+
+Smart contracts could also be constructed in order to read data from another contract. In that case one could use the code below to read the data via a proxy contract:
+
+```ts
+// read smart contract data
+const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().executeReadOnlySmartContract(
+    {
+        fee: 0,
+        maxGas: 2000000,
+        gasPrice: 0,
+        coins: 0,
+        contractDataBase64: compiledScFromSource.base64,
+    } as IContractData,
+    baseAccount
+);
+```
+
+Finally, smart contract persistent storage could be easily accessed via:
+
+```ts
+      const data: string = await web3Client.smartContracts().getDatastoreEntry("vWDxmER2ar6mRFgcRqg94iEMYVypUCcRHGV5tjhdiAGqZqEoo", "some_key");
 ```

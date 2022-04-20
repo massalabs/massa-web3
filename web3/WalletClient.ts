@@ -13,6 +13,7 @@ import { OperationTypeId } from "../interfaces/OperationTypes";
 import { PublicApiClient } from "./PublicApiClient";
 import { IRollsData } from "../interfaces/IRollsData";
 import { INodeStatus } from "../interfaces/INodeStatus";
+import { IBalance } from "../interfaces/IBalance";
 
 const MAX_WALLET_ACCOUNTS: number = 256;
 
@@ -24,7 +25,7 @@ export class WalletClient extends BaseClient {
 
 	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, baseAccount?: IAccount) {
 		super(clientConfig);
-		
+
 		// ========== bind wallet methods ========= //
 
 		// wallet methods
@@ -41,6 +42,7 @@ export class WalletClient extends BaseClient {
 		this.sendTransaction = this.sendTransaction.bind(this);
 		this.sellRolls = this.sellRolls.bind(this);
 		this.buyRolls = this.buyRolls.bind(this);
+		this.getAccountSequentialBalance = this.getAccountSequentialBalance.bind(this);
 
 		// init wallet with a base account if any
 		if (baseAccount) {
@@ -140,9 +142,9 @@ export class WalletClient extends BaseClient {
 				publicKey: this.wallet[index].publicKey,
 				privateKey: this.wallet[index].privateKey,
 				...info
-			} as IFullAddressInfo
+			} as IFullAddressInfo;
 		});
-	} 
+	}
 
 	 /** generate a private key and add it into the wallet */
 	public static async walletGenerateNewAccount() {
@@ -165,6 +167,26 @@ export class WalletClient extends BaseClient {
 		} as IAccount;
 	}
 
+	/** generate a private key and add it into the wallet */
+	public static async getAccountFromPrivateKey(privateKeyBase58: string): Promise<IAccount> {
+		// get private key
+		const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKeyBase58);
+
+		// get public key
+		const publicKey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
+		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+
+		// get wallet account address
+		const address: Uint8Array = await secp.utils.sha256(publicKey);
+		const addressBase58Encoded: string = base58checkEncode(address);
+
+		return {
+			address: addressBase58Encoded,
+			privateKey: privateKeyBase58,
+			publicKey: publicKeyBase58Encoded
+		} as IAccount;
+	}
+
 	/** sign random message data with an already added wallet account */
 	public async signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature> {
 		const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
@@ -178,7 +200,7 @@ export class WalletClient extends BaseClient {
 	private async getWalletAddressesInfo(addresses: Array<string>): Promise<Array<IAddressInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [addresses]]);
+			return await trySafeExecute<Array<IAddressInfo>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [addresses]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IAddressInfo>>(jsonRpcRequestMethod, [addresses]);
 		}
@@ -196,7 +218,7 @@ export class WalletClient extends BaseClient {
 		if (!signer.publicKey) {
 			throw new Error("No public key to verify the signed message with");
 		}
-		
+
     	// cast private key
 		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
 
@@ -220,19 +242,19 @@ export class WalletClient extends BaseClient {
 		if (signer.publicKey) {
 			const publicKeyBase58Decoded = base58checkDecode(signer.publicKey);
 			const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
-			const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toBuffer());
+			const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toArrayLike(Buffer, "be", 33));
 			if (!isVerified) {
 				throw new Error(`Signature could not be verified with public key. Please inspect`);
 			}
 		}
 
 		// extract sig vector
-		const r: Uint8Array = sig[0].slice(0,32);
+		const r: Uint8Array = sig[0].slice(0, 32);
 		const s: Uint8Array = sig[0].slice(32);
 		const v: number = sig[1];
 		const hex = secp.utils.bytesToHex(sig[0]);
 		const base58Encoded = base58checkEncode(Buffer.concat([r, s]));
-		
+
 		return {
 			r,
 			s,
@@ -240,6 +262,17 @@ export class WalletClient extends BaseClient {
 			hex,
 			base58Encoded
 		} as ISignature;
+	}
+
+	/** Returns the account sequential balance - the consensus side balance  */
+	public async getAccountSequentialBalance(address: string): Promise<IBalance | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+		if (addresses.length === 0) return null;
+		const addressInfo: IAddressInfo = addresses.at(0);
+		return {
+			candidate: addressInfo.ledger_info.candidate_ledger_info.balance,
+			final: addressInfo.ledger_info.final_ledger_info.balance
+		} as IBalance;
 	}
 
 	/** send native MAS from a wallet address to another */
@@ -269,7 +302,7 @@ export class WalletClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
@@ -300,7 +333,7 @@ export class WalletClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
@@ -331,7 +364,7 @@ export class WalletClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;

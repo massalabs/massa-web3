@@ -8,17 +8,21 @@ export { IBlockInfo } from "./interfaces/IBlockInfo";
 export { IClientConfig } from "./interfaces/IClientConfig";
 export { IClique } from "./interfaces/IClique";
 export { IContractData } from "./interfaces/IContractData";
+export { ICallData } from "./interfaces/ICallData";
 export { IEndorsement } from "./interfaces/IEndorsement";
 export { INodeStatus } from "./interfaces/INodeStatus";
 export { IOperationData } from "./interfaces/IOperationData";
-export { IProvider } from "./interfaces/IProvider";
+export { IProvider, ProviderType } from "./interfaces/IProvider";
 export { IRollsData } from "./interfaces/IRollsData";
 export { ISignature } from "./interfaces/ISignature";
 export { ISignedMessage } from "./interfaces/ISignedMessage";
 export { IStakingAddresses } from "./interfaces/IStakingAddresses";
 export { ITransactionData } from "./interfaces/ITransactionData";
+export { IBalance } from "./interfaces/IBalance";
+export { IContractReadOperationData } from "./interfaces/IContractReadOperationData";
 export { IExecuteReadOnlyResponse, ISCOutputEvent, IEventExecutionContext } from "./interfaces/IExecuteReadOnlyResponse";
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";
+export { EOperationStatus } from "./interfaces/EOperationStatus";
 export { ITransactionOpType, IRollBuyOpType, IRollSellOpType, IExecSmartContractOpType, OperationTypeId, OpType } from "./interfaces/OperationTypes";
 
 /** Exposed clients and factories */

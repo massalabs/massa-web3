@@ -1,4 +1,4 @@
-import { EventEmitter } from "stream";
+import { EventEmitter } from "events";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { Timeout } from "../utils/Timeout";
@@ -28,7 +28,7 @@ export class EventPoller extends EventEmitter {
 			this.emit(ON_EVENT, events);
 		} catch (ex) {
 			console.error(ex);
-		}	
+		}
 	}
 
 	public stopPolling(): void {
@@ -47,7 +47,7 @@ export class EventPoller extends EventEmitter {
 		return new Promise((resolve, reject) => {
 			eventPoller.on(ON_EVENT, (data: [IEvent]) => {
 				eventPoller.stopPolling();
-				return resolve(data)
+				return resolve(data);
 			});
 			eventPoller.on("error", (e) => {
 				eventPoller.stopPolling();

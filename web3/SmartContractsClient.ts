@@ -1,19 +1,22 @@
-import * as wasmCli from "assemblyscript/cli/asc";
-import * as fs from "fs";
-import * as path from "path";
 import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { IAccount } from "../interfaces/IAccount";
+import { IAddressInfo } from "../interfaces/IAddressInfo";
+import { IBalance } from "../interfaces/IBalance";
+import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
+import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { IOperationData } from "../interfaces/IOperationData";
+import { IReadData } from "../interfaces/IReadData";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { wait } from "../utils/Wait";
+import { base58checkEncode, hashSha256 } from "../utils/Xbqcrypto";
 import { BaseClient } from "./BaseClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
@@ -21,240 +24,20 @@ import { WalletClient } from "./WalletClient";
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
-export interface CompiledSmartContract {
-	binary: Uint8Array;
-	text: string;
-	base64: string;
-}
-
-export interface WasmConfig {
-	smartContractFilePath: fs.PathLike;
-	wasmBinaryPath?: fs.PathLike;
-	wasmTextPath?: fs.PathLike;
-}
-
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
 export class SmartContractsClient extends BaseClient {
-	private isWebAssemblyCliInitialized = false;
-
 	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, private readonly walletClient: WalletClient) {
 		super(clientConfig);
 
 		// bind class methods
-		this.initWebAssemblyCli = this.initWebAssemblyCli.bind(this);
-		this.compileSmartContractFromString = this.compileSmartContractFromString.bind(this);
-		this.compileSmartContractFromSourceFile = this.compileSmartContractFromSourceFile.bind(this);
-		this.compileSmartContractFromWasmFile = this.compileSmartContractFromWasmFile.bind(this);
-		this.compileSmartContractOnTheFly = this.compileSmartContractOnTheFly.bind(this);
 		this.deploySmartContract = this.deploySmartContract.bind(this);
 		this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
 		this.executeReadOnlySmartContract = this.executeReadOnlySmartContract.bind(this);
-		this.awaitFinalOperationStatus = this.awaitFinalOperationStatus.bind(this);
+		this.awaitRequiredOperationStatus = this.awaitRequiredOperationStatus.bind(this);
 		this.getOperationStatus = this.getOperationStatus.bind(this);
-	}
-
-	/** initializes the webassembly cli under the hood */
-	private async initWebAssemblyCli(): Promise<void> {
-		try {
-			await wasmCli.ready;
-		} catch (ex) {
-			console.error("Error initializing wasm cli", ex);
-			throw ex;
-		}
-		this.isWebAssemblyCliInitialized = true;
-	}
-
-	/** compile smart contract on the fly using the assemblyscript smart contract code as a string */
-	public async compileSmartContractFromString(smartContractContent: string): Promise<CompiledSmartContract> {
-
-		if (!this.isWebAssemblyCliInitialized) {
-			await this.initWebAssemblyCli();
-		}
-
-		let compiledData: { stdout: wasmCli.OutputStream, stderr: wasmCli.OutputStream, binary: Uint8Array, text: string } = null;
-		try {
-			const virtualFiles = { "input.ts": smartContractContent };
-			compiledData = wasmCli.compileString(virtualFiles, {
-				optimize: true,
-				optimizeLevel: 3,
-				runtime: "stub",
-				transform: "json-as/transform",
-				measure: true,
-				debug: true,
-				noColors: false,
-				traceResolution: true,
-				exportTable: true,
-				exportRuntime: true,
-			} as wasmCli.CompilerOptions);
-		} catch (ex) {
-			console.error(`Wasm from string compilation error`, ex);
-			throw ex;
-		}
-
-		console.log(`>>> STDOUT >>>\n${compiledData.stdout.toString()}`);
-		console.log(`>>> STDERR >>>\n${compiledData.stderr.toString()}`);
-
-		if (!compiledData || !compiledData.binary) {
-			throw new Error("No binary file created in the compilation");
-		}
-		if (!compiledData || !compiledData.text) {
-			throw new Error("No text file created in the compilation");
-		}
-		const base64: string = Buffer.from(compiledData.binary).toString('base64');
-
-		return {
-			binary: compiledData.binary,
-			text: compiledData.text,
-			base64
-		} as CompiledSmartContract;
-	}
-
-	/** compile smart contract from a physical assemblyscript (.ts) file */
-	public async compileSmartContractFromSourceFile(config: WasmConfig): Promise<CompiledSmartContract> {
-
-		if (!this.isWebAssemblyCliInitialized) {
-			await this.initWebAssemblyCli();
-		}
-
-		if (!fs.existsSync(config.smartContractFilePath)) {
-			throw new Error(`Smart contract file ${config.smartContractFilePath} [TYPESCRIPT] does not exist`);
-		}
-		const smartContractFilePath = config.smartContractFilePath.toString();
-
-		const par = path.parse(smartContractFilePath);
-		const [smartContractFileName, smartContractExtName, smartContractDir] = [par.name, par.ext, par.dir];
-		if (!smartContractExtName.includes("ts")) {
-			throw new Error(`Smart contract extension ${smartContractExtName} is not a typescript one`);
-		}
-
-		const binaryFileToCreate =  `${config.wasmBinaryPath || smartContractDir}/${smartContractFileName}.wasm`;
-		const textFileToCreate = `${config.wasmTextPath || smartContractDir}/${smartContractFileName}.wat`;
-
-		try {
-			wasmCli.main([
-				smartContractFilePath,
-				"--binaryFile", binaryFileToCreate,
-				"--textFile", textFileToCreate,
-				"--transform", "json-as/transform",
-				"--exportRuntime",
-				"--target", "release",
-				"--optimize",
-				"--sourceMap",
-				"--measure"
-			], {
-				stdout: process.stdout,
-				stderr: process.stderr
-			}
-			);
-		} catch (ex) {
-			console.error(`Wasm compilation error`, ex);
-			throw ex;
-		}
-
-		if (!fs.existsSync(binaryFileToCreate)) {
-			throw new Error(`Compiled wasm file (.wasm) ${binaryFileToCreate} does not exist`);
-		}
-
-		if (!fs.existsSync(textFileToCreate)) {
-			throw new Error(`Compiled text file (.wat) ${textFileToCreate} does not exist`);
-		}
-
-		const binaryArrayBuffer = fs.readFileSync(binaryFileToCreate, {});
-        const binaryFileContents = new Uint8Array(binaryArrayBuffer);
-        const textFileContents = fs.readFileSync(textFileToCreate, {encoding: "utf8"});
-		const base64: string = Buffer.from(binaryFileContents).toString('base64');
-        
-		return {
-			binary: binaryFileContents,
-			text: textFileContents,
-			base64
-		} as CompiledSmartContract;
-	}
-
-	/** compile smart contract from a physical assemblyscript file */
-	public async compileSmartContractFromWasmFile(wasmFilePath: fs.PathLike): Promise<CompiledSmartContract> {
-
-		if (!this.isWebAssemblyCliInitialized) {
-			await this.initWebAssemblyCli();
-		}
-
-		if (!fs.existsSync(wasmFilePath)) {
-			throw new Error(`Wasm contract file ${wasmFilePath} does not exist`);
-		}
-		const wasmFilePathStr = wasmFilePath.toString();
-
-		const binaryArrayBuffer: Buffer = fs.readFileSync(wasmFilePathStr, {});
-		const binaryFileContents = new Uint8Array(binaryArrayBuffer);
-		const base64: string = Buffer.from(binaryFileContents).toString('base64');
-
-		return {
-			binary: binaryFileContents,
-			text: null,
-			base64
-		} as CompiledSmartContract;
-	}
-
-	// ----------------------------------------------------------------
-
-	/** compile smart contract from a physical assemblyscript (.ts) file */
-	public async compileSmartContractOnTheFly(smartContractContent: string): Promise<any> {
-
-		if (!this.isWebAssemblyCliInitialized) {
-			await this.initWebAssemblyCli();
-		}
-
-		const sources = { "input.ts": smartContractContent };
-		console.log(sources);
-		const output = Object.create({
-			stdout: wasmCli.createMemoryStream(),
-			stderr: wasmCli.createMemoryStream()
-		});
-
-		const argv = [
-			...Object.keys(sources),
-			"-O3",
-			"--runtime", "stub",
-			"--binaryFile", "binary",
-			"--textFile", "text",
-			"--sourceMap"
-		];
-		console.log("argv ", argv);
-
-		try {
-			wasmCli.main(argv, {
-					stdout: output.stdout,
-					stderr: output.stderr,
-					
-					readFile: (name, baseDir) => {
-						console.log("READFILE (name, basedir) ", name, baseDir, Object.prototype.hasOwnProperty.call(sources, name));
-						return Object.prototype.hasOwnProperty.call(sources, name) ? sources[name] : null;
-					},
-					
-					writeFile: (name, contents, baseDir) => {
-						console.log(`>>> WRITE:${name} >>>\n${contents.length}`);
-						output[name] = contents;
-					},
-					listFiles(dirname, baseDir) {
-						return [];
-					}
-					
-				} as wasmCli.APIOptions,
-				(err) => { 
-					console.log(`>>> STDOUT >>>\n${output.stdout.toString()}`);
-					console.log(`>>> STDERR >>>\n${output.stderr.toString()}`);
-					if (err) {
-					  console.log(">>> THROWN >>>");
-					  console.log(err);
-					}
-					return 0;
-				}
-			);
-		} catch (ex) {
-			console.error(`Wasm compilation error`, ex);
-			throw ex;
-		}
-        
-		return output;
+		this.callSmartContract = this.callSmartContract.bind(this);
+		this.readSmartContract = this.readSmartContract.bind(this);
+		this.getParallelBalance = this.getParallelBalance.bind(this);
 	}
 
 	/** create and send an operation containing byte code */
@@ -264,8 +47,7 @@ export class SmartContractsClient extends BaseClient {
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// get the block size
-		const nodeStatus: INodeStatus = await this.publicApiClient.getNodeStatus();
-		if (contractData.contractDataBase64.length > nodeStatus.config.max_block_size / 2) {
+		if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
 			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
 		}
 
@@ -279,7 +61,7 @@ export class SmartContractsClient extends BaseClient {
 		if (!contractData.contractDataBase64) {
 			throw new Error(`Contract base64 encoded data required. Got null`);
 		}
-        const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, 'base64'))
+        const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, "base64"));
 
 		const data = {
 			content: {
@@ -296,10 +78,81 @@ export class SmartContractsClient extends BaseClient {
 				sender_public_key: executor.publicKey
 			},
 			signature: signature.base58Encoded,
-		}
+		};
 		// returns operation ids
 		const opIds: Array<string> = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
 		return opIds;
+	}
+
+	/** call smart contract method */
+	public async callSmartContract(callData: ICallData, executor: IAccount): Promise<Array<string>> {
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, executor, expiryPeriod);
+
+		// sign payload
+		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		// request data
+		const data = {
+			content: {
+				expire_period: expiryPeriod,
+				fee: callData.fee.toString(),
+				op: {
+					CallSC: {
+						max_gas: callData.maxGas,
+						gas_price: callData.gasPrice.toString(),
+						parallel_coins: callData.parallelCoins.toString(),
+						sequential_coins: callData.sequentialCoins.toString(),
+						target_addr: callData.targetAddress,
+						target_func: callData.functionName,
+						param: callData.parameter,
+					}
+				},
+				sender_public_key: executor.publicKey
+			},
+			signature: signature.base58Encoded,
+		};
+		// returns operation ids
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+		}
+	}
+
+	/** read smart contract method */
+	public async readSmartContract(readData: IReadData): Promise<Array<IContractReadOperationData>> {
+		// request data
+		const data = {
+			max_gas: readData.maxGas,
+			simulated_gas_price: readData.simulatedGasPrice.toString(),
+			target_address: readData.targetAddress,
+			target_function: readData.targetFunction,
+			parameter: "undefined",
+			caller_address: readData.callerAddress
+		};
+		// returns operation ids
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IContractReadOperationData>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+		} else {
+			return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+		}
+	}
+
+	/** Returns the parallel balance which is the smart contract side balance  */
+	public async getParallelBalance(address: string): Promise<IBalance | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+		if (addresses.length === 0) return null;
+		const addressInfo: IAddressInfo = addresses.at(0);
+		return {
+			candidate: addressInfo.candidate_sce_ledger_info.balance,
+			final: addressInfo.final_sce_ledger_info.balance
+		} as IBalance;
 	}
 
 	/** get filtered smart contract events */
@@ -317,10 +170,24 @@ export class SmartContractsClient extends BaseClient {
 
 		// returns filtered events
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [data]]);
+			return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IEvent>>(jsonRpcRequestMethod, [data]);
 		}
+	}
+
+	/** Returns the smart contract data storage */
+	public async getDatastoreEntry(address: string, key: string): Promise<string | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+		if (addresses.length === 0) return null;
+		const addressInfo: IAddressInfo = addresses.at(0);
+		const base58EncodedKey: string = base58checkEncode(Buffer.from(hashSha256(key)));
+		const data: number = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+		const res: string = "";
+		for (let i = 0 ; i < data.toString().length ; ++i) {
+			res.concat(String.fromCharCode(parseInt(data[i])));
+		}
+		return res;
 	}
 
 	/** Read-only smart contracts */
@@ -341,32 +208,36 @@ export class SmartContractsClient extends BaseClient {
 			address: contractData.address,
 		};
 
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_REQUEST;
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest,[jsonRpcRequestMethod, [[data]]]);
+			return await trySafeExecute<Array<IExecuteReadOnlyResponse>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
 		} else {
 			return await this.sendJsonRPCRequest<Array<IExecuteReadOnlyResponse>>(jsonRpcRequestMethod, [[data]]);
 		}
 	}
 
-	private async getOperationStatus(opId: string): Promise<EOperationStatus> {
+	public async getOperationStatus(opId: string): Promise<EOperationStatus> {
 		const operationData: Array<IOperationData> = await this.publicApiClient.getOperations([opId]);
-		if (!operationData || operationData.length === 0) return EOperationStatus.PENDING;
+		if (!operationData || operationData.length === 0) return EOperationStatus.NOT_FOUND;
 		const opData = operationData[0];
-		if (opData.in_pool) {
-			return EOperationStatus.PENDING;
-		} else if (opData.is_final) {
-			return EOperationStatus.SUCCESS;
-		} else {
-			return EOperationStatus.FAIL;
+		if (opData.is_final) {
+			return EOperationStatus.FINAL;
 		}
+		if (opData.in_blocks.length > 0) {
+			return EOperationStatus.INCLUDED_PENDING;
+		}
+		if (opData.in_pool) {
+			return EOperationStatus.AWAITING_INCLUSION;
+		}
+
+		return EOperationStatus.INCONSISTENT;
 	}
 
-	public async awaitFinalOperationStatus(opId: string): Promise<EOperationStatus> {
+	public async awaitRequiredOperationStatus(opId: string, requiredStatus: EOperationStatus): Promise<EOperationStatus> {
 		let errCounter = 0;
 		let pendingCounter = 0;
 		while (true) {
-			let status = EOperationStatus.PENDING;
+			let status = EOperationStatus.NOT_FOUND;
 			try {
 				status = await this.getOperationStatus(opId);
 			}
@@ -380,8 +251,9 @@ export class SmartContractsClient extends BaseClient {
 				await wait(TX_POLL_INTERVAL_MS);
 			}
 
-			if (status == EOperationStatus.SUCCESS || status == EOperationStatus.FAIL)
+			if (status == requiredStatus) {
 				return status;
+			}
 
 			if (++pendingCounter > 1000) {
 				const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT}ms.`;
