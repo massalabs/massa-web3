@@ -12,7 +12,7 @@ export interface IEndorsementDraws {
     index: number;
 }
 export interface ILedgerDatastore {
-    [name: string]: number;
+    [name: string]: [number];
 }
 export interface IAddressInfo {
     address: string;

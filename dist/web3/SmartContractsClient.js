@@ -173,8 +173,8 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashSha256)(key)));
             const data = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
             const res = "";
-            for (let i = 0; i < data.toString().length; ++i) {
-                res.concat(String.fromCharCode(parseInt(data[i])));
+            for (let i = 0; i < data.length; ++i) {
+                res.concat(String.fromCharCode(data[i]));
             }
             return res;
         });

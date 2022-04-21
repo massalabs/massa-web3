@@ -182,10 +182,10 @@ export class SmartContractsClient extends BaseClient {
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);
 		const base58EncodedKey: string = base58checkEncode(Buffer.from(hashSha256(key)));
-		const data: number = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+		const data: [number] = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
 		const res: string = "";
-		for (let i = 0 ; i < data.toString().length ; ++i) {
-			res.concat(String.fromCharCode(parseInt(data[i])));
+		for (let i = 0 ; i < data.length ; ++i) {
+			res.concat(String.fromCharCode(data[i]));
 		}
 		return res;
 	}
