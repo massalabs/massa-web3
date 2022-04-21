@@ -929,20 +929,20 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             }
         });
     }
-    /** Returns the smart contract data storage */
-    getDatastoreEntry(address, key) {
+    /** Returns the smart contract data storage for a given key */
+    getDatastoreEntry(smartContractAddress, key) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const addresses = yield this.publicApiClient.getAddresses([address]);
+            const addresses = yield this.publicApiClient.getAddresses([smartContractAddress]);
             if (addresses.length === 0)
                 return null;
             const addressInfo = addresses.at(0);
             const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashSha256)(key)));
-            const data = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-            const res = "";
-            for (let i = 0; i < data.toString().length; ++i) {
-                res.concat(String.fromCharCode(parseInt(data[i])));
-            }
-            return res;
+            const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+            const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
+            return {
+                candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
+                final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
+            };
         });
     }
     /** Read-only smart contracts */

@@ -8,7 +8,7 @@
     "check": "npm outdated",
     "upgrade": "npm run up && npm run check && npm run build",
     "build-package": "rimraf dist/* && tsc -d",
-    "build-bundle": "npm run gen-bundle && npm run uglify-bundle",
+    "build-bundle": "npm run gen-bundle && npm run uglify-bundle-optimum",
     "update-version-major": "npm version major",
     "update-version-minor": "npm version minor",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts",

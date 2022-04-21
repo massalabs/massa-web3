@@ -19,6 +19,7 @@ export { ISignedMessage } from "./interfaces/ISignedMessage";
 export { IStakingAddresses } from "./interfaces/IStakingAddresses";
 export { ITransactionData } from "./interfaces/ITransactionData";
 export { IBalance } from "./interfaces/IBalance";
+export { IContractStorageData } from "./interfaces/IContractStorageData";
 export { IContractReadOperationData } from "./interfaces/IContractReadOperationData";
 export { IExecuteReadOnlyResponse, ISCOutputEvent, IEventExecutionContext } from "./interfaces/IExecuteReadOnlyResponse";
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";

@@ -5,6 +5,7 @@ import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
+import { IContractStorageData } from "../interfaces/IContractStorageData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
@@ -27,8 +28,8 @@ export declare class SmartContractsClient extends BaseClient {
     getParallelBalance(address: string): Promise<IBalance | null>;
     /** get filtered smart contract events */
     getFilteredScOutputEvents(eventFilterData: IEventFilter): Promise<Array<IEvent>>;
-    /** Returns the smart contract data storage */
-    getDatastoreEntry(address: string, key: string): Promise<string | null>;
+    /** Returns the smart contract data storage for a given key */
+    getDatastoreEntry(smartContractAddress: string, key: string): Promise<IContractStorageData | null>;
     /** Read-only smart contracts */
     executeReadOnlySmartContract(contractData: IContractData): Promise<Array<IExecuteReadOnlyResponse>>;
     getOperationStatus(opId: string): Promise<EOperationStatus>;

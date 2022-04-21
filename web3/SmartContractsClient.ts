@@ -6,6 +6,7 @@ import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
+import { IContractStorageData } from "../interfaces/IContractStorageData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
@@ -176,18 +177,18 @@ export class SmartContractsClient extends BaseClient {
 		}
 	}
 
-	/** Returns the smart contract data storage */
-	public async getDatastoreEntry(address: string, key: string): Promise<string | null> {
-		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+	/** Returns the smart contract data storage for a given key */
+	public async getDatastoreEntry(smartContractAddress: string, key: string): Promise<IContractStorageData | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([smartContractAddress]);
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);
 		const base58EncodedKey: string = base58checkEncode(Buffer.from(hashSha256(key)));
-		const data: [number] = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-		const res: string = "";
-		for (let i = 0 ; i < data.length ; ++i) {
-			res.concat(String.fromCharCode(data[i]));
-		}
-		return res;
+		const candidateLedgerInfo: Array<number> = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+		const finalLedgerInfo: Array<number> = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
+		return {
+			candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
+			final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
+		} as IContractStorageData;
 	}
 
 	/** Read-only smart contracts */
