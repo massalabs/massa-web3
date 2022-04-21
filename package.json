@@ -1,6 +1,6 @@
 {
   "name": "@massalabs/massa-web3",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "massa's web3 sdk client",
   "main": "dist/index.js",
   "scripts": {
