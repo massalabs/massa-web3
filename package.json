@@ -1,6 +1,6 @@
 {
   "name": "@massalabs/massa-web3",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "massa's web3 sdk client",
   "main": "dist/index.js",
   "scripts": {
@@ -9,7 +9,6 @@
     "upgrade": "npm run up && npm run check && npm run build",
     "build-package": "rimraf dist/* && tsc -d",
     "build-bundle": "npm run gen-bundle && npm run uglify-bundle",
-    "publish": "npm publish --access public",
     "update-version-major": "npm version major",
     "update-version-minor": "npm version minor",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts",
