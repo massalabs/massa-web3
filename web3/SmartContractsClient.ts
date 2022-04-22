@@ -42,7 +42,7 @@ export class SmartContractsClient extends BaseClient {
 	}
 
 	/** create and send an operation containing byte code */
-	public async deploySmartContract(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
+	public async deploySmartContract(contractData: IContractData, executor?: IAccount): Promise<Array<string>> {
 		// get next period info
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
@@ -52,11 +52,17 @@ export class SmartContractsClient extends BaseClient {
 			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
 		}
 
+		// check sender account
+		const sender = executor || this.walletClient.getBaseAccount();
+		if (!sender) {
+			throw new Error(`No tx sender available`);
+		}
+
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, executor, expiryPeriod);
+		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, sender, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature = await WalletClient.walletSignMessage(bytesCompact, sender);
 
 		// revert base64 sc data to binary
 		if (!contractData.contractDataBase64) {
@@ -86,16 +92,22 @@ export class SmartContractsClient extends BaseClient {
 	}
 
 	/** call smart contract method */
-	public async callSmartContract(callData: ICallData, executor: IAccount): Promise<Array<string>> {
+	public async callSmartContract(callData: ICallData, executor?: IAccount): Promise<Array<string>> {
 		// get next period info
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
+		// check sender account
+		const sender = executor || this.walletClient.getBaseAccount();
+		if (!sender) {
+			throw new Error(`No tx sender available`);
+		}
+
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, executor, expiryPeriod);
+		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, sender, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature = await WalletClient.walletSignMessage(bytesCompact, sender);
 		// request data
 		const data = {
 			content: {
@@ -133,7 +145,7 @@ export class SmartContractsClient extends BaseClient {
 			simulated_gas_price: readData.simulatedGasPrice.toString(),
 			target_address: readData.targetAddress,
 			target_function: readData.targetFunction,
-			parameter: "undefined",
+			parameter: readData.parameter,
 			caller_address: readData.callerAddress
 		};
 		// returns operation ids

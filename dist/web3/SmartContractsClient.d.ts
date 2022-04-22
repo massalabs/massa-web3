@@ -19,9 +19,9 @@ export declare class SmartContractsClient extends BaseClient {
     private readonly walletClient;
     constructor(clientConfig: IClientConfig, publicApiClient: PublicApiClient, walletClient: WalletClient);
     /** create and send an operation containing byte code */
-    deploySmartContract(contractData: IContractData, executor: IAccount): Promise<Array<string>>;
+    deploySmartContract(contractData: IContractData, executor?: IAccount): Promise<Array<string>>;
     /** call smart contract method */
-    callSmartContract(callData: ICallData, executor: IAccount): Promise<Array<string>>;
+    callSmartContract(callData: ICallData, executor?: IAccount): Promise<Array<string>>;
     /** read smart contract method */
     readSmartContract(readData: IReadData): Promise<Array<IContractReadOperationData>>;
     /** Returns the parallel balance which is the smart contract side balance  */
