@@ -5,6 +5,7 @@ const PrivateApiClient_1 = require("./PrivateApiClient");
 const PublicApiClient_1 = require("./PublicApiClient");
 const WalletClient_1 = require("./WalletClient");
 const SmartContractsClient_1 = require("./SmartContractsClient");
+const VaultClient_1 = require("./VaultClient");
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 class Client {
     constructor(clientConfig, baseAccount) {
@@ -12,6 +13,7 @@ class Client {
         this.privateApiClient = new PrivateApiClient_1.PrivateApiClient(clientConfig);
         this.walletClient = new WalletClient_1.WalletClient(clientConfig, this.publicApiClient, baseAccount);
         this.smartContractsClient = new SmartContractsClient_1.SmartContractsClient(clientConfig, this.publicApiClient, this.walletClient);
+        this.vaultClient = new VaultClient_1.VaultClient(clientConfig, this.walletClient);
         // exposed and bound class methods
         this.privateApi = this.privateApi.bind(this);
         this.publicApi = this.publicApi.bind(this);
@@ -33,6 +35,10 @@ class Client {
     /** Smart Contracts related methods */
     smartContracts() {
         return this.smartContractsClient;
+    }
+    /** Vault related methods */
+    vault() {
+        return this.vaultClient;
     }
 }
 exports.Client = Client;

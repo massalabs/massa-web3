@@ -10,6 +10,8 @@ import { ICallData } from "../interfaces/ICallData";
 import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { wait } from "../utils/Wait";
 import { IReadData } from "../interfaces/IReadData";
+import { VaultClient } from "../web3/VaultClient";
+import { WalletClient } from "../web3/WalletClient";
 
 const baseAccount = {
     publicKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
@@ -23,88 +25,15 @@ const baseAccount = {
         // init client
         const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
 
-        // construct a sc utils
-        const utils = new SmartContractUtils();
+        // init the vault
+        web3Client.vault().setPassword("supersecret");
+        web3Client.vault().init();
+        console.log("EXPORTED VAULT ", web3Client.vault().exportVault());
+        const encrypted = await web3Client.vault().encryptVault();
+        console.log("ENCRYPTED VAULT ", encrypted);
 
-        // compile sc from wasm file ready for deployment
-        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("/home/evgeni/Documents/development/massa/OTHERS/tictactoe-sc/build/main.wasm"); // TODO: please change acc. to your design
-        if (!compiledSc.base64) {
-            throw new Error("No bytecode to deploy. Check AS compiler");
-        }
-
-        // deploy smart contract
-        const deployTxId = await web3Client.smartContracts().deploySmartContract({
-            fee: 0,
-            maxGas: 200000,
-            gasPrice: 0,
-            coins: 0,
-            contractDataBase64: compiledSc.base64
-        } as IContractData, baseAccount);
-        const deploymentOperationId = deployTxId[0];
-        console.log("=======> Deploy Smart Contract OpId", deploymentOperationId);
-
-        // await included_pending state
-        const status: EOperationStatus = await web3Client.smartContracts().awaitRequiredOperationStatus(deploymentOperationId, EOperationStatus.INCLUDED_PENDING);
-        // wait around 20 secs fo the events to be fetchable
-        await wait(40000);
-        console.log("=======> Deploy Smart Contract Status", status);
-
-        // poll smart contract events for the opId
-        const eventsFilter = {
-            start: {
-                period: 0,
-                thread: 0
-            } as ISlot,
-            end:  {
-                period: 0,
-                thread: 0
-            } as ISlot,
-            original_caller_address: null,
-            original_operation_id: deploymentOperationId,
-            emitter_address: null,
-        } as IEventFilter;
-        const events: Array<IEvent> = await EventPoller.getEventsAsync(eventsFilter, 5000, web3Client.smartContracts());
-        console.log("=======> Sc events received = ", events);
-
-        // find an event that contains the emitted sc address
-        const addressEvent: IEvent = events.find(event => event.data.includes("Address:"));
-        const scAddress: string = addressEvent.data.split(":")[1];
-        console.log("=======> Smart Contract Address = ", scAddress);
-
-        // send a sc operation
-        const callTxId = await web3Client.smartContracts().callSmartContract({
-            fee: 0,
-            gasPrice: 0,
-            maxGas: 200000,
-            parallelCoins: 0,
-            sequentialCoins: 0,
-            targetAddress: scAddress,
-            functionName: "play",
-            parameter: JSON.stringify({index : 1}),
-        } as ICallData, baseAccount);
-        const callScOperationId = callTxId[0];
-        console.log("=======> Call Smart Contract Op Id = ", callScOperationId);
-
-        // get information about transaction
-        const opData = await web3Client.publicApi().getOperations([callScOperationId]);
-        console.log("=======> Get Operations Smart Contract Tx Summary = ", opData);
-
-        // finally get some read state
-        const readTxId = await web3Client.smartContracts().readSmartContract({
-            fee: 0,
-            maxGas: 200000,
-            simulatedGasPrice: 0,
-            targetAddress: scAddress,
-            targetFunction: "getGameState",
-            parameter: "undefined",
-            callerAddress: baseAccount.address
-        } as IReadData);
-        const readScOperationId = readTxId[0];
-        console.log("=======> Read Smart Contract Op Id = ", readScOperationId);
-
-        // get sc storage data
-        const scStorageData = await web3Client.smartContracts().getDatastoreEntry(scAddress, "gameState");
-        console.log("=======> Get Smart Contract Storage Data = ", scStorageData);
+        const decrypted = await web3Client.vault().decryptVault(encrypted);
+        console.log("DECRYPTED VAULT ", decrypted);
 
     } catch (ex) {
         console.error("Error = ", ex.message);

@@ -15,6 +15,8 @@ import { IRollsData } from "../interfaces/IRollsData";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { IBalance } from "../interfaces/IBalance";
 
+const crypto = require("crypto");
+
 const MAX_WALLET_ACCOUNTS: number = 256;
 
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
@@ -29,6 +31,7 @@ export class WalletClient extends BaseClient {
 		// ========== bind wallet methods ========= //
 
 		// wallet methods
+		this.cleanWallet = this.cleanWallet.bind(this);
 		this.getWalletAccounts = this.getWalletAccounts.bind(this);
 		this.getWalletAccountByAddress = this.getWalletAccountByAddress.bind(this);
 		this.addPrivateKeysToWallet = this.addPrivateKeysToWallet.bind(this);
@@ -53,7 +56,16 @@ export class WalletClient extends BaseClient {
 
 	/** set the default (base) account */
 	public setBaseAccount(baseAccount: IAccount): void {
-		this.baseAccount = baseAccount;
+		let randomEntropy: Buffer = null;
+		if (!randomEntropy) {
+			randomEntropy = crypto.randomBytes(32);
+		}
+
+		this.baseAccount = {...baseAccount, randomEntropy};
+		// see if base account is already added, if not, add it
+		if (!this.getWalletAccountByAddress(baseAccount.address)) {
+			this.addAccountsToWallet([baseAccount]);
+		}
 	}
 
 	/** get the default (base) account */
@@ -64,6 +76,11 @@ export class WalletClient extends BaseClient {
 	/** get all accounts under a wallet */
 	public getWalletAccounts(): Array<IAccount> {
 		return this.wallet;
+	}
+
+	/** delete all accounts under a wallet */
+	public cleanWallet(): void {
+		this.wallet.length = 0;
 	}
 
 	/** get wallet account by an address */
@@ -89,6 +106,7 @@ export class WalletClient extends BaseClient {
 					privateKey: privateKey, // submitted in base58
 					publicKey: publicKeyBase58Encoded,
 					address: addressBase58Encoded,
+					randomEntropy: crypto.randomBytes(32)
 				} as IAccount);
 			}
 		}
@@ -109,8 +127,14 @@ export class WalletClient extends BaseClient {
 			if (!account.address) {
 				throw new Error("Missing account address");
 			}
+
+			let randomEntropy: Buffer = null;
+			if (!account.randomEntropy) {
+				randomEntropy = crypto.randomBytes(32);
+			}
+
 			if (!this.getWalletAccountByAddress(account.address)) {
-				this.wallet.push(account);
+				this.wallet.push({...account, randomEntropy});
 			}
 		}
 	}
@@ -146,7 +170,7 @@ export class WalletClient extends BaseClient {
 		});
 	}
 
-	 /** generate a private key and add it into the wallet */
+	 /** generate a private and public key account and add it into the wallet */
 	public static async walletGenerateNewAccount() {
 		// generate private key
 		const privateKey: Uint8Array = secp.utils.randomPrivateKey();
@@ -163,11 +187,12 @@ export class WalletClient extends BaseClient {
 		return {
 			address: addressBase58Encoded,
 			privateKey: privateKeyBase58Encoded,
-			publicKey: publicKeyBase58Encoded
+			publicKey: publicKeyBase58Encoded,
+			randomEntropy: crypto.randomBytes(32)
 		} as IAccount;
 	}
 
-	/** generate a private key and add it into the wallet */
+	/** generate an account from private key */
 	public static async getAccountFromPrivateKey(privateKeyBase58: string): Promise<IAccount> {
 		// get private key
 		const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKeyBase58);
@@ -183,7 +208,8 @@ export class WalletClient extends BaseClient {
 		return {
 			address: addressBase58Encoded,
 			privateKey: privateKeyBase58,
-			publicKey: publicKeyBase58Encoded
+			publicKey: publicKeyBase58Encoded,
+			randomEntropy: crypto.randomBytes(32)
 		} as IAccount;
 	}
 

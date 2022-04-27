@@ -4,6 +4,7 @@ import { PrivateApiClient } from "./PrivateApiClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 import { SmartContractsClient } from "./SmartContractsClient";
+import { VaultClient } from "./VaultClient";
 
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 export class Client {
@@ -11,12 +12,14 @@ export class Client {
 	private privateApiClient: PrivateApiClient;
 	private walletClient: WalletClient;
 	private smartContractsClient: SmartContractsClient;
+	private vaultClient: VaultClient;
 
 	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
 		this.publicApiClient =  new PublicApiClient(clientConfig);
 		this.privateApiClient =  new PrivateApiClient(clientConfig);
 		this.walletClient =  new WalletClient(clientConfig, this.publicApiClient, baseAccount);
 		this.smartContractsClient = new SmartContractsClient(clientConfig, this.publicApiClient, this.walletClient);
+		this.vaultClient = new VaultClient(clientConfig, this.walletClient);
 
 		// exposed and bound class methods
 		this.privateApi = this.privateApi.bind(this);
@@ -43,5 +46,10 @@ export class Client {
 	/** Smart Contracts related methods */
 	public smartContracts(): SmartContractsClient {
 		return this.smartContractsClient;
+	}
+
+	/** Vault related methods */
+	public vault(): VaultClient {
+		return this.vaultClient;
 	}
 }

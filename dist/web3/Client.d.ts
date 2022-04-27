@@ -4,12 +4,14 @@ import { PrivateApiClient } from "./PrivateApiClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 import { SmartContractsClient } from "./SmartContractsClient";
+import { VaultClient } from "./VaultClient";
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 export declare class Client {
     private publicApiClient;
     private privateApiClient;
     private walletClient;
     private smartContractsClient;
+    private vaultClient;
     constructor(clientConfig: IClientConfig, baseAccount?: IAccount);
     /** Private Api related RPC methods */
     privateApi(): PrivateApiClient;
@@ -19,4 +21,6 @@ export declare class Client {
     wallet(): WalletClient;
     /** Smart Contracts related methods */
     smartContracts(): SmartContractsClient;
+    /** Vault related methods */
+    vault(): VaultClient;
 }

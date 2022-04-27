@@ -9,6 +9,7 @@ const bn_js_1 = require("bn.js");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
+const crypto = require("crypto");
 const MAX_WALLET_ACCOUNTS = 256;
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 class WalletClient extends BaseClient_1.BaseClient {
@@ -18,6 +19,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         this.wallet = [];
         // ========== bind wallet methods ========= //
         // wallet methods
+        this.cleanWallet = this.cleanWallet.bind(this);
         this.getWalletAccounts = this.getWalletAccounts.bind(this);
         this.getWalletAccountByAddress = this.getWalletAccountByAddress.bind(this);
         this.addPrivateKeysToWallet = this.addPrivateKeysToWallet.bind(this);
@@ -40,7 +42,15 @@ class WalletClient extends BaseClient_1.BaseClient {
     }
     /** set the default (base) account */
     setBaseAccount(baseAccount) {
-        this.baseAccount = baseAccount;
+        let randomEntropy = null;
+        if (!randomEntropy) {
+            randomEntropy = crypto.randomBytes(32);
+        }
+        this.baseAccount = Object.assign(Object.assign({}, baseAccount), { randomEntropy });
+        // see if base account is already added, if not, add it
+        if (!this.getWalletAccountByAddress(baseAccount.address)) {
+            this.addAccountsToWallet([baseAccount]);
+        }
     }
     /** get the default (base) account */
     getBaseAccount() {
@@ -49,6 +59,10 @@ class WalletClient extends BaseClient_1.BaseClient {
     /** get all accounts under a wallet */
     getWalletAccounts() {
         return this.wallet;
+    }
+    /** delete all accounts under a wallet */
+    cleanWallet() {
+        this.wallet.length = 0;
     }
     /** get wallet account by an address */
     getWalletAccountByAddress(address) {
@@ -71,6 +85,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                         privateKey: privateKey,
                         publicKey: publicKeyBase58Encoded,
                         address: addressBase58Encoded,
+                        randomEntropy: crypto.randomBytes(32)
                     });
                 }
             }
@@ -91,8 +106,12 @@ class WalletClient extends BaseClient_1.BaseClient {
             if (!account.address) {
                 throw new Error("Missing account address");
             }
+            let randomEntropy = null;
+            if (!account.randomEntropy) {
+                randomEntropy = crypto.randomBytes(32);
+            }
             if (!this.getWalletAccountByAddress(account.address)) {
-                this.wallet.push(account);
+                this.wallet.push(Object.assign(Object.assign({}, account), { randomEntropy }));
             }
         }
     }
@@ -121,7 +140,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             });
         });
     }
-    /** generate a private key and add it into the wallet */
+    /** generate a private and public key account and add it into the wallet */
     static walletGenerateNewAccount() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             // generate private key
@@ -136,11 +155,12 @@ class WalletClient extends BaseClient_1.BaseClient {
             return {
                 address: addressBase58Encoded,
                 privateKey: privateKeyBase58Encoded,
-                publicKey: publicKeyBase58Encoded
+                publicKey: publicKeyBase58Encoded,
+                randomEntropy: crypto.randomBytes(32)
             };
         });
     }
-    /** generate a private key and add it into the wallet */
+    /** generate an account from private key */
     static getAccountFromPrivateKey(privateKeyBase58) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             // get private key
@@ -154,7 +174,8 @@ class WalletClient extends BaseClient_1.BaseClient {
             return {
                 address: addressBase58Encoded,
                 privateKey: privateKeyBase58,
-                publicKey: publicKeyBase58Encoded
+                publicKey: publicKeyBase58Encoded,
+                randomEntropy: crypto.randomBytes(32)
             };
         });
     }

@@ -20,6 +20,8 @@ export declare class WalletClient extends BaseClient {
     getBaseAccount(): IAccount;
     /** get all accounts under a wallet */
     getWalletAccounts(): Array<IAccount>;
+    /** delete all accounts under a wallet */
+    cleanWallet(): void;
     /** get wallet account by an address */
     getWalletAccountByAddress(address: string): IAccount | undefined;
     /** add a list of private keys to the wallet */
@@ -30,9 +32,9 @@ export declare class WalletClient extends BaseClient {
     removeAddressesFromWallet(addresses: Array<string>): void;
     /** show wallet info (private keys, public keys, addresses, balances ...) */
     walletInfo(): Promise<Array<IFullAddressInfo>>;
-    /** generate a private key and add it into the wallet */
+    /** generate a private and public key account and add it into the wallet */
     static walletGenerateNewAccount(): Promise<IAccount>;
-    /** generate a private key and add it into the wallet */
+    /** generate an account from private key */
     static getAccountFromPrivateKey(privateKeyBase58: string): Promise<IAccount>;
     /** sign random message data with an already added wallet account */
     signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature>;
