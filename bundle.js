@@ -256,6 +256,10 @@ class BaseClient {
         this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
         this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
     }
+    /** set new providers */
+    setProviders(providers) {
+        this.clientConfig.providers = providers;
+    }
     /** return all private providers */
     getPrivateProviders() {
         return this.clientConfig.providers.filter((provider) => provider.type === IProvider_1.ProviderType.PRIVATE);
@@ -416,6 +420,7 @@ const PublicApiClient_1 = require("./PublicApiClient");
 const WalletClient_1 = require("./WalletClient");
 const SmartContractsClient_1 = require("./SmartContractsClient");
 const VaultClient_1 = require("./VaultClient");
+const IProvider_1 = require("../interfaces/IProvider");
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 class Client {
     constructor(clientConfig, baseAccount) {
@@ -450,10 +455,30 @@ class Client {
     vault() {
         return this.vaultClient;
     }
+    /** set new providers */
+    setCustomProviders(providers) {
+        this.publicApiClient.setProviders(providers);
+        this.privateApiClient.setProviders(providers);
+        this.walletClient.setProviders(providers);
+        this.smartContractsClient.setProviders(providers);
+    }
+    setNewDefaultProvider(provider) {
+        const providers = new Array({
+            url: provider,
+            type: IProvider_1.ProviderType.PUBLIC
+        }, {
+            url: provider,
+            type: IProvider_1.ProviderType.PRIVATE
+        });
+        this.publicApiClient.setProviders(providers);
+        this.privateApiClient.setProviders(providers);
+        this.walletClient.setProviders(providers);
+        this.smartContractsClient.setProviders(providers);
+    }
 }
 exports.Client = Client;
 
-},{"./PrivateApiClient":14,"./PublicApiClient":15,"./SmartContractsClient":16,"./VaultClient":17,"./WalletClient":18}],12:[function(require,module,exports){
+},{"../interfaces/IProvider":3,"./PrivateApiClient":14,"./PublicApiClient":15,"./SmartContractsClient":16,"./VaultClient":17,"./WalletClient":18}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientFactory = exports.DefaultProviderUrls = void 0;

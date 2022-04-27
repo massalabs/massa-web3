@@ -6,6 +6,7 @@ const PublicApiClient_1 = require("./PublicApiClient");
 const WalletClient_1 = require("./WalletClient");
 const SmartContractsClient_1 = require("./SmartContractsClient");
 const VaultClient_1 = require("./VaultClient");
+const IProvider_1 = require("../interfaces/IProvider");
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 class Client {
     constructor(clientConfig, baseAccount) {
@@ -39,6 +40,26 @@ class Client {
     /** Vault related methods */
     vault() {
         return this.vaultClient;
+    }
+    /** set new providers */
+    setCustomProviders(providers) {
+        this.publicApiClient.setProviders(providers);
+        this.privateApiClient.setProviders(providers);
+        this.walletClient.setProviders(providers);
+        this.smartContractsClient.setProviders(providers);
+    }
+    setNewDefaultProvider(provider) {
+        const providers = new Array({
+            url: provider,
+            type: IProvider_1.ProviderType.PUBLIC
+        }, {
+            url: provider,
+            type: IProvider_1.ProviderType.PRIVATE
+        });
+        this.publicApiClient.setProviders(providers);
+        this.privateApiClient.setProviders(providers);
+        this.walletClient.setProviders(providers);
+        this.smartContractsClient.setProviders(providers);
     }
 }
 exports.Client = Client;

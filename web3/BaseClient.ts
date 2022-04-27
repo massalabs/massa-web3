@@ -44,6 +44,11 @@ export class BaseClient {
 		this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
 	}
 
+	/** set new providers */
+	public setProviders(providers: Array<IProvider>): void {
+		this.clientConfig.providers = providers;
+	}
+
 	/** return all private providers */
 	protected getPrivateProviders(): Array<IProvider> {
 		return this.clientConfig.providers.filter((provider) => provider.type === ProviderType.PRIVATE);
