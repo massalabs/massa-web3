@@ -6,6 +6,7 @@ import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
+import { IContractStorageData } from "../interfaces/IContractStorageData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
@@ -41,7 +42,7 @@ export class SmartContractsClient extends BaseClient {
 	}
 
 	/** create and send an operation containing byte code */
-	public async deploySmartContract(contractData: IContractData, executor: IAccount): Promise<Array<string>> {
+	public async deploySmartContract(contractData: IContractData, executor?: IAccount): Promise<Array<string>> {
 		// get next period info
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
@@ -51,11 +52,17 @@ export class SmartContractsClient extends BaseClient {
 			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
 		}
 
+		// check sender account
+		const sender = executor || this.walletClient.getBaseAccount();
+		if (!sender) {
+			throw new Error(`No tx sender available`);
+		}
+
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, executor, expiryPeriod);
+		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, sender, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature = await WalletClient.walletSignMessage(bytesCompact, sender);
 
 		// revert base64 sc data to binary
 		if (!contractData.contractDataBase64) {
@@ -85,16 +92,22 @@ export class SmartContractsClient extends BaseClient {
 	}
 
 	/** call smart contract method */
-	public async callSmartContract(callData: ICallData, executor: IAccount): Promise<Array<string>> {
+	public async callSmartContract(callData: ICallData, executor?: IAccount): Promise<Array<string>> {
 		// get next period info
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
+		// check sender account
+		const sender = executor || this.walletClient.getBaseAccount();
+		if (!sender) {
+			throw new Error(`No tx sender available`);
+		}
+
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, executor, expiryPeriod);
+		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, sender, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature = await WalletClient.walletSignMessage(bytesCompact, sender);
 		// request data
 		const data = {
 			content: {
@@ -132,7 +145,7 @@ export class SmartContractsClient extends BaseClient {
 			simulated_gas_price: readData.simulatedGasPrice.toString(),
 			target_address: readData.targetAddress,
 			target_function: readData.targetFunction,
-			parameter: "undefined",
+			parameter: readData.parameter,
 			caller_address: readData.callerAddress
 		};
 		// returns operation ids
@@ -176,18 +189,18 @@ export class SmartContractsClient extends BaseClient {
 		}
 	}
 
-	/** Returns the smart contract data storage */
-	public async getDatastoreEntry(address: string, key: string): Promise<string | null> {
-		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
+	/** Returns the smart contract data storage for a given key */
+	public async getDatastoreEntry(smartContractAddress: string, key: string): Promise<IContractStorageData | null> {
+		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([smartContractAddress]);
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);
 		const base58EncodedKey: string = base58checkEncode(Buffer.from(hashSha256(key)));
-		const data: number = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-		const res: string = "";
-		for (let i = 0 ; i < data.toString().length ; ++i) {
-			res.concat(String.fromCharCode(parseInt(data[i])));
-		}
-		return res;
+		const candidateLedgerInfo: Array<number> = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+		const finalLedgerInfo: Array<number> = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
+		return {
+			candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
+			final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
+		} as IContractStorageData;
 	}
 
 	/** Read-only smart contracts */

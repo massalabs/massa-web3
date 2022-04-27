@@ -27,7 +27,7 @@ const baseAccount = {
         const utils = new SmartContractUtils();
 
         // compile sc from wasm file ready for deployment
-        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("path_to_create_tictactoe.wasm"); // TODO: please change acc. to your design
+        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("/home/evgeni/Documents/development/massa/OTHERS/tictactoe-sc/build/main.wasm"); // TODO: please change acc. to your design
         if (!compiledSc.base64) {
             throw new Error("No bytecode to deploy. Check AS compiler");
         }
@@ -102,6 +102,9 @@ const baseAccount = {
         const readScOperationId = readTxId[0];
         console.log("=======> Read Smart Contract Op Id = ", readScOperationId);
 
+        // get sc storage data
+        const scStorageData = await web3Client.smartContracts().getDatastoreEntry(scAddress, "gameState");
+        console.log("=======> Get Smart Contract Storage Data = ", scStorageData);
 
     } catch (ex) {
         console.error("Error = ", ex.message);

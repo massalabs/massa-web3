@@ -38,10 +38,15 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
                 console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
             }
+            // check sender account
+            const sender = executor || this.walletClient.getBaseAccount();
+            if (!sender) {
+                throw new Error(`No tx sender available`);
+            }
             // bytes compaction
-            const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, executor, expiryPeriod);
+            const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // revert base64 sc data to binary
             if (!contractData.contractDataBase64) {
                 throw new Error(`Contract base64 encoded data required. Got null`);
@@ -74,10 +79,15 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // get next period info
             const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
             const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+            // check sender account
+            const sender = executor || this.walletClient.getBaseAccount();
+            if (!sender) {
+                throw new Error(`No tx sender available`);
+            }
             // bytes compaction
-            const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, executor, expiryPeriod);
+            const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // request data
             const data = {
                 content: {
@@ -117,7 +127,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                 simulated_gas_price: readData.simulatedGasPrice.toString(),
                 target_address: readData.targetAddress,
                 target_function: readData.targetFunction,
-                parameter: "undefined",
+                parameter: readData.parameter,
                 caller_address: readData.callerAddress
             };
             // returns operation ids
@@ -163,20 +173,20 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             }
         });
     }
-    /** Returns the smart contract data storage */
-    getDatastoreEntry(address, key) {
+    /** Returns the smart contract data storage for a given key */
+    getDatastoreEntry(smartContractAddress, key) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const addresses = yield this.publicApiClient.getAddresses([address]);
+            const addresses = yield this.publicApiClient.getAddresses([smartContractAddress]);
             if (addresses.length === 0)
                 return null;
             const addressInfo = addresses.at(0);
             const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashSha256)(key)));
-            const data = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-            const res = "";
-            for (let i = 0; i < data.toString().length; ++i) {
-                res.concat(String.fromCharCode(parseInt(data[i])));
-            }
-            return res;
+            const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
+            const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
+            return {
+                candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
+                final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
+            };
         });
     }
     /** Read-only smart contracts */

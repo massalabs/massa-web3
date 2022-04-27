@@ -14,7 +14,7 @@ export interface IEndorsementDraws {
 }
 
 export interface ILedgerDatastore {
-    [name: string]: number;
+    [name: string]: [number];
 }
 
 export interface IAddressInfo {
