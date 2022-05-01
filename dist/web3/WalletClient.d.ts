@@ -25,7 +25,7 @@ export declare class WalletClient extends BaseClient {
     /** get wallet account by an address */
     getWalletAccountByAddress(address: string): IAccount | undefined;
     /** add a list of private keys to the wallet */
-    addPrivateKeysToWallet(privateKeys: Array<string>): Promise<void>;
+    addPrivateKeysToWallet(privateKeys: Array<string>): Promise<Array<IAccount>>;
     /** add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address) */
     addAccountsToWallet(accounts: Array<IAccount>): void;
     /** remove a list of addresses from the wallet */

@@ -89,10 +89,12 @@ export class WalletClient extends BaseClient {
 	}
 
 	/** add a list of private keys to the wallet */
-	public async addPrivateKeysToWallet(privateKeys: Array<string>): Promise<void> {
+	public async addPrivateKeysToWallet(privateKeys: Array<string>): Promise<Array<IAccount>> {
 		if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
 		}
+		let accountsToCreate = new Array<IAccount>();
+
 		for (const privateKey of privateKeys) {
 			const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKey);
 			const publicKey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
@@ -102,7 +104,7 @@ export class WalletClient extends BaseClient {
 			const addressBase58Encoded: string = base58checkEncode(address);
 
 			if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
-				this.wallet.push({
+				accountsToCreate.push({
 					privateKey: privateKey, // submitted in base58
 					publicKey: publicKeyBase58Encoded,
 					address: addressBase58Encoded,
@@ -110,6 +112,9 @@ export class WalletClient extends BaseClient {
 				} as IAccount);
 			}
 		}
+
+		this.wallet.push(...accountsToCreate);
+		return accountsToCreate;
 	}
 
 	/** add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address) */

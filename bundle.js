@@ -1241,6 +1241,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
                 throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
             }
+            let accountsToCreate = new Array();
             for (const privateKey of privateKeys) {
                 const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKey);
                 const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
@@ -1248,7 +1249,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                 const address = yield secp.utils.sha256(publicKey);
                 const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
                 if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
-                    this.wallet.push({
+                    accountsToCreate.push({
                         privateKey: privateKey,
                         publicKey: publicKeyBase58Encoded,
                         address: addressBase58Encoded,
@@ -1256,6 +1257,8 @@ class WalletClient extends BaseClient_1.BaseClient {
                     });
                 }
             }
+            this.wallet.push(...accountsToCreate);
+            return accountsToCreate;
         });
     }
     /** add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address) */

@@ -217,7 +217,7 @@ Available class methods are:
 
 -   `addPrivateKeysToWallet`
     ```ts
-    await web3Client
+    const addedAccounts: Array<IAccount> = await web3Client
         .wallet()
         .addPrivateKeysToWallet([
             "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
