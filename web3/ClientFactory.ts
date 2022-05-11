@@ -7,7 +7,7 @@ import { IClientConfig } from "../interfaces/IClientConfig";
 export enum DefaultProviderUrls {
 	MAINNET = "https://massa.net/api/v2",
 	TESTNET = "https://test.massa.net/api/v2",
-	LABNET = "http://145.239.66.206:33035/api/v2"
+	LABNET = "https://labnet.massa.net/api/v2"
 }
 
 /** Massa Web3 Client Factory for easy initialization */
