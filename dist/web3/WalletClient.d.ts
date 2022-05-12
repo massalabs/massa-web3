@@ -25,23 +25,25 @@ export declare class WalletClient extends BaseClient {
     /** get wallet account by an address */
     getWalletAccountByAddress(address: string): IAccount | undefined;
     /** add a list of private keys to the wallet */
-    addPrivateKeysToWallet(privateKeys: Array<string>): Promise<Array<IAccount>>;
-    /** add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address) */
-    addAccountsToWallet(accounts: Array<IAccount>): void;
+    addPrivateKeysToWallet(privateKeys: Array<string>): Array<IAccount>;
+    /** add accounts to wallet. Prerequisite: each account must have a base58 encoded random entropy or private key */
+    addAccountsToWallet(accounts: Array<IAccount>): Array<IAccount>;
     /** remove a list of addresses from the wallet */
     removeAddressesFromWallet(addresses: Array<string>): void;
     /** show wallet info (private keys, public keys, addresses, balances ...) */
     walletInfo(): Promise<Array<IFullAddressInfo>>;
-    /** generate a private and public key account and add it into the wallet */
-    static walletGenerateNewAccount(): Promise<IAccount>;
-    /** generate an account from private key */
-    static getAccountFromPrivateKey(privateKeyBase58: string): Promise<IAccount>;
+    /** generate a new account */
+    static walletGenerateNewAccount(): IAccount;
+    /** returns an account from private key */
+    static getAccountFromPrivateKey(privateKeyBase58: string): IAccount;
+    /** returns an account from entropy */
+    static getAccountFromEntropy(entropyBase58: string): IAccount;
     /** sign random message data with an already added wallet account */
-    signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature>;
+    signMessage(data: string | Buffer, accountSignerAddress: string): ISignature;
     /** get wallet addresses info */
     private getWalletAddressesInfo;
     /** sign provided string with given address (address must be in the wallet) */
-    static walletSignMessage(data: string | Buffer, signer: IAccount): Promise<ISignature>;
+    static walletSignMessage(data: string | Buffer, signer: IAccount): ISignature;
     /** Returns the account sequential balance - the consensus side balance  */
     getAccountSequentialBalance(address: string): Promise<IBalance | null>;
     /** send native MAS from a wallet address to another */

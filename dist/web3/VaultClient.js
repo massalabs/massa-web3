@@ -2,7 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VaultClient = void 0;
 const tslib_1 = require("tslib");
+const WalletClient_1 = require("./WalletClient");
 const aes_password_1 = require("aes-password");
+const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const bip39 = require("bip39");
 /** Vault module that intenrally uses the wallet client */
 class VaultClient {
@@ -15,16 +17,20 @@ class VaultClient {
         // vault methods
         this.setPassword = this.setPassword.bind(this);
         this.getPassword = this.getPassword.bind(this);
-        this.generateMnemonic = this.generateMnemonic.bind(this);
+        this.entropyHexToMnemonic = this.entropyHexToMnemonic.bind(this);
+        this.mnemonicToHexEntropy = this.mnemonicToHexEntropy.bind(this);
         this.exportVault = this.exportVault.bind(this);
         this.encryptVault = this.encryptVault.bind(this);
         this.decryptVault = this.decryptVault.bind(this);
+        this.recoverVault = this.recoverVault.bind(this);
     }
     /** initializes a vault with a wallet base account */
     init() {
         if (!this.mnemonic) {
-            const baseAccount = this.walletClient.getBaseAccount();
-            this.mnemonic = this.generateMnemonic(baseAccount.randomEntropy);
+            const baseAccount = WalletClient_1.WalletClient.walletGenerateNewAccount();
+            const hex = Buffer.from((0, Xbqcrypto_1.base58checkDecode)(baseAccount.randomEntropy)).toString('hex');
+            this.walletClient.setBaseAccount(baseAccount);
+            this.mnemonic = this.entropyHexToMnemonic(hex);
         }
     }
     /** set password */
@@ -34,6 +40,12 @@ class VaultClient {
     /** get password */
     getPassword() {
         return this.password;
+    }
+    /** recover vault */
+    recoverVault(mnemonic) {
+        let bytes = Buffer.from(this.mnemonicToHexEntropy(mnemonic), 'hex');
+        this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58checkEncode)(bytes)));
+        this.mnemonic = mnemonic;
     }
     /** export vault */
     exportVault() {
@@ -91,8 +103,11 @@ class VaultClient {
             return JSON.parse(decrypted);
         });
     }
-    generateMnemonic(dataObj) {
-        return bip39.entropyToMnemonic(dataObj);
+    entropyHexToMnemonic(data) {
+        return bip39.entropyToMnemonic(data);
+    }
+    mnemonicToHexEntropy(mnemonic) {
+        return bip39.mnemonicToEntropy(mnemonic);
     }
 }
 exports.VaultClient = VaultClient;

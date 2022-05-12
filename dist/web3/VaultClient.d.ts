@@ -19,9 +19,12 @@ export declare class VaultClient {
     setPassword(password: string): void;
     /** get password */
     getPassword(): string;
+    /** recover vault */
+    recoverVault(mnemonic: string): void;
     /** export vault */
     exportVault(): IVault;
     encryptVault(password?: string): Promise<string>;
     decryptVault(encryptedData: string, password?: string): Promise<IVault>;
-    private generateMnemonic;
+    private entropyHexToMnemonic;
+    private mnemonicToHexEntropy;
 }

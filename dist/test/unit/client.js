@@ -77,7 +77,7 @@ const testGroupWallet = (web3Client) => tslib_1.__awaiter(void 0, void 0, void 0
     const newWalletAccount = yield WalletClient_1.WalletClient.walletGenerateNewAccount();
     console.log("New Wallet Account: ", JSON.stringify(newWalletAccount, null, 2));
     // STATIC: sign random message
-    const sig = yield WalletClient_1.WalletClient.walletSignMessage("hello", baseAccount);
+    const sig = WalletClient_1.WalletClient.walletSignMessage("hello", baseAccount);
     console.log("Signature Info: ", JSON.stringify(sig, null, 2));
     // add account by private key
     yield web3Client.wallet().addPrivateKeysToWallet(["2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC"]);
@@ -91,7 +91,8 @@ const testGroupWallet = (web3Client) => tslib_1.__awaiter(void 0, void 0, void 0
     yield web3Client.wallet().addAccountsToWallet([{
             privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
             publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
-            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
+            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2",
+            randomEntropy: null
         }]);
     // get wallet info
     const walletInfo = yield web3Client.wallet().walletInfo();

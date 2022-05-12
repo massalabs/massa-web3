@@ -20,6 +20,7 @@ import { IEvent } from "../../interfaces/IEvent";
 import { ISlot } from "../../interfaces/ISlot";
 import { EventPoller, ON_EVENT } from "../../web3/EventPoller";
 import { IExecuteReadOnlyResponse } from "../../interfaces/IExecuteReadOnlyResponse";
+import { ISignature } from "../../interfaces/ISignature";
 
 const SMART_CONTRACT_EXAMPLE = `
 import { print } from "massa-sc-std";
@@ -111,7 +112,7 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
     console.log("New Wallet Account: ", JSON.stringify(newWalletAccount, null, 2));
 
     // STATIC: sign random message
-    const sig = await WalletClient.walletSignMessage("hello", baseAccount);
+    const sig: ISignature = WalletClient.walletSignMessage("hello", baseAccount);
     console.log("Signature Info: ", JSON.stringify(sig, null, 2));
 
     // add account by private key
@@ -130,7 +131,8 @@ const testGroupWallet = async (web3Client: Client): Promise<void> => {
         [{
             privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
             publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
-            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2"
+            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2",
+            randomEntropy: null
         }]
     );
 

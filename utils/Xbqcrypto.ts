@@ -2,7 +2,7 @@ import * as varint from "varint";
 import * as createhash from "create-hash";
 const base58check = require("base58check");
 
-export function hashSha256(data) {
+export function hashSha256(data): Uint8Array {
     return createhash("sha256").update(data).digest();
 }
 

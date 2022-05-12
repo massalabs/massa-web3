@@ -845,7 +845,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // revert base64 sc data to binary
             if (!contractData.contractDataBase64) {
                 throw new Error(`Contract base64 encoded data required. Got null`);
@@ -886,7 +886,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // request data
             const data = {
                 content: {
@@ -1064,11 +1064,14 @@ exports.SmartContractsClient = SmartContractsClient;
 
 }).call(this)}).call(this,require("buffer").Buffer)
 },{"../interfaces/EOperationStatus":2,"../interfaces/JsonRpcMethods":4,"../interfaces/OperationTypes":5,"../utils/Wait":7,"../utils/Xbqcrypto":8,"../utils/retryExecuteFunction":9,"./BaseClient":10,"./WalletClient":18,"buffer":116,"tslib":228}],17:[function(require,module,exports){
+(function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VaultClient = void 0;
 const tslib_1 = require("tslib");
+const WalletClient_1 = require("./WalletClient");
 const aes_password_1 = require("aes-password");
+const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const bip39 = require("bip39");
 /** Vault module that intenrally uses the wallet client */
 class VaultClient {
@@ -1081,16 +1084,20 @@ class VaultClient {
         // vault methods
         this.setPassword = this.setPassword.bind(this);
         this.getPassword = this.getPassword.bind(this);
-        this.generateMnemonic = this.generateMnemonic.bind(this);
+        this.entropyHexToMnemonic = this.entropyHexToMnemonic.bind(this);
+        this.mnemonicToHexEntropy = this.mnemonicToHexEntropy.bind(this);
         this.exportVault = this.exportVault.bind(this);
         this.encryptVault = this.encryptVault.bind(this);
         this.decryptVault = this.decryptVault.bind(this);
+        this.recoverVault = this.recoverVault.bind(this);
     }
     /** initializes a vault with a wallet base account */
     init() {
         if (!this.mnemonic) {
-            const baseAccount = this.walletClient.getBaseAccount();
-            this.mnemonic = this.generateMnemonic(baseAccount.randomEntropy);
+            const baseAccount = WalletClient_1.WalletClient.walletGenerateNewAccount();
+            const hex = Buffer.from((0, Xbqcrypto_1.base58checkDecode)(baseAccount.randomEntropy)).toString('hex');
+            this.walletClient.setBaseAccount(baseAccount);
+            this.mnemonic = this.entropyHexToMnemonic(hex);
         }
     }
     /** set password */
@@ -1100,6 +1107,12 @@ class VaultClient {
     /** get password */
     getPassword() {
         return this.password;
+    }
+    /** recover vault */
+    recoverVault(mnemonic) {
+        let bytes = Buffer.from(this.mnemonicToHexEntropy(mnemonic), 'hex');
+        this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58checkEncode)(bytes)));
+        this.mnemonic = mnemonic;
     }
     /** export vault */
     exportVault() {
@@ -1157,13 +1170,17 @@ class VaultClient {
             return JSON.parse(decrypted);
         });
     }
-    generateMnemonic(dataObj) {
-        return bip39.entropyToMnemonic(dataObj);
+    entropyHexToMnemonic(data) {
+        return bip39.entropyToMnemonic(data);
+    }
+    mnemonicToHexEntropy(mnemonic) {
+        return bip39.mnemonicToEntropy(mnemonic);
     }
 }
 exports.VaultClient = VaultClient;
 
-},{"aes-password":20,"bip39":75,"tslib":228}],18:[function(require,module,exports){
+}).call(this)}).call(this,require("buffer").Buffer)
+},{"../utils/Xbqcrypto":8,"./WalletClient":18,"aes-password":20,"bip39":75,"buffer":116,"tslib":228}],18:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1204,19 +1221,15 @@ class WalletClient extends BaseClient_1.BaseClient {
         // init wallet with a base account if any
         if (baseAccount) {
             this.setBaseAccount(baseAccount);
-            this.addAccountsToWallet([baseAccount]);
         }
     }
     /** set the default (base) account */
     setBaseAccount(baseAccount) {
-        let randomEntropy = null;
-        if (!randomEntropy) {
-            randomEntropy = crypto.randomBytes(32);
-        }
-        this.baseAccount = Object.assign(Object.assign({}, baseAccount), { randomEntropy });
         // see if base account is already added, if not, add it
+        let baseAccountAdded = null;
         if (!this.getWalletAccountByAddress(baseAccount.address)) {
-            this.addAccountsToWallet([baseAccount]);
+            baseAccountAdded = this.addAccountsToWallet([baseAccount]);
+            this.baseAccount = baseAccountAdded[0];
         }
     }
     /** get the default (base) account */
@@ -1237,53 +1250,70 @@ class WalletClient extends BaseClient_1.BaseClient {
     }
     /** add a list of private keys to the wallet */
     addPrivateKeysToWallet(privateKeys) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
-                throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
+        if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
+            throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
+        }
+        let accountsToCreate = new Array();
+        for (const privateKey of privateKeys) {
+            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKey);
+            const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
+            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+            const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
+            const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+            if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
+                accountsToCreate.push({
+                    privateKey: privateKey,
+                    publicKey: publicKeyBase58Encoded,
+                    address: addressBase58Encoded,
+                    randomEntropy: null
+                });
             }
-            let accountsToCreate = new Array();
-            for (const privateKey of privateKeys) {
-                const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKey);
-                const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
-                const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
-                const address = yield secp.utils.sha256(publicKey);
-                const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
-                if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
-                    accountsToCreate.push({
-                        privateKey: privateKey,
-                        publicKey: publicKeyBase58Encoded,
-                        address: addressBase58Encoded,
-                        randomEntropy: crypto.randomBytes(32)
-                    });
-                }
-            }
-            this.wallet.push(...accountsToCreate);
-            return accountsToCreate;
-        });
+        }
+        this.wallet.push(...accountsToCreate);
+        return accountsToCreate;
     }
-    /** add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address) */
+    /** add accounts to wallet. Prerequisite: each account must have a base58 encoded random entropy or private key */
     addAccountsToWallet(accounts) {
         if (accounts.length > MAX_WALLET_ACCOUNTS) {
             throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted accounts: ${accounts.length}`);
         }
+        let accountsAdded = [];
         for (const account of accounts) {
-            if (!account.privateKey) {
-                throw new Error("Missing account private key");
+            if (!account.randomEntropy && !account.privateKey) {
+                throw new Error("Missing account entropy / private key");
             }
-            if (!account.publicKey) {
-                throw new Error("Missing account public key");
+            let privateKeyBase58Encoded = null;
+            // account is specified via entropy
+            if (account.randomEntropy) {
+                const base58DecodedRandomEntropy = (0, Xbqcrypto_1.base58checkDecode)(account.randomEntropy);
+                const privateKey = secp.utils.hashToPrivateKey(base58DecodedRandomEntropy);
+                privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
             }
-            if (!account.address) {
-                throw new Error("Missing account address");
+            // if not entropy defined, use the base58 encoded value defined as param
+            privateKeyBase58Encoded = privateKeyBase58Encoded || account.privateKey;
+            // get public key
+            const publicKey = secp.getPublicKey((0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58Encoded), true);
+            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+            if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
+                throw new Error("Public key does not correspond the the private key submitted");
             }
-            let randomEntropy = null;
-            if (!account.randomEntropy) {
-                randomEntropy = crypto.randomBytes(32);
+            // get wallet account address
+            const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
+            const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+            if (account.address && account.address !== addressBase58Encoded) {
+                throw new Error("Account address not correspond the the address submitted");
             }
-            if (!this.getWalletAccountByAddress(account.address)) {
-                this.wallet.push(Object.assign(Object.assign({}, account), { randomEntropy }));
+            if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
+                accountsAdded.push({
+                    address: addressBase58Encoded,
+                    privateKey: privateKeyBase58Encoded,
+                    publicKey: publicKeyBase58Encoded,
+                    randomEntropy: account.randomEntropy
+                });
             }
         }
+        this.wallet.push(...accountsAdded);
+        return accountsAdded;
     }
     /** remove a list of addresses from the wallet */
     removeAddressesFromWallet(addresses) {
@@ -1306,58 +1336,73 @@ class WalletClient extends BaseClient_1.BaseClient {
                 throw new Error(`Requested wallets not fully retrieved. Got ${addressesInfo.length}, expected: ${this.wallet.length}`);
             }
             return addressesInfo.map((info, index) => {
-                return Object.assign({ publicKey: this.wallet[index].publicKey, privateKey: this.wallet[index].privateKey }, info);
+                return Object.assign({ publicKey: this.wallet[index].publicKey, privateKey: this.wallet[index].privateKey, randomEntropy: this.wallet[index].randomEntropy }, info);
             });
         });
     }
-    /** generate a private and public key account and add it into the wallet */
+    /** generate a new account */
     static walletGenerateNewAccount() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // generate private key
-            const privateKey = secp.utils.randomPrivateKey();
-            const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
-            // get public key
-            const publicKey = secp.getPublicKey(privateKey, true);
-            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
-            // get wallet account address
-            const address = yield secp.utils.sha256(publicKey);
-            const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
-            return {
-                address: addressBase58Encoded,
-                privateKey: privateKeyBase58Encoded,
-                publicKey: publicKeyBase58Encoded,
-                randomEntropy: crypto.randomBytes(32)
-            };
-        });
+        // generate private key
+        const randomBytes = secp.utils.randomBytes(32);
+        const privateKey = secp.utils.hashToPrivateKey(randomBytes);
+        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+        // get public key
+        const publicKey = secp.getPublicKey(privateKey, true);
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        // get wallet account address
+        const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
+        const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+        return {
+            address: addressBase58Encoded,
+            privateKey: privateKeyBase58Encoded,
+            publicKey: publicKeyBase58Encoded,
+            randomEntropy: (0, Xbqcrypto_1.base58checkEncode)(randomBytes)
+        };
     }
-    /** generate an account from private key */
+    /** returns an account from private key */
     static getAccountFromPrivateKey(privateKeyBase58) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // get private key
-            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58);
-            // get public key
-            const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
-            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
-            // get wallet account address
-            const address = yield secp.utils.sha256(publicKey);
-            const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
-            return {
-                address: addressBase58Encoded,
-                privateKey: privateKeyBase58,
-                publicKey: publicKeyBase58Encoded,
-                randomEntropy: crypto.randomBytes(32)
-            };
-        });
+        // get private key
+        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58);
+        // get public key
+        const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        // get wallet account address
+        const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
+        const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+        return {
+            address: addressBase58Encoded,
+            privateKey: privateKeyBase58,
+            publicKey: publicKeyBase58Encoded,
+            randomEntropy: null
+        };
+    }
+    /** returns an account from entropy */
+    static getAccountFromEntropy(entropyBase58) {
+        // decode entropy
+        const entropyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(entropyBase58);
+        // get private key
+        const privateKey = secp.utils.hashToPrivateKey(entropyBase58Decoded);
+        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+        // get public key
+        const publicKey = secp.getPublicKey(privateKey, true); // key is compressed!
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        // get wallet account address
+        const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
+        const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+        return {
+            address: addressBase58Encoded,
+            privateKey: privateKeyBase58Encoded,
+            publicKey: publicKeyBase58Encoded,
+            randomEntropy: entropyBase58
+        };
     }
     /** sign random message data with an already added wallet account */
     signMessage(data, accountSignerAddress) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
-            if (!signerAccount) {
-                throw new Error(`No signer account ${accountSignerAddress} found in wallet`);
-            }
-            return yield WalletClient.walletSignMessage(data, signerAccount);
-        });
+        const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
+        if (!signerAccount) {
+            throw new Error(`No signer account ${accountSignerAddress} found in wallet`);
+        }
+        return WalletClient.walletSignMessage(data, signerAccount);
     }
     /** get wallet addresses info */
     getWalletAddressesInfo(addresses) {
@@ -1373,53 +1418,51 @@ class WalletClient extends BaseClient_1.BaseClient {
     }
     /** sign provided string with given address (address must be in the wallet) */
     static walletSignMessage(data, signer) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // check private keys to sign the message with
-            if (!signer.privateKey) {
-                throw new Error("No private key to sign the message with");
-            }
-            // check public key to verify the message with
-            if (!signer.publicKey) {
-                throw new Error("No public key to verify the signed message with");
-            }
-            // cast private key
-            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.privateKey);
-            // bytes compaction
-            const bytesCompact = Buffer.from(data);
-            // Hash byte compact
-            const messageHashDigest = yield secp.utils.sha256(bytesCompact);
-            // sign the digest
-            const sig = yield secp.sign(messageHashDigest, privateKeyBase58Decoded, {
-                der: false,
-                recovered: true
-            });
-            // check sig length
-            if (sig[0].length != 64) {
-                throw new Error(`Invalid signature length. Expected 64, got ${sig[0].length}`);
-            }
-            // verify signature
-            if (signer.publicKey) {
-                const publicKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.publicKey);
-                const base58PublicKey = new bn_js_1.BN(publicKeyBase58Decoded, 16);
-                const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toArrayLike(Buffer, "be", 33));
-                if (!isVerified) {
-                    throw new Error(`Signature could not be verified with public key. Please inspect`);
-                }
-            }
-            // extract sig vector
-            const r = sig[0].slice(0, 32);
-            const s = sig[0].slice(32);
-            const v = sig[1];
-            const hex = secp.utils.bytesToHex(sig[0]);
-            const base58Encoded = (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([r, s]));
-            return {
-                r,
-                s,
-                v,
-                hex,
-                base58Encoded
-            };
+        // check private keys to sign the message with
+        if (!signer.privateKey) {
+            throw new Error("No private key to sign the message with");
+        }
+        // check public key to verify the message with
+        if (!signer.publicKey) {
+            throw new Error("No public key to verify the signed message with");
+        }
+        // cast private key
+        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.privateKey);
+        // bytes compaction
+        const bytesCompact = Buffer.from(data);
+        // Hash byte compact
+        const messageHashDigest = (0, Xbqcrypto_1.hashSha256)(bytesCompact);
+        // sign the digest
+        const sig = secp.signSync(messageHashDigest, privateKeyBase58Decoded, {
+            der: false,
+            recovered: true
         });
+        // check sig length
+        if (sig[0].length != 64) {
+            throw new Error(`Invalid signature length. Expected 64, got ${sig[0].length}`);
+        }
+        // verify signature
+        if (signer.publicKey) {
+            const publicKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.publicKey);
+            const base58PublicKey = new bn_js_1.BN(publicKeyBase58Decoded, 16);
+            const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toArrayLike(Buffer, "be", 33));
+            if (!isVerified) {
+                throw new Error(`Signature could not be verified with public key. Please inspect`);
+            }
+        }
+        // extract sig vector
+        const r = sig[0].slice(0, 32);
+        const s = sig[0].slice(32);
+        const v = sig[1];
+        const hex = secp.utils.bytesToHex(sig[0]);
+        const base58Encoded = (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([r, s]));
+        return {
+            r,
+            s,
+            v,
+            hex,
+            base58Encoded
+        };
     }
     /** Returns the account sequential balance - the consensus side balance  */
     getAccountSequentialBalance(address) {
@@ -1443,7 +1486,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.Transaction, executor, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = WalletClient.walletSignMessage(bytesCompact, executor);
             // prepare tx data
             const data = {
                 content: {
@@ -1473,7 +1516,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollBuy, executor, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = WalletClient.walletSignMessage(bytesCompact, executor);
             const data = {
                 content: {
                     expire_period: expiryPeriod,
@@ -1501,7 +1544,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollSell, executor, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = WalletClient.walletSignMessage(bytesCompact, executor);
             const data = {
                 content: {
                     expire_period: expiryPeriod,
@@ -1901,7 +1944,7 @@ class Point {
     }
     multiplyAndAddUnsafe(Q, a, b) {
         const P = JacobianPoint.fromAffine(this);
-        const aP = P.multiply(a);
+        const aP = a === _0n || a === _1n || this !== Point.BASE ? P.multiplyUnsafe(a) : P.multiply(a);
         const bQ = JacobianPoint.fromAffine(Q).multiplyUnsafe(b);
         const sum = aP.add(bQ);
         return sum.equals(JacobianPoint.ZERO) ? undefined : sum.toAffine();
@@ -2434,16 +2477,8 @@ function verify(signature, msgHash, publicKey, opts = vopts) {
     return v === r;
 }
 exports.verify = verify;
-async function taggedHash(tag, ...messages) {
-    const tagB = new Uint8Array(tag.split('').map((c) => c.charCodeAt(0)));
-    const tagH = await exports.utils.sha256(tagB);
-    const h = await exports.utils.sha256(concatBytes(tagH, tagH, ...messages));
-    return bytesToNumber(h);
-}
-async function createChallenge(x, P, message) {
-    const rx = numTo32b(x);
-    const t = await taggedHash('BIP0340/challenge', rx, P.toRawX(), message);
-    return mod(t, CURVE.n);
+function finalizeSchnorrChallenge(ch) {
+    return mod(bytesToNumber(ch), CURVE.n);
 }
 function hasEvenY(point) {
     return (point.y & _1n) === _0n;
@@ -2477,69 +2512,112 @@ class SchnorrSignature {
 function schnorrGetPublicKey(privateKey) {
     return Point.fromPrivateKey(privateKey).toRawX();
 }
-async function schnorrSign(message, privateKey, auxRand = exports.utils.randomBytes()) {
+function initSchnorrSigArgs(message, privateKey, auxRand) {
     if (message == null)
         throw new TypeError(`sign: Expected valid message, not "${message}"`);
-    const { n } = CURVE;
     const m = ensureBytes(message);
     const d0 = normalizePrivateKey(privateKey);
     const rand = ensureBytes(auxRand);
     if (rand.length !== 32)
         throw new TypeError('sign: Expected 32 bytes of aux randomness');
     const P = Point.fromPrivateKey(d0);
-    const d = hasEvenY(P) ? d0 : n - d0;
-    const t0h = await taggedHash('BIP0340/aux', rand);
-    const t = d ^ t0h;
-    const k0h = await taggedHash('BIP0340/nonce', numTo32b(t), P.toRawX(), m);
-    const k0 = mod(k0h, n);
+    const px = P.toRawX();
+    const d = hasEvenY(P) ? d0 : CURVE.n - d0;
+    return { m, P, px, d, rand };
+}
+function initSchnorrNonce(d, t0h) {
+    return numTo32b(d ^ bytesToNumber(t0h));
+}
+function finalizeSchnorrNonce(k0h) {
+    const k0 = mod(bytesToNumber(k0h), CURVE.n);
     if (k0 === _0n)
         throw new Error('sign: Creation of signature failed. k is zero');
     const R = Point.fromPrivateKey(k0);
-    const k = hasEvenY(R) ? k0 : n - k0;
-    const e = await createChallenge(R.x, P, m);
-    const sig = new SchnorrSignature(R.x, mod(k + e * d, n)).toRawBytes();
-    const isValid = await schnorrVerify(sig, m, P.toRawX());
+    const rx = R.toRawX();
+    const k = hasEvenY(R) ? k0 : CURVE.n - k0;
+    return { R, rx, k };
+}
+function finalizeSchnorrSig(R, k, e, d) {
+    return new SchnorrSignature(R.x, mod(k + e * d, CURVE.n)).toRawBytes();
+}
+async function schnorrSign(message, privateKey, auxRand = exports.utils.randomBytes()) {
+    const { m, px, d, rand } = initSchnorrSigArgs(message, privateKey, auxRand);
+    const t = initSchnorrNonce(d, await exports.utils.taggedHash(TAGS.aux, rand));
+    const { R, rx, k } = finalizeSchnorrNonce(await exports.utils.taggedHash(TAGS.nonce, t, px, m));
+    const e = finalizeSchnorrChallenge(await exports.utils.taggedHash(TAGS.challenge, rx, px, m));
+    const sig = finalizeSchnorrSig(R, k, e, d);
+    const isValid = await schnorrVerify(sig, m, px);
     if (!isValid)
         throw new Error('sign: Invalid signature produced');
     return sig;
 }
-async function schnorrVerify(signature, message, publicKey) {
+function schnorrSignSync(message, privateKey, auxRand = exports.utils.randomBytes()) {
+    const { m, px, d, rand } = initSchnorrSigArgs(message, privateKey, auxRand);
+    const t = initSchnorrNonce(d, exports.utils.taggedHashSync(TAGS.aux, rand));
+    const { R, rx, k } = finalizeSchnorrNonce(exports.utils.taggedHashSync(TAGS.nonce, t, px, m));
+    const e = finalizeSchnorrChallenge(exports.utils.taggedHashSync(TAGS.challenge, rx, px, m));
+    const sig = finalizeSchnorrSig(R, k, e, d);
+    const isValid = schnorrVerifySync(sig, m, px);
+    if (!isValid)
+        throw new Error('sign: Invalid signature produced');
+    return sig;
+}
+function initSchnorrVerify(signature, message, publicKey) {
     const raw = signature instanceof SchnorrSignature;
-    let sig;
-    try {
-        sig = raw ? signature : SchnorrSignature.fromHex(signature);
-        if (raw)
-            sig.assertValidity();
-    }
-    catch (error) {
-        return false;
-    }
-    const { r, s } = sig;
-    const m = ensureBytes(message);
-    let P;
-    try {
-        P = normalizePublicKey(publicKey);
-    }
-    catch (error) {
-        return false;
-    }
-    const e = await createChallenge(r, P, m);
+    const sig = raw ? signature : SchnorrSignature.fromHex(signature);
+    if (raw)
+        sig.assertValidity();
+    return {
+        ...sig,
+        m: ensureBytes(message),
+        P: normalizePublicKey(publicKey),
+    };
+}
+function finalizeSchnorrVerify(r, P, s, e) {
     const R = Point.BASE.multiplyAndAddUnsafe(P, normalizePrivateKey(s), mod(-e, CURVE.n));
     if (!R || !hasEvenY(R) || R.x !== r)
         return false;
     return true;
+}
+async function schnorrVerify(signature, message, publicKey) {
+    try {
+        const { r, s, m, P } = initSchnorrVerify(signature, message, publicKey);
+        const e = finalizeSchnorrChallenge(await exports.utils.taggedHash(TAGS.challenge, numTo32b(r), P.toRawX(), m));
+        return finalizeSchnorrVerify(r, P, s, e);
+    }
+    catch (error) {
+        return false;
+    }
+}
+function schnorrVerifySync(signature, message, publicKey) {
+    try {
+        const { r, s, m, P } = initSchnorrVerify(signature, message, publicKey);
+        const e = finalizeSchnorrChallenge(exports.utils.taggedHashSync(TAGS.challenge, numTo32b(r), P.toRawX(), m));
+        return finalizeSchnorrVerify(r, P, s, e);
+    }
+    catch (error) {
+        return false;
+    }
 }
 exports.schnorr = {
     Signature: SchnorrSignature,
     getPublicKey: schnorrGetPublicKey,
     sign: schnorrSign,
     verify: schnorrVerify,
+    signSync: schnorrSignSync,
+    verifySync: schnorrVerifySync,
 };
 Point.BASE._setWindowSize(8);
 const crypto = {
     node: crypto_1.default,
     web: typeof self === 'object' && 'crypto' in self ? self.crypto : undefined,
 };
+const TAGS = {
+    challenge: 'BIP0340/challenge',
+    aux: 'BIP0340/aux',
+    nonce: 'BIP0340/nonce',
+};
+const TAGGED_HASH_PREFIXES = {};
 exports.utils = {
     isValidPrivateKey(privateKey) {
         try {
@@ -2550,10 +2628,32 @@ exports.utils = {
             return false;
         }
     },
+    privateAdd: (privateKey, tweak) => {
+        const p = normalizePrivateKey(privateKey);
+        const t = bytesToNumber(ensureBytes(tweak));
+        return numTo32b(mod(p + t, CURVE.n));
+    },
+    privateNegate: (privateKey) => {
+        const p = normalizePrivateKey(privateKey);
+        return numTo32b(CURVE.n - p);
+    },
+    pointAddScalar: (p, tweak, isCompressed) => {
+        const P = Point.fromHex(p);
+        const t = bytesToNumber(ensureBytes(tweak));
+        const Q = Point.BASE.multiplyAndAddUnsafe(P, t, _1n);
+        if (!Q)
+            throw new Error('Tweaked point at infinity');
+        return Q.toRawBytes(isCompressed);
+    },
+    pointMultiply: (p, tweak, isCompressed) => {
+        const P = Point.fromHex(p);
+        const t = bytesToNumber(ensureBytes(tweak));
+        return P.multiply(t).toRawBytes(isCompressed);
+    },
     hashToPrivateKey: (hash) => {
         hash = ensureBytes(hash);
-        if (hash.length < 40 || hash.length > 1024)
-            throw new Error('Expected 40-1024 bytes of private key as per FIPS 186');
+        if (hash.length < 32 || hash.length > 1024)
+            throw new Error('Expected 32-1024 bytes of private key as per FIPS 186');
         const num = mod(bytesToNumber(hash), CURVE.n);
         if (num === _0n || num === _1n)
             throw new Error('Invalid private key');
@@ -2576,14 +2676,16 @@ exports.utils = {
     },
     bytesToHex,
     mod,
-    sha256: async (message) => {
+    sha256: async (...messages) => {
         if (crypto.web) {
-            const buffer = await crypto.web.subtle.digest('SHA-256', message.buffer);
+            const buffer = await crypto.web.subtle.digest('SHA-256', concatBytes(...messages));
             return new Uint8Array(buffer);
         }
         else if (crypto.node) {
             const { createHash } = crypto.node;
-            return Uint8Array.from(createHash('sha256').update(message).digest());
+            const hash = createHash('sha256');
+            messages.forEach((m) => hash.update(m));
+            return Uint8Array.from(hash.digest());
         }
         else {
             throw new Error("The environment doesn't have sha256 function");
@@ -2608,6 +2710,26 @@ exports.utils = {
     },
     sha256Sync: undefined,
     hmacSha256Sync: undefined,
+    taggedHash: async (tag, ...messages) => {
+        let tagP = TAGGED_HASH_PREFIXES[tag];
+        if (tagP === undefined) {
+            const tagH = await exports.utils.sha256(Uint8Array.from(tag, (c) => c.charCodeAt(0)));
+            tagP = concatBytes(tagH, tagH);
+            TAGGED_HASH_PREFIXES[tag] = tagP;
+        }
+        return exports.utils.sha256(tagP, ...messages);
+    },
+    taggedHashSync: (tag, ...messages) => {
+        if (typeof exports.utils.sha256Sync !== 'function')
+            throw new Error('utils.sha256Sync is undefined, you need to set it');
+        let tagP = TAGGED_HASH_PREFIXES[tag];
+        if (tagP === undefined) {
+            const tagH = exports.utils.sha256Sync(Uint8Array.from(tag, (c) => c.charCodeAt(0)));
+            tagP = concatBytes(tagH, tagH);
+            TAGGED_HASH_PREFIXES[tag] = tagP;
+        }
+        return exports.utils.sha256Sync(tagP, ...messages);
+    },
     precompute(windowSize = 8, point = Point.BASE) {
         const cached = point === Point.BASE ? point : new Point(point.x, point.y);
         cached._setWindowSize(windowSize);

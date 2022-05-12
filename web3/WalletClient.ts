@@ -4,7 +4,7 @@ import * as secp from "@noble/secp256k1";
 import { BaseClient } from "./BaseClient";
 import { IAddressInfo, IFullAddressInfo } from "../interfaces/IAddressInfo";
 import { ISignature } from "../interfaces/ISignature";
-import { base58checkDecode, base58checkEncode } from "../utils/Xbqcrypto";
+import { base58checkDecode, base58checkEncode, hashSha256 } from "../utils/Xbqcrypto";
 import { BN }  from "bn.js";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
@@ -50,21 +50,16 @@ export class WalletClient extends BaseClient {
 		// init wallet with a base account if any
 		if (baseAccount) {
 			this.setBaseAccount(baseAccount);
-			this.addAccountsToWallet([baseAccount]);
 		}
 	}
 
 	/** set the default (base) account */
 	public setBaseAccount(baseAccount: IAccount): void {
-		let randomEntropy: Buffer = null;
-		if (!randomEntropy) {
-			randomEntropy = crypto.randomBytes(32);
-		}
-
-		this.baseAccount = {...baseAccount, randomEntropy};
 		// see if base account is already added, if not, add it
+		let baseAccountAdded: Array<IAccount> = null; 
 		if (!this.getWalletAccountByAddress(baseAccount.address)) {
-			this.addAccountsToWallet([baseAccount]);
+			baseAccountAdded = this.addAccountsToWallet([baseAccount]);
+			this.baseAccount = baseAccountAdded[0];
 		}
 	}
 
@@ -89,7 +84,7 @@ export class WalletClient extends BaseClient {
 	}
 
 	/** add a list of private keys to the wallet */
-	public async addPrivateKeysToWallet(privateKeys: Array<string>): Promise<Array<IAccount>> {
+	public addPrivateKeysToWallet(privateKeys: Array<string>): Array<IAccount> {
 		if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
 		}
@@ -100,7 +95,7 @@ export class WalletClient extends BaseClient {
 			const publicKey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
 			const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
 
-			const address: Uint8Array = await secp.utils.sha256(publicKey);
+			const address: Uint8Array = hashSha256(publicKey);
 			const addressBase58Encoded: string = base58checkEncode(address);
 
 			if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
@@ -108,7 +103,7 @@ export class WalletClient extends BaseClient {
 					privateKey: privateKey, // submitted in base58
 					publicKey: publicKeyBase58Encoded,
 					address: addressBase58Encoded,
-					randomEntropy: crypto.randomBytes(32)
+					randomEntropy: null
 				} as IAccount);
 			}
 		}
@@ -117,31 +112,57 @@ export class WalletClient extends BaseClient {
 		return accountsToCreate;
 	}
 
-	/** add accounts to wallet. Prerequisite: each account must have a full set of data (private, public keys and an address) */
-	public addAccountsToWallet(accounts: Array<IAccount>): void {
+	/** add accounts to wallet. Prerequisite: each account must have a base58 encoded random entropy or private key */
+	public addAccountsToWallet(accounts: Array<IAccount>): Array<IAccount> {
 		if (accounts.length > MAX_WALLET_ACCOUNTS) {
 			throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted accounts: ${accounts.length}`);
 		}
+		let accountsAdded: Array<IAccount> = [];
+
 		for (const account of accounts) {
-			if (!account.privateKey) {
-				throw new Error("Missing account private key");
-			}
-			if (!account.publicKey) {
-				throw new Error("Missing account public key");
-			}
-			if (!account.address) {
-				throw new Error("Missing account address");
+			if (!account.randomEntropy && !account.privateKey) {
+				throw new Error("Missing account entropy / private key");
 			}
 
-			let randomEntropy: Buffer = null;
-			if (!account.randomEntropy) {
-				randomEntropy = crypto.randomBytes(32);
+			let privateKeyBase58Encoded: string = null;
+
+			// account is specified via entropy
+			if (account.randomEntropy) {
+				const base58DecodedRandomEntropy: Buffer = base58checkDecode(account.randomEntropy);
+				const privateKey: Uint8Array = secp.utils.hashToPrivateKey(base58DecodedRandomEntropy);
+				privateKeyBase58Encoded = base58checkEncode(privateKey);
 			}
 
-			if (!this.getWalletAccountByAddress(account.address)) {
-				this.wallet.push({...account, randomEntropy});
+			// if not entropy defined, use the base58 encoded value defined as param
+			privateKeyBase58Encoded = privateKeyBase58Encoded || account.privateKey;
+
+			// get public key
+			const publicKey: Uint8Array = secp.getPublicKey(base58checkDecode(privateKeyBase58Encoded), true);
+			const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+
+			if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
+				throw new Error("Public key does not correspond the the private key submitted");
+			}
+
+			// get wallet account address
+			const address: Uint8Array = hashSha256(publicKey);
+			const addressBase58Encoded: string = base58checkEncode(address);
+			if (account.address && account.address !== addressBase58Encoded) {
+				throw new Error("Account address not correspond the the address submitted");
+			}
+
+			if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
+				accountsAdded.push({
+					address: addressBase58Encoded,
+					privateKey: privateKeyBase58Encoded,
+					publicKey: publicKeyBase58Encoded,
+					randomEntropy: account.randomEntropy
+				} as IAccount);
 			}
 		}
+
+		this.wallet.push(...accountsAdded);
+		return accountsAdded;
 	}
 
 	/** remove a list of addresses from the wallet */
@@ -170,15 +191,18 @@ export class WalletClient extends BaseClient {
 			return {
 				publicKey: this.wallet[index].publicKey,
 				privateKey: this.wallet[index].privateKey,
+				randomEntropy: this.wallet[index].randomEntropy,
 				...info
 			} as IFullAddressInfo;
 		});
 	}
 
-	 /** generate a private and public key account and add it into the wallet */
-	public static async walletGenerateNewAccount() {
+	 /** generate a new account */
+	public static walletGenerateNewAccount(): IAccount {
+
 		// generate private key
-		const privateKey: Uint8Array = secp.utils.randomPrivateKey();
+		const randomBytes: Uint8Array = secp.utils.randomBytes(32);
+		const privateKey: Uint8Array = secp.utils.hashToPrivateKey(randomBytes);
 		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
 
 		// get public key
@@ -186,19 +210,19 @@ export class WalletClient extends BaseClient {
 		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
 
 		// get wallet account address
-		const address: Uint8Array = await secp.utils.sha256(publicKey);
+		const address: Uint8Array = hashSha256(publicKey);
 		const addressBase58Encoded: string = base58checkEncode(address);
 
 		return {
 			address: addressBase58Encoded,
 			privateKey: privateKeyBase58Encoded,
 			publicKey: publicKeyBase58Encoded,
-			randomEntropy: crypto.randomBytes(32)
+			randomEntropy: base58checkEncode(randomBytes)
 		} as IAccount;
 	}
 
-	/** generate an account from private key */
-	public static async getAccountFromPrivateKey(privateKeyBase58: string): Promise<IAccount> {
+	/** returns an account from private key */
+	public static getAccountFromPrivateKey(privateKeyBase58: string): IAccount {
 		// get private key
 		const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKeyBase58);
 
@@ -207,24 +231,49 @@ export class WalletClient extends BaseClient {
 		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
 
 		// get wallet account address
-		const address: Uint8Array = await secp.utils.sha256(publicKey);
+		const address: Uint8Array = hashSha256(publicKey);
 		const addressBase58Encoded: string = base58checkEncode(address);
 
 		return {
 			address: addressBase58Encoded,
 			privateKey: privateKeyBase58,
 			publicKey: publicKeyBase58Encoded,
-			randomEntropy: crypto.randomBytes(32)
+			randomEntropy: null
+		} as IAccount;
+	}
+
+	/** returns an account from entropy */
+	public static getAccountFromEntropy(entropyBase58: string): IAccount {
+		// decode entropy
+		const entropyBase58Decoded: Buffer = base58checkDecode(entropyBase58);
+
+		// get private key
+		const privateKey: Uint8Array = secp.utils.hashToPrivateKey(entropyBase58Decoded);
+		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
+
+		// get public key
+		const publicKey: Uint8Array = secp.getPublicKey(privateKey, true); // key is compressed!
+		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+
+		// get wallet account address
+		const address: Uint8Array = hashSha256(publicKey);
+		const addressBase58Encoded: string = base58checkEncode(address);
+
+		return {
+			address: addressBase58Encoded,
+			privateKey: privateKeyBase58Encoded,
+			publicKey: publicKeyBase58Encoded,
+			randomEntropy: entropyBase58
 		} as IAccount;
 	}
 
 	/** sign random message data with an already added wallet account */
-	public async signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature> {
+	public signMessage(data: string | Buffer, accountSignerAddress: string): ISignature {
 		const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
 		if (!signerAccount) {
 			throw new Error(`No signer account ${accountSignerAddress} found in wallet`);
 		}
-		return await WalletClient.walletSignMessage(data, signerAccount);
+		return WalletClient.walletSignMessage(data, signerAccount);
 	}
 
 	/** get wallet addresses info */
@@ -238,7 +287,7 @@ export class WalletClient extends BaseClient {
 	}
 
 	/** sign provided string with given address (address must be in the wallet) */
-	public static async walletSignMessage(data: string | Buffer, signer: IAccount): Promise<ISignature> {
+	public static walletSignMessage(data: string | Buffer, signer: IAccount): ISignature {
 
 		// check private keys to sign the message with
 		if (!signer.privateKey) {
@@ -256,10 +305,10 @@ export class WalletClient extends BaseClient {
 		// bytes compaction
 		const bytesCompact: Buffer = Buffer.from(data);
 		// Hash byte compact
-		const messageHashDigest: Uint8Array = await secp.utils.sha256(bytesCompact);
+		const messageHashDigest: Uint8Array = hashSha256(bytesCompact);
 
 		// sign the digest
-		const sig = await secp.sign(messageHashDigest, privateKeyBase58Decoded, {
+		const sig = secp.signSync(messageHashDigest, privateKeyBase58Decoded, {
 			der: false,
 			recovered: true
 		});
@@ -317,7 +366,7 @@ export class WalletClient extends BaseClient {
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, executor);
 
 		// prepare tx data
 		const data = {
@@ -350,7 +399,7 @@ export class WalletClient extends BaseClient {
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollBuy, executor, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, executor);
 
 		const data = {
 			content: {
@@ -381,7 +430,7 @@ export class WalletClient extends BaseClient {
 		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollSell, executor, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, executor);
 
 		const data = {
 			content: {

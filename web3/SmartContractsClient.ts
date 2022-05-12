@@ -13,6 +13,7 @@ import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { IOperationData } from "../interfaces/IOperationData";
 import { IReadData } from "../interfaces/IReadData";
+import { ISignature } from "../interfaces/ISignature";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
@@ -62,7 +63,7 @@ export class SmartContractsClient extends BaseClient {
 		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, sender, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, sender);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, sender);
 
 		// revert base64 sc data to binary
 		if (!contractData.contractDataBase64) {
@@ -107,7 +108,7 @@ export class SmartContractsClient extends BaseClient {
 		const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, sender, expiryPeriod);
 
 		// sign payload
-		const signature = await WalletClient.walletSignMessage(bytesCompact, sender);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, sender);
 		// request data
 		const data = {
 			content: {

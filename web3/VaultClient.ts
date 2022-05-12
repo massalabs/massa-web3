@@ -2,7 +2,7 @@ import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { WalletClient } from "./WalletClient";
 import { AESEncryption } from "aes-password";
-
+import { base58checkDecode, base58checkEncode } from "../utils/Xbqcrypto";
 const bip39 = require("bip39");
 
 export interface IVault {
@@ -24,17 +24,21 @@ export class VaultClient {
 		// vault methods
 		this.setPassword = this.setPassword.bind(this);
 		this.getPassword = this.getPassword.bind(this);
-		this.generateMnemonic = this.generateMnemonic.bind(this);
+		this.entropyHexToMnemonic = this.entropyHexToMnemonic.bind(this);
+		this.mnemonicToHexEntropy = this.mnemonicToHexEntropy.bind(this);
 		this.exportVault = this.exportVault.bind(this);
 		this.encryptVault = this.encryptVault.bind(this);
 		this.decryptVault = this.decryptVault.bind(this);
+		this.recoverVault = this.recoverVault.bind(this);
 	}
 
 	/** initializes a vault with a wallet base account */
 	public init(): void {
 		if (!this.mnemonic) {
-			const baseAccount: IAccount = this.walletClient.getBaseAccount();
-			this.mnemonic = this.generateMnemonic(baseAccount.randomEntropy);
+			const baseAccount: IAccount = WalletClient.walletGenerateNewAccount();
+			const hex = Buffer.from(base58checkDecode(baseAccount.randomEntropy)).toString('hex');
+			this.walletClient.setBaseAccount(baseAccount);
+			this.mnemonic = this.entropyHexToMnemonic(hex);
 		}
 	}
 
@@ -47,6 +51,13 @@ export class VaultClient {
 	public getPassword(): string {
 		return this.password;
 	}
+
+	/** recover vault */
+	public recoverVault(mnemonic: string) {
+        let bytes: Buffer = Buffer.from(this.mnemonicToHexEntropy(mnemonic), 'hex');
+		this.walletClient.setBaseAccount(WalletClient.getAccountFromEntropy(base58checkEncode(bytes)));
+        this.mnemonic = mnemonic;
+    }
 
 	/** export vault */
 	public exportVault(): IVault {
@@ -104,7 +115,11 @@ export class VaultClient {
 		return JSON.parse(decrypted) as IVault;
 	}
 
-	private generateMnemonic(dataObj: any): string {
-        return bip39.entropyToMnemonic(dataObj);
+	private entropyHexToMnemonic(data: any): string {
+        return bip39.entropyToMnemonic(data);
+    }
+
+	private mnemonicToHexEntropy(mnemonic: string): any {
+        return bip39.mnemonicToEntropy(mnemonic);
     }
 }
