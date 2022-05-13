@@ -11,12 +11,12 @@ const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
 const hmac_1 = require("@noble/hashes/hmac");
 const sha256_1 = require("@noble/hashes/sha256");
+// add hmacSync for sync signing
 secp.utils.hmacSha256Sync = (key, ...msgs) => {
     const h = hmac_1.hmac.create(sha256_1.sha256, key);
     msgs.forEach(msg => h.update(msg));
     return h.digest();
 };
-const crypto = require("crypto");
 const MAX_WALLET_ACCOUNTS = 256;
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 class WalletClient extends BaseClient_1.BaseClient {

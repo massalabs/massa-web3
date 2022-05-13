@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VaultClient = void 0;
 const tslib_1 = require("tslib");
 const WalletClient_1 = require("./WalletClient");
-const aes_password_1 = require("aes-password");
+const aes_1 = require("../utils/aes");
 const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const bip39 = require("bip39");
 /** Vault module that intenrally uses the wallet client */
@@ -76,7 +76,8 @@ class VaultClient {
             // encrypt and return the encrypted vault
             let encrypted = null;
             try {
-                encrypted = yield aes_password_1.AESEncryption.encrypt(JSON.stringify(dataObj), pwd);
+                encrypted = yield aes_1.default.encrypt(JSON.stringify(dataObj), pwd);
+                //encrypted = await AESEncryption.encrypt(JSON.stringify(dataObj), pwd);
             }
             catch (ex) {
                 console.error("Error when encrypting vault with password", ex);
@@ -94,7 +95,8 @@ class VaultClient {
             // decrypt and return the decrypted vault
             let decrypted = null;
             try {
-                decrypted = yield aes_password_1.AESEncryption.decrypt(encryptedData, pwd);
+                decrypted = yield aes_1.default.decrypt(encryptedData, pwd);
+                //decrypted = await AESEncryption.decrypt(encryptedData, pwd);
             }
             catch (ex) {
                 console.error("Error when decrypting vault with password", ex);
