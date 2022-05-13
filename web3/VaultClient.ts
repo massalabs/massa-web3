@@ -1,9 +1,9 @@
 import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { WalletClient } from "./WalletClient";
-import Aes from "../utils/aes";
 import { base58checkDecode, base58checkEncode } from "../utils/Xbqcrypto";
 const bip39 = require("bip39");
+const CryptoJS = require("crypto-js");
 
 export interface IVault {
 	network: number;
@@ -89,7 +89,8 @@ export class VaultClient {
 		// encrypt and return the encrypted vault
 		let encrypted: string = null;
 		try {
-			encrypted = await Aes.encrypt(JSON.stringify(dataObj), pwd);
+			encrypted = CryptoJS.AES.encrypt(JSON.stringify(dataObj), pwd).toString();
+			//encrypted = await Aes.encrypt(JSON.stringify(dataObj), pwd);
 		} catch (ex) {
 			console.error("Error when encrypting vault with password", ex);
 			throw ex;
@@ -106,7 +107,9 @@ export class VaultClient {
 		// decrypt and return the decrypted vault
 		let decrypted: string = null;
 		try {
-			decrypted = await Aes.decrypt(encryptedData, pwd);
+			const bytes = CryptoJS.AES.decrypt(encryptedData, pwd);
+			decrypted = bytes.toString(CryptoJS.enc.Utf8);
+			//decrypted = await Aes.decrypt(encryptedData, pwd);
 		} catch (ex) {
 			console.error("Error when decrypting vault with password", ex);
 			throw ex;

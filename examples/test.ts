@@ -14,7 +14,7 @@ import { VaultClient } from "../web3/VaultClient";
 import { WalletClient } from "../web3/WalletClient";
 import { base58checkDecode, base58checkEncode, hashSha256 } from "../utils/Xbqcrypto";
 import * as secp from "@noble/secp256k1"
-import Aes from "../utils/aes"
+const CryptoJS = require("crypto-js");
 
 //const ecc= require('tiny-secp256k1')
 const bip39 = require("bip39");
@@ -43,6 +43,20 @@ const baseAccount = {
         const decrypted = await web3Client.vault().decryptVault(encrypted);
         //const decrypted = await Aes.decrypt(encrypted, "password");
         console.log("DECRYPTED VAULT ", decrypted);
+
+
+
+        /*
+        // Encrypt
+        var ciphertext = CryptoJS.AES.encrypt(JSON.stringify({"name": "Evgeni"}), 'secret key 123').toString();
+        console.log("ciphertext ", ciphertext);
+
+        // Decrypt
+        var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
+        console.log("bytes ", bytes);
+        var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        console.log("decryptedData ", decryptedData);
+        */
         
         //await web3Client.vault().recoverVault(web3Client.vault().exportVault().mnemonic);
         //console.log("RECOVERED VAULT ", web3Client.vault().exportVault());
