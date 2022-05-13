@@ -28,6 +28,8 @@ export class Client {
 		this.publicApi = this.publicApi.bind(this);
 		this.wallet = this.wallet.bind(this);
 		this.smartContracts = this.smartContracts.bind(this);
+		this.setCustomProviders = this.setCustomProviders.bind(this);
+		this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
 	}
 
 	/** Private Api related RPC methods */

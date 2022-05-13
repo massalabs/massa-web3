@@ -15,6 +15,15 @@ import { IRollsData } from "../interfaces/IRollsData";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { IBalance } from "../interfaces/IBalance";
 
+import { hmac } from '@noble/hashes/hmac';
+import { sha256 } from '@noble/hashes/sha256';
+
+secp.utils.hmacSha256Sync = (key: Uint8Array, ...msgs: Uint8Array[]) => {
+  const h = hmac.create(sha256, key);
+  msgs.forEach(msg => h.update(msg));
+  return h.digest();
+};
+
 const crypto = require("crypto");
 
 const MAX_WALLET_ACCOUNTS: number = 256;

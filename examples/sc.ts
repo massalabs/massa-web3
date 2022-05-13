@@ -10,14 +10,6 @@ import { ICallData } from "../interfaces/ICallData";
 import { EOperationStatus } from "../interfaces/EOperationStatus";
 import { wait } from "../utils/Wait";
 import { IReadData } from "../interfaces/IReadData";
-import { VaultClient } from "../web3/VaultClient";
-import { WalletClient } from "../web3/WalletClient";
-import { base58checkDecode, base58checkEncode, hashSha256 } from "../utils/Xbqcrypto";
-import * as secp from "@noble/secp256k1"
-
-//const ecc= require('tiny-secp256k1')
-const bip39 = require("bip39");
-const crypto = require("crypto");
 
 const baseAccount = {
     publicKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
@@ -30,64 +22,84 @@ const baseAccount = {
 
     try {
         // init client
-        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true);
-        web3Client.vault().init();
-        web3Client.vault().setPassword("supersecret");
-        console.log("EXPORTED VAULT ", web3Client.vault().exportVault());
-        const encrypted = await web3Client.vault().encryptVault();
-        console.log("ENCRYPTED VAULT ", encrypted);
+        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
 
-        const decrypted = await web3Client.vault().decryptVault(encrypted);
-        console.log("DECRYPTED VAULT ", decrypted);
-        
-        await web3Client.vault().recoverVault(web3Client.vault().exportVault().mnemonic);
-        console.log("RECOVERED VAULT ", web3Client.vault().exportVault());
+        // construct a sc utils
+        const utils = new SmartContractUtils();
 
-        // init the vault
-        /*
-        web3Client.vault().setPassword("supersecret");
-        web3Client.vault().init();
-        console.log("EXPORTED VAULT ", web3Client.vault().exportVault());
-        const encrypted = await web3Client.vault().encryptVault();
-        console.log("ENCRYPTED VAULT ", encrypted);
+        // compile sc from wasm file ready for deployment
+        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("/home/evgeni/Documents/development/massa/OTHERS/tictactoe-sc/build/main.wasm"); // TODO: please change acc. to your design
+        if (!compiledSc.base64) {
+            throw new Error("No bytecode to deploy. Check AS compiler");
+        }
 
-        const decrypted = await web3Client.vault().decryptVault(encrypted);
-        console.log("DECRYPTED VAULT ", decrypted);
-        */
+        // deploy smart contract
+        const deployTxId = await web3Client.smartContracts().deploySmartContract({
+            fee: 0,
+            maxGas: 200000,
+            gasPrice: 0,
+            coins: 0,
+            contractDataBase64: compiledSc.base64
+        } as IContractData, baseAccount);
+        const deploymentOperationId = deployTxId[0];
+        console.log("=======> Deploy Smart Contract OpId", deploymentOperationId);
 
-        /*
-        const newAccount = WalletClient.walletGenerateNewAccount();
-        const pubKey = base58checkDecode(newAccount.publicKey);
-        console.log("NEW ACCOUNT ", newAccount, pubKey);
+        // await included_pending state
+        const status: EOperationStatus = await web3Client.smartContracts().awaitRequiredOperationStatus(deploymentOperationId, EOperationStatus.INCLUDED_PENDING);
+        // wait around 20 secs fo the events to be fetchable
+        await wait(40000);
+        console.log("=======> Deploy Smart Contract Status", status);
 
-        const address = hashSha256(pubKey);
-        const addressBase58Encoded: string = base58checkEncode(address);
-        console.log("XXXXXXXXXXXX ", addressBase58Encoded);
-        */
+        // poll smart contract events for the opId
+        const eventsFilter = {
+            start: null,
+            end: null,
+            original_caller_address: null,
+            original_operation_id: deploymentOperationId,
+            emitter_address: null,
+        } as IEventFilter;
+        const events: Array<IEvent> = await EventPoller.getEventsAsync(eventsFilter, 5000, web3Client.smartContracts());
+        console.log("=======> Sc events received = ", events);
 
-        /*
-        const hex = Buffer.from('hellotherekaksitipofdfdopfodpty5', 'utf8').toString('hex');
-        console.log("hex ", hex);
-        const mnemonic = bip39.entropyToMnemonic(hex);
-        console.log("mnemonic ", mnemonic);
-        const entropy = bip39.mnemonicToEntropy(mnemonic);
-        console.log("entropy ", entropy);
-        */
+        // find an event that contains the emitted sc address
+        const addressEvent: IEvent = events.find(event => event.data.includes("Address:"));
+        const scAddress: string = addressEvent.data.split(":")[1];
+        console.log("=======> Smart Contract Address = ", scAddress);
 
-        /*
-        const randomEntropy: Uint8Array = secp.utils.randomBytes(32);
-        //const randomEntropy: Buffer = crypto.randomBytes(32);
-        console.log("randomEntropy ", randomEntropy);
+        // send a sc operation
+        const callTxId = await web3Client.smartContracts().callSmartContract({
+            fee: 0,
+            gasPrice: 0,
+            maxGas: 200000,
+            parallelCoins: 0,
+            sequentialCoins: 0,
+            targetAddress: scAddress,
+            functionName: "play",
+            parameter: JSON.stringify({index : 1}),
+        } as ICallData, baseAccount);
+        const callScOperationId = callTxId[0];
+        console.log("=======> Call Smart Contract Op Id = ", callScOperationId);
 
-        const privateKey: Uint8Array = secp.utils.hashToPrivateKey(randomEntropy);
-        console.log("private key ", privateKey);
+        // get information about transaction
+        const opData = await web3Client.publicApi().getOperations([callScOperationId]);
+        console.log("=======> Get Operations Smart Contract Tx Summary = ", opData);
 
-        //const publicKey = ecc.pointFromScalar(privateKey, true);
-        //console.log("public key ", publicKey);
-        const publicKey2 = secp.getPublicKey(privateKey, true);
-        console.log("public key 2", publicKey2);
-        */
-        
+        // finally get some read state
+        const readTxId = await web3Client.smartContracts().readSmartContract({
+            fee: 0,
+            maxGas: 200000,
+            simulatedGasPrice: 0,
+            targetAddress: scAddress,
+            targetFunction: "getGameState",
+            parameter: "undefined",
+            callerAddress: baseAccount.address
+        } as IReadData);
+        const readScOperationId = readTxId[0];
+        console.log("=======> Read Smart Contract Op Id = ", readScOperationId);
+
+        // get sc storage data
+        const scStorageData = await web3Client.smartContracts().getDatastoreEntry(scAddress, "gameState");
+        console.log("=======> Get Smart Contract Storage Data = ", scStorageData);
 
     } catch (ex) {
         console.error("Error = ", ex.message);

@@ -9,6 +9,13 @@ const bn_js_1 = require("bn.js");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
+const hmac_1 = require("@noble/hashes/hmac");
+const sha256_1 = require("@noble/hashes/sha256");
+secp.utils.hmacSha256Sync = (key, ...msgs) => {
+    const h = hmac_1.hmac.create(sha256_1.sha256, key);
+    msgs.forEach(msg => h.update(msg));
+    return h.digest();
+};
 const crypto = require("crypto");
 const MAX_WALLET_ACCOUNTS = 256;
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
