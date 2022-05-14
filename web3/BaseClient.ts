@@ -2,7 +2,7 @@ import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
 import { base58checkDecode, varintEncode } from "../utils/Xbqcrypto";
-import { BN }  from "bn.js";
+import { BN } from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";

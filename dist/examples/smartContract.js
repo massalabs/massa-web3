@@ -88,4 +88,4 @@ const baseAccount = {
         console.error("Error = ", ex.message);
     }
 }))();
-//# sourceMappingURL=sc.js.map
+//# sourceMappingURL=smartContract.js.map

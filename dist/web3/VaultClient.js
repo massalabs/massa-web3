@@ -77,7 +77,6 @@ class VaultClient {
             let encrypted = null;
             try {
                 encrypted = CryptoJS.AES.encrypt(JSON.stringify(dataObj), pwd).toString();
-                //encrypted = await Aes.encrypt(JSON.stringify(dataObj), pwd);
             }
             catch (ex) {
                 console.error("Error when encrypting vault with password", ex);
@@ -97,7 +96,6 @@ class VaultClient {
             try {
                 const bytes = CryptoJS.AES.decrypt(encryptedData, pwd);
                 decrypted = bytes.toString(CryptoJS.enc.Utf8);
-                //decrypted = await Aes.decrypt(encryptedData, pwd);
             }
             catch (ex) {
                 console.error("Error when decrypting vault with password", ex);

@@ -9,9 +9,10 @@ import { IOperationData } from "../interfaces/IOperationData";
 import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
+import { IPublicApiClient } from "../interfaces/IPublicApiClient";
 
 /** Public Api Client for interacting with the massa network */
-export class PublicApiClient extends BaseClient {
+export class PublicApiClient extends BaseClient implements IPublicApiClient {
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
 

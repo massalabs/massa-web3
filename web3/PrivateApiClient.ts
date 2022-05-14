@@ -3,9 +3,11 @@ import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { ISignedMessage } from "../interfaces/ISignedMessage";
 import { BaseClient } from "./BaseClient";
+import { IPrivateApiClient } from "../interfaces/IPrivateApiClient";
+
 
 /** Private Api Client for interacting with a massa node */
-export class PrivateApiClient extends BaseClient {
+export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
 
