@@ -1,15 +1,15 @@
-import { IAccount } from "../interfaces/IAccount";
-import { IContractData } from "../interfaces/IContractData";
-import { IEventFilter } from "../interfaces/IEventFilter";
-import { ISlot } from "../interfaces/ISlot";
-import { ClientFactory, DefaultProviderUrls } from "../web3/ClientFactory";
+import { IAccount } from "../src/interfaces/IAccount";
+import { IContractData } from "../src/interfaces/IContractData";
+import { IEventFilter } from "../src/interfaces/IEventFilter";
+import { ClientFactory, DefaultProviderUrls } from "../src/web3/ClientFactory";
 import { SmartContractUtils, ICompiledSmartContract } from "massa-sc-utils";
-import { IEvent } from "../interfaces/IEvent";
-import { EventPoller } from "../web3/EventPoller";
-import { ICallData } from "../interfaces/ICallData";
-import { EOperationStatus } from "../interfaces/EOperationStatus";
-import { wait } from "../utils/Wait";
-import { IReadData } from "../interfaces/IReadData";
+import { IEvent } from "../src/interfaces/IEvent";
+import { EventPoller } from "../src/web3/EventPoller";
+import { ICallData } from "../src/interfaces/ICallData";
+import { EOperationStatus } from "../src/interfaces/EOperationStatus";
+import { wait } from "../src/utils/Wait";
+import { IReadData } from "../src/interfaces/IReadData";
+
 
 const baseAccount = {
     publicKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",

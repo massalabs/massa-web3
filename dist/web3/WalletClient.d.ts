@@ -8,8 +8,9 @@ import { ITransactionData } from "../interfaces/ITransactionData";
 import { PublicApiClient } from "./PublicApiClient";
 import { IRollsData } from "../interfaces/IRollsData";
 import { IBalance } from "../interfaces/IBalance";
+import { IWalletClient } from "../interfaces/IWalletClient";
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
-export declare class WalletClient extends BaseClient {
+export declare class WalletClient extends BaseClient implements IWalletClient {
     private readonly publicApiClient;
     private wallet;
     private baseAccount;

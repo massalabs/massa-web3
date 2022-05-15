@@ -1,1 +1,1 @@
-{"version":3,"file":"JsonRpcResponseData.js","sourceRoot":"","sources":["../../interfaces/JsonRpcResponseData.ts"],"names":[],"mappings":""}
+{"version":3,"file":"JsonRpcResponseData.js","sourceRoot":"","sources":["../../src/interfaces/JsonRpcResponseData.ts"],"names":[],"mappings":""}

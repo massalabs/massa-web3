@@ -1,13 +1,9 @@
-import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { WalletClient } from "./WalletClient";
-export interface IVault {
-    network: number;
-    accounts: IAccount[];
-    mnemonic: string;
-}
-/** Vault module that intenrally uses the wallet client */
-export declare class VaultClient {
+import { IVault } from "../interfaces/IVault";
+import { IVaultClient } from "../interfaces/IVaultClient";
+/** Vault module that internally uses the wallet client */
+export declare class VaultClient implements IVaultClient {
     private readonly clientConfig;
     private readonly walletClient;
     private password;
@@ -23,8 +19,12 @@ export declare class VaultClient {
     recoverVault(mnemonic: string): void;
     /** export vault */
     exportVault(): IVault;
+    /** encrypt vault */
     encryptVault(password?: string): Promise<string>;
+    /** decrypt vault */
     decryptVault(encryptedData: string, password?: string): Promise<IVault>;
-    private entropyHexToMnemonic;
-    private mnemonicToHexEntropy;
+    /** entropy to hex mnemonic */
+    entropyHexToMnemonic(data: any): string;
+    /** mnemonic to hex entropy */
+    mnemonicToHexEntropy(mnemonic: string): any;
 }

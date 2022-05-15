@@ -76,7 +76,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         if (privateKeys.length > MAX_WALLET_ACCOUNTS) {
             throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${privateKeys.length}`);
         }
-        let accountsToCreate = new Array();
+        const accountsToCreate = new Array();
         for (const privateKey of privateKeys) {
             const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKey);
             const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
@@ -100,7 +100,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         if (accounts.length > MAX_WALLET_ACCOUNTS) {
             throw new Error(`Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted accounts: ${accounts.length}`);
         }
-        let accountsAdded = [];
+        const accountsAdded = [];
         for (const account of accounts) {
             if (!account.randomEntropy && !account.privateKey) {
                 throw new Error("Missing account entropy / private key");

@@ -7,8 +7,9 @@ import { SmartContractsClient } from "./SmartContractsClient";
 import { VaultClient } from "./VaultClient";
 import { IProvider } from "../interfaces/IProvider";
 import { DefaultProviderUrls } from "./ClientFactory";
+import { IClient } from "../interfaces/IClient";
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
-export declare class Client {
+export declare class Client implements IClient {
     private publicApiClient;
     private privateApiClient;
     private walletClient;

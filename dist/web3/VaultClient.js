@@ -6,7 +6,7 @@ const WalletClient_1 = require("./WalletClient");
 const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const bip39 = require("bip39");
 const CryptoJS = require("crypto-js");
-/** Vault module that intenrally uses the wallet client */
+/** Vault module that internally uses the wallet client */
 class VaultClient {
     constructor(clientConfig, walletClient) {
         // ========== bind vault methods ========= //
@@ -28,7 +28,7 @@ class VaultClient {
     init() {
         if (!this.mnemonic) {
             const baseAccount = WalletClient_1.WalletClient.walletGenerateNewAccount();
-            const hex = Buffer.from((0, Xbqcrypto_1.base58checkDecode)(baseAccount.randomEntropy)).toString('hex');
+            const hex = Buffer.from((0, Xbqcrypto_1.base58checkDecode)(baseAccount.randomEntropy)).toString("hex");
             this.walletClient.setBaseAccount(baseAccount);
             this.mnemonic = this.entropyHexToMnemonic(hex);
         }
@@ -43,7 +43,7 @@ class VaultClient {
     }
     /** recover vault */
     recoverVault(mnemonic) {
-        let bytes = Buffer.from(this.mnemonicToHexEntropy(mnemonic), 'hex');
+        const bytes = Buffer.from(this.mnemonicToHexEntropy(mnemonic), "hex");
         this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58checkEncode)(bytes)));
         this.mnemonic = mnemonic;
     }
@@ -58,6 +58,7 @@ class VaultClient {
             mnemonic: this.mnemonic,
         };
     }
+    /** encrypt vault */
     encryptVault(password) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const pwd = password || this.password;
@@ -85,6 +86,7 @@ class VaultClient {
             return encrypted;
         });
     }
+    /** decrypt vault */
     decryptVault(encryptedData, password) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const pwd = password || this.password;
@@ -104,9 +106,11 @@ class VaultClient {
             return JSON.parse(decrypted);
         });
     }
+    /** entropy to hex mnemonic */
     entropyHexToMnemonic(data) {
         return bip39.entropyToMnemonic(data);
     }
+    /** mnemonic to hex entropy */
     mnemonicToHexEntropy(mnemonic) {
         return bip39.mnemonicToEntropy(mnemonic);
     }

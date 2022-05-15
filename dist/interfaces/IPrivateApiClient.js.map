@@ -1,1 +1,1 @@
-{"version":3,"file":"IPrivateApiClient.js","sourceRoot":"","sources":["../../interfaces/IPrivateApiClient.ts"],"names":[],"mappings":""}
+{"version":3,"file":"IPrivateApiClient.js","sourceRoot":"","sources":["../../src/interfaces/IPrivateApiClient.ts"],"names":[],"mappings":""}

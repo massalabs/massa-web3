@@ -1,4 +1,4 @@
-import { ClientFactory, DefaultProviderUrls } from "../web3/ClientFactory";
+import { ClientFactory, DefaultProviderUrls } from "../src/web3/ClientFactory";
 
 (async () => {
 
