@@ -11,7 +11,8 @@ export interface ISignedScDeployment {
     signature?: ISignature;
 }
 export declare class SmartContractsEventEmitter extends EventEmitter {
-    emitScDeploySignature(payload: ISignedScDeployment): void;
+    emitScDeploySign(payload: ISignedScDeployment): void;
+    emitScDeploySigned(payload: ISignedScDeployment): void;
     emitScDeploySubmitted(operationIds: Array<string>): void;
     emitScDeployFailed(reason: string, ex: Error): void;
 }

@@ -70,7 +70,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, sender, expiryPeriod);
 
 		// sign payload
-		this.smartContractsEventEmitter.emitScDeploySignature({
+		this.smartContractsEventEmitter.emitScDeploySign({
 			contractData,
 			expiryPeriod,
 			sender,

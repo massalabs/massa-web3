@@ -862,7 +862,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
             // sign payload
-            this.smartContractsEventEmitter.emitScDeploySignature({
+            this.smartContractsEventEmitter.emitScDeploySign({
                 contractData,
                 expiryPeriod,
                 sender,
@@ -1689,8 +1689,11 @@ exports.SmartContractsEventEmitter = void 0;
 const events_1 = require("events");
 const SmartContractEvents_1 = require("./SmartContractEvents");
 class SmartContractsEventEmitter extends events_1.default {
-    emitScDeploySignature(payload) {
+    emitScDeploySign(payload) {
         this.emit(SmartContractEvents_1.SMART_CONTRACT_EVENTS.SC_DEPLOY_SIGN, payload);
+    }
+    emitScDeploySigned(payload) {
+        this.emit(SmartContractEvents_1.SMART_CONTRACT_EVENTS.SC_DEPLOY_SIGNED, payload);
     }
     emitScDeploySubmitted(operationIds) {
         this.emit(SmartContractEvents_1.SMART_CONTRACT_EVENTS.SC_DEPLOY_SUBMITTED, operationIds);

@@ -49,7 +49,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
             // sign payload
-            this.smartContractsEventEmitter.emitScDeploySignature({
+            this.smartContractsEventEmitter.emitScDeploySign({
                 contractData,
                 expiryPeriod,
                 sender,

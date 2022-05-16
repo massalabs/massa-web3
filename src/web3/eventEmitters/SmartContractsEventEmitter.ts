@@ -13,8 +13,12 @@ export interface ISignedScDeployment {
 }
 
 export class SmartContractsEventEmitter extends EventEmitter {
-	public emitScDeploySignature(payload: ISignedScDeployment): void {
+	public emitScDeploySign(payload: ISignedScDeployment): void {
 		this.emit(SMART_CONTRACT_EVENTS.SC_DEPLOY_SIGN, payload);
+	}
+
+    public emitScDeploySigned(payload: ISignedScDeployment): void {
+		this.emit(SMART_CONTRACT_EVENTS.SC_DEPLOY_SIGNED, payload);
 	}
 
     public emitScDeploySubmitted(operationIds: Array<string>): void {
