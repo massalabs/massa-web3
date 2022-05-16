@@ -15,6 +15,8 @@ export declare const PERIOD_OFFSET = 5;
 export declare class BaseClient {
     protected clientConfig: IClientConfig;
     constructor(clientConfig: IClientConfig);
+    /** set new providers */
+    setProviders(providers: Array<IProvider>): void;
     /** return all private providers */
     protected getPrivateProviders(): Array<IProvider>;
     /** return all public providers */

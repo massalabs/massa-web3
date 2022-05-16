@@ -7,8 +7,9 @@ import { IOperationData } from "../interfaces/IOperationData";
 import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
+import { IPublicApiClient } from "../interfaces/IPublicApiClient";
 /** Public Api Client for interacting with the massa network */
-export declare class PublicApiClient extends BaseClient {
+export declare class PublicApiClient extends BaseClient implements IPublicApiClient {
     constructor(clientConfig: IClientConfig);
     /** Show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...) */
     getNodeStatus(): Promise<INodeStatus>;
