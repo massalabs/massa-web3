@@ -8,7 +8,7 @@ var DefaultProviderUrls;
 (function (DefaultProviderUrls) {
     DefaultProviderUrls["MAINNET"] = "https://massa.net/api/v2";
     DefaultProviderUrls["TESTNET"] = "https://test.massa.net/api/v2";
-    DefaultProviderUrls["LABNET"] = "http://145.239.66.206:33035/api/v2";
+    DefaultProviderUrls["LABNET"] = "https://labnet.massa.net/api/v2";
 })(DefaultProviderUrls = exports.DefaultProviderUrls || (exports.DefaultProviderUrls = {}));
 /** Massa Web3 Client Factory for easy initialization */
 class ClientFactory {
