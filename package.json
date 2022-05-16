@@ -37,7 +37,7 @@
     "massa"
   ],
   "dependencies": {
-    "@noble/secp256k1": "github:BatiGencho/noble-secp256k1#feature/entropy-32-bytes",
+    "@noble/secp256k1": "https://github.com/BatiGencho/noble-secp256k1.git#feature/entropy-32-bytes",
     "axios": "^0.26.1",
     "base58check": "^2.0.0",
     "bip39": "^3.0.4",
