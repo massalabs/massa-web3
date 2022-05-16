@@ -844,6 +844,10 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.readSmartContract = this.readSmartContract.bind(this);
         this.getParallelBalance = this.getParallelBalance.bind(this);
         this.onSmartContractDeploySignedListener = this.onSmartContractDeploySignedListener.bind(this);
+        this.getSmartContractsEventEmitter = this.getSmartContractsEventEmitter.bind(this);
+    }
+    getSmartContractsEventEmitter() {
+        return this.smartContractsEventEmitter;
     }
     /** this function is mainly used by the extension for singing */
     extensionSignScDeployment(contractData, sender) {

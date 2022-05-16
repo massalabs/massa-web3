@@ -48,6 +48,11 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		this.getParallelBalance = this.getParallelBalance.bind(this);
 
 		this.onSmartContractDeploySignedListener = this.onSmartContractDeploySignedListener.bind(this);
+		this.getSmartContractsEventEmitter = this.getSmartContractsEventEmitter.bind(this);
+	}
+
+	public getSmartContractsEventEmitter(): SmartContractsEventEmitter {
+		return this.smartContractsEventEmitter;
 	}
 
 	/** this function is mainly used by the extension for singing */

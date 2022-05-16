@@ -12,6 +12,7 @@ import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse
 import { IReadData } from "../interfaces/IReadData";
 import { ISmartContractsClient } from "../interfaces/ISmartContractsClient";
 import { BaseClient } from "./BaseClient";
+import { SmartContractsEventEmitter } from "./eventEmitters/SmartContractsEventEmitter";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
@@ -20,6 +21,7 @@ export declare class SmartContractsClient extends BaseClient implements ISmartCo
     private readonly walletClient;
     private smartContractsEventEmitter;
     constructor(clientConfig: IClientConfig, publicApiClient: PublicApiClient, walletClient: WalletClient);
+    getSmartContractsEventEmitter(): SmartContractsEventEmitter;
     /** this function is mainly used by the extension for singing */
     extensionSignScDeployment(contractData: IContractData, sender: IAccount): Promise<void>;
     onSmartContractDeploySignedListener(): Promise<void>;
