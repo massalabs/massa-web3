@@ -1,8 +1,9 @@
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { ISignedMessage } from "../interfaces/ISignedMessage";
 import { BaseClient } from "./BaseClient";
+import { IPrivateApiClient } from "../interfaces/IPrivateApiClient";
 /** Private Api Client for interacting with a massa node */
-export declare class PrivateApiClient extends BaseClient {
+export declare class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     constructor(clientConfig: IClientConfig);
     /** Unban a given IP addresses */
     unbanIpAddress(ipAddress: string): Promise<void>;

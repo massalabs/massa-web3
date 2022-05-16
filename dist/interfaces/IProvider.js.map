@@ -1,1 +1,1 @@
-{"version":3,"file":"IProvider.js","sourceRoot":"","sources":["../../interfaces/IProvider.ts"],"names":[],"mappings":";;;AAKA,IAAY,YAGX;AAHD,WAAY,YAAY;IACvB,qDAAO,CAAA;IACP,mDAAM,CAAA;AACP,CAAC,EAHW,YAAY,GAAZ,oBAAY,KAAZ,oBAAY,QAGvB"}
+{"version":3,"file":"IProvider.js","sourceRoot":"","sources":["../../src/interfaces/IProvider.ts"],"names":[],"mappings":";;;AAKA,IAAY,YAGX;AAHD,WAAY,YAAY;IACvB,qDAAO,CAAA;IACP,mDAAM,CAAA;AACP,CAAC,EAHW,YAAY,GAAZ,oBAAY,KAAZ,oBAAY,QAGvB"}

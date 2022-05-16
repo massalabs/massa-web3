@@ -31,6 +31,11 @@ class BaseClient {
         this.getPublicProviders = this.getPublicProviders.bind(this);
         this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
         this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
+        this.setProviders = this.setProviders.bind(this);
+    }
+    /** set new providers */
+    setProviders(providers) {
+        this.clientConfig.providers = providers;
     }
     /** return all private providers */
     getPrivateProviders() {

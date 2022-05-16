@@ -46,7 +46,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // revert base64 sc data to binary
             if (!contractData.contractDataBase64) {
                 throw new Error(`Contract base64 encoded data required. Got null`);
@@ -87,7 +87,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // request data
             const data = {
                 content: {
