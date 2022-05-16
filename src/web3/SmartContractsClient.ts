@@ -21,6 +21,8 @@ import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { wait } from "../utils/Wait";
 import { base58checkEncode, hashSha256 } from "../utils/Xbqcrypto";
 import { BaseClient } from "./BaseClient";
+import { SMART_CONTRACT_EVENTS } from "./eventEmitters/SmartContractEvents";
+import { ISignedScDeployment, SmartContractsEventEmitter } from "./eventEmitters/SmartContractsEventEmitter";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 
@@ -29,6 +31,9 @@ const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
 export class SmartContractsClient extends BaseClient implements ISmartContractsClient {
+
+	private smartContractsEventEmitter = new SmartContractsEventEmitter();
+
 	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, private readonly walletClient: WalletClient) {
 		super(clientConfig);
 
@@ -41,6 +46,77 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		this.callSmartContract = this.callSmartContract.bind(this);
 		this.readSmartContract = this.readSmartContract.bind(this);
 		this.getParallelBalance = this.getParallelBalance.bind(this);
+
+		this.onSmartContractDeploySignedListener = this.onSmartContractDeploySignedListener.bind(this);
+	}
+
+	/** this function is mainly used by the extension for singing */
+	public async extensionSignScDeployment(contractData: IContractData, sender: IAccount): Promise<void> {
+		// get next period info
+		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+
+		// get the block size
+		if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
+			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
+		}
+
+		// bytes compaction
+		const bytesCompact: Buffer = this.compactBytesForOperation(contractData, OperationTypeId.ExecuteSC, sender, expiryPeriod);
+
+		// sign payload
+		this.smartContractsEventEmitter.emitScDeploySignature({
+			contractData,
+			expiryPeriod,
+			sender,
+			bytesCompact,
+			signature: null
+		});
+	}
+
+	public async onSmartContractDeploySignedListener(): Promise<void> {
+		return new Promise<void>(async (resolve, reject) => {
+			this.smartContractsEventEmitter.on(SMART_CONTRACT_EVENTS.SC_DEPLOY_SIGNED, async (payload: ISignedScDeployment) => {
+				// revert base64 sc data to binary
+				if (!payload.contractData.contractDataBase64) {
+					const err = new Error(`Contract base64 encoded data required. Got null`);
+					this.smartContractsEventEmitter.emitScDeployFailed(`Contract base64 encoded data required. Got null`, err);
+					return resolve();
+				}
+				if (!payload.signature) {
+					const err = new Error(`Payload signature is null`);
+					this.smartContractsEventEmitter.emitScDeployFailed(`Payload signature is null`, err);
+					return resolve();
+				}
+				const decodedScBinaryCode = new Uint8Array(Buffer.from(payload.contractData.contractDataBase64, "base64"));
+				const data = {
+					content: {
+						expire_period: payload.expiryPeriod,
+						fee: payload.contractData.fee.toString(),
+						op: {
+							ExecuteSC: {
+								data: Array.from(decodedScBinaryCode),
+								max_gas: payload.contractData.maxGas,
+								coins: payload.contractData.coins.toString(),
+								gas_price: payload.contractData.gasPrice.toString()
+							}
+						},
+						sender_public_key: payload.sender.publicKey
+					},
+					signature: payload.signature.base58Encoded,
+				};
+				// returns operation ids
+				let opIds: Array<string> = null;
+				try {
+					opIds = await this.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
+				} catch (err) {
+					this.smartContractsEventEmitter.emitScDeployFailed(`Error deploying smart contract`, err);
+					return resolve();
+				}
+				this.smartContractsEventEmitter.emitScDeploySubmitted(opIds);
+				return resolve();
+			});
+		})
 	}
 
 	/** create and send an operation containing byte code */
@@ -55,7 +131,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		}
 
 		// check sender account
-		const sender = executor || this.walletClient.getBaseAccount();
+		const sender: IAccount = executor || this.walletClient.getBaseAccount();
 		if (!sender) {
 			throw new Error(`No tx sender available`);
 		}

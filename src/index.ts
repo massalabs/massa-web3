@@ -42,3 +42,8 @@ export { WalletClient } from "./web3/WalletClient";
 export { VaultClient } from "./web3/VaultClient";
 export { EventPoller } from "./web3/EventPoller";
 export { SmartContractsClient } from "./web3/SmartContractsClient";
+
+// export extension methods
+export { SMART_CONTRACT_EVENTS } from "./web3/eventEmitters/SmartContractEvents";
+export { ISignedScDeployment, SmartContractsEventEmitter } from "./web3/eventEmitters/SmartContractsEventEmitter";
+

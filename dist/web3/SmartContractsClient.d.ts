@@ -18,7 +18,11 @@ import { WalletClient } from "./WalletClient";
 export declare class SmartContractsClient extends BaseClient implements ISmartContractsClient {
     private readonly publicApiClient;
     private readonly walletClient;
+    private smartContractsEventEmitter;
     constructor(clientConfig: IClientConfig, publicApiClient: PublicApiClient, walletClient: WalletClient);
+    /** this function is mainly used by the extension for singing */
+    extensionSignScDeployment(contractData: IContractData, sender: IAccount): Promise<void>;
+    onSmartContractDeploySignedListener(): Promise<void>;
     /** create and send an operation containing byte code */
     deploySmartContract(contractData: IContractData, executor?: IAccount): Promise<Array<string>>;
     /** call smart contract method */

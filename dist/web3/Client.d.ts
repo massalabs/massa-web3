@@ -16,6 +16,8 @@ export declare class Client implements IClient {
     private smartContractsClient;
     private vaultClient;
     constructor(clientConfig: IClientConfig, baseAccount?: IAccount);
+    /** starts all listeners on all sub-clients */
+    startAllListeners(): void;
     /** Private Api related RPC methods */
     privateApi(): PrivateApiClient;
     /** Public Api related RPC methods */

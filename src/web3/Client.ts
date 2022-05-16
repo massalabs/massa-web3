@@ -33,6 +33,13 @@ export class Client implements IClient {
 		this.smartContracts = this.smartContracts.bind(this);
 		this.setCustomProviders = this.setCustomProviders.bind(this);
 		this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
+		this.startAllListeners = this.startAllListeners.bind(this);
+	}
+
+	/** starts all listeners on all sub-clients */
+	public startAllListeners(): void {
+		// all these funcs should be infallible
+		this.smartContractsClient.onSmartContractDeploySignedListener().then(() => { console.log("Smart contract listeners started"); });
 	}
 
 	/** Private Api related RPC methods */
