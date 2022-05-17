@@ -48,9 +48,9 @@ export declare class WalletClient extends BaseClient implements IWalletClient {
     /** Returns the account sequential balance - the consensus side balance  */
     getAccountSequentialBalance(address: string): Promise<IBalance | null>;
     /** send native MAS from a wallet address to another */
-    sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>>;
+    sendTransaction(txData: ITransactionData, executor?: IAccount): Promise<Array<string>>;
     /** buy rolls with wallet address */
-    buyRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
+    buyRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>>;
     /** sell rolls with wallet address */
-    sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
+    sellRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>>;
 }

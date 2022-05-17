@@ -165,7 +165,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 						gas_price: contractData.gasPrice.toString()
 					}
 				},
-				sender_public_key: executor.publicKey
+				sender_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};
@@ -207,7 +207,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 						param: callData.parameter,
 					}
 				},
-				sender_public_key: executor.publicKey
+				sender_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};

@@ -954,7 +954,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                             gas_price: contractData.gasPrice.toString()
                         }
                     },
-                    sender_public_key: executor.publicKey
+                    sender_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
@@ -994,7 +994,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                             param: callData.parameter,
                         }
                     },
-                    sender_public_key: executor.publicKey
+                    sender_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
@@ -1583,13 +1583,18 @@ class WalletClient extends BaseClient_1.BaseClient {
     /** send native MAS from a wallet address to another */
     sendTransaction(txData, executor) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // check sender account
+            const sender = executor || this.getBaseAccount();
+            if (!sender) {
+                throw new Error(`No tx sender available`);
+            }
             // get next period info
             const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
             const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
             // bytes compaction
-            const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.Transaction, executor, expiryPeriod);
+            const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.Transaction, sender, expiryPeriod);
             // sign payload
-            const signature = WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = WalletClient.walletSignMessage(bytesCompact, sender);
             // prepare tx data
             const data = {
                 content: {
@@ -1601,7 +1606,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                             recipient_address: txData.recipientAddress
                         }
                     },
-                    sender_public_key: executor.publicKey
+                    sender_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
@@ -1613,13 +1618,18 @@ class WalletClient extends BaseClient_1.BaseClient {
     /** buy rolls with wallet address */
     buyRolls(txData, executor) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // check sender account
+            const sender = executor || this.getBaseAccount();
+            if (!sender) {
+                throw new Error(`No tx sender available`);
+            }
             // get next period info
             const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
             const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
             // bytes compaction
-            const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollBuy, executor, expiryPeriod);
+            const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollBuy, sender, expiryPeriod);
             // sign payload
-            const signature = WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = WalletClient.walletSignMessage(bytesCompact, sender);
             const data = {
                 content: {
                     expire_period: expiryPeriod,
@@ -1629,7 +1639,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                             roll_count: txData.amount,
                         }
                     },
-                    sender_public_key: executor.publicKey
+                    sender_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
@@ -1641,13 +1651,18 @@ class WalletClient extends BaseClient_1.BaseClient {
     /** sell rolls with wallet address */
     sellRolls(txData, executor) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // check sender account
+            const sender = executor || this.getBaseAccount();
+            if (!sender) {
+                throw new Error(`No tx sender available`);
+            }
             // get next period info
             const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
             const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
             // bytes compaction
-            const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollSell, executor, expiryPeriod);
+            const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollSell, sender, expiryPeriod);
             // sign payload
-            const signature = WalletClient.walletSignMessage(bytesCompact, executor);
+            const signature = WalletClient.walletSignMessage(bytesCompact, sender);
             const data = {
                 content: {
                     expire_period: expiryPeriod,
@@ -1657,7 +1672,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                             roll_count: txData.amount,
                         }
                     },
-                    sender_public_key: executor.publicKey
+                    sender_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
