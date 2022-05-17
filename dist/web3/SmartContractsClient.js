@@ -9,8 +9,6 @@ const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const Wait_1 = require("../utils/Wait");
 const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const BaseClient_1 = require("./BaseClient");
-const SmartContractEvents_1 = require("./eventEmitters/SmartContractEvents");
-const SmartContractsEventEmitter_1 = require("./eventEmitters/SmartContractsEventEmitter");
 const WalletClient_1 = require("./WalletClient");
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
@@ -20,7 +18,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         super(clientConfig);
         this.publicApiClient = publicApiClient;
         this.walletClient = walletClient;
-        this.smartContractsEventEmitter = new SmartContractsEventEmitter_1.SmartContractsEventEmitter();
         // bind class methods
         this.deploySmartContract = this.deploySmartContract.bind(this);
         this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
@@ -30,80 +27,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         this.callSmartContract = this.callSmartContract.bind(this);
         this.readSmartContract = this.readSmartContract.bind(this);
         this.getParallelBalance = this.getParallelBalance.bind(this);
-        this.onSmartContractDeploySignedListener = this.onSmartContractDeploySignedListener.bind(this);
-        this.getSmartContractsEventEmitter = this.getSmartContractsEventEmitter.bind(this);
-    }
-    getSmartContractsEventEmitter() {
-        return this.smartContractsEventEmitter;
-    }
-    /** this function is mainly used by the extension for singing */
-    extensionSignScDeployment(contractData, sender) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // get next period info
-            const nodeStatusInfo = yield this.publicApiClient.getNodeStatus();
-            const expiryPeriod = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-            // get the block size
-            if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
-                console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
-            }
-            // bytes compaction
-            const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
-            // sign payload
-            this.smartContractsEventEmitter.emitScDeploySign({
-                contractData,
-                expiryPeriod,
-                sender,
-                bytesCompact,
-                signature: null
-            });
-        });
-    }
-    onSmartContractDeploySignedListener() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                this.smartContractsEventEmitter.on(SmartContractEvents_1.SMART_CONTRACT_EVENTS.SC_DEPLOY_SIGNED, (payload) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                    // revert base64 sc data to binary
-                    if (!payload.contractData.contractDataBase64) {
-                        const err = new Error(`Contract base64 encoded data required. Got null`);
-                        this.smartContractsEventEmitter.emitScDeployFailed(`Contract base64 encoded data required. Got null`, err);
-                        return resolve();
-                    }
-                    if (!payload.signature) {
-                        const err = new Error(`Payload signature is null`);
-                        this.smartContractsEventEmitter.emitScDeployFailed(`Payload signature is null`, err);
-                        return resolve();
-                    }
-                    const decodedScBinaryCode = new Uint8Array(Buffer.from(payload.contractData.contractDataBase64, "base64"));
-                    const data = {
-                        content: {
-                            expire_period: payload.expiryPeriod,
-                            fee: payload.contractData.fee.toString(),
-                            op: {
-                                ExecuteSC: {
-                                    data: Array.from(decodedScBinaryCode),
-                                    max_gas: payload.contractData.maxGas,
-                                    coins: payload.contractData.coins.toString(),
-                                    gas_price: payload.contractData.gasPrice.toString()
-                                }
-                            },
-                            sender_public_key: payload.sender.publicKey
-                        },
-                        signature: payload.signature.base58Encoded,
-                    };
-                    // returns operation ids
-                    let opIds = null;
-                    try {
-                        opIds = yield this.sendJsonRPCRequest(JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [[data]]);
-                    }
-                    catch (err) {
-                        this.smartContractsEventEmitter.emitScDeployFailed(`Error deploying smart contract`, err);
-                        return resolve();
-                    }
-                    this.smartContractsEventEmitter.emitScDeploySubmitted(opIds);
-                    return resolve();
-                }));
-            }));
-        });
     }
     /** create and send an operation containing byte code */
     deploySmartContract(contractData, executor) {
