@@ -68,6 +68,8 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		if (!this.getWalletAccountByAddress(baseAccount.address)) {
 			baseAccountAdded = this.addAccountsToWallet([baseAccount]);
 			this.baseAccount = baseAccountAdded[0];
+		} else {
+			this.baseAccount = baseAccount;
 		}
 	}
 

@@ -1246,6 +1246,9 @@ class WalletClient extends BaseClient_1.BaseClient {
             baseAccountAdded = this.addAccountsToWallet([baseAccount]);
             this.baseAccount = baseAccountAdded[0];
         }
+        else {
+            this.baseAccount = baseAccount;
+        }
     }
     /** get the default (base) account */
     getBaseAccount() {
