@@ -364,17 +364,23 @@ export class WalletClient extends BaseClient implements IWalletClient {
 	}
 
 	/** send native MAS from a wallet address to another */
-	public async sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>> {
+	public async sendTransaction(txData: ITransactionData, executor?: IAccount): Promise<Array<string>> {
+
+		// check sender account
+		const sender: IAccount = executor || this.getBaseAccount();
+		if (!sender) {
+			throw new Error(`No tx sender available`);
+		}
 
 		// get next period info
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, executor, expiryPeriod);
+		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.Transaction, sender, expiryPeriod);
 
 		// sign payload
-		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, sender);
 
 		// prepare tx data
 		const data = {
@@ -387,7 +393,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 						recipient_address: txData.recipientAddress
 					}
 				},
-				sender_public_key: executor.publicKey
+				sender_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};
@@ -397,17 +403,23 @@ export class WalletClient extends BaseClient implements IWalletClient {
 	}
 
 	/** buy rolls with wallet address */
-	public async buyRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
+	public async buyRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>> {
+
+		// check sender account
+		const sender: IAccount = executor || this.getBaseAccount();
+		if (!sender) {
+			throw new Error(`No tx sender available`);
+		}
 
 		// get next period info
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollBuy, executor, expiryPeriod);
+		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollBuy, sender, expiryPeriod);
 
 		// sign payload
-		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, sender);
 
 		const data = {
 			content: {
@@ -418,7 +430,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 						roll_count: txData.amount,
 					}
 				},
-				sender_public_key: executor.publicKey
+				sender_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};
@@ -428,17 +440,23 @@ export class WalletClient extends BaseClient implements IWalletClient {
 	}
 
 	/** sell rolls with wallet address */
-	public async sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>> {
+	public async sellRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>> {
+
+		// check sender account
+		const sender: IAccount = executor || this.getBaseAccount();
+		if (!sender) {
+			throw new Error(`No tx sender available`);
+		}
 
 		// get next period info
 		const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// bytes compaction
-		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollSell, executor, expiryPeriod);
+		const bytesCompact: Buffer = this.compactBytesForOperation(txData, OperationTypeId.RollSell, sender, expiryPeriod);
 
 		// sign payload
-		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, executor);
+		const signature: ISignature = WalletClient.walletSignMessage(bytesCompact, sender);
 
 		const data = {
 			content: {
@@ -449,7 +467,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 						roll_count: txData.amount,
 					}
 				},
-				sender_public_key: executor.publicKey
+				sender_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};

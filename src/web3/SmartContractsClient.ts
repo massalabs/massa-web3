@@ -29,6 +29,7 @@ const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
 export class SmartContractsClient extends BaseClient implements ISmartContractsClient {
+
 	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, private readonly walletClient: WalletClient) {
 		super(clientConfig);
 
@@ -55,7 +56,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		}
 
 		// check sender account
-		const sender = executor || this.walletClient.getBaseAccount();
+		const sender: IAccount = executor || this.walletClient.getBaseAccount();
 		if (!sender) {
 			throw new Error(`No tx sender available`);
 		}
@@ -84,7 +85,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 						gas_price: contractData.gasPrice.toString()
 					}
 				},
-				sender_public_key: executor.publicKey
+				sender_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};
@@ -126,7 +127,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 						param: callData.parameter,
 					}
 				},
-				sender_public_key: executor.publicKey
+				sender_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};
