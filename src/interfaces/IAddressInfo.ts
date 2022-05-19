@@ -57,8 +57,3 @@ export interface IAddressInfo {
         datastore: ILedgerDatastore
     };
   }
-
-  export interface IFullAddressInfo extends IAddressInfo {
-    publicKey: string;
-    privateKey: string;
-  }

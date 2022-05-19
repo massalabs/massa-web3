@@ -2,7 +2,7 @@ const UglifyJS = require('uglify-js');
 const fs = require('fs');
 
 const file = fs.readFileSync('./bundle.js', "utf-8");
-var code = {
+const code = {
     "file.js": file,
 };
 
@@ -26,7 +26,6 @@ const result = UglifyJS.minify(code, {
         hoist_vars: true,
         negate_iife: true,
         pure_getters:true,
-        drop_console: true
 	}
 });
 

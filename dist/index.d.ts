@@ -9,6 +9,8 @@ export { IClientConfig } from "./interfaces/IClientConfig";
 export { IClique } from "./interfaces/IClique";
 export { IContractData } from "./interfaces/IContractData";
 export { ICallData } from "./interfaces/ICallData";
+export { IReadData } from "./interfaces/IReadData";
+export { IFullAddressInfo } from "./interfaces/IFullAddressInfo";
 export { IEndorsement } from "./interfaces/IEndorsement";
 export { INodeStatus } from "./interfaces/INodeStatus";
 export { IOperationData } from "./interfaces/IOperationData";

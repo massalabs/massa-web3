@@ -2,7 +2,7 @@
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IAccount } from "../interfaces/IAccount";
 import { BaseClient } from "./BaseClient";
-import { IFullAddressInfo } from "../interfaces/IAddressInfo";
+import { IFullAddressInfo } from "../interfaces/IFullAddressInfo";
 import { ISignature } from "../interfaces/ISignature";
 import { ITransactionData } from "../interfaces/ITransactionData";
 import { PublicApiClient } from "./PublicApiClient";

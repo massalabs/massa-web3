@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { IAccount } from "./IAccount";
-import { IFullAddressInfo } from "./IAddressInfo";
+import { IFullAddressInfo } from "./IFullAddressInfo";
 import { IBalance } from "./IBalance";
 import { IRollsData } from "./IRollsData";
 import { ISignature } from "./ISignature";
