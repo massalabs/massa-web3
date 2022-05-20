@@ -29,9 +29,12 @@
   "license": "MIT",
   "repository": "https://github.com/massalabs/massa-web3",
   "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "keywords": [
     "web3",
-    "js",
     "ts",
     "sdk",
     "massa"
@@ -45,7 +48,7 @@
     "buffer": "^6.0.3",
     "create-hash": "^1.2.0",
     "crypto-js": "^4.1.1",
-    "massa-sc-utils": "^2.1.0",
+    "@massalabs/massa-sc-utils": "^2.1.1",
     "varint": "^6.0.0"
   },
   "devDependencies": {
