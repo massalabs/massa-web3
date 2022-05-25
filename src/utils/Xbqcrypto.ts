@@ -1,9 +1,14 @@
 import * as varint from "varint";
 import * as createhash from "create-hash";
+import { blake3 } from "@noble/hashes/blake3";
 const base58check = require("base58check");
 
 export function hashSha256(data): Uint8Array {
     return createhash("sha256").update(data).digest();
+}
+
+export function hashBlake3(data: Uint8Array | string): Uint8Array {
+    return blake3(data);
 }
 
 export function base58checkEncode(data: Buffer | Uint8Array): string {

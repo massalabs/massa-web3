@@ -193,7 +193,7 @@ export class BaseClient {
 				const gasPriceEncoded = Buffer.from(varintEncode((data as ICallData).gasPrice));
 
 				// target address
-				const targetAddressEncoded = base58checkDecode((data as ICallData).targetAddress);
+				const targetAddressEncoded = base58checkDecode((data as ICallData).targetAddress.slice(1)).slice(1);
 
 				// target function name and name length
 				const functionNameEncoded = new Uint8Array(Buffer.from((data as ICallData).functionName, "utf8"));
@@ -209,7 +209,7 @@ export class BaseClient {
 				// transfer amount
 				const transferAmountEncoded = Buffer.from(varintEncode(this.scaleAmount((data as ITransactionData).amount)));
 				// recipient
-				const recipientAddressEncoded = base58checkDecode((data as ITransactionData).recipientAddress);
+				const recipientAddressEncoded = base58checkDecode((data as ITransactionData).recipientAddress.slice(1)).slice(1);
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
 			}
