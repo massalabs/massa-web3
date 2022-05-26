@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.massa = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SmartContractsClient = exports.EventPoller = exports.VaultClient = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
+exports.utils = exports.SmartContractsClient = exports.EventPoller = exports.VaultClient = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
 var IProvider_1 = require("./interfaces/IProvider");
 Object.defineProperty(exports, "ProviderType", { enumerable: true, get: function () { return IProvider_1.ProviderType; } });
 var EOperationStatus_1 = require("./interfaces/EOperationStatus");
@@ -26,8 +26,10 @@ var EventPoller_1 = require("./web3/EventPoller");
 Object.defineProperty(exports, "EventPoller", { enumerable: true, get: function () { return EventPoller_1.EventPoller; } });
 var SmartContractsClient_1 = require("./web3/SmartContractsClient");
 Object.defineProperty(exports, "SmartContractsClient", { enumerable: true, get: function () { return SmartContractsClient_1.SmartContractsClient; } });
+/** Exposed utils */
+exports.utils = require("./utils/Xbqcrypto");
 
-},{"./interfaces/EOperationStatus":2,"./interfaces/IProvider":3,"./interfaces/OperationTypes":5,"./web3/Client":11,"./web3/ClientFactory":12,"./web3/EventPoller":13,"./web3/PrivateApiClient":14,"./web3/PublicApiClient":15,"./web3/SmartContractsClient":16,"./web3/VaultClient":17,"./web3/WalletClient":18}],2:[function(require,module,exports){
+},{"./interfaces/EOperationStatus":2,"./interfaces/IProvider":3,"./interfaces/OperationTypes":5,"./utils/Xbqcrypto":8,"./web3/Client":11,"./web3/ClientFactory":12,"./web3/EventPoller":13,"./web3/PrivateApiClient":14,"./web3/PublicApiClient":15,"./web3/SmartContractsClient":16,"./web3/VaultClient":17,"./web3/WalletClient":18}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EOperationStatus = void 0;
@@ -158,11 +160,16 @@ exports.wait = wait;
 (function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.typedArrayToBuffer = exports.varintDecode = exports.varintEncode = exports.base58checkDecode = exports.base58checkEncode = exports.hashBlake3 = exports.hashSha256 = void 0;
+exports.varintDecode = exports.varintEncode = exports.base58Decode = exports.base58Encode = exports.hashBlake3 = exports.hashSha256 = exports.bytesToHex = void 0;
 const varint = require("varint");
 const createhash = require("create-hash");
 const blake3_1 = require("@noble/hashes/blake3");
+const secp = require("@noble/secp256k1");
 const base58check = require("base58check");
+function bytesToHex(bytes) {
+    return secp.utils.bytesToHex(bytes);
+}
+exports.bytesToHex = bytesToHex;
 function hashSha256(data) {
     return createhash("sha256").update(data).digest();
 }
@@ -171,16 +178,16 @@ function hashBlake3(data) {
     return (0, blake3_1.blake3)(data);
 }
 exports.hashBlake3 = hashBlake3;
-function base58checkEncode(data) {
+function base58Encode(data) {
     const bufData = Buffer.from(data);
     return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, "0"));
 }
-exports.base58checkEncode = base58checkEncode;
-function base58checkDecode(data) {
+exports.base58Encode = base58Encode;
+function base58Decode(data) {
     const decoded = base58check.decode(data);
     return Buffer.concat([decoded.prefix, decoded.data]);
 }
-exports.base58checkDecode = base58checkDecode;
+exports.base58Decode = base58Decode;
 function varintEncode(data) {
     return varint.encode(data);
 }
@@ -189,13 +196,9 @@ function varintDecode(data) {
     return varint.decode(data);
 }
 exports.varintDecode = varintDecode;
-function typedArrayToBuffer(array) {
-    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
-}
-exports.typedArrayToBuffer = typedArrayToBuffer;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"@noble/hashes/blake3":23,"base58check":74,"buffer":120,"create-hash":127,"varint":271}],9:[function(require,module,exports){
+},{"@noble/hashes/blake3":23,"@noble/secp256k1":28,"base58check":74,"buffer":120,"create-hash":127,"varint":271}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.trySafeExecute = void 0;
@@ -362,7 +365,7 @@ class BaseClient {
     compactBytesForOperation(data, opTypeId, account, expirePeriod) {
         const feeEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(this.scaleAmount(data.fee)));
         const expirePeriodEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(expirePeriod));
-        const publicKeyEncoded = (0, Xbqcrypto_1.base58checkDecode)(account.publicKey);
+        const publicKeyEncoded = (0, Xbqcrypto_1.base58Decode)(account.publicKey);
         const typeIdEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(opTypeId.valueOf()));
         switch (opTypeId) {
             case OperationTypes_1.OperationTypeId.ExecuteSC: {
@@ -389,7 +392,7 @@ class BaseClient {
                 // gas price
                 const gasPriceEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.gasPrice));
                 // target address
-                const targetAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.targetAddress.slice(1)).slice(1);
+                const targetAddressEncoded = (0, Xbqcrypto_1.base58Decode)(data.targetAddress.slice(1)).slice(1);
                 // target function name and name length
                 const functionNameEncoded = new Uint8Array(buffer_1.Buffer.from(data.functionName, "utf8"));
                 const functionNameLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(functionNameEncoded.length));
@@ -402,7 +405,7 @@ class BaseClient {
                 // transfer amount
                 const transferAmountEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(this.scaleAmount(data.amount)));
                 // recipient
-                const recipientAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.recipientAddress.slice(1)).slice(1);
+                const recipientAddressEncoded = (0, Xbqcrypto_1.base58Decode)(data.recipientAddress.slice(1)).slice(1);
                 return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
             }
             case OperationTypes_1.OperationTypeId.RollBuy:
@@ -987,7 +990,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             if (addresses.length === 0)
                 return null;
             const addressInfo = addresses.at(0);
-            const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
+            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
             const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
             const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
             if (!candidateLedgerInfo || !finalLedgerInfo)
@@ -1105,7 +1108,7 @@ class VaultClient {
     init() {
         if (!this.mnemonic) {
             const baseAccount = WalletClient_1.WalletClient.walletGenerateNewAccount();
-            const hex = Buffer.from((0, Xbqcrypto_1.base58checkDecode)(baseAccount.randomEntropy)).toString("hex");
+            const hex = Buffer.from((0, Xbqcrypto_1.base58Decode)(baseAccount.randomEntropy)).toString("hex");
             this.walletClient.setBaseAccount(baseAccount);
             this.mnemonic = this.entropyHexToMnemonic(hex);
         }
@@ -1121,7 +1124,7 @@ class VaultClient {
     /** recover vault */
     recoverVault(mnemonic) {
         const bytes = Buffer.from(this.mnemonicToHexEntropy(mnemonic), "hex");
-        this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58checkEncode)(bytes)));
+        this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58Encode)(bytes)));
         this.mnemonic = mnemonic;
     }
     /** export vault */
@@ -1288,11 +1291,11 @@ class WalletClient extends BaseClient_1.BaseClient {
         }
         const accountsToCreate = new Array();
         for (const privateKey of privateKeys) {
-            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKey);
+            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(privateKey);
             const publicKey = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
-            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
             const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-            const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+            const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
             if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
                 accountsToCreate.push({
                     privateKey: privateKey,
@@ -1318,21 +1321,21 @@ class WalletClient extends BaseClient_1.BaseClient {
             let privateKeyBase58Encoded = null;
             // account is specified via entropy
             if (account.randomEntropy) {
-                const base58DecodedRandomEntropy = (0, Xbqcrypto_1.base58checkDecode)(account.randomEntropy);
+                const base58DecodedRandomEntropy = (0, Xbqcrypto_1.base58Decode)(account.randomEntropy);
                 const privateKey = secp.utils.hashToPrivateKey(base58DecodedRandomEntropy);
-                privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+                privateKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(privateKey);
             }
             // if not entropy defined, use the base58 encoded value defined as param
             privateKeyBase58Encoded = privateKeyBase58Encoded || account.privateKey;
             // get public key
-            const publicKey = secp.schnorr.getPublicKey((0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58Encoded));
-            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+            const publicKey = secp.schnorr.getPublicKey((0, Xbqcrypto_1.base58Decode)(privateKeyBase58Encoded));
+            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
             if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
                 throw new Error("Public key does not correspond the the private key submitted");
             }
             // get wallet account address
             const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-            const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+            const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
             if (account.address && account.address !== addressBase58Encoded) {
                 throw new Error("Account address not correspond the the address submitted");
             }
@@ -1378,30 +1381,30 @@ class WalletClient extends BaseClient_1.BaseClient {
         // generate private key
         const randomBytes = secp.utils.randomBytes(32);
         const privateKey = secp.utils.hashToPrivateKey(randomBytes);
-        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(privateKey);
         // get public key
         const publicKey = secp.schnorr.getPublicKey(privateKey);
-        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
         // get wallet account address
         const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             privateKey: privateKeyBase58Encoded,
             publicKey: publicKeyBase58Encoded,
-            randomEntropy: (0, Xbqcrypto_1.base58checkEncode)(randomBytes)
+            randomEntropy: (0, Xbqcrypto_1.base58Encode)(randomBytes)
         };
     }
     /** returns an account from private key */
     static getAccountFromPrivateKey(privateKeyBase58) {
         // get private key
-        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58);
+        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(privateKeyBase58);
         // get public key
         const publicKey = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
-        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
         // get wallet account address
         const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             privateKey: privateKeyBase58,
@@ -1412,16 +1415,16 @@ class WalletClient extends BaseClient_1.BaseClient {
     /** returns an account from entropy */
     static getAccountFromEntropy(entropyBase58) {
         // decode entropy
-        const entropyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(entropyBase58);
+        const entropyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(entropyBase58);
         // get private key
         const privateKey = secp.utils.hashToPrivateKey(entropyBase58Decoded);
-        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(privateKey);
         // get public key
         const publicKey = secp.schnorr.getPublicKey(privateKey);
-        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
         // get wallet account address
         const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             privateKey: privateKeyBase58Encoded,
@@ -1460,7 +1463,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             throw new Error("No public key to verify the signed message with");
         }
         // cast private key
-        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.privateKey);
+        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(signer.privateKey);
         // bytes compaction
         const bytesCompact = Buffer.from(data);
         // Hash byte compact
@@ -1473,7 +1476,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         }
         // verify signature
         if (signer.publicKey) {
-            const publicKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.publicKey);
+            const publicKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(signer.publicKey);
             const isVerified = secp256k1_1.schnorr.verifySync(sig, messageHashDigest, publicKeyBase58Decoded);
             if (!isVerified) {
                 throw new Error(`Signature could not be verified with public key. Please inspect`);
@@ -1481,7 +1484,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         }
         // convert sig
         const hex = secp.utils.bytesToHex(sig);
-        const base58Encoded = (0, Xbqcrypto_1.base58checkEncode)(sig);
+        const base58Encoded = (0, Xbqcrypto_1.base58Encode)(sig);
         return {
             hex,
             base58Encoded

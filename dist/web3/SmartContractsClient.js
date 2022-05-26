@@ -180,7 +180,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             if (addresses.length === 0)
                 return null;
             const addressInfo = addresses.at(0);
-            const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
+            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
             const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
             const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
             if (!candidateLedgerInfo || !finalLedgerInfo)

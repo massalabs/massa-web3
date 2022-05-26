@@ -9,8 +9,10 @@
     "up": "npm update",
     "check": "npm outdated",
     "upgrade": "npm run up && npm run check && npm run build",
-    "build-package": "rimraf dist/* && tsc -d",
+    "build-package": "rimraf dist/* && tsc -d -p ./tsconfig.json",
     "build-bundle": "npm run gen-bundle && npm run uglify-bundle-optimize",
+    "gen-bundle": "browserify dist/index.js --standalone massa > bundle.js",
+    "uglify-bundle-optimize": "browserify dist/index.js -i node-fetch -i http -i https -o bundle.min.js && browserify dist/index.js -i node-fetch -g uglifyify --compress --mangle -o bundle.min.js",
     "build": "npm run build-package && npm run build-bundle",
     "update-version-major": "npm version major",
     "update-version-minor": "npm version minor",
@@ -18,10 +20,7 @@
     "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts",
     "test-smart-contract-example": "ts-node ./examples/smartContract.ts",
     "test-vault-example": "ts-node ./examples/vault.ts",
-    "fix-lint": "tslint -c tslint.json '**/*.ts' --fix",
-    "gen-bundle": "browserify dist/index.js --standalone massa > bundle.js",
-    "uglify-bundle": "uglifyjs --compress --mangle -- bundle.js > bundle.min.js",
-    "uglify-bundle-optimize": "node minify.js"
+    "fix-lint": "tslint -c tslint.json '**/*.ts' --fix"
   },
   "author": "Massa Labs <info@massa.net>",
   "contributors": [
@@ -54,8 +53,8 @@
     "dist"
   ],
   "dependencies": {
-    "@noble/secp256k1": "github:BatiGencho/noble-secp256k1#feature/entropy-32-bytes",
     "@massalabs/massa-sc-utils": "^2.1.1",
+    "@noble/secp256k1": "github:BatiGencho/noble-secp256k1#feature/entropy-32-bytes",
     "axios": "^0.26.1",
     "base58check": "^2.0.0",
     "bip39": "^3.0.4",
@@ -73,6 +72,7 @@
     "@types/secp256k1": "^4.0.3",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
+    "browserify": "^17.0.0",
     "chai": "^4.3.6",
     "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -82,6 +82,7 @@
     "eslint-plugin-promise": "^5.0.0",
     "lint-staged": "^12.3.7",
     "mocha": "^9.2.2",
+    "node-ts": "^5.1.2",
     "prettier": "^2.6.1",
     "prettier-eslint": "^13.0.0",
     "prettier-standard": "^15.0.1",
@@ -89,8 +90,7 @@
     "tslib": "^2.3.1",
     "tslint": "^6.1.3",
     "typescript": "^4.6.2",
-    "browserify": "^17.0.0",
     "uglify-js": "^3.15.4",
-    "node-ts": "^5.1.2"
+    "uglifyify": "^5.0.2"
   }
 }

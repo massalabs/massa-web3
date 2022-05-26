@@ -1,7 +1,12 @@
 import * as varint from "varint";
 import * as createhash from "create-hash";
 import { blake3 } from "@noble/hashes/blake3";
+import * as secp from "@noble/secp256k1";
 const base58check = require("base58check");
+
+export function bytesToHex(bytes: Uint8Array): string {
+    return secp.utils.bytesToHex(bytes);
+}
 
 export function hashSha256(data): Uint8Array {
     return createhash("sha256").update(data).digest();
@@ -11,12 +16,12 @@ export function hashBlake3(data: Uint8Array | string): Uint8Array {
     return blake3(data);
 }
 
-export function base58checkEncode(data: Buffer | Uint8Array): string {
+export function base58Encode(data: Buffer | Uint8Array): string {
     const bufData = Buffer.from(data);
     return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, "0"));
 }
 
-export function base58checkDecode(data: string): Buffer {
+export function base58Decode(data: string): Buffer {
     const decoded = base58check.decode(data);
     return Buffer.concat([decoded.prefix, decoded.data]);
 }
@@ -27,8 +32,4 @@ export function varintEncode(data: number): [number] {
 
 export function varintDecode(data: [number]): number {
     return varint.decode(data);
-}
-
-export function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
-    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
 }

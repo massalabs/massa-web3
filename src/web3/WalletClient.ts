@@ -5,7 +5,7 @@ import { BaseClient } from "./BaseClient";
 import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { IFullAddressInfo } from "../interfaces/IFullAddressInfo";
 import { ISignature } from "../interfaces/ISignature";
-import { base58checkDecode, base58checkEncode, varintEncode, hashBlake3 } from "../utils/Xbqcrypto";
+import { base58Decode, base58Encode, varintEncode, hashBlake3 } from "../utils/Xbqcrypto";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { ITransactionData } from "../interfaces/ITransactionData";
@@ -111,12 +111,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		const accountsToCreate = new Array<IAccount>();
 
 		for (const privateKey of privateKeys) {
-			const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKey);
+			const privateKeyBase58Decoded: Buffer = base58Decode(privateKey);
 			const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
-			const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+			const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 			const version = Buffer.from(varintEncode(VERSION_NUMBER));
-			const addressBase58Encoded = ADDRESS_PRAEFIX + base58checkEncode(Buffer.concat([version, hashBlake3(publicKey)]));
+			const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 			if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
 				accountsToCreate.push({
@@ -148,17 +148,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
 			// account is specified via entropy
 			if (account.randomEntropy) {
-				const base58DecodedRandomEntropy: Buffer = base58checkDecode(account.randomEntropy);
+				const base58DecodedRandomEntropy: Buffer = base58Decode(account.randomEntropy);
 				const privateKey: Uint8Array = secp.utils.hashToPrivateKey(base58DecodedRandomEntropy);
-				privateKeyBase58Encoded = base58checkEncode(privateKey);
+				privateKeyBase58Encoded = base58Encode(privateKey);
 			}
 
 			// if not entropy defined, use the base58 encoded value defined as param
 			privateKeyBase58Encoded = privateKeyBase58Encoded || account.privateKey;
 
 			// get public key
-			const publicKey: Uint8Array = secp.schnorr.getPublicKey(base58checkDecode(privateKeyBase58Encoded));
-			const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+			const publicKey: Uint8Array = secp.schnorr.getPublicKey(base58Decode(privateKeyBase58Encoded));
+			const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 			if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
 				throw new Error("Public key does not correspond the the private key submitted");
@@ -166,7 +166,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
 			// get wallet account address
 			const version = Buffer.from(varintEncode(VERSION_NUMBER));
-			const addressBase58Encoded = ADDRESS_PRAEFIX + base58checkEncode(Buffer.concat([version, hashBlake3(publicKey)]));
+			const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 			if (account.address && account.address !== addressBase58Encoded) {
 				throw new Error("Account address not correspond the the address submitted");
 			}
@@ -223,36 +223,36 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		// generate private key
 		const randomBytes: Uint8Array = secp.utils.randomBytes(32);
 		const privateKey: Uint8Array = secp.utils.hashToPrivateKey(randomBytes);
-		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
+		const privateKeyBase58Encoded: string = base58Encode(privateKey);
 
 		// get public key
 		const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKey);
-		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+		const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 		// get wallet account address
 		const version = Buffer.from(varintEncode(VERSION_NUMBER));
-		const addressBase58Encoded = ADDRESS_PRAEFIX + base58checkEncode(Buffer.concat([version, hashBlake3(publicKey)]));
+		const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 		return {
 			address: addressBase58Encoded,
 			privateKey: privateKeyBase58Encoded,
 			publicKey: publicKeyBase58Encoded,
-			randomEntropy: base58checkEncode(randomBytes)
+			randomEntropy: base58Encode(randomBytes)
 		} as IAccount;
 	}
 
 	/** returns an account from private key */
 	public static getAccountFromPrivateKey(privateKeyBase58: string): IAccount {
 		// get private key
-		const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKeyBase58);
+		const privateKeyBase58Decoded: Buffer = base58Decode(privateKeyBase58);
 
 		// get public key
 		const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
-		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+		const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 		// get wallet account address
 		const version = Buffer.from(varintEncode(VERSION_NUMBER));
-		const addressBase58Encoded = ADDRESS_PRAEFIX + base58checkEncode(Buffer.concat([version, hashBlake3(publicKey)]));
+		const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 		return {
 			address: addressBase58Encoded,
@@ -265,19 +265,19 @@ export class WalletClient extends BaseClient implements IWalletClient {
 	/** returns an account from entropy */
 	public static getAccountFromEntropy(entropyBase58: string): IAccount {
 		// decode entropy
-		const entropyBase58Decoded: Buffer = base58checkDecode(entropyBase58);
+		const entropyBase58Decoded: Buffer = base58Decode(entropyBase58);
 
 		// get private key
 		const privateKey: Uint8Array = secp.utils.hashToPrivateKey(entropyBase58Decoded);
-		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
+		const privateKeyBase58Encoded: string = base58Encode(privateKey);
 
 		// get public key
 		const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKey);
-		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+		const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 		// get wallet account address
 		const version = Buffer.from(varintEncode(VERSION_NUMBER));
-		const addressBase58Encoded = ADDRESS_PRAEFIX + base58checkEncode(Buffer.concat([version, hashBlake3(publicKey)]));
+		const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 		return {
 			address: addressBase58Encoded,
@@ -320,7 +320,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		}
 
     	// cast private key
-		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
+		const privateKeyBase58Decoded = base58Decode(signer.privateKey);
 
 		// bytes compaction
 		const bytesCompact: Buffer = Buffer.from(data);
@@ -337,7 +337,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
 		// verify signature
 		if (signer.publicKey) {
-			const publicKeyBase58Decoded = base58checkDecode(signer.publicKey);
+			const publicKeyBase58Decoded = base58Decode(signer.publicKey);
 			const isVerified = schnorr.verifySync(sig, messageHashDigest, publicKeyBase58Decoded);
 			if (!isVerified) {
 				throw new Error(`Signature could not be verified with public key. Please inspect`);
@@ -346,7 +346,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
 		// convert sig
 		const hex = secp.utils.bytesToHex(sig);
-		const base58Encoded = base58checkEncode(sig);
+		const base58Encoded = base58Encode(sig);
 
 		return {
 			hex,

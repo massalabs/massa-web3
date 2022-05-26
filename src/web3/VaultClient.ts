@@ -1,7 +1,7 @@
 import { IAccount } from "../interfaces/IAccount";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { WalletClient } from "./WalletClient";
-import { base58checkDecode, base58checkEncode } from "../utils/Xbqcrypto";
+import { base58Decode, base58Encode } from "../utils/Xbqcrypto";
 import { IVault } from "../interfaces/IVault";
 import { IVaultClient } from "../interfaces/IVaultClient";
 const bip39 = require("bip39");
@@ -32,7 +32,7 @@ export class VaultClient implements IVaultClient {
 	public init(): void {
 		if (!this.mnemonic) {
 			const baseAccount: IAccount = WalletClient.walletGenerateNewAccount();
-			const hex = Buffer.from(base58checkDecode(baseAccount.randomEntropy)).toString("hex");
+			const hex = Buffer.from(base58Decode(baseAccount.randomEntropy)).toString("hex");
 			this.walletClient.setBaseAccount(baseAccount);
 			this.mnemonic = this.entropyHexToMnemonic(hex);
 		}
@@ -51,7 +51,7 @@ export class VaultClient implements IVaultClient {
 	/** recover vault */
 	public recoverVault(mnemonic: string) {
         const bytes: Buffer = Buffer.from(this.mnemonicToHexEntropy(mnemonic), "hex");
-		this.walletClient.setBaseAccount(WalletClient.getAccountFromEntropy(base58checkEncode(bytes)));
+		this.walletClient.setBaseAccount(WalletClient.getAccountFromEntropy(base58Encode(bytes)));
         this.mnemonic = mnemonic;
     }
 
