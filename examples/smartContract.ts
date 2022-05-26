@@ -22,7 +22,7 @@ const baseAccount = {
 
     try {
         // init client
-        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
+        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, baseAccount);
 
         // construct a sc utils
         const utils = new SmartContractUtils();
