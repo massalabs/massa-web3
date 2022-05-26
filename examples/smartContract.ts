@@ -2,7 +2,7 @@ import { IAccount } from "../src/interfaces/IAccount";
 import { IContractData } from "../src/interfaces/IContractData";
 import { IEventFilter } from "../src/interfaces/IEventFilter";
 import { ClientFactory, DefaultProviderUrls } from "../src/web3/ClientFactory";
-import { SmartContractUtils, ICompiledSmartContract } from "massa-sc-utils";
+import { SmartContractUtils, ICompiledSmartContract } from "@massalabs/massa-sc-utils";
 import { IEvent } from "../src/interfaces/IEvent";
 import { EventPoller } from "../src/web3/EventPoller";
 import { ICallData } from "../src/interfaces/ICallData";
