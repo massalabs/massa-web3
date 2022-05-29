@@ -3,6 +3,8 @@
   "version": "1.9.7",
   "description": "massa's web3 sdk client",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "browser": "bundle.min.js",
   "scripts": {
     "up": "npm update",
     "check": "npm outdated",
@@ -26,13 +28,22 @@
     "Evgeni Pirianov",
     "Yvan Sraka <yvan@sraka.xyz>"
   ],
-  "license": "MIT",
-  "repository": "https://github.com/massalabs/massa-web3",
+  "license": "(MIT AND Apache-2.0)",
+  "homepage": "https://github.com/massalabs/massa-web3",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/massalabs/massa-web3"
+  },
   "private": false,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "files": [
+    "dist",
+    "bundle.js",
+    "bundle.min.js"
+  ],
   "keywords": [
     "web3",
     "ts",
