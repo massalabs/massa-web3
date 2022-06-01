@@ -4,7 +4,6 @@
   "description": "massa's web3 sdk client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "browser": "bundle.min.js",
   "scripts": {
     "up": "npm update",
     "check": "npm outdated",
@@ -38,11 +37,6 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "files": [
-    "dist",
-    "bundle.js",
-    "bundle.min.js"
-  ],
   "keywords": [
     "web3",
     "ts",
@@ -50,7 +44,9 @@
     "massa"
   ],
   "files": [
-    "dist"
+    "dist",
+    "bundle.js",
+    "bundle.min.js"
   ],
   "dependencies": {
     "@massalabs/massa-sc-utils": "^2.1.1",
