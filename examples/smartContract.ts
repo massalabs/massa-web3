@@ -9,26 +9,20 @@ import { ICallData } from "../src/interfaces/ICallData";
 import { EOperationStatus } from "../src/interfaces/EOperationStatus";
 import { wait } from "../src/utils/Wait";
 import { IReadData } from "../src/interfaces/IReadData";
-
-
-const baseAccount = {
-    publicKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
-    privateKey: "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
-    address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
-    randomEntropy: null
-} as IAccount;
+import { WalletClient } from "../src/web3/WalletClient";
 
 (async () => {
 
     try {
         // init client
-        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, baseAccount);
+        const baseAccount: IAccount = WalletClient.walletGenerateNewAccount();
+        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
 
         // construct a sc utils
         const utils = new SmartContractUtils();
 
         // compile sc from wasm file ready for deployment
-        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("/home/evgeni/Documents/development/massa/OTHERS/tictactoe-sc/build/main.wasm"); // TODO: please change acc. to your design
+        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile("my_wasm_file.wasm"); // TODO: please change acc. to your design
         if (!compiledSc.base64) {
             throw new Error("No bytecode to deploy. Check AS compiler");
         }
@@ -40,7 +34,7 @@ const baseAccount = {
             gasPrice: 0,
             coins: 0,
             contractDataBase64: compiledSc.base64
-        } as IContractData, baseAccount);
+        } as IContractData);
         const deploymentOperationId = deployTxId[0];
         console.log("=======> Deploy Smart Contract OpId", deploymentOperationId);
 
@@ -76,7 +70,7 @@ const baseAccount = {
             targetAddress: scAddress,
             functionName: "play",
             parameter: JSON.stringify({index : 1}),
-        } as ICallData, baseAccount);
+        } as ICallData);
         const callScOperationId = callTxId[0];
         console.log("=======> Call Smart Contract Op Id = ", callScOperationId);
 
@@ -92,7 +86,6 @@ const baseAccount = {
             targetAddress: scAddress,
             targetFunction: "getGameState",
             parameter: "undefined",
-            callerAddress: baseAccount.address
         } as IReadData);
         const readScOperationId = readTxId[0];
         console.log("=======> Read Smart Contract Op Id = ", readScOperationId);

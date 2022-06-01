@@ -5,8 +5,7 @@ import { BaseClient } from "./BaseClient";
 import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { IFullAddressInfo } from "../interfaces/IFullAddressInfo";
 import { ISignature } from "../interfaces/ISignature";
-import { base58checkDecode, base58checkEncode, hashSha256 } from "../utils/Xbqcrypto";
-import { BN }  from "bn.js";
+import { base58Decode, base58Encode, varintEncode, hashBlake3 } from "../utils/Xbqcrypto";
 import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { ITransactionData } from "../interfaces/ITransactionData";
@@ -17,16 +16,26 @@ import { INodeStatus } from "../interfaces/INodeStatus";
 import { IBalance } from "../interfaces/IBalance";
 import { hmac } from "@noble/hashes/hmac";
 import { sha256 } from "@noble/hashes/sha256";
+import { schnorr } from "@noble/secp256k1";
 import { IWalletClient } from "../interfaces/IWalletClient";
+import * as createhash from "create-hash";
+
+const VERSION_NUMBER: number = 0;
+const ADDRESS_PRAEFIX = "A";
+const MAX_WALLET_ACCOUNTS: number = 256;
 
 // add hmacSync for sync signing
-secp.utils.hmacSha256Sync = (key: Uint8Array, ...msgs: Uint8Array[]) => {
+secp.utils.hmacSha256Sync = (key: Uint8Array, ...msgs: Uint8Array[]): Uint8Array => {
   const h = hmac.create(sha256, key);
   msgs.forEach(msg => h.update(msg));
   return h.digest();
 };
 
-const MAX_WALLET_ACCOUNTS: number = 256;
+secp.utils.sha256Sync = (...msgs: Uint8Array[]): Uint8Array => {
+	const h = createhash("sha256");
+	msgs.forEach(msg => h.update(msg));
+	return h.digest();
+};
 
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class WalletClient extends BaseClient implements IWalletClient {
@@ -102,12 +111,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		const accountsToCreate = new Array<IAccount>();
 
 		for (const privateKey of privateKeys) {
-			const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKey);
-			const publicKey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
-			const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+			const privateKeyBase58Decoded: Buffer = base58Decode(privateKey);
+			const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
+			const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
-			const address: Uint8Array = hashSha256(publicKey);
-			const addressBase58Encoded: string = base58checkEncode(address);
+			const version = Buffer.from(varintEncode(VERSION_NUMBER));
+			const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 			if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
 				accountsToCreate.push({
@@ -139,25 +148,25 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
 			// account is specified via entropy
 			if (account.randomEntropy) {
-				const base58DecodedRandomEntropy: Buffer = base58checkDecode(account.randomEntropy);
+				const base58DecodedRandomEntropy: Buffer = base58Decode(account.randomEntropy);
 				const privateKey: Uint8Array = secp.utils.hashToPrivateKey(base58DecodedRandomEntropy);
-				privateKeyBase58Encoded = base58checkEncode(privateKey);
+				privateKeyBase58Encoded = base58Encode(privateKey);
 			}
 
 			// if not entropy defined, use the base58 encoded value defined as param
 			privateKeyBase58Encoded = privateKeyBase58Encoded || account.privateKey;
 
 			// get public key
-			const publicKey: Uint8Array = secp.getPublicKey(base58checkDecode(privateKeyBase58Encoded), true);
-			const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+			const publicKey: Uint8Array = secp.schnorr.getPublicKey(base58Decode(privateKeyBase58Encoded));
+			const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 			if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
 				throw new Error("Public key does not correspond the the private key submitted");
 			}
 
 			// get wallet account address
-			const address: Uint8Array = hashSha256(publicKey);
-			const addressBase58Encoded: string = base58checkEncode(address);
+			const version = Buffer.from(varintEncode(VERSION_NUMBER));
+			const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 			if (account.address && account.address !== addressBase58Encoded) {
 				throw new Error("Account address not correspond the the address submitted");
 			}
@@ -214,36 +223,36 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		// generate private key
 		const randomBytes: Uint8Array = secp.utils.randomBytes(32);
 		const privateKey: Uint8Array = secp.utils.hashToPrivateKey(randomBytes);
-		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
+		const privateKeyBase58Encoded: string = base58Encode(privateKey);
 
 		// get public key
-		const publicKey: Uint8Array = secp.getPublicKey(privateKey, true);
-		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+		const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKey);
+		const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 		// get wallet account address
-		const address: Uint8Array = hashSha256(publicKey);
-		const addressBase58Encoded: string = base58checkEncode(address);
+		const version = Buffer.from(varintEncode(VERSION_NUMBER));
+		const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 		return {
 			address: addressBase58Encoded,
 			privateKey: privateKeyBase58Encoded,
 			publicKey: publicKeyBase58Encoded,
-			randomEntropy: base58checkEncode(randomBytes)
+			randomEntropy: base58Encode(randomBytes)
 		} as IAccount;
 	}
 
 	/** returns an account from private key */
 	public static getAccountFromPrivateKey(privateKeyBase58: string): IAccount {
 		// get private key
-		const privateKeyBase58Decoded: Buffer = base58checkDecode(privateKeyBase58);
+		const privateKeyBase58Decoded: Buffer = base58Decode(privateKeyBase58);
 
 		// get public key
-		const publicKey: Uint8Array = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
-		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+		const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
+		const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 		// get wallet account address
-		const address: Uint8Array = hashSha256(publicKey);
-		const addressBase58Encoded: string = base58checkEncode(address);
+		const version = Buffer.from(varintEncode(VERSION_NUMBER));
+		const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 		return {
 			address: addressBase58Encoded,
@@ -256,19 +265,19 @@ export class WalletClient extends BaseClient implements IWalletClient {
 	/** returns an account from entropy */
 	public static getAccountFromEntropy(entropyBase58: string): IAccount {
 		// decode entropy
-		const entropyBase58Decoded: Buffer = base58checkDecode(entropyBase58);
+		const entropyBase58Decoded: Buffer = base58Decode(entropyBase58);
 
 		// get private key
 		const privateKey: Uint8Array = secp.utils.hashToPrivateKey(entropyBase58Decoded);
-		const privateKeyBase58Encoded: string = base58checkEncode(privateKey);
+		const privateKeyBase58Encoded: string = base58Encode(privateKey);
 
 		// get public key
-		const publicKey: Uint8Array = secp.getPublicKey(privateKey, true); // key is compressed!
-		const publicKeyBase58Encoded: string = base58checkEncode(publicKey);
+		const publicKey: Uint8Array = secp.schnorr.getPublicKey(privateKey);
+		const publicKeyBase58Encoded: string = base58Encode(publicKey);
 
 		// get wallet account address
-		const address: Uint8Array = hashSha256(publicKey);
-		const addressBase58Encoded: string = base58checkEncode(address);
+		const version = Buffer.from(varintEncode(VERSION_NUMBER));
+		const addressBase58Encoded = ADDRESS_PRAEFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 		return {
 			address: addressBase58Encoded,
@@ -311,45 +320,35 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		}
 
     	// cast private key
-		const privateKeyBase58Decoded = base58checkDecode(signer.privateKey);
+		const privateKeyBase58Decoded = base58Decode(signer.privateKey);
 
 		// bytes compaction
 		const bytesCompact: Buffer = Buffer.from(data);
 		// Hash byte compact
-		const messageHashDigest: Uint8Array = hashSha256(bytesCompact);
+		const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
 
 		// sign the digest
-		const sig = secp.signSync(messageHashDigest, privateKeyBase58Decoded, {
-			der: false,
-			recovered: true
-		});
+		const sig = schnorr.signSync(messageHashDigest, privateKeyBase58Decoded);
 
 		// check sig length
-		if (sig[0].length != 64) {
-			throw new Error(`Invalid signature length. Expected 64, got ${sig[0].length}`);
+		if (sig.length != 64) {
+			throw new Error(`Invalid signature length. Expected 64, got ${sig.length}`);
 		}
 
 		// verify signature
 		if (signer.publicKey) {
-			const publicKeyBase58Decoded = base58checkDecode(signer.publicKey);
-			const base58PublicKey = new BN(publicKeyBase58Decoded, 16);
-			const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toArrayLike(Buffer, "be", 33));
+			const publicKeyBase58Decoded = base58Decode(signer.publicKey);
+			const isVerified = schnorr.verifySync(sig, messageHashDigest, publicKeyBase58Decoded);
 			if (!isVerified) {
 				throw new Error(`Signature could not be verified with public key. Please inspect`);
 			}
 		}
 
-		// extract sig vector
-		const r: Uint8Array = sig[0].slice(0, 32);
-		const s: Uint8Array = sig[0].slice(32);
-		const v: number = sig[1];
-		const hex = secp.utils.bytesToHex(sig[0]);
-		const base58Encoded = base58checkEncode(Buffer.concat([r, s]));
+		// convert sig
+		const hex = secp.utils.bytesToHex(sig);
+		const base58Encoded = base58Encode(sig);
 
 		return {
-			r,
-			s,
-			v,
 			hex,
 			base58Encoded
 		} as ISignature;

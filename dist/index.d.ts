@@ -43,3 +43,5 @@ export { WalletClient } from "./web3/WalletClient";
 export { VaultClient } from "./web3/VaultClient";
 export { EventPoller } from "./web3/EventPoller";
 export { SmartContractsClient } from "./web3/SmartContractsClient";
+/** Exposed utils */
+export * as utils from "./utils/Xbqcrypto";

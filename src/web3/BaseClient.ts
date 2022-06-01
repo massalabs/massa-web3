@@ -1,7 +1,7 @@
 import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
-import { base58checkDecode, varintEncode } from "../utils/Xbqcrypto";
+import { base58Decode, varintEncode } from "../utils/Xbqcrypto";
 import { BN } from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
@@ -155,7 +155,7 @@ export class BaseClient {
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
 		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
-		const publicKeyEncoded: Buffer = base58checkDecode(account.publicKey);
+		const publicKeyEncoded: Buffer = base58Decode(account.publicKey);
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
 		switch (opTypeId) {
@@ -193,7 +193,7 @@ export class BaseClient {
 				const gasPriceEncoded = Buffer.from(varintEncode((data as ICallData).gasPrice));
 
 				// target address
-				const targetAddressEncoded = base58checkDecode((data as ICallData).targetAddress);
+				const targetAddressEncoded = base58Decode((data as ICallData).targetAddress.slice(1)).slice(1);
 
 				// target function name and name length
 				const functionNameEncoded = new Uint8Array(Buffer.from((data as ICallData).functionName, "utf8"));
@@ -209,7 +209,7 @@ export class BaseClient {
 				// transfer amount
 				const transferAmountEncoded = Buffer.from(varintEncode(this.scaleAmount((data as ITransactionData).amount)));
 				// recipient
-				const recipientAddressEncoded = base58checkDecode((data as ITransactionData).recipientAddress);
+				const recipientAddressEncoded = base58Decode((data as ITransactionData).recipientAddress.slice(1)).slice(1);
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
 			}

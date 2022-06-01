@@ -128,7 +128,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                 target_address: readData.targetAddress,
                 target_function: readData.targetFunction,
                 parameter: readData.parameter,
-                caller_address: readData.callerAddress
+                caller_address: readData.callerAddress || this.walletClient.getBaseAccount().address
             };
             // returns operation ids
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
@@ -180,9 +180,11 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             if (addresses.length === 0)
                 return null;
             const addressInfo = addresses.at(0);
-            const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashSha256)(key)));
+            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
             const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
             const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
+            if (!candidateLedgerInfo || !finalLedgerInfo)
+                return null;
             return {
                 candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
                 final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")

@@ -133,7 +133,7 @@ class BaseClient {
     compactBytesForOperation(data, opTypeId, account, expirePeriod) {
         const feeEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(this.scaleAmount(data.fee)));
         const expirePeriodEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(expirePeriod));
-        const publicKeyEncoded = (0, Xbqcrypto_1.base58checkDecode)(account.publicKey);
+        const publicKeyEncoded = (0, Xbqcrypto_1.base58Decode)(account.publicKey);
         const typeIdEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(opTypeId.valueOf()));
         switch (opTypeId) {
             case OperationTypes_1.OperationTypeId.ExecuteSC: {
@@ -160,7 +160,7 @@ class BaseClient {
                 // gas price
                 const gasPriceEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(data.gasPrice));
                 // target address
-                const targetAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.targetAddress);
+                const targetAddressEncoded = (0, Xbqcrypto_1.base58Decode)(data.targetAddress.slice(1)).slice(1);
                 // target function name and name length
                 const functionNameEncoded = new Uint8Array(buffer_1.Buffer.from(data.functionName, "utf8"));
                 const functionNameLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(functionNameEncoded.length));
@@ -173,7 +173,7 @@ class BaseClient {
                 // transfer amount
                 const transferAmountEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(this.scaleAmount(data.amount)));
                 // recipient
-                const recipientAddressEncoded = (0, Xbqcrypto_1.base58checkDecode)(data.recipientAddress);
+                const recipientAddressEncoded = (0, Xbqcrypto_1.base58Decode)(data.recipientAddress.slice(1)).slice(1);
                 return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
             }
             case OperationTypes_1.OperationTypeId.RollBuy:

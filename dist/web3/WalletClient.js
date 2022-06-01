@@ -5,19 +5,27 @@ const tslib_1 = require("tslib");
 const secp = require("@noble/secp256k1");
 const BaseClient_1 = require("./BaseClient");
 const Xbqcrypto_1 = require("../utils/Xbqcrypto");
-const bn_js_1 = require("bn.js");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
 const hmac_1 = require("@noble/hashes/hmac");
 const sha256_1 = require("@noble/hashes/sha256");
+const secp256k1_1 = require("@noble/secp256k1");
+const createhash = require("create-hash");
+const VERSION_NUMBER = 0;
+const ADDRESS_PRAEFIX = "A";
+const MAX_WALLET_ACCOUNTS = 256;
 // add hmacSync for sync signing
 secp.utils.hmacSha256Sync = (key, ...msgs) => {
     const h = hmac_1.hmac.create(sha256_1.sha256, key);
     msgs.forEach(msg => h.update(msg));
     return h.digest();
 };
-const MAX_WALLET_ACCOUNTS = 256;
+secp.utils.sha256Sync = (...msgs) => {
+    const h = createhash("sha256");
+    msgs.forEach(msg => h.update(msg));
+    return h.digest();
+};
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 class WalletClient extends BaseClient_1.BaseClient {
     constructor(clientConfig, publicApiClient, baseAccount) {
@@ -81,11 +89,11 @@ class WalletClient extends BaseClient_1.BaseClient {
         }
         const accountsToCreate = new Array();
         for (const privateKey of privateKeys) {
-            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKey);
-            const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
-            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
-            const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
-            const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+            const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(privateKey);
+            const publicKey = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
+            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
+            const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+            const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
             if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
                 accountsToCreate.push({
                     privateKey: privateKey,
@@ -111,21 +119,21 @@ class WalletClient extends BaseClient_1.BaseClient {
             let privateKeyBase58Encoded = null;
             // account is specified via entropy
             if (account.randomEntropy) {
-                const base58DecodedRandomEntropy = (0, Xbqcrypto_1.base58checkDecode)(account.randomEntropy);
+                const base58DecodedRandomEntropy = (0, Xbqcrypto_1.base58Decode)(account.randomEntropy);
                 const privateKey = secp.utils.hashToPrivateKey(base58DecodedRandomEntropy);
-                privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+                privateKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(privateKey);
             }
             // if not entropy defined, use the base58 encoded value defined as param
             privateKeyBase58Encoded = privateKeyBase58Encoded || account.privateKey;
             // get public key
-            const publicKey = secp.getPublicKey((0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58Encoded), true);
-            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+            const publicKey = secp.schnorr.getPublicKey((0, Xbqcrypto_1.base58Decode)(privateKeyBase58Encoded));
+            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
             if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
                 throw new Error("Public key does not correspond the the private key submitted");
             }
             // get wallet account address
-            const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
-            const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+            const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+            const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
             if (account.address && account.address !== addressBase58Encoded) {
                 throw new Error("Account address not correspond the the address submitted");
             }
@@ -171,30 +179,30 @@ class WalletClient extends BaseClient_1.BaseClient {
         // generate private key
         const randomBytes = secp.utils.randomBytes(32);
         const privateKey = secp.utils.hashToPrivateKey(randomBytes);
-        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(privateKey);
         // get public key
-        const publicKey = secp.getPublicKey(privateKey, true);
-        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        const publicKey = secp.schnorr.getPublicKey(privateKey);
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
         // get wallet account address
-        const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
-        const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+        const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             privateKey: privateKeyBase58Encoded,
             publicKey: publicKeyBase58Encoded,
-            randomEntropy: (0, Xbqcrypto_1.base58checkEncode)(randomBytes)
+            randomEntropy: (0, Xbqcrypto_1.base58Encode)(randomBytes)
         };
     }
     /** returns an account from private key */
     static getAccountFromPrivateKey(privateKeyBase58) {
         // get private key
-        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(privateKeyBase58);
+        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(privateKeyBase58);
         // get public key
-        const publicKey = secp.getPublicKey(privateKeyBase58Decoded, true); // key is compressed!
-        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        const publicKey = secp.schnorr.getPublicKey(privateKeyBase58Decoded);
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
         // get wallet account address
-        const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
-        const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+        const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             privateKey: privateKeyBase58,
@@ -205,16 +213,16 @@ class WalletClient extends BaseClient_1.BaseClient {
     /** returns an account from entropy */
     static getAccountFromEntropy(entropyBase58) {
         // decode entropy
-        const entropyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(entropyBase58);
+        const entropyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(entropyBase58);
         // get private key
         const privateKey = secp.utils.hashToPrivateKey(entropyBase58Decoded);
-        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(privateKey);
+        const privateKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(privateKey);
         // get public key
-        const publicKey = secp.getPublicKey(privateKey, true); // key is compressed!
-        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(publicKey);
+        const publicKey = secp.schnorr.getPublicKey(privateKey);
+        const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
         // get wallet account address
-        const address = (0, Xbqcrypto_1.hashSha256)(publicKey);
-        const addressBase58Encoded = (0, Xbqcrypto_1.base58checkEncode)(address);
+        const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+        const addressBase58Encoded = ADDRESS_PRAEFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             privateKey: privateKeyBase58Encoded,
@@ -253,39 +261,29 @@ class WalletClient extends BaseClient_1.BaseClient {
             throw new Error("No public key to verify the signed message with");
         }
         // cast private key
-        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.privateKey);
+        const privateKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(signer.privateKey);
         // bytes compaction
         const bytesCompact = Buffer.from(data);
         // Hash byte compact
-        const messageHashDigest = (0, Xbqcrypto_1.hashSha256)(bytesCompact);
+        const messageHashDigest = (0, Xbqcrypto_1.hashBlake3)(bytesCompact);
         // sign the digest
-        const sig = secp.signSync(messageHashDigest, privateKeyBase58Decoded, {
-            der: false,
-            recovered: true
-        });
+        const sig = secp256k1_1.schnorr.signSync(messageHashDigest, privateKeyBase58Decoded);
         // check sig length
-        if (sig[0].length != 64) {
-            throw new Error(`Invalid signature length. Expected 64, got ${sig[0].length}`);
+        if (sig.length != 64) {
+            throw new Error(`Invalid signature length. Expected 64, got ${sig.length}`);
         }
         // verify signature
         if (signer.publicKey) {
-            const publicKeyBase58Decoded = (0, Xbqcrypto_1.base58checkDecode)(signer.publicKey);
-            const base58PublicKey = new bn_js_1.BN(publicKeyBase58Decoded, 16);
-            const isVerified = secp.verify(sig[0], messageHashDigest, base58PublicKey.toArrayLike(Buffer, "be", 33));
+            const publicKeyBase58Decoded = (0, Xbqcrypto_1.base58Decode)(signer.publicKey);
+            const isVerified = secp256k1_1.schnorr.verifySync(sig, messageHashDigest, publicKeyBase58Decoded);
             if (!isVerified) {
                 throw new Error(`Signature could not be verified with public key. Please inspect`);
             }
         }
-        // extract sig vector
-        const r = sig[0].slice(0, 32);
-        const s = sig[0].slice(32);
-        const v = sig[1];
-        const hex = secp.utils.bytesToHex(sig[0]);
-        const base58Encoded = (0, Xbqcrypto_1.base58checkEncode)(Buffer.concat([r, s]));
+        // convert sig
+        const hex = secp.utils.bytesToHex(sig);
+        const base58Encoded = (0, Xbqcrypto_1.base58Encode)(sig);
         return {
-            r,
-            s,
-            v,
             hex,
             base58Encoded
         };

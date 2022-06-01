@@ -28,7 +28,7 @@ class VaultClient {
     init() {
         if (!this.mnemonic) {
             const baseAccount = WalletClient_1.WalletClient.walletGenerateNewAccount();
-            const hex = Buffer.from((0, Xbqcrypto_1.base58checkDecode)(baseAccount.randomEntropy)).toString("hex");
+            const hex = Buffer.from((0, Xbqcrypto_1.base58Decode)(baseAccount.randomEntropy)).toString("hex");
             this.walletClient.setBaseAccount(baseAccount);
             this.mnemonic = this.entropyHexToMnemonic(hex);
         }
@@ -44,7 +44,7 @@ class VaultClient {
     /** recover vault */
     recoverVault(mnemonic) {
         const bytes = Buffer.from(this.mnemonicToHexEntropy(mnemonic), "hex");
-        this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58checkEncode)(bytes)));
+        this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58Encode)(bytes)));
         this.mnemonic = mnemonic;
     }
     /** export vault */
