@@ -177,7 +177,7 @@ export class BaseClient {
 				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+				return Buffer.concat([publicKeyEncoded, feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 			}
 			case OperationTypeId.CallSC: {
 				// max gas
@@ -203,7 +203,7 @@ export class BaseClient {
 				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, "utf8"));
 				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
+				return Buffer.concat([publicKeyEncoded, feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount
@@ -211,7 +211,7 @@ export class BaseClient {
 				// recipient
 				const recipientAddressEncoded = base58Decode((data as ITransactionData).recipientAddress.slice(1)).slice(1);
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
+				return Buffer.concat([publicKeyEncoded, feeEncoded, expirePeriodEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
 			}
 			case OperationTypeId.RollBuy:
 			case OperationTypeId.RollSell: {
@@ -219,7 +219,7 @@ export class BaseClient {
 				const amount = new BN((data as IRollsData).amount);
 				const rollsAmountEncoded = Buffer.from(varintEncode(amount.toNumber()));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, rollsAmountEncoded]);
+				return Buffer.concat([publicKeyEncoded, feeEncoded, expirePeriodEncoded, typeIdEncoded, rollsAmountEncoded]);
 			}
 		}
 	}
