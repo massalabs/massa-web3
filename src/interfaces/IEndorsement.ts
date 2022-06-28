@@ -5,7 +5,7 @@ export interface IEndorsement {
     is_final: boolean;
     endorsement: {
         content: {
-            sender_public_key: string,
+            creator_public_key: string,
             slot: {
                 period: number,
                 thread: number

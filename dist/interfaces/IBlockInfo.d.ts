@@ -10,7 +10,7 @@ export interface IBlockInfo {
                 content: {
                     endorsed_block: string;
                     index: number;
-                    sender_public_key: string;
+                    creator_public_key: string;
                     slot: {
                         period: number;
                         thread: number;
@@ -32,7 +32,7 @@ export interface IBlockInfo {
                     expire_period: number;
                     fee: string;
                     op: OpType;
-                    sender_public_key: string;
+                    creator_public_key: string;
                 };
                 signature: string;
             }

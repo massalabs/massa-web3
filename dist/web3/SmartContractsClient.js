@@ -64,7 +64,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                             gas_price: contractData.gasPrice.toString()
                         }
                     },
-                    sender_public_key: sender.publicKey
+                    creator_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
@@ -104,7 +104,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                             param: callData.parameter,
                         }
                     },
-                    sender_public_key: sender.publicKey
+                    creator_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };

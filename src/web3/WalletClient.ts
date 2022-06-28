@@ -395,7 +395,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 						recipient_address: txData.recipientAddress
 					}
 				},
-				sender_public_key: sender.publicKey
+				creator_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};
@@ -432,7 +432,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 						roll_count: txData.amount,
 					}
 				},
-				sender_public_key: sender.publicKey
+				creator_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};
@@ -469,7 +469,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 						roll_count: txData.amount,
 					}
 				},
-				sender_public_key: sender.publicKey
+				creator_public_key: sender.publicKey
 			},
 			signature: signature.base58Encoded,
 		};

@@ -9,7 +9,7 @@ export interface IOperationData {
             expire_period: number;
             fee: string;
             op: OpType;
-            sender_public_key: string;
+            creator_public_key: string;
         };
         signature: string;
     };

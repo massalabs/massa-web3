@@ -11,7 +11,7 @@ export interface IBlockInfo {
                 content: {
                   endorsed_block: string, // Block id
                   index: number,
-                  sender_public_key: string,
+                  creator_public_key: string,
                   slot: { // endorsed block slot: deifferent from block's slot
                     period: number,
                     thread: number
@@ -33,7 +33,7 @@ export interface IBlockInfo {
               expire_period: number,
               fee: string, // represent an Amount in coins
               op: OpType,
-              sender_public_key: string
+              creator_public_key: string
             },
             signature: string
           }
