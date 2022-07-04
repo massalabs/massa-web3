@@ -22,9 +22,9 @@ import { IAccount, IClientConfig, IProvider, ProviderType } from "massa_web3/int
 import { Client } from "massa_web3/web3/Client";
 
 const baseAccount = {
-    privateKey: "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
-    publicKey: "5Jwx18K2JXacFoZcPmTWKFgdG1mSdkpBAUnwiyEqsVP9LKyNxR",
-    address: "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM"
+    publicKey: "24PTDe1wdmWHEJNaPEPJKLk3mESQv3yVYLL5JV1CBz78Kow41c",
+    privateKey: "2Y12pVFMj15WQY9d3kbrj3dPDfcvdv5KeywsEBVpCjvBLepQgv",
+    address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQBT"
 } as IAccount;
 
 const providers: Array<IProvider> = [
@@ -217,7 +217,7 @@ Available class methods are:
 
 -   `addPrivateKeysToWallet`
     ```ts
-    await web3Client
+    const addedAccounts: Array<IAccount> = await web3Client
         .wallet()
         .addPrivateKeysToWallet([
             "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
@@ -228,7 +228,7 @@ Available class methods are:
     await web3Client
         .wallet()
         .removeAddressesFromWallet([
-            "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+            "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
         ]);
     ```
 -   `getWalletAccounts`
@@ -240,16 +240,16 @@ Available class methods are:
     const walletAccount: IAccount | undefined = web3Client
         .wallet()
         .getWalletAccountByAddress(
-            "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM"
+            "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB"
         );
     ```
 -   `addAccountsToWallet`
     ```ts
     await web3Client.wallet().addAccountsToWallet([
         {
-            privateKey: "2a4dobJSVb8CN7cQCEL4cfU6xsUNrtwGXQvUPqzUXhEedvzGjc",
-            publicKey: "5tdoCo5TwvYZoRjnoqZHDsvff3Z9pXTP1gnEgN9FFS7WWbjjn2",
-            address: "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2",
+            publicKey: "24PTDe1wdmWHEJNaPEPJKLk3mESQv3yVYLL5JV1CBz78Kow41c",
+            privateKey: "2Y12pVFMj15WQY9d3kbrj3dPDfcvdv5KeywsEBVpCjvBLepQgv",
+            address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB"
         },
     ]);
     ```
@@ -266,7 +266,7 @@ Available class methods are:
             fee: 0, // int
             amount: "1", //MAS
             recipientAddress:
-                "yKCRYgv5nVDVwqHmTTXXxqqZW7he3bgEDBQ5bPjBxPkuzAte2",
+                "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
         } as ITransactionData,
         baseAccount
     );
@@ -293,7 +293,7 @@ Available class methods are:
     ```
 -   `getAccountSequentialBalance`
     ```ts
-    const balance: IBalance = await web3Client.wallet().getAccountSequentialBalance("9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM");
+    const balance: IBalance = await web3Client.wallet().getAccountSequentialBalance("A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB");
     ```
 
 In addition to the class methods, there are also static methods for direct use:
@@ -336,16 +336,10 @@ Emitted smart contract events could directly be fetched
 
 ```ts
 const eventsFilter = {
-    start: {
-        period: 0,
-        thread: 0,
-    } as ISlot,
-    end: {
-        period: 0,
-        thread: 0,
-    } as ISlot,
+    start: null,
+    end: null,
     original_caller_address:
-        "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+        "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
 } as IEventFilter;
@@ -358,16 +352,10 @@ Events could also be polled. The second parameter in the call represents the ref
 ```ts
 // poll smart contract events
 const eventsFilter = {
-    start: {
-        period: 0,
-        thread: 0,
-    } as ISlot,
-    end: {
-        period: 0,
-        thread: 0,
-    } as ISlot,
+    start: null,
+    end: null,
     original_caller_address:
-        "9mvJfA4761u1qT8QwSWcJ4gTDaFP5iSgjQzKMaqTbrWCFo1QM",
+        "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
 } as IEventFilter;

@@ -10,11 +10,12 @@ import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
 import { IReadData } from "../interfaces/IReadData";
+import { ISmartContractsClient } from "../interfaces/ISmartContractsClient";
 import { BaseClient } from "./BaseClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
-export declare class SmartContractsClient extends BaseClient {
+export declare class SmartContractsClient extends BaseClient implements ISmartContractsClient {
     private readonly publicApiClient;
     private readonly walletClient;
     constructor(clientConfig: IClientConfig, publicApiClient: PublicApiClient, walletClient: WalletClient);

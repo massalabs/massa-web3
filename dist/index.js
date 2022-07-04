@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SmartContractsClient = exports.EventPoller = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
+exports.utils = exports.SmartContractsClient = exports.EventPoller = exports.VaultClient = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
 var IProvider_1 = require("./interfaces/IProvider");
 Object.defineProperty(exports, "ProviderType", { enumerable: true, get: function () { return IProvider_1.ProviderType; } });
 var EOperationStatus_1 = require("./interfaces/EOperationStatus");
@@ -19,8 +19,12 @@ var PrivateApiClient_1 = require("./web3/PrivateApiClient");
 Object.defineProperty(exports, "PrivateApiClient", { enumerable: true, get: function () { return PrivateApiClient_1.PrivateApiClient; } });
 var WalletClient_1 = require("./web3/WalletClient");
 Object.defineProperty(exports, "WalletClient", { enumerable: true, get: function () { return WalletClient_1.WalletClient; } });
+var VaultClient_1 = require("./web3/VaultClient");
+Object.defineProperty(exports, "VaultClient", { enumerable: true, get: function () { return VaultClient_1.VaultClient; } });
 var EventPoller_1 = require("./web3/EventPoller");
 Object.defineProperty(exports, "EventPoller", { enumerable: true, get: function () { return EventPoller_1.EventPoller; } });
 var SmartContractsClient_1 = require("./web3/SmartContractsClient");
 Object.defineProperty(exports, "SmartContractsClient", { enumerable: true, get: function () { return SmartContractsClient_1.SmartContractsClient; } });
+/** Exposed utils */
+exports.utils = require("./utils/Xbqcrypto");
 //# sourceMappingURL=index.js.map

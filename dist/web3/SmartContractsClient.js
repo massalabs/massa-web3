@@ -46,7 +46,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // revert base64 sc data to binary
             if (!contractData.contractDataBase64) {
                 throw new Error(`Contract base64 encoded data required. Got null`);
@@ -64,7 +64,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                             gas_price: contractData.gasPrice.toString()
                         }
                     },
-                    sender_public_key: executor.publicKey
+                    sender_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
@@ -87,7 +87,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, sender, expiryPeriod);
             // sign payload
-            const signature = yield WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
             // request data
             const data = {
                 content: {
@@ -104,7 +104,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                             param: callData.parameter,
                         }
                     },
-                    sender_public_key: executor.publicKey
+                    sender_public_key: sender.publicKey
                 },
                 signature: signature.base58Encoded,
             };
@@ -128,7 +128,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                 target_address: readData.targetAddress,
                 target_function: readData.targetFunction,
                 parameter: readData.parameter,
-                caller_address: readData.callerAddress
+                caller_address: readData.callerAddress || this.walletClient.getBaseAccount().address
             };
             // returns operation ids
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
@@ -180,9 +180,11 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             if (addresses.length === 0)
                 return null;
             const addressInfo = addresses.at(0);
-            const base58EncodedKey = (0, Xbqcrypto_1.base58checkEncode)(Buffer.from((0, Xbqcrypto_1.hashSha256)(key)));
+            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
             const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
             const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
+            if (!candidateLedgerInfo || !finalLedgerInfo)
+                return null;
             return {
                 candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
                 final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
