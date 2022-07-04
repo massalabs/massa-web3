@@ -192,21 +192,6 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		}
 	}
 
-	/** Returns the smart contract data storage for a given key */
-	public async getDatastoreEntry(smartContractAddress: string, key: string): Promise<IContractStorageData | null> {
-		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([smartContractAddress]);
-		if (addresses.length === 0) return null;
-		const addressInfo: IAddressInfo = addresses.at(0);
-		const base58EncodedKey: string = base58Encode(Buffer.from(hashBlake3(key)));
-		const candidateLedgerInfo: Array<number>|null = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-		const finalLedgerInfo: Array<number>|null = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
-		if (!candidateLedgerInfo || !finalLedgerInfo) return null;
-		return {
-			candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
-			final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
-		} as IContractStorageData;
-	}
-
 	/** Read-only smart contracts */
 	public async executeReadOnlySmartContract(contractData: IContractData): Promise<Array<IExecuteReadOnlyResponse>> {
 

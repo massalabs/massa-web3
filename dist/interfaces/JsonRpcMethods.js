@@ -15,6 +15,7 @@ var JSON_RPC_REQUEST_METHOD;
     JSON_RPC_REQUEST_METHOD["GET_FILTERED_SC_OUTPUT_EVENT"] = "get_filtered_sc_output_event";
     JSON_RPC_REQUEST_METHOD["EXECUTE_READ_ONLY_BYTECODE"] = "execute_read_only_bytecode";
     JSON_RPC_REQUEST_METHOD["EXECUTE_READ_ONLY_CALL"] = "execute_read_only_call";
+    JSON_RPC_REQUEST_METHOD["GET_DATASTORE_ENTRY"] = "get_datastore_entry";
     // private Api
     JSON_RPC_REQUEST_METHOD["STOP_NODE"] = "stop_node";
     JSON_RPC_REQUEST_METHOD["BAN"] = "ban";

@@ -16,9 +16,10 @@
     "update-version-major": "npm version major",
     "update-version-minor": "npm version minor",
     "update-version-patch": "npm version patch",
-    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts",
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/datastore.ts",
     "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
     "test-vault-example": "ts-node ./examples/vault/index.ts",
+    "test-datastore-example": "ts-node ./examples/dataStore/index.ts",
     "fix-lint": "tslint -c tslint.json '**/*.ts' --fix"
   },
   "author": "Massa Labs <info@massa.net>",

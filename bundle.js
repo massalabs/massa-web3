@@ -70,6 +70,7 @@ var JSON_RPC_REQUEST_METHOD;
     JSON_RPC_REQUEST_METHOD["GET_FILTERED_SC_OUTPUT_EVENT"] = "get_filtered_sc_output_event";
     JSON_RPC_REQUEST_METHOD["EXECUTE_READ_ONLY_BYTECODE"] = "execute_read_only_bytecode";
     JSON_RPC_REQUEST_METHOD["EXECUTE_READ_ONLY_CALL"] = "execute_read_only_call";
+    JSON_RPC_REQUEST_METHOD["GET_DATASTORE_ENTRY"] = "get_datastore_entry";
     // private Api
     JSON_RPC_REQUEST_METHOD["STOP_NODE"] = "stop_node";
     JSON_RPC_REQUEST_METHOD["BAN"] = "ban";
@@ -290,7 +291,8 @@ class BaseClient {
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_STAKERS:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
-            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL: {
+            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL:
+            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY: {
                 return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
             }
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -797,6 +799,22 @@ class PublicApiClient extends BaseClient_1.BaseClient {
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_STAKERS;
             if (this.clientConfig.retryStrategyOn) {
                 return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, []]);
+            }
+            else {
+                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+            }
+        });
+    }
+    /** Returns the data entry both at the latest final and active executed slots. */
+    getDatastoreEntry(address, key) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const data = {
+                address: address,
+                key: key,
+            };
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
+            if (this.clientConfig.retryStrategyOn) {
+                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
             }
             else {
                 return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, []);

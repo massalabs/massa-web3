@@ -103,6 +103,22 @@ class PublicApiClient extends BaseClient_1.BaseClient {
             }
         });
     }
+    /** Returns the data entry both at the latest final and active executed slots. */
+    getDatastoreEntry(address, key) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const data = {
+                address: address,
+                key: key,
+            };
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
+            if (this.clientConfig.retryStrategyOn) {
+                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+            }
+            else {
+                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+            }
+        });
+    }
 }
 exports.PublicApiClient = PublicApiClient;
 //# sourceMappingURL=PublicApiClient.js.map

@@ -10,6 +10,9 @@ import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
 import { IPublicApiClient } from "../interfaces/IPublicApiClient";
+import { IContractStorageData } from "../interfaces/IContractStorageData"
+import { base58Encode, hashBlake3 } from "../utils/Xbqcrypto";
+import { IDatastoreEntry } from "../interfaces/IDatastoreEntry";
 
 /** Public Api Client for interacting with the massa network */
 export class PublicApiClient extends BaseClient implements IPublicApiClient {
@@ -96,5 +99,26 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 		} else {
 			return await this.sendJsonRPCRequest<Array<IStakingAddresses>>(jsonRpcRequestMethod, []);
 		}
+	}
+
+	/** Returns the data entry both at the latest final and active executed slots. */
+	public async getDatastoreEntry(address: string, key: string): Promise<IContractStorageData> {
+		const base58EncodedKey: string = base58Encode(Buffer.from(hashBlake3(key)));
+		const data = {
+			address: address,
+			key: base58EncodedKey,
+		};
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
+		if (this.clientConfig.retryStrategyOn) {
+			var datastoreEntry = await trySafeExecute<IDatastoreEntry>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+		} else {
+			var datastoreEntry = await this.sendJsonRPCRequest<IDatastoreEntry>(jsonRpcRequestMethod, [data]);
+		}
+		const candidatedatastoreEntry: Array<number>|null = datastoreEntry.active_value;
+		const finaldatastoreEntry: Array<number>|null = datastoreEntry.final_value;
+		return {
+			candidate: ( candidatedatastoreEntry ) ? candidatedatastoreEntry.map((s) => String.fromCharCode(s)).join(""): null,
+			final: ( finaldatastoreEntry ) ? finaldatastoreEntry.map((s) => String.fromCharCode(s)).join(""): null
+		} as IContractStorageData;
 	}
 }
