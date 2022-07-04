@@ -5,6 +5,7 @@ const tslib_1 = require("tslib");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const BaseClient_1 = require("./BaseClient");
+const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 /** Public Api Client for interacting with the massa network */
 class PublicApiClient extends BaseClient_1.BaseClient {
     constructor(clientConfig) {
@@ -106,17 +107,24 @@ class PublicApiClient extends BaseClient_1.BaseClient {
     /** Returns the data entry both at the latest final and active executed slots. */
     getDatastoreEntry(address, key) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
             const data = {
                 address: address,
-                key: key,
+                key: base58EncodedKey,
             };
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
             if (this.clientConfig.retryStrategyOn) {
-                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+                var datastoreEntry = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
             }
             else {
-                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+                var datastoreEntry = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
+            const candidatedatastoreEntry = datastoreEntry.active_value;
+            const finaldatastoreEntry = datastoreEntry.final_value;
+            return {
+                candidate: (candidatedatastoreEntry) ? candidatedatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null,
+                final: (finaldatastoreEntry) ? finaldatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null
+            };
         });
     }
 }

@@ -27,5 +27,5 @@ export declare class PublicApiClient extends BaseClient implements IPublicApiCli
     /** Returns the active stakers and their roll counts for the current cycle */
     getStakers(): Promise<Array<IStakingAddresses>>;
     /** Returns the data entry both at the latest final and active executed slots. */
-    getDatastoreEntry(address: string, key: string): Promise<Array<IContractStorageData>>;
+    getDatastoreEntry(address: string, key: string): Promise<IContractStorageData>;
 }

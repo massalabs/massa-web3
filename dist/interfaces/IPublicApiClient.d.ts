@@ -14,5 +14,5 @@ export interface IPublicApiClient {
     getOperations(operationIds: Array<string>): Promise<Array<IOperationData>>;
     getCliques(): Promise<Array<IClique>>;
     getStakers(): Promise<Array<IStakingAddresses>>;
-    getDatastoreEntry(address: string, key: string): Promise<Array<IContractStorageData>>;
+    getDatastoreEntry(address: string, key: string): Promise<IContractStorageData | null>;
 }

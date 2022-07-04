@@ -700,6 +700,7 @@ class PrivateApiClient extends BaseClient_1.BaseClient {
 exports.PrivateApiClient = PrivateApiClient;
 
 },{"../interfaces/JsonRpcMethods":4,"../utils/retryExecuteFunction":9,"./BaseClient":10,"tslib":294}],15:[function(require,module,exports){
+(function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PublicApiClient = void 0;
@@ -707,6 +708,7 @@ const tslib_1 = require("tslib");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const BaseClient_1 = require("./BaseClient");
+const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 /** Public Api Client for interacting with the massa network */
 class PublicApiClient extends BaseClient_1.BaseClient {
     constructor(clientConfig) {
@@ -808,23 +810,31 @@ class PublicApiClient extends BaseClient_1.BaseClient {
     /** Returns the data entry both at the latest final and active executed slots. */
     getDatastoreEntry(address, key) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
             const data = {
                 address: address,
-                key: key,
+                key: base58EncodedKey,
             };
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
             if (this.clientConfig.retryStrategyOn) {
-                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+                var datastoreEntry = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
             }
             else {
-                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, []);
+                var datastoreEntry = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
+            const candidatedatastoreEntry = datastoreEntry.active_value;
+            const finaldatastoreEntry = datastoreEntry.final_value;
+            return {
+                candidate: (candidatedatastoreEntry) ? candidatedatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null,
+                final: (finaldatastoreEntry) ? finaldatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null
+            };
         });
     }
 }
 exports.PublicApiClient = PublicApiClient;
 
-},{"../interfaces/JsonRpcMethods":4,"../utils/retryExecuteFunction":9,"./BaseClient":10,"tslib":294}],16:[function(require,module,exports){
+}).call(this)}).call(this,require("buffer").Buffer)
+},{"../interfaces/JsonRpcMethods":4,"../utils/Xbqcrypto":8,"../utils/retryExecuteFunction":9,"./BaseClient":10,"buffer":134,"tslib":294}],16:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -835,7 +845,6 @@ const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const Wait_1 = require("../utils/Wait");
-const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const BaseClient_1 = require("./BaseClient");
 const WalletClient_1 = require("./WalletClient");
 const TX_POLL_INTERVAL_MS = 10000;
@@ -1001,24 +1010,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             }
         });
     }
-    /** Returns the smart contract data storage for a given key */
-    getDatastoreEntry(smartContractAddress, key) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const addresses = yield this.publicApiClient.getAddresses([smartContractAddress]);
-            if (addresses.length === 0)
-                return null;
-            const addressInfo = addresses.at(0);
-            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
-            const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-            const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
-            if (!candidateLedgerInfo || !finalLedgerInfo)
-                return null;
-            return {
-                candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
-                final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
-            };
-        });
-    }
     /** Read-only smart contracts */
     executeReadOnlySmartContract(contractData) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -1094,7 +1085,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
 exports.SmartContractsClient = SmartContractsClient;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"../interfaces/EOperationStatus":2,"../interfaces/JsonRpcMethods":4,"../interfaces/OperationTypes":5,"../utils/Wait":7,"../utils/Xbqcrypto":8,"../utils/retryExecuteFunction":9,"./BaseClient":10,"./WalletClient":18,"buffer":134,"tslib":294}],17:[function(require,module,exports){
+},{"../interfaces/EOperationStatus":2,"../interfaces/JsonRpcMethods":4,"../interfaces/OperationTypes":5,"../utils/Wait":7,"../utils/retryExecuteFunction":9,"./BaseClient":10,"./WalletClient":18,"buffer":134,"tslib":294}],17:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });

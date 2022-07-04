@@ -1,4 +1,4 @@
 export interface IContractStorageData {
-    final: string;
-    candidate: string;
+    final: string | null;
+    candidate: string | null;
 }
