@@ -7,7 +7,6 @@ const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const Wait_1 = require("../utils/Wait");
-const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const BaseClient_1 = require("./BaseClient");
 const WalletClient_1 = require("./WalletClient");
 const TX_POLL_INTERVAL_MS = 10000;
@@ -171,24 +170,6 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             else {
                 return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
-        });
-    }
-    /** Returns the smart contract data storage for a given key */
-    getDatastoreEntry(smartContractAddress, key) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const addresses = yield this.publicApiClient.getAddresses([smartContractAddress]);
-            if (addresses.length === 0)
-                return null;
-            const addressInfo = addresses.at(0);
-            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
-            const candidateLedgerInfo = addressInfo.candidate_sce_ledger_info.datastore[base58EncodedKey];
-            const finalLedgerInfo = addressInfo.final_sce_ledger_info.datastore[base58EncodedKey];
-            if (!candidateLedgerInfo || !finalLedgerInfo)
-                return null;
-            return {
-                candidate: candidateLedgerInfo.map((s) => String.fromCharCode(s)).join(""),
-                final: finalLedgerInfo.map((s) => String.fromCharCode(s)).join("")
-            };
         });
     }
     /** Read-only smart contracts */

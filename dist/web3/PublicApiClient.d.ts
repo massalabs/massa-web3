@@ -8,6 +8,7 @@ import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
 import { IPublicApiClient } from "../interfaces/IPublicApiClient";
+import { IContractStorageData } from "../interfaces/IContractStorageData";
 /** Public Api Client for interacting with the massa network */
 export declare class PublicApiClient extends BaseClient implements IPublicApiClient {
     constructor(clientConfig: IClientConfig);
@@ -25,4 +26,6 @@ export declare class PublicApiClient extends BaseClient implements IPublicApiCli
     getCliques(): Promise<Array<IClique>>;
     /** Returns the active stakers and their roll counts for the current cycle */
     getStakers(): Promise<Array<IStakingAddresses>>;
+    /** Returns the data entry both at the latest final and active executed slots. */
+    getDatastoreEntry(address: string, key: string): Promise<IContractStorageData>;
 }

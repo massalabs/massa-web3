@@ -7,9 +7,9 @@ import { IEvent } from "../../src/interfaces/IEvent";
 import { EventPoller } from "../../src/web3/EventPoller";
 import { ICallData } from "../../src/interfaces/ICallData";
 import { EOperationStatus } from "../../src/interfaces/EOperationStatus";
-import { wait } from "../../src/utils/Wait";
 import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
+import { IProvider, ProviderType } from "../../src/interfaces/IProvider";
 const chalk = require("chalk");
 const ora = require("ora");
 
@@ -109,7 +109,7 @@ const ora = require("ora");
 
         // get sc storage data
         spinner = ora(`Reading a smart state entry...`).start();
-        const scStorageData = await web3Client.smartContracts().getDatastoreEntry(scAddress, "gameState");
+        const scStorageData = await web3Client.publicApi().getDatastoreEntry(scAddress, "gameState");
         spinner.succeed(`Got smart contract storage data for key: ${chalk.yellow(JSON.stringify(scStorageData, null, 4))}`);
 
     } catch (ex) {
