@@ -14,7 +14,7 @@ class PrivateApiClient extends BaseClient_1.BaseClient {
         this.nodeStop = this.nodeStop.bind(this);
         this.banIpAddress = this.banIpAddress.bind(this);
         this.unbanIpAddress = this.unbanIpAddress.bind(this);
-        this.nodeAddStakingPrivateKeys = this.nodeAddStakingPrivateKeys.bind(this);
+        this.nodeAddStakingSecretKeys = this.nodeAddStakingSecretKeys.bind(this);
         this.nodeGetStakingAddresses = this.nodeGetStakingAddresses.bind(this);
         this.nodeRemoveStakingAddresses = this.nodeRemoveStakingAddresses.bind(this);
         this.nodeSignMessage = this.nodeSignMessage.bind(this);
@@ -92,14 +92,14 @@ class PrivateApiClient extends BaseClient_1.BaseClient {
         });
     }
     /** Add staking private keys */
-    nodeAddStakingPrivateKeys(privateKeys) {
+    nodeAddStakingSecretKeys(secretKeys) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS;
             if (this.clientConfig.retryStrategyOn) {
-                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [privateKeys]]);
+                return yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [secretKeys]]);
             }
             else {
-                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [privateKeys]);
+                return yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [secretKeys]);
             }
         });
     }

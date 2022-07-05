@@ -7,5 +7,5 @@ export interface IPrivateApiClient {
 	nodeSignMessage(message: Uint8Array): Promise<ISignedMessage>;
 	nodeGetStakingAddresses(): Promise<Array<string>>;
 	nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void>;
-	nodeAddStakingPrivateKeys(privateKeys: Array<string>): Promise<void>;
+	nodeAddStakingSecretKeys(secretKeys: Array<string>): Promise<void>;
 }

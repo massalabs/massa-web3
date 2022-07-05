@@ -20,8 +20,8 @@ export class VaultClient implements IVaultClient {
 		// vault methods
 		this.setPassword = this.setPassword.bind(this);
 		this.getPassword = this.getPassword.bind(this);
-		this.entropyHexToMnemonic = this.entropyHexToMnemonic.bind(this);
-		this.mnemonicToHexEntropy = this.mnemonicToHexEntropy.bind(this);
+		this.secretKeyToMnemonic = this.secretKeyToMnemonic.bind(this);
+		this.mnemonicToSecretKey = this.mnemonicToSecretKey.bind(this);
 		this.exportVault = this.exportVault.bind(this);
 		this.encryptVault = this.encryptVault.bind(this);
 		this.decryptVault = this.decryptVault.bind(this);
@@ -29,12 +29,11 @@ export class VaultClient implements IVaultClient {
 	}
 
 	/** initializes a vault with a wallet base account */
-	public init(): void {
+	public async init(): Promise<void> {
 		if (!this.mnemonic) {
-			const baseAccount: IAccount = WalletClient.walletGenerateNewAccount();
-			const hex = Buffer.from(base58Decode(baseAccount.randomEntropy)).toString("hex");
+			const baseAccount: IAccount = await WalletClient.walletGenerateNewAccount();
 			this.walletClient.setBaseAccount(baseAccount);
-			this.mnemonic = this.entropyHexToMnemonic(hex);
+			this.mnemonic = this.secretKeyToMnemonic(baseAccount.secretKey);
 		}
 	}
 
@@ -50,8 +49,10 @@ export class VaultClient implements IVaultClient {
 
 	/** recover vault */
 	public recoverVault(mnemonic: string) {
-        const bytes: Buffer = Buffer.from(this.mnemonicToHexEntropy(mnemonic), "hex");
-		this.walletClient.setBaseAccount(WalletClient.getAccountFromEntropy(base58Encode(bytes)));
+        const secret: string = this.mnemonicToSecretKey(mnemonic);
+		WalletClient.getAccountFromSecretKey(secret).then(account => {
+			this.walletClient.setBaseAccount(account);
+		});
         this.mnemonic = mnemonic;
     }
 
@@ -115,12 +116,12 @@ export class VaultClient implements IVaultClient {
 	}
 
 	/** entropy to hex mnemonic */
-	public entropyHexToMnemonic(data: any): string {
+	public secretKeyToMnemonic(data: any): string {
         return bip39.entropyToMnemonic(data);
     }
 
 	/** mnemonic to hex entropy */
-	public mnemonicToHexEntropy(mnemonic: string): any {
+	public mnemonicToSecretKey(mnemonic: string): any {
         return bip39.mnemonicToEntropy(mnemonic);
     }
 }

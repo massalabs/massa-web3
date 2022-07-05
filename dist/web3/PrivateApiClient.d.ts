@@ -18,5 +18,5 @@ export declare class PrivateApiClient extends BaseClient implements IPrivateApiC
     /** Remove staking addresses */
     nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void>;
     /** Add staking private keys */
-    nodeAddStakingPrivateKeys(privateKeys: Array<string>): Promise<void>;
+    nodeAddStakingSecretKeys(secretKeys: Array<string>): Promise<void>;
 }

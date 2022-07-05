@@ -10,7 +10,7 @@ export declare class VaultClient implements IVaultClient {
     private mnemonic;
     constructor(clientConfig: IClientConfig, walletClient: WalletClient);
     /** initializes a vault with a wallet base account */
-    init(): void;
+    init(): Promise<void>;
     /** set password */
     setPassword(password: string): void;
     /** get password */
@@ -24,7 +24,7 @@ export declare class VaultClient implements IVaultClient {
     /** decrypt vault */
     decryptVault(encryptedData: string, password?: string): Promise<IVault>;
     /** entropy to hex mnemonic */
-    entropyHexToMnemonic(data: any): string;
+    secretKeyToMnemonic(data: any): string;
     /** mnemonic to hex entropy */
-    mnemonicToHexEntropy(mnemonic: string): any;
+    mnemonicToSecretKey(mnemonic: string): any;
 }
