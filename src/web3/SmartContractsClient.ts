@@ -73,7 +73,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		}
 
 		const data = {
-			serialized_content: bytesCompact,
+			serialized_content: Array.prototype.slice.call(bytesCompact),
 			creator_public_key: sender.publicKey,
 			signature: signature.base58Encoded,
 		};
@@ -101,7 +101,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		const signature: ISignature = await WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
 		// request data
 		const data = {
-			serialized_content: bytesCompact,
+			serialized_content: Array.prototype.slice.call(bytesCompact),
 			creator_public_key: sender.publicKey,
 			signature: signature.base58Encoded,
 		};

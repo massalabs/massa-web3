@@ -883,7 +883,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
                 throw new Error(`Contract base64 encoded data required. Got null`);
             }
             const data = {
-                serialized_content: bytesCompact,
+                serialized_content: Array.prototype.slice.call(bytesCompact),
                 creator_public_key: sender.publicKey,
                 signature: signature.base58Encoded,
             };
@@ -909,7 +909,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             const signature = yield WalletClient_1.WalletClient.walletSignMessage(Buffer.concat([WalletClient_1.WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
             // request data
             const data = {
-                serialized_content: bytesCompact,
+                serialized_content: Array.prototype.slice.call(bytesCompact),
                 creator_public_key: sender.publicKey,
                 signature: signature.base58Encoded,
             };
@@ -1408,7 +1408,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                 throw new Error("No public key to verify the signed message with");
             }
             // get private key
-            const secretKeyBase58Decoded = this.getBytesSecretKey(signer.publicKey);
+            const secretKeyBase58Decoded = this.getBytesSecretKey(signer.secretKey);
             // bytes compaction
             const bytesCompact = Buffer.from(data);
             // Hash byte compact
@@ -1485,7 +1485,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             const signature = yield WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
             // prepare tx data
             const data = {
-                serialized_content: bytesCompact,
+                serialized_content: Array.prototype.slice.call(bytesCompact),
                 creator_public_key: sender.publicKey,
                 signature: signature.base58Encoded,
             };
@@ -1510,7 +1510,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             // sign payload
             const signature = yield WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
             const data = {
-                serialized_content: bytesCompact,
+                serialized_content: Array.prototype.slice.call(bytesCompact),
                 creator_public_key: sender.publicKey,
                 signature: signature.base58Encoded,
             };
@@ -1535,7 +1535,7 @@ class WalletClient extends BaseClient_1.BaseClient {
             // sign payload
             const signature = yield WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
             const data = {
-                serialized_content: bytesCompact,
+                serialized_content: Array.prototype.slice.call(bytesCompact),
                 creator_public_key: sender.publicKey,
                 signature: signature.base58Encoded,
             };

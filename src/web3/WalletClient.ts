@@ -262,7 +262,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		}
 
 		// get private key
-		const secretKeyBase58Decoded = this.getBytesSecretKey(signer.publicKey);
+		const secretKeyBase58Decoded = this.getBytesSecretKey(signer.secretKey);
 
 		// bytes compaction
 		const bytesCompact: Buffer = Buffer.from(data);
@@ -349,7 +349,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
 		// prepare tx data
 		const data = {
-			serialized_content: bytesCompact,
+			serialized_content: Array.prototype.slice.call(bytesCompact),
 			creator_public_key: sender.publicKey,
 			signature: signature.base58Encoded,
 		};
@@ -378,7 +378,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		const signature: ISignature = await WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
 
 		const data = {
-			serialized_content: bytesCompact,
+			serialized_content: Array.prototype.slice.call(bytesCompact),
 			creator_public_key: sender.publicKey,
 			signature: signature.base58Encoded,
 		};
@@ -407,7 +407,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		const signature: ISignature = await WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
 
 		const data = {
-			serialized_content: bytesCompact,
+			serialized_content: Array.prototype.slice.call(bytesCompact),
 			creator_public_key: sender.publicKey,
 			signature: signature.base58Encoded,
 		};
