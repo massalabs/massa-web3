@@ -1,15 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.varintDecode = exports.varintEncode = exports.base58Decode = exports.base58Encode = exports.hashBlake3 = exports.hashSha256 = exports.bytesToHex = void 0;
+exports.varintDecode = exports.varintEncode = exports.base58Decode = exports.base58Encode = exports.hashBlake3 = exports.hashSha256 = void 0;
 const varint = require("varint");
 const createhash = require("create-hash");
 const blake3_1 = require("@noble/hashes/blake3");
-const secp = require("@noble/secp256k1");
 const base58check = require("base58check");
-function bytesToHex(bytes) {
-    return secp.utils.bytesToHex(bytes);
-}
-exports.bytesToHex = bytesToHex;
 function hashSha256(data) {
     return createhash("sha256").update(data).digest();
 }
