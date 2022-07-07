@@ -484,5 +484,5 @@ const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().
 Finally, smart contract persistent storage could be easily accessed via:
 
 ```ts
-      const data: string = await web3Client.publicApi().getDatastoreEntry("vWDxmER2ar6mRFgcRqg94iEMYVypUCcRHGV5tjhdiAGqZqEoo", "some_key");
+const data: string = await web3Client.publicApi().getDatastoreEntry("vWDxmER2ar6mRFgcRqg94iEMYVypUCcRHGV5tjhdiAGqZqEoo", "some_key");
 ```
