@@ -5,7 +5,6 @@ const tslib_1 = require("tslib");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const BaseClient_1 = require("./BaseClient");
-const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 /** Public Api Client for interacting with the massa network */
 class PublicApiClient extends BaseClient_1.BaseClient {
     constructor(clientConfig) {
@@ -105,26 +104,30 @@ class PublicApiClient extends BaseClient_1.BaseClient {
         });
     }
     /** Returns the data entry both at the latest final and active executed slots. */
-    getDatastoreEntry(address, key) {
+    getDatastoreEntries(addresses_keys) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
-            const data = {
-                address: address,
-                key: base58EncodedKey,
-            };
-            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
+            let data = [];
+            for (let input of addresses_keys) {
+                data.push({
+                    address: input.address,
+                    key: Array.prototype.slice.call(Buffer.from(input.key))
+                });
+            }
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;
             if (this.clientConfig.retryStrategyOn) {
-                var datastoreEntry = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+                var datastoreEntries = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
             }
             else {
-                var datastoreEntry = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
+                var datastoreEntries = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
-            const candidatedatastoreEntry = datastoreEntry.active_value;
-            const finaldatastoreEntry = datastoreEntry.final_value;
-            return {
-                candidate: (candidatedatastoreEntry) ? candidatedatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null,
-                final: (finaldatastoreEntry) ? finaldatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null
-            };
+            const candidateDatastoreEntries = datastoreEntries.map(elem => elem.active_value);
+            const finalDatastoreEntries = datastoreEntries.map(elem => elem.final_value);
+            return datastoreEntries.map((_, index) => {
+                return {
+                    candidate: (candidateDatastoreEntries[index]) ? candidateDatastoreEntries[index].map((s) => String.fromCharCode(s)).join("") : null,
+                    final: (finalDatastoreEntries[index]) ? finalDatastoreEntries[index].map((s) => String.fromCharCode(s)).join("") : null
+                };
+            });
         });
     }
 }

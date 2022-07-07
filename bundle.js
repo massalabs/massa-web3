@@ -70,7 +70,7 @@ var JSON_RPC_REQUEST_METHOD;
     JSON_RPC_REQUEST_METHOD["GET_FILTERED_SC_OUTPUT_EVENT"] = "get_filtered_sc_output_event";
     JSON_RPC_REQUEST_METHOD["EXECUTE_READ_ONLY_BYTECODE"] = "execute_read_only_bytecode";
     JSON_RPC_REQUEST_METHOD["EXECUTE_READ_ONLY_CALL"] = "execute_read_only_call";
-    JSON_RPC_REQUEST_METHOD["GET_DATASTORE_ENTRY"] = "get_datastore_entry";
+    JSON_RPC_REQUEST_METHOD["GET_DATASTORE_ENTRIES"] = "get_datastore_entries";
     // private Api
     JSON_RPC_REQUEST_METHOD["STOP_NODE"] = "stop_node";
     JSON_RPC_REQUEST_METHOD["BAN"] = "ban";
@@ -287,7 +287,7 @@ class BaseClient {
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL:
-            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY: {
+            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES: {
                 return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
             }
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -702,7 +702,6 @@ const tslib_1 = require("tslib");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const BaseClient_1 = require("./BaseClient");
-const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 /** Public Api Client for interacting with the massa network */
 class PublicApiClient extends BaseClient_1.BaseClient {
     constructor(clientConfig) {
@@ -802,33 +801,37 @@ class PublicApiClient extends BaseClient_1.BaseClient {
         });
     }
     /** Returns the data entry both at the latest final and active executed slots. */
-    getDatastoreEntry(address, key) {
+    getDatastoreEntries(addresses_keys) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const base58EncodedKey = (0, Xbqcrypto_1.base58Encode)(Buffer.from((0, Xbqcrypto_1.hashBlake3)(key)));
-            const data = {
-                address: address,
-                key: base58EncodedKey,
-            };
-            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
+            let data = [];
+            for (let input of addresses_keys) {
+                data.push({
+                    address: input.address,
+                    key: Array.prototype.slice.call(Buffer.from(input.key))
+                });
+            }
+            const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;
             if (this.clientConfig.retryStrategyOn) {
-                var datastoreEntry = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+                var datastoreEntries = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
             }
             else {
-                var datastoreEntry = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
+                var datastoreEntries = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
-            const candidatedatastoreEntry = datastoreEntry.active_value;
-            const finaldatastoreEntry = datastoreEntry.final_value;
-            return {
-                candidate: (candidatedatastoreEntry) ? candidatedatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null,
-                final: (finaldatastoreEntry) ? finaldatastoreEntry.map((s) => String.fromCharCode(s)).join("") : null
-            };
+            const candidateDatastoreEntries = datastoreEntries.map(elem => elem.active_value);
+            const finalDatastoreEntries = datastoreEntries.map(elem => elem.final_value);
+            return datastoreEntries.map((_, index) => {
+                return {
+                    candidate: (candidateDatastoreEntries[index]) ? candidateDatastoreEntries[index].map((s) => String.fromCharCode(s)).join("") : null,
+                    final: (finalDatastoreEntries[index]) ? finalDatastoreEntries[index].map((s) => String.fromCharCode(s)).join("") : null
+                };
+            });
         });
     }
 }
 exports.PublicApiClient = PublicApiClient;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"../interfaces/JsonRpcMethods":4,"../utils/Xbqcrypto":8,"../utils/retryExecuteFunction":9,"./BaseClient":10,"buffer":131,"tslib":291}],16:[function(require,module,exports){
+},{"../interfaces/JsonRpcMethods":4,"../utils/retryExecuteFunction":9,"./BaseClient":10,"buffer":131,"tslib":291}],16:[function(require,module,exports){
 (function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });

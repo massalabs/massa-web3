@@ -11,8 +11,8 @@ import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
 import { IPublicApiClient } from "../interfaces/IPublicApiClient";
 import { IContractStorageData } from "../interfaces/IContractStorageData"
-import { base58Encode, hashBlake3 } from "../utils/Xbqcrypto";
 import { IDatastoreEntry } from "../interfaces/IDatastoreEntry";
+import { IDatastoreEntryInput } from "../interfaces/IDatastoreEntryInput";
 
 /** Public Api Client for interacting with the massa network */
 export class PublicApiClient extends BaseClient implements IPublicApiClient {
@@ -102,23 +102,27 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 	}
 
 	/** Returns the data entry both at the latest final and active executed slots. */
-	public async getDatastoreEntry(address: string, key: string): Promise<IContractStorageData> {
-		const base58EncodedKey: string = base58Encode(Buffer.from(hashBlake3(key)));
-		const data = {
-			address: address,
-			key: base58EncodedKey,
-		};
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY;
-		if (this.clientConfig.retryStrategyOn) {
-			var datastoreEntry = await trySafeExecute<IDatastoreEntry>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
-		} else {
-			var datastoreEntry = await this.sendJsonRPCRequest<IDatastoreEntry>(jsonRpcRequestMethod, [data]);
+	public async getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IContractStorageData>> {
+		let data = [];
+		for (let input of addresses_keys) {
+			data.push({
+				address: input.address,
+				key: Array.prototype.slice.call(Buffer.from(input.key))
+			});
 		}
-		const candidatedatastoreEntry: Array<number>|null = datastoreEntry.active_value;
-		const finaldatastoreEntry: Array<number>|null = datastoreEntry.final_value;
-		return {
-			candidate: ( candidatedatastoreEntry ) ? candidatedatastoreEntry.map((s) => String.fromCharCode(s)).join(""): null,
-			final: ( finaldatastoreEntry ) ? finaldatastoreEntry.map((s) => String.fromCharCode(s)).join(""): null
-		} as IContractStorageData;
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;
+		if (this.clientConfig.retryStrategyOn) {
+			var datastoreEntries = await trySafeExecute<Array<IDatastoreEntry>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+		} else {
+			var datastoreEntries = await this.sendJsonRPCRequest<Array<IDatastoreEntry>>(jsonRpcRequestMethod, [data]);
+		}
+		const candidateDatastoreEntries: Array<Array<number>|null> = datastoreEntries.map(elem => elem.active_value);
+		const finalDatastoreEntries: Array<Array<number>|null> = datastoreEntries.map(elem => elem.final_value);
+		return datastoreEntries.map((_, index) => {
+			return {
+				candidate: ( candidateDatastoreEntries[index] ) ? candidateDatastoreEntries[index].map((s) => String.fromCharCode(s)).join(""): null,
+				final: ( finalDatastoreEntries[index] ) ? finalDatastoreEntries[index].map((s) => String.fromCharCode(s)).join(""): null
+			} as IContractStorageData;
+		});
 	}
 }

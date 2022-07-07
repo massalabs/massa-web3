@@ -11,7 +11,7 @@ export enum JSON_RPC_REQUEST_METHOD {
 	GET_FILTERED_SC_OUTPUT_EVENT = "get_filtered_sc_output_event",
 	EXECUTE_READ_ONLY_BYTECODE = "execute_read_only_bytecode",
 	EXECUTE_READ_ONLY_CALL = "execute_read_only_call",
-	GET_DATASTORE_ENTRY = "get_datastore_entry",
+	GET_DATASTORE_ENTRIES = "get_datastore_entries",
 
 	// private Api
 	STOP_NODE = "stop_node",
