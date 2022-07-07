@@ -17,7 +17,7 @@ const ora = require("ora");
 
         // init vault
         spinner = ora(`Initializing vault....`).start();
-        web3Client.vault().init();
+        await web3Client.vault().init();
         spinner.succeed(`Vault successfully initialized`);
 
         // set password to vault

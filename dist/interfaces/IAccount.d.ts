@@ -1,6 +1,5 @@
 export interface IAccount {
     address: string | null;
     publicKey: string | null;
-    privateKey: string | null;
-    randomEntropy: string | null;
+    secretKey: string | null;
 }

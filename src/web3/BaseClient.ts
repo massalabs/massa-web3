@@ -74,7 +74,7 @@ export class BaseClient {
 			case JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
 			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
 			case JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL:
-			case JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY: {
+			case JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES: {
 					return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
 				}
 			case JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -156,7 +156,6 @@ export class BaseClient {
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
 		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
 		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
-		const publicKeyEncoded: Buffer = base58Decode(account.publicKey);
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
 		switch (opTypeId) {
@@ -178,7 +177,7 @@ export class BaseClient {
 				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
 			}
 			case OperationTypeId.CallSC: {
 				// max gas
@@ -204,7 +203,7 @@ export class BaseClient {
 				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, "utf8"));
 				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount
@@ -212,7 +211,7 @@ export class BaseClient {
 				// recipient
 				const recipientAddressEncoded = base58Decode((data as ITransactionData).recipientAddress.slice(1)).slice(1);
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
 			}
 			case OperationTypeId.RollBuy:
 			case OperationTypeId.RollSell: {
@@ -220,7 +219,7 @@ export class BaseClient {
 				const amount = new BN((data as IRollsData).amount);
 				const rollsAmountEncoded = Buffer.from(varintEncode(amount.toNumber()));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, rollsAmountEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, rollsAmountEncoded]);
 			}
 		}
 	}

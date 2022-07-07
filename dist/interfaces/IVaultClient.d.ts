@@ -7,6 +7,6 @@ export interface IVaultClient {
     encryptVault(password?: string): Promise<string>;
     decryptVault(encryptedData: string, password?: string): Promise<IVault>;
     exportVault(): IVault;
-    entropyHexToMnemonic(data: any): string;
-    mnemonicToHexEntropy(mnemonic: string): any;
+    secretKeyToMnemonic(data: any): string;
+    mnemonicToSecretKey(mnemonic: string): any;
 }

@@ -59,7 +59,7 @@ class BaseClient {
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE:
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL:
-            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRY: {
+            case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES: {
                 return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
             }
             case JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.STOP_NODE:
@@ -134,7 +134,6 @@ class BaseClient {
     compactBytesForOperation(data, opTypeId, account, expirePeriod) {
         const feeEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(this.scaleAmount(data.fee)));
         const expirePeriodEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(expirePeriod));
-        const publicKeyEncoded = (0, Xbqcrypto_1.base58Decode)(account.publicKey);
         const typeIdEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(opTypeId.valueOf()));
         switch (opTypeId) {
             case OperationTypes_1.OperationTypeId.ExecuteSC: {
@@ -149,7 +148,7 @@ class BaseClient {
                 // contract data
                 const contractDataEncoded = buffer_1.Buffer.from(decodedScBinaryCode);
                 const dataLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(contractDataEncoded.length));
-                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
             }
             case OperationTypes_1.OperationTypeId.CallSC: {
                 // max gas
@@ -168,21 +167,21 @@ class BaseClient {
                 // parameter
                 const parametersEncoded = new Uint8Array(buffer_1.Buffer.from(data.parameter, "utf8"));
                 const parametersLengthEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(parametersEncoded.length));
-                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
+                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
             }
             case OperationTypes_1.OperationTypeId.Transaction: {
                 // transfer amount
                 const transferAmountEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(this.scaleAmount(data.amount)));
                 // recipient
                 const recipientAddressEncoded = (0, Xbqcrypto_1.base58Decode)(data.recipientAddress.slice(1)).slice(1);
-                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
+                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, recipientAddressEncoded, transferAmountEncoded]);
             }
             case OperationTypes_1.OperationTypeId.RollBuy:
             case OperationTypes_1.OperationTypeId.RollSell: {
                 // rolls amount
                 const amount = new bn_js_1.BN(data.amount);
                 const rollsAmountEncoded = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(amount.toNumber()));
-                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, publicKeyEncoded, typeIdEncoded, rollsAmountEncoded]);
+                return buffer_1.Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, rollsAmountEncoded]);
             }
         }
     }

@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VaultClient = void 0;
 const tslib_1 = require("tslib");
 const WalletClient_1 = require("./WalletClient");
-const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const bip39 = require("bip39");
 const CryptoJS = require("crypto-js");
 /** Vault module that internally uses the wallet client */
@@ -17,8 +16,8 @@ class VaultClient {
         // vault methods
         this.setPassword = this.setPassword.bind(this);
         this.getPassword = this.getPassword.bind(this);
-        this.entropyHexToMnemonic = this.entropyHexToMnemonic.bind(this);
-        this.mnemonicToHexEntropy = this.mnemonicToHexEntropy.bind(this);
+        this.secretKeyToMnemonic = this.secretKeyToMnemonic.bind(this);
+        this.mnemonicToSecretKey = this.mnemonicToSecretKey.bind(this);
         this.exportVault = this.exportVault.bind(this);
         this.encryptVault = this.encryptVault.bind(this);
         this.decryptVault = this.decryptVault.bind(this);
@@ -26,12 +25,13 @@ class VaultClient {
     }
     /** initializes a vault with a wallet base account */
     init() {
-        if (!this.mnemonic) {
-            const baseAccount = WalletClient_1.WalletClient.walletGenerateNewAccount();
-            const hex = Buffer.from((0, Xbqcrypto_1.base58Decode)(baseAccount.randomEntropy)).toString("hex");
-            this.walletClient.setBaseAccount(baseAccount);
-            this.mnemonic = this.entropyHexToMnemonic(hex);
-        }
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if (!this.mnemonic) {
+                const baseAccount = yield WalletClient_1.WalletClient.walletGenerateNewAccount();
+                this.walletClient.setBaseAccount(baseAccount);
+                this.mnemonic = this.secretKeyToMnemonic(baseAccount.secretKey);
+            }
+        });
     }
     /** set password */
     setPassword(password) {
@@ -43,8 +43,10 @@ class VaultClient {
     }
     /** recover vault */
     recoverVault(mnemonic) {
-        const bytes = Buffer.from(this.mnemonicToHexEntropy(mnemonic), "hex");
-        this.walletClient.setBaseAccount(WalletClient_1.WalletClient.getAccountFromEntropy((0, Xbqcrypto_1.base58Encode)(bytes)));
+        const secret = this.mnemonicToSecretKey(mnemonic);
+        WalletClient_1.WalletClient.getAccountFromSecretKey(secret).then(account => {
+            this.walletClient.setBaseAccount(account);
+        });
         this.mnemonic = mnemonic;
     }
     /** export vault */
@@ -107,11 +109,11 @@ class VaultClient {
         });
     }
     /** entropy to hex mnemonic */
-    entropyHexToMnemonic(data) {
+    secretKeyToMnemonic(data) {
         return bip39.entropyToMnemonic(data);
     }
     /** mnemonic to hex entropy */
-    mnemonicToHexEntropy(mnemonic) {
+    mnemonicToSecretKey(mnemonic) {
         return bip39.mnemonicToEntropy(mnemonic);
     }
 }

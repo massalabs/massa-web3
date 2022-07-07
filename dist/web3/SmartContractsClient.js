@@ -45,26 +45,14 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
             // sign payload
-            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = yield WalletClient_1.WalletClient.walletSignMessage(Buffer.concat([WalletClient_1.WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
             // revert base64 sc data to binary
             if (!contractData.contractDataBase64) {
                 throw new Error(`Contract base64 encoded data required. Got null`);
             }
-            const decodedScBinaryCode = new Uint8Array(Buffer.from(contractData.contractDataBase64, "base64"));
             const data = {
-                content: {
-                    expire_period: expiryPeriod,
-                    fee: contractData.fee.toString(),
-                    op: {
-                        ExecuteSC: {
-                            data: Array.from(decodedScBinaryCode),
-                            max_gas: contractData.maxGas,
-                            coins: contractData.coins.toString(),
-                            gas_price: contractData.gasPrice.toString()
-                        }
-                    },
-                    sender_public_key: sender.publicKey
-                },
+                serialized_content: Array.prototype.slice.call(bytesCompact),
+                creator_public_key: sender.publicKey,
                 signature: signature.base58Encoded,
             };
             // returns operation ids
@@ -86,25 +74,11 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
             // bytes compaction
             const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, sender, expiryPeriod);
             // sign payload
-            const signature = WalletClient_1.WalletClient.walletSignMessage(bytesCompact, sender);
+            const signature = yield WalletClient_1.WalletClient.walletSignMessage(Buffer.concat([WalletClient_1.WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
             // request data
             const data = {
-                content: {
-                    expire_period: expiryPeriod,
-                    fee: callData.fee.toString(),
-                    op: {
-                        CallSC: {
-                            max_gas: callData.maxGas,
-                            gas_price: callData.gasPrice.toString(),
-                            parallel_coins: callData.parallelCoins.toString(),
-                            sequential_coins: callData.sequentialCoins.toString(),
-                            target_addr: callData.targetAddress,
-                            target_func: callData.functionName,
-                            param: callData.parameter,
-                        }
-                    },
-                    sender_public_key: sender.publicKey
-                },
+                serialized_content: Array.prototype.slice.call(bytesCompact),
+                creator_public_key: sender.publicKey,
                 signature: signature.base58Encoded,
             };
             // returns operation ids

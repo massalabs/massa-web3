@@ -1,12 +1,7 @@
 import * as varint from "varint";
 import * as createhash from "create-hash";
 import { blake3 } from "@noble/hashes/blake3";
-import * as secp from "@noble/secp256k1";
 const base58check = require("base58check");
-
-export function bytesToHex(bytes: Uint8Array): string {
-    return secp.utils.bytesToHex(bytes);
-}
 
 export function hashSha256(data): Uint8Array {
     return createhash("sha256").update(data).digest();

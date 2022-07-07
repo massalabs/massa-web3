@@ -1,5 +1,4 @@
 /// <reference types="node" />
-export declare function bytesToHex(bytes: Uint8Array): string;
 export declare function hashSha256(data: any): Uint8Array;
 export declare function hashBlake3(data: Uint8Array | string): Uint8Array;
 export declare function base58Encode(data: Buffer | Uint8Array): string;
