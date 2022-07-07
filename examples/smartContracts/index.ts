@@ -2,14 +2,15 @@ import { IAccount } from "../../src/interfaces/IAccount";
 import { IContractData } from "../../src/interfaces/IContractData";
 import { IEventFilter } from "../../src/interfaces/IEventFilter";
 import { ClientFactory, DefaultProviderUrls } from "../../src/web3/ClientFactory";
-import { SmartContractUtils, ICompiledSmartContract } from "@massalabs/massa-sc-utils";
+import { SmartContractUtils } from "@massalabs/massa-sc-utils";
 import { IEvent } from "../../src/interfaces/IEvent";
 import { EventPoller } from "../../src/web3/EventPoller";
 import { ICallData } from "../../src/interfaces/ICallData";
 import { EOperationStatus } from "../../src/interfaces/EOperationStatus";
 import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
-import { IProvider, ProviderType } from "../../src/interfaces/IProvider";
+import { ICompiledSmartContract } from "@massalabs/massa-sc-utils/dist/interfaces/ICompiledSmartContract";
+import { IDatastoreEntryInput } from "../../src/interfaces/IDatastoreEntryInput";
 const chalk = require("chalk");
 const ora = require("ora");
 
@@ -26,7 +27,7 @@ const ora = require("ora");
     try {
 
         // init client
-        const baseAccount: IAccount = WalletClient.walletGenerateNewAccount();
+        const baseAccount: IAccount = await WalletClient.walletGenerateNewAccount();
         const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
 
         // construct a sc utils
@@ -109,7 +110,7 @@ const ora = require("ora");
 
         // get sc storage data
         spinner = ora(`Reading a smart state entry...`).start();
-        const scStorageData = await web3Client.publicApi().getDatastoreEntry(scAddress, "gameState");
+        const scStorageData = await web3Client.publicApi().getDatastoreEntries([{address: scAddress, key: "gameState" } as IDatastoreEntryInput]);
         spinner.succeed(`Got smart contract storage data for key: ${chalk.yellow(JSON.stringify(scStorageData, null, 4))}`);
 
     } catch (ex) {
