@@ -212,14 +212,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
 	/** returns an account from private key */
 	public static async getAccountFromSecretKey(secretKeyBase58: string): Promise<IAccount> {
+		const version = Buffer.from(varintEncode(VERSION_NUMBER));
 		// get private key
 		const secretKeyBase58Decoded = this.getBytesSecretKey(secretKeyBase58);
 		// get public key
 		const publicKey: Uint8Array = await ed.getPublicKey(secretKeyBase58Decoded);
-		const publicKeyBase58Encoded: string = base58Encode(publicKey);
+		const publicKeyBase58Encoded: string = PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
 
 		// get wallet account address
-		const version = Buffer.from(varintEncode(VERSION_NUMBER));
 		const addressBase58Encoded = ADDRESS_PREFIX + base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
 		return {

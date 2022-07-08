@@ -180,13 +180,13 @@ class WalletClient extends BaseClient_1.BaseClient {
     /** returns an account from private key */
     static getAccountFromSecretKey(secretKeyBase58) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
             // get private key
             const secretKeyBase58Decoded = this.getBytesSecretKey(secretKeyBase58);
             // get public key
             const publicKey = yield ed.getPublicKey(secretKeyBase58Decoded);
-            const publicKeyBase58Encoded = (0, Xbqcrypto_1.base58Encode)(publicKey);
+            const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, publicKey]));
             // get wallet account address
-            const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
             const addressBase58Encoded = ADDRESS_PREFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
             return {
                 address: addressBase58Encoded,
