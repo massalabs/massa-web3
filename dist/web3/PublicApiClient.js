@@ -120,7 +120,7 @@ class PublicApiClient extends BaseClient_1.BaseClient {
             else {
                 var datastoreEntries = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
-            const candidateDatastoreEntries = datastoreEntries.map(elem => elem.active_value);
+            const candidateDatastoreEntries = datastoreEntries.map(elem => elem.candidate_value);
             const finalDatastoreEntries = datastoreEntries.map(elem => elem.final_value);
             return datastoreEntries.map((_, index) => {
                 return {

@@ -18,13 +18,12 @@ Web3 libraries for Massa (web3.js SDK)
 To instantiate a web3 client, one needs to create a base account for signing and paying for transactions as well as a list of providers as shown below:
 
 ```ts
-import { IAccount, IClientConfig, IProvider, ProviderType } from "massa_web3/interfaces";
-import { Client } from "massa_web3/web3/Client";
+import { Client, IAccount, IClientConfig, IProvider, ProviderType } from "@massalabs/massa-web3";
 
 const baseAccount = {
-    publicKey: "24PTDe1wdmWHEJNaPEPJKLk3mESQv3yVYLL5JV1CBz78Kow41c",
-    privateKey: "2Y12pVFMj15WQY9d3kbrj3dPDfcvdv5KeywsEBVpCjvBLepQgv",
-    address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQBT"
+  address: 'A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1',
+  secretKey: 'S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L',
+  publicKey: 'P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR'
 } as IAccount;
 
 const providers: Array<IProvider> = [
@@ -50,7 +49,7 @@ const web3Client: Client = new Client(web3ClientConfig, baseAccount);
 Once there is an initialized client instance, it is straightforward to call methods on it:
 
 ```ts
-import { IStatus, IAddressInfo } from "massa_web3/interfaces";
+import { IStatus, IAddressInfo } from "@massalabs/massa-web3";
 
 const nodeStatusResp: IStatus = await web3Client.getStatus();
 const addressesResp: Array<IAddressInfo> = await web3Client
@@ -65,7 +64,7 @@ import {
     ClientFactory,
     Client,
     DefaultProviderUrls,
-} from "massa_web3/web3/ClientFactory";
+} from "@massalabs/massa-web3";
 
 // a testnet client
 const testnetClient: Client = ClientFactory.createDefaultClient(
@@ -89,6 +88,7 @@ web3Client.publicApi()      -> sub-client for public api                    (int
 web3Client.privateApi()     -> sub-client for private api                   (interface: PrivateApiClient)
 web3Client.wallet()         -> sub-client for wallet-related operations     (interface: WalletClient)
 web3Client.smartContracts() -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
+web3Client.vault()          -> sub-client for vault interaction [mainly used by massa-wallet] (interface: VaultClient)
 
 ```
 
@@ -117,7 +117,7 @@ Available methods are:
     ```ts
     const addressesResp: Array<IAddressInfo> = await web3Client
         .publicApi()
-        .getAddresses(["2GcahavufBH9tqVH6SjkSCPXRbqpiCwwSfwFAf3veKiJmiHubK"]);
+        .getAddresses(["A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"]);
     ```
 -   `getBlocks` (https://github.com/massalabs/massa/wiki/api#get_block)
     ```ts
@@ -146,6 +146,12 @@ Available methods are:
     const stakers: Array<IStakingAddresses> = await web3Client
         .publicApi()
         .getStakers();
+    ```
+-   `getDatastoreEntries` (https://github.com/massalabs/massa/wiki/api#get_stakers)
+    ```ts
+    const datastoreEntries: Array<IContractStorageData> = await web3Client
+        .publicApi()
+        .getDatastoreEntries([{ address: smartContractAddress, key: "some_key" } as IDatastoreEntryInput]);
     ```
 
 ### Client private API
@@ -184,15 +190,15 @@ Available methods are:
     await web3Client
         .privateApi()
         .nodeRemoveStakingAddresses([
-            "2Wo22kCJASiqEu4XSF8YUaP4i5BMwGH2Zaadup9BcYPVaq1eWp",
+            "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
         ]);
     ```
 -   `nodeAddStakingPrivateKeys` (https://github.com/massalabs/massa/wiki/api#add_staking_private_keys)
     ```ts
     await web3Client
         .privateApi()
-        .nodeAddStakingPrivateKeys([
-            "2snKEK1ADWnQX5Mda99riL2kUwy1WjTxWDuCkoExiSC1KPE3vJ",
+        .nodeAddStakingSecretKeys([
+            "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
         ]);
     ```
 -   `nodeSignMessage` (https://github.com/massalabs/massa/wiki/api#node_sign_message)
@@ -210,7 +216,7 @@ Example:
 
 ```ts
 // generate new wallet
-const newWalletAccount = web3Client.wallet().walletGenerateNewAccount();
+const newWalletAccount = await web3Client.wallet().walletGenerateNewAccount();
 ```
 
 Available class methods are:
@@ -219,13 +225,13 @@ Available class methods are:
     ```ts
     const addedAccounts: Array<IAccount> = await web3Client
         .wallet()
-        .addPrivateKeysToWallet([
+        .addSecretKeysToWallet([
             "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
         ]);
     ```
 -   `removeAddressesFromWallet`
     ```ts
-    await web3Client
+    web3Client
         .wallet()
         .removeAddressesFromWallet([
             "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
@@ -247,9 +253,9 @@ Available class methods are:
     ```ts
     await web3Client.wallet().addAccountsToWallet([
         {
-            publicKey: "24PTDe1wdmWHEJNaPEPJKLk3mESQv3yVYLL5JV1CBz78Kow41c",
-            privateKey: "2Y12pVFMj15WQY9d3kbrj3dPDfcvdv5KeywsEBVpCjvBLepQgv",
-            address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB"
+            address: 'A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1',
+            secretKey: 'S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L',
+            publicKey: 'P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR'
         },
     ]);
     ```
@@ -266,7 +272,7 @@ Available class methods are:
             fee: 0, // int
             amount: "1", //MAS
             recipientAddress:
-                "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
+                "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
         } as ITransactionData,
         baseAccount
     );
@@ -293,14 +299,14 @@ Available class methods are:
     ```
 -   `getAccountSequentialBalance`
     ```ts
-    const balance: IBalance = await web3Client.wallet().getAccountSequentialBalance("A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB");
+    const balance: IBalance = await web3Client.wallet().getAccountSequentialBalance("A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1");
     ```
 
 In addition to the class methods, there are also static methods for direct use:
 
 -   `getAccountFromPrivateKey`
     ```ts
-    const account: IAccount = await WalletClient.getAccountFromPrivateKey("2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC");
+    const account: IAccount = await WalletClient.getAccountFromSecretKey("S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L");
     ```
 -   `walletGenerateNewAccount`
     ```ts
@@ -479,10 +485,4 @@ const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().
     } as IContractData,
     baseAccount
 );
-```
-
-Finally, smart contract persistent storage could be easily accessed via:
-
-```ts
-const data: string = await web3Client.publicApi().getDatastoreEntry("vWDxmER2ar6mRFgcRqg94iEMYVypUCcRHGV5tjhdiAGqZqEoo", "some_key");
 ```

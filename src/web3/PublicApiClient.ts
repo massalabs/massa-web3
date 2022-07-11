@@ -116,7 +116,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 		} else {
 			var datastoreEntries = await this.sendJsonRPCRequest<Array<IDatastoreEntry>>(jsonRpcRequestMethod, [data]);
 		}
-		const candidateDatastoreEntries: Array<Array<number>|null> = datastoreEntries.map(elem => elem.active_value);
+		const candidateDatastoreEntries: Array<Array<number>|null> = datastoreEntries.map(elem => elem.candidate_value);
 		const finalDatastoreEntries: Array<Array<number>|null> = datastoreEntries.map(elem => elem.final_value);
 		return datastoreEntries.map((_, index) => {
 			return {

@@ -34,6 +34,7 @@ export { IPrivateApiClient } from "./interfaces/IPrivateApiClient";
 export { IWalletClient } from "./interfaces/IWalletClient";
 export { IVaultClient } from "./interfaces/IVaultClient";
 export { ISmartContractsClient } from "./interfaces/ISmartContractsClient";
+export { IDatastoreEntryInput } from "./interfaces/IDatastoreEntryInput";
 
 /** Exposed clients and factories */
 export { ClientFactory, DefaultProviderUrls } from "./web3/ClientFactory";
