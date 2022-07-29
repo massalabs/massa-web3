@@ -128,7 +128,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 				throw new Error("Missing account private key");
 			}
 
-			let secretKeyBase58Encoded: string = account.secretKey;
+			const secretKeyBase58Encoded: string = account.secretKey;
 			const secretKeyBase58Decoded = WalletClient.getBytesSecretKey(secretKeyBase58Encoded);
 			// get public key
 			const publicKey: Uint8Array = await ed.getPublicKey(secretKeyBase58Decoded);

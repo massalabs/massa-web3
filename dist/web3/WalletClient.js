@@ -107,7 +107,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                 if (!account.secretKey) {
                     throw new Error("Missing account private key");
                 }
-                let secretKeyBase58Encoded = account.secretKey;
+                const secretKeyBase58Encoded = account.secretKey;
                 const secretKeyBase58Decoded = WalletClient.getBytesSecretKey(secretKeyBase58Encoded);
                 // get public key
                 const publicKey = yield ed.getPublicKey(secretKeyBase58Decoded);

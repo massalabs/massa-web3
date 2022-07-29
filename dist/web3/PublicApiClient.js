@@ -106,19 +106,20 @@ class PublicApiClient extends BaseClient_1.BaseClient {
     /** Returns the data entry both at the latest final and active executed slots. */
     getDatastoreEntries(addresses_keys) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            let data = [];
-            for (let input of addresses_keys) {
+            const data = [];
+            for (const input of addresses_keys) {
                 data.push({
                     address: input.address,
                     key: Array.prototype.slice.call(Buffer.from(input.key))
                 });
             }
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;
+            let datastoreEntries = [];
             if (this.clientConfig.retryStrategyOn) {
-                var datastoreEntries = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+                datastoreEntries = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
             }
             else {
-                var datastoreEntries = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
+                datastoreEntries = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
             const candidateDatastoreEntries = datastoreEntries.map(elem => elem.candidate_value);
             const finalDatastoreEntries = datastoreEntries.map(elem => elem.final_value);

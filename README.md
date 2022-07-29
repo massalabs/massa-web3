@@ -338,7 +338,7 @@ The compiledScFromSource is the base64 compiled smart contract code that could e
 
 ### Smart contract event fetching and polling
 
-Emitted smart contract events could directly be fetched 
+Emitted smart contract events could directly be fetched via:
 
 ```ts
 const eventsFilter = {
@@ -353,28 +353,29 @@ const eventsFilter = {
 const filteredEvents: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventFilterData);
 ```
 
-Events could also be polled. The second parameter in the call represents the refresh interval which we can set in order to poll the events:
+Events could also be polled. The js sdk has two methods for doing this as shown below. In both, a filter, a web3 client and a poll interval which we can set in order to poll the events needs to be provided:
 
 ```ts
+
+const onEventData = (events: Array<IEvent>) => {console.log("Event Data Received:" , events);}
+const onEventDataError = (error: Error) => {console.log("Event Data Error:" , error);}
+
 // poll smart contract events
 const eventsFilter = {
     start: null,
     end: null,
-    original_caller_address:
-        "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
+    original_caller_address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
 } as IEventFilter;
 
-const eventPoller = new EventPoller(
+const eventPoller = EventPoller.startEventPoller(
     eventsFilter,
-    5000, //in milliseconds
-    web3Client.smartContracts()
+    1000,
+    web3Client
 );
-eventPoller.startPolling();
-eventPoller.on(ON_EVENT, (data: [IEvent]) =>
-    console.log("EVENT(S) RECEIVED", data)
-);
+eventPoller.on(ON_MASSA_EVENT_DATA, onEventData);
+eventPoller.on(ON_MASSA_EVENT_ERROR, onEventDataError);
 
 //...do some work...
 
@@ -382,15 +383,24 @@ eventPoller.on(ON_EVENT, (data: [IEvent]) =>
 eventPoller.stopPolling();
 ```
 
-Alternatively, one could make direct use of an async promise for doing the latter:
+Alternatively, one could make direct use of an async promise for doing the latter by providing callback functions which would fire on event data received or generated errors:
 
 ```ts
-const events: Array<IEvent> = await EventPoller.getEventsAsync(
+const onEventData = (events: Array<IEvent>) => {console.log("Event Data Received:" , events);}
+const onEventDataError = (error: Error) => {console.log("Event Data Error:" , error);}
+
+const eventPoller: EventPoller = await EventPoller.startEventsPollingAsync(
     eventsFilter,
-    5000, //in milliseconds
-    web3Client.smartContracts()
-);
-console.log("Events", events);
+    1000,
+    web3Client,
+    onEventData,
+    onEventDataError);
+
+//...do some work...
+
+// cleanup and finish
+eventPoller.stopPolling();
+
 ```
 
 The latter could easily be employed in smart contracts where we need to e.g. get the contract address. For example, this contract would emit the address at creation:
@@ -456,7 +466,10 @@ const data: Array<IContractReadOperationData> = await web3Client.smartContracts(
         } as IReadData);
 ```
 
-Smart contract data could be written via `callSmartContract` method:
+Please note that this method would currently only return data which is emitted as an event e.g. `generateEvent(...)`. The returned event data is contained in an object of type IContractReadOperationData under the data key!
+
+
+Smart contract state-changing operations could be excuted via `callSmartContract` method:
 
 ```ts
 const data: Array<string> = await web3Client.smartContracts().callSmartContract({
