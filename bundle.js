@@ -146,18 +146,32 @@ exports.Interval = Interval;
 },{}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wait = void 0;
+exports.promiseWithTimeout = exports.wait = void 0;
 const tslib_1 = require("tslib");
 const Timeout_1 = require("./Timeout");
 const wait = (timeMilli) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         const timeout = new Timeout_1.Timeout(timeMilli, () => {
             timeout.clear();
-            resolve();
+            return resolve();
         });
     });
 });
 exports.wait = wait;
+const promiseWithTimeout = (timeLimit, task, failureValue) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    let timeout;
+    const timeoutPromise = new Promise((resolve, reject) => {
+        timeout = setTimeout(() => {
+            resolve(failureValue);
+        }, timeLimit);
+    });
+    const response = yield Promise.race([task, timeoutPromise]);
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+    return response;
+});
+exports.promiseWithTimeout = promiseWithTimeout;
 
 },{"./Timeout":6,"tslib":291}],8:[function(require,module,exports){
 (function (Buffer){(function (){

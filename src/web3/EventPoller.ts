@@ -27,7 +27,7 @@ export class EventPoller extends EventEmitter {
 	private async callback() {
 		try {
 			const events: Array<IEvent> = await this.web3Client.smartContracts().getFilteredScOutputEvents(this.eventsFilter);
-            if(events.length > 0) {
+            if (events.length > 0) {
                 this.emit(ON_MASSA_EVENT_DATA, events);
             }
 		} catch (ex) {
@@ -65,7 +65,7 @@ export class EventPoller extends EventEmitter {
 				onError(e);
 			});
 
-            return resolve(eventPoller)
+            return resolve(eventPoller);
 		});
 	}
 
