@@ -43,7 +43,7 @@ export { PublicApiClient } from "./web3/PublicApiClient";
 export { PrivateApiClient } from "./web3/PrivateApiClient";
 export { WalletClient } from "./web3/WalletClient";
 export { VaultClient } from "./web3/VaultClient";
-export { EventPoller } from "./web3/EventPoller";
+export { EventPoller, ON_MASSA_EVENT_DATA, ON_MASSA_EVENT_ERROR } from "./web3/EventPoller";
 export { SmartContractsClient } from "./web3/SmartContractsClient";
 
 /** Exposed utils */

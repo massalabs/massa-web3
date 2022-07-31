@@ -68,7 +68,7 @@ const ora = require("ora");
             original_operation_id: deploymentOperationId,
             emitter_address: null,
         } as IEventFilter;
-        const events: Array<IEvent> = await EventPoller.getEventsAsync(eventsFilter, 5000, web3Client.smartContracts());
+        const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
         spinner.succeed(`Sc events received: ${chalk.yellow(events)}`);
 
         // find an event that contains the emitted sc address

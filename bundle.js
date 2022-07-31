@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.massa = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.utils = exports.SmartContractsClient = exports.EventPoller = exports.VaultClient = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
+exports.utils = exports.SmartContractsClient = exports.ON_MASSA_EVENT_ERROR = exports.ON_MASSA_EVENT_DATA = exports.EventPoller = exports.VaultClient = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.Client = exports.DefaultProviderUrls = exports.ClientFactory = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
 var IProvider_1 = require("./interfaces/IProvider");
 Object.defineProperty(exports, "ProviderType", { enumerable: true, get: function () { return IProvider_1.ProviderType; } });
 var EOperationStatus_1 = require("./interfaces/EOperationStatus");
@@ -24,6 +24,8 @@ var VaultClient_1 = require("./web3/VaultClient");
 Object.defineProperty(exports, "VaultClient", { enumerable: true, get: function () { return VaultClient_1.VaultClient; } });
 var EventPoller_1 = require("./web3/EventPoller");
 Object.defineProperty(exports, "EventPoller", { enumerable: true, get: function () { return EventPoller_1.EventPoller; } });
+Object.defineProperty(exports, "ON_MASSA_EVENT_DATA", { enumerable: true, get: function () { return EventPoller_1.ON_MASSA_EVENT_DATA; } });
+Object.defineProperty(exports, "ON_MASSA_EVENT_ERROR", { enumerable: true, get: function () { return EventPoller_1.ON_MASSA_EVENT_ERROR; } });
 var SmartContractsClient_1 = require("./web3/SmartContractsClient");
 Object.defineProperty(exports, "SmartContractsClient", { enumerable: true, get: function () { return SmartContractsClient_1.SmartContractsClient; } });
 /** Exposed utils */
@@ -144,18 +146,32 @@ exports.Interval = Interval;
 },{}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wait = void 0;
+exports.promiseWithTimeout = exports.wait = void 0;
 const tslib_1 = require("tslib");
 const Timeout_1 = require("./Timeout");
 const wait = (timeMilli) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         const timeout = new Timeout_1.Timeout(timeMilli, () => {
             timeout.clear();
-            resolve();
+            return resolve();
         });
     });
 });
 exports.wait = wait;
+const promiseWithTimeout = (timeLimit, task, failureValue) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    let timeout;
+    const timeoutPromise = new Promise((resolve, reject) => {
+        timeout = setTimeout(() => {
+            resolve(failureValue);
+        }, timeLimit);
+    });
+    const response = yield Promise.race([task, timeoutPromise]);
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+    return response;
+});
+exports.promiseWithTimeout = promiseWithTimeout;
 
 },{"./Timeout":6,"tslib":291}],8:[function(require,module,exports){
 (function (Buffer){(function (){
@@ -529,18 +545,20 @@ exports.ClientFactory = ClientFactory;
 },{"../interfaces/IProvider":3,"./Client":11}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventPoller = exports.ON_EVENT = void 0;
+exports.EventPoller = exports.ON_MASSA_EVENT_ERROR = exports.ON_MASSA_EVENT_DATA = void 0;
 const tslib_1 = require("tslib");
 const events_1 = require("events");
 const Timeout_1 = require("../utils/Timeout");
-exports.ON_EVENT = "ON_EVENT";
+/** Smart Contracts Event Poller */
+exports.ON_MASSA_EVENT_DATA = "ON_MASSA_EVENT";
+exports.ON_MASSA_EVENT_ERROR = "ON_MASSA_ERROR";
 /** Smart Contracts Event Poller */
 class EventPoller extends events_1.EventEmitter {
-    constructor(eventsFilter, pollIntervalMillis, smartContractsClient) {
+    constructor(eventsFilter, pollIntervalMillis, web3Client) {
         super();
         this.eventsFilter = eventsFilter;
         this.pollIntervalMillis = pollIntervalMillis;
-        this.smartContractsClient = smartContractsClient;
+        this.web3Client = web3Client;
         this.timeoutId = null;
         // bind class methods
         this.callback = this.callback.bind(this);
@@ -550,12 +568,16 @@ class EventPoller extends events_1.EventEmitter {
     callback() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
-                const events = yield this.smartContractsClient.getFilteredScOutputEvents(this.eventsFilter);
-                this.emit(exports.ON_EVENT, events);
+                const events = yield this.web3Client.smartContracts().getFilteredScOutputEvents(this.eventsFilter);
+                if (events.length > 0) {
+                    this.emit(exports.ON_MASSA_EVENT_DATA, events);
+                }
             }
             catch (ex) {
-                console.error(ex);
+                this.emit(exports.ON_MASSA_EVENT_ERROR, ex);
             }
+            // reset the interval
+            this.timeoutId = new Timeout_1.Timeout(this.pollIntervalMillis, () => this.callback());
         });
     }
     stopPolling() {
@@ -563,23 +585,31 @@ class EventPoller extends events_1.EventEmitter {
             this.timeoutId.clear();
     }
     startPolling() {
-        this.timeoutId = new Timeout_1.Timeout(this.pollIntervalMillis, () => this.callback());
+        const that = this;
+        if (this.timeoutId) {
+            return;
+        }
+        this.timeoutId = new Timeout_1.Timeout(this.pollIntervalMillis, () => that.callback());
     }
-    static getEventsAsync(eventsFilter, pollIntervalMillis, smartContractsClient) {
+    static startEventsPollingAsync(eventsFilter, pollIntervalMillis, web3Client, onData, onError) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, smartContractsClient);
+            const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, web3Client);
             eventPoller.startPolling();
             return new Promise((resolve, reject) => {
-                eventPoller.on(exports.ON_EVENT, (data) => {
-                    eventPoller.stopPolling();
-                    return resolve(data);
+                eventPoller.on(exports.ON_MASSA_EVENT_DATA, (data) => {
+                    onData(data);
                 });
-                eventPoller.on("error", (e) => {
-                    eventPoller.stopPolling();
-                    return reject(e);
+                eventPoller.on(exports.ON_MASSA_EVENT_ERROR, (e) => {
+                    onError(e);
                 });
+                return resolve(eventPoller);
             });
         });
+    }
+    static startEventPoller(eventsFilter, pollIntervalMillis, web3Client) {
+        const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, web3Client);
+        eventPoller.startPolling();
+        return eventPoller;
     }
 }
 exports.EventPoller = EventPoller;
@@ -803,19 +833,20 @@ class PublicApiClient extends BaseClient_1.BaseClient {
     /** Returns the data entry both at the latest final and active executed slots. */
     getDatastoreEntries(addresses_keys) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            let data = [];
-            for (let input of addresses_keys) {
+            const data = [];
+            for (const input of addresses_keys) {
                 data.push({
                     address: input.address,
                     key: Array.prototype.slice.call(Buffer.from(input.key))
                 });
             }
             const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;
+            let datastoreEntries = [];
             if (this.clientConfig.retryStrategyOn) {
-                var datastoreEntries = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+                datastoreEntries = yield (0, retryExecuteFunction_1.trySafeExecute)(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
             }
             else {
-                var datastoreEntries = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
+                datastoreEntries = yield this.sendJsonRPCRequest(jsonRpcRequestMethod, [data]);
             }
             const candidateDatastoreEntries = datastoreEntries.map(elem => elem.candidate_value);
             const finalDatastoreEntries = datastoreEntries.map(elem => elem.final_value);
@@ -1289,7 +1320,7 @@ class WalletClient extends BaseClient_1.BaseClient {
                 if (!account.secretKey) {
                     throw new Error("Missing account private key");
                 }
-                let secretKeyBase58Encoded = account.secretKey;
+                const secretKeyBase58Encoded = account.secretKey;
                 const secretKeyBase58Decoded = WalletClient.getBytesSecretKey(secretKeyBase58Encoded);
                 // get public key
                 const publicKey = yield ed.getPublicKey(secretKeyBase58Decoded);
