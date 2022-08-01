@@ -18,4 +18,5 @@ export declare class EventPoller extends EventEmitter {
     startPolling(): void;
     static startEventsPollingAsync(eventsFilter: IEventFilter, pollIntervalMillis: number, web3Client: Client, onData: (data: Array<IEvent>) => void, onError: (err: Error) => void): Promise<EventPoller>;
     static startEventPoller(eventsFilter: IEventFilter, pollIntervalMillis: number, web3Client: Client): EventPoller;
+    static getEventsOnce(eventsFilter: IEventFilter, web3Client: Client): Promise<Array<IEvent>>;
 }

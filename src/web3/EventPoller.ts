@@ -76,4 +76,16 @@ export class EventPoller extends EventEmitter {
 		eventPoller.startPolling();
         return eventPoller;
 	}
+
+	public static getEventsOnce(eventsFilter: IEventFilter,
+								web3Client: Client): Promise<Array<IEvent>> {
+		return new Promise(async (resolve, reject) => {
+			try {
+				const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
+				return resolve(events);
+			} catch (ex) {
+				return reject(ex);
+			}
+		});
+	}
 }

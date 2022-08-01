@@ -21,4 +21,4 @@ export const promiseWithTimeout = async (timeLimit: number, task: Promise<any>, 
 	  clearTimeout(timeout);
 	}
 	return response;
-}
+};

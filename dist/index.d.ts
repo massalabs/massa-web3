@@ -24,7 +24,7 @@ export { IBalance } from "./interfaces/IBalance";
 export { IVault } from "./interfaces/IVault";
 export { IContractStorageData } from "./interfaces/IContractStorageData";
 export { IContractReadOperationData } from "./interfaces/IContractReadOperationData";
-export { IExecuteReadOnlyResponse, ISCOutputEvent, IEventExecutionContext } from "./interfaces/IExecuteReadOnlyResponse";
+export { IExecuteReadOnlyResponse } from "./interfaces/IExecuteReadOnlyResponse";
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";
 export { EOperationStatus } from "./interfaces/EOperationStatus";
 export { ITransactionOpType, IRollBuyOpType, IRollSellOpType, IExecSmartContractOpType, OperationTypeId, OpType } from "./interfaces/OperationTypes";

@@ -1,11 +1,9 @@
+import { ISlot } from "./ISlot";
 export interface IEvent {
+    id?: string;
     data: string;
-    id: string;
     context: {
-        slot: {
-            period: number;
-            thread: number;
-        };
+        slot: ISlot;
         block: null | string;
         read_only: Boolean;
         call_stack: [string];

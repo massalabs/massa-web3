@@ -1,8 +1,8 @@
+import { IEvent } from "./IEvent";
+import { ISlot } from "./ISlot";
+
 export interface IContractReadOperationData {
-	executed_at: {
-		"period": number,
-		"thread": number
-	};
-	result: string; // "ok" or error message
-	output_events: any;
+	executed_at: ISlot;
+	result: string; // "Ok" or error message
+	output_events: Array<IEvent>;
 }

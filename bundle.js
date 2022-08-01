@@ -611,6 +611,17 @@ class EventPoller extends events_1.EventEmitter {
         eventPoller.startPolling();
         return eventPoller;
     }
+    static getEventsOnce(eventsFilter, web3Client) {
+        return new Promise((resolve, reject) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            try {
+                const events = yield web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
+                return resolve(events);
+            }
+            catch (ex) {
+                return reject(ex);
+            }
+        }));
+    }
 }
 exports.EventPoller = EventPoller;
 
