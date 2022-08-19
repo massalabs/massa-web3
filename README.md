@@ -367,6 +367,7 @@ const eventsFilter = {
     original_caller_address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
+    candidate: null,
 } as IEventFilter;
 
 const eventPoller = EventPoller.startEventPoller(
@@ -469,7 +470,7 @@ const data: Array<IContractReadOperationData> = await web3Client.smartContracts(
 Please note that this method would currently only return data which is emitted as an event e.g. `generateEvent(...)`. The returned event data is contained in an object of type IContractReadOperationData under the data key!
 
 
-Smart contract state-changing operations could be excuted via `callSmartContract` method:
+Smart contract state-changing operations could be executed via `callSmartContract` method:
 
 ```ts
 const data: Array<string> = await web3Client.smartContracts().callSmartContract({
