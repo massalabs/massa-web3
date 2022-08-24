@@ -177,15 +177,10 @@ exports.promiseWithTimeout = promiseWithTimeout;
 (function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.varintDecode = exports.varintEncode = exports.base58Decode = exports.base58Encode = exports.hashBlake3 = exports.hashSha256 = void 0;
+exports.varintDecode = exports.varintEncode = exports.base58Decode = exports.base58Encode = exports.hashBlake3 = void 0;
 const varint = require("varint");
-const createhash = require("create-hash");
 const blake3_1 = require("@noble/hashes/blake3");
 const base58check = require("base58check");
-function hashSha256(data) {
-    return createhash("sha256").update(data).digest();
-}
-exports.hashSha256 = hashSha256;
 function hashBlake3(data) {
     return (0, blake3_1.blake3)(data);
 }
@@ -210,7 +205,7 @@ function varintDecode(data) {
 exports.varintDecode = varintDecode;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"@noble/hashes/blake3":24,"base58check":73,"buffer":132,"create-hash":138,"varint":296}],9:[function(require,module,exports){
+},{"@noble/hashes/blake3":24,"base58check":73,"buffer":132,"varint":296}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.trySafeExecute = void 0;
