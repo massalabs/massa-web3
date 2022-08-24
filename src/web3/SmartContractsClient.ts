@@ -154,6 +154,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 			emitter_address: eventFilterData.emitter_address,
 			original_caller_address: eventFilterData.original_caller_address,
 			original_operation_id: eventFilterData.original_operation_id,
+			candidate: eventFilterData.candidate
 		};
 
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT;

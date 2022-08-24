@@ -5,4 +5,5 @@ export interface IEventFilter {
     emitter_address: null | string;
     original_caller_address: null | string;
     original_operation_id: null | string;
+    candidate: boolean | null;
 }
