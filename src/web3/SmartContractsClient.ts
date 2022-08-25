@@ -9,6 +9,7 @@ import { IContractReadOperationData } from "../interfaces/IContractReadOperation
 import { IContractStorageData } from "../interfaces/IContractStorageData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
+import { IEventRegexFilter } from "../interfaces/IEventRegexFilter";
 import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
 import { INodeStatus } from "../interfaces/INodeStatus";
 import { IOperationData } from "../interfaces/IOperationData";
@@ -154,7 +155,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 			emitter_address: eventFilterData.emitter_address,
 			original_caller_address: eventFilterData.original_caller_address,
 			original_operation_id: eventFilterData.original_operation_id,
-			candidate: eventFilterData.candidate
+			is_final: eventFilterData.is_final
 		};
 
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT;

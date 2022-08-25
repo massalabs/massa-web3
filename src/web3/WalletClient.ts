@@ -22,6 +22,12 @@ const PUBLIC_KEY_PREFIX = "P";
 const SECRET_KEY_PREFIX = "S";
 const MAX_WALLET_ACCOUNTS: number = 256;
 
+const getThreadNumber = (address: string): number => {
+	const pubKeyHash = base58Decode(address.slice(1));
+	const threadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
+	return threadNumber;
+}
+
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class WalletClient extends BaseClient implements IWalletClient {
 
@@ -49,15 +55,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		this.sellRolls = this.sellRolls.bind(this);
 		this.buyRolls = this.buyRolls.bind(this);
 		this.getAccountSequentialBalance = this.getAccountSequentialBalance.bind(this);
-
-		// init wallet with a base account if any
-		if (baseAccount) {
-			this.setBaseAccount(baseAccount);
-		}
 	}
 
 	/** set the default (base) account */
 	public async setBaseAccount(baseAccount: IAccount): Promise<void> {
+		// in case of not set thread number, compute the value
+		if (!baseAccount.createdInThread && baseAccount.address) {
+			baseAccount.createdInThread = getThreadNumber(baseAccount.address);
+		}
 		// see if base account is already added, if not, add it
 		let baseAccountAdded: Array<IAccount> = null;
 		if (!this.getWalletAccountByAddress(baseAccount.address)) {
@@ -107,7 +112,8 @@ export class WalletClient extends BaseClient implements IWalletClient {
 				accountsToCreate.push({
 					secretKey: secretKey, // submitted in base58
 					publicKey: publicKeyBase58Encoded,
-					address: addressBase58Encoded
+					address: addressBase58Encoded,
+					createdInThread: getThreadNumber(addressBase58Encoded)
 				} as IAccount);
 			}
 		}
@@ -149,6 +155,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 					address: addressBase58Encoded,
 					secretKey: secretKeyBase58Encoded,
 					publicKey: publicKeyBase58Encoded,
+					createdInThread: getThreadNumber(addressBase58Encoded)
 				} as IAccount);
 			}
 		}
@@ -207,6 +214,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 			address: addressBase58Encoded,
 			secretKey: secretKeyBase58Encoded,
 			publicKey: publicKeyBase58Encoded,
+			createdInThread: getThreadNumber(addressBase58Encoded)
 		} as IAccount;
 	}
 
@@ -226,6 +234,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 			address: addressBase58Encoded,
 			secretKey: secretKeyBase58,
 			publicKey: publicKeyBase58Encoded,
+			createdInThread: getThreadNumber(addressBase58Encoded)
 		} as IAccount;
 	}
 

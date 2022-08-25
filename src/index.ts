@@ -2,6 +2,7 @@
 export { IAccount } from "./interfaces/IAccount";
 export { IEvent } from "./interfaces/IEvent";
 export { IEventFilter } from "./interfaces/IEventFilter";
+export { IEventRegexFilter } from "./interfaces/IEventRegexFilter";
 export { ISlot } from "./interfaces/ISlot";
 export { IAddressInfo } from "./interfaces/IAddressInfo";
 export { IBlockInfo } from "./interfaces/IBlockInfo";

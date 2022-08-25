@@ -9,8 +9,6 @@ import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { DefaultProviderUrls } from "./ClientFactory";
 import { IClient } from "../interfaces/IClient";
 
-
-
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 export class Client implements IClient {
 	private publicApiClient: PublicApiClient;
