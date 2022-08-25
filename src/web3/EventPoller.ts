@@ -1,6 +1,8 @@
 import { EventEmitter } from "events";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
+import { IEventRegexFilter } from "../interfaces/IEventRegexFilter";
+import { ISlot } from "../interfaces/ISlot";
 import { Timeout } from "../utils/Timeout";
 import { Client } from "./Client";
 
@@ -8,12 +10,22 @@ import { Client } from "./Client";
 export const ON_MASSA_EVENT_DATA = "ON_MASSA_EVENT";
 export const ON_MASSA_EVENT_ERROR = "ON_MASSA_ERROR";
 
+const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
+	const periodOrder = a.period - b.period;
+	if (periodOrder === 0) {
+		const threadOrder = a.thread - b.thread;
+		return threadOrder;
+	}
+	return periodOrder;
+}
+
 /** Smart Contracts Event Poller */
 export class EventPoller extends EventEmitter {
 
 	private timeoutId: Timeout|null = null;
+	private lastSlot: ISlot;
 
-	public constructor(private readonly eventsFilter: IEventFilter,
+	public constructor(private readonly eventsFilter: IEventFilter | IEventRegexFilter,
 						private readonly pollIntervalMillis: number,
 						private readonly web3Client: Client) {
 		super();
@@ -26,9 +38,40 @@ export class EventPoller extends EventEmitter {
 
 	private async callback() {
 		try {
-			const events: Array<IEvent> = await this.web3Client.smartContracts().getFilteredScOutputEvents(this.eventsFilter);
-            if (events.length > 0) {
-                this.emit(ON_MASSA_EVENT_DATA, events);
+            // get all events using the filter
+			const events: Array<IEvent> = await this.web3Client
+			.smartContracts()
+			.getFilteredScOutputEvents(this.eventsFilter);
+
+            // filter further using regex and last scanned slot
+            const filteredEvents: Array<IEvent> = events.filter(event => {
+
+				// check if regex condition is met
+                let meetsRegex = true;
+				if ((this.eventsFilter as IEventRegexFilter).eventsNameRegex) {
+					meetsRegex = event.data.includes((this.eventsFilter as IEventRegexFilter).eventsNameRegex);
+				}
+                
+				// check if after last slot
+                let isAfterLastSlot = true;
+                if (this.lastSlot) {
+					isAfterLastSlot = sortByThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
+                }
+				
+                return meetsRegex && isAfterLastSlot;
+            });
+
+			// sort after highest period and thread
+			const sortedByHighestThreadAndPeriod = filteredEvents.sort((a, b) => {
+				return sortByThreadAndPeriod(a.context.slot, b.context.slot);
+			});
+            
+            if (sortedByHighestThreadAndPeriod.length > 0) {
+				// update slot to be the very last slot
+				this.lastSlot = sortedByHighestThreadAndPeriod[sortedByHighestThreadAndPeriod.length - 1].context.slot;
+
+				// emit the filtered events
+                this.emit(ON_MASSA_EVENT_DATA, sortedByHighestThreadAndPeriod);
             }
 		} catch (ex) {
             this.emit(ON_MASSA_EVENT_ERROR, ex);
@@ -50,7 +93,7 @@ export class EventPoller extends EventEmitter {
 		this.timeoutId = new Timeout(this.pollIntervalMillis, () => that.callback());
 	}
 
-    public static async startEventsPollingAsync(eventsFilter: IEventFilter,
+    public static async startEventsPollingAsync(eventsFilter: IEventFilter | IEventRegexFilter,
 										pollIntervalMillis: number,
 										web3Client: Client,
                                         onData: (data: Array<IEvent>) => void,
@@ -69,7 +112,7 @@ export class EventPoller extends EventEmitter {
 		});
 	}
 
-    public static startEventPoller(eventsFilter: IEventFilter,
+    public static startEventPoller(eventsFilter: IEventFilter | IEventRegexFilter,
 										pollIntervalMillis: number,
 										web3Client: Client): EventPoller {
 		const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, web3Client);
@@ -77,7 +120,7 @@ export class EventPoller extends EventEmitter {
         return eventPoller;
 	}
 
-	public static getEventsOnce(eventsFilter: IEventFilter,
+	public static getEventsOnce(eventsFilter: IEventFilter | IEventRegexFilter,
 								web3Client: Client): Promise<Array<IEvent>> {
 		return new Promise(async (resolve, reject) => {
 			try {

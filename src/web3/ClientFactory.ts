@@ -14,7 +14,7 @@ export enum DefaultProviderUrls {
 export class ClientFactory {
 
 	/** Factory Method for easy initializing a client using a default provider */
-	public static createDefaultClient(provider: DefaultProviderUrls, retryStrategyOn: boolean = true, baseAccount?: IAccount): Client {
+	public static async createDefaultClient(provider: DefaultProviderUrls, retryStrategyOn: boolean = true, baseAccount?: IAccount): Promise<Client> {
 		const providers = new Array({
 			url: provider,
 			type: ProviderType.PUBLIC
@@ -28,15 +28,21 @@ export class ClientFactory {
 			retryStrategyOn,
 			providers,
 		} as IClientConfig, baseAccount);
+
+		await client.wallet().setBaseAccount(baseAccount);
+
 		return client;
 	}
 
 	/** Factory Method for easy initializing a client using a custom set of private and public providers. Suitable for local node interaction */
-	public static createCustomClient(providers: Array<IProvider>, retryStrategyOn: boolean = true, baseAccount?: IAccount): Client {
+	public static async createCustomClient(providers: Array<IProvider>, retryStrategyOn: boolean = true, baseAccount?: IAccount): Promise<Client> {
 		const client: Client = new Client({
 			retryStrategyOn,
 			providers
 		} as IClientConfig, baseAccount);
+
+		await client.wallet().setBaseAccount(baseAccount);
+
 		return client;
 	}
 }

@@ -15,17 +15,52 @@ Web3 libraries for Massa (web3.js SDK)
 
 ### Web3 Client initialization
 
-To instantiate a web3 client, one needs to create a base account for signing and paying for transactions as well as a list of providers as shown below:
+There are two types of client initialization. The first one is connecting to Massa's public rpc node using a so-called default client. Please note that specifying a base account is only optional at this point. The code below illustrates how to do that:
 
 ```ts
-import { Client, IAccount, IClientConfig, IProvider, ProviderType } from "@massalabs/massa-web3";
+import {
+    ClientFactory,
+    Client,
+    DefaultProviderUrls,
+    IAccount,
+    IProvider,
+    ProviderType 
+} from "@massalabs/massa-web3";
 
+// create a base account for signing transactions
 const baseAccount = {
   address: 'A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1',
   secretKey: 'S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L',
   publicKey: 'P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR'
 } as IAccount;
 
+// initialize a testnet client
+const testnetClient: Client = await ClientFactory.createDefaultClient(
+    DefaultProviderUrls.TESTNET,
+    baseAccount
+);
+```
+
+The second way is to create a custom client connecting to a node whose ip and ports are to be specified by the user.
+
+```ts
+import {
+    ClientFactory,
+    Client,
+    DefaultProviderUrls,
+    IAccount,
+    IProvider,
+    ProviderType 
+} from "@massalabs/massa-web3";
+
+// create a base account for signing transactions
+const baseAccount = {
+  address: 'A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1',
+  secretKey: 'S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L',
+  publicKey: 'P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR'
+} as IAccount;
+
+// initialize a custom client using an own provider
 const providers: Array<IProvider> = [
     {
         url: "http://127.0.0.1:33035",
@@ -37,13 +72,10 @@ const providers: Array<IProvider> = [
     } as IProvider
 ];
 
-const web3ClientConfig = {
+const customClient: Client = await ClientFactory.createCustomClient(
     providers,
-    retryStrategyOn: true,// activate the backoff retry strategy
-    periodOffset: 3       // set an offset of a few periods (default = 5)
-} as IClientConfig;
-
-const web3Client: Client = new Client(web3ClientConfig, baseAccount);
+    baseAccount
+);
 ```
 
 Once there is an initialized client instance, it is straightforward to call methods on it:
@@ -57,31 +89,9 @@ const addressesResp: Array<IAddressInfo> = await web3Client
     .getAddresses(["some_address"]);
 ```
 
-There are also convenience factories for a straightforward initialization of the client:
-
-```ts
-import {
-    ClientFactory,
-    Client,
-    DefaultProviderUrls,
-} from "@massalabs/massa-web3";
-
-// a testnet client
-const testnetClient: Client = ClientFactory.createDefaultClient(
-    DefaultProviderUrls.TESTNET,
-    baseAccount
-);
-
-// a custom client (see above)
-const customClient: Client = ClientFactory.createCustomClient(
-    providers,
-    baseAccount
-);
-```
-
 ### Client exposed APIs
 
-The client exposes several APIs which could be used on its (also initialized as stand-alone) own if one needs to:
+The client exposes several APIs which could be used on its own (also initialized as stand-alone) if one needs to:
 
 ```ts
 web3Client.publicApi()      -> sub-client for public api                    (interface: PublicApiClient)
@@ -367,7 +377,7 @@ const eventsFilter = {
     original_caller_address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
-    candidate: null,
+    is_final: null,
 } as IEventFilter;
 
 const eventPoller = EventPoller.startEventPoller(

@@ -2,14 +2,11 @@ import { IAccount } from "../../src/interfaces/IAccount";
 import { IContractData } from "../../src/interfaces/IContractData";
 import { IEventFilter } from "../../src/interfaces/IEventFilter";
 import { ClientFactory, DefaultProviderUrls } from "../../src/web3/ClientFactory";
-import { SmartContractUtils } from "@massalabs/massa-sc-utils";
 import { IEvent } from "../../src/interfaces/IEvent";
-import { EventPoller } from "../../src/web3/EventPoller";
 import { ICallData } from "../../src/interfaces/ICallData";
-import { EOperationStatus } from "../../src/interfaces/EOperationStatus";
 import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
-import { ICompiledSmartContract } from "@massalabs/massa-sc-utils/dist/interfaces/ICompiledSmartContract";
+import { deploySmartContract } from "@massalabs/massa-sc-utils";
 import { IDatastoreEntryInput } from "../../src/interfaces/IDatastoreEntryInput";
 const chalk = require("chalk");
 const ora = require("ora");
@@ -25,39 +22,20 @@ const ora = require("ora");
     let spinner;
 
     try {
-
         // init client
         const baseAccount: IAccount = await WalletClient.walletGenerateNewAccount();
-        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
-
-        // construct a sc utils
-        const utils = new SmartContractUtils();
-
-        // compile sc from wasm file ready for deployment
-        spinner = ora(`Running ${chalk.green("compilation")} of smart contract on path ${chalk.yellow(smartContractPath)}....`).start();
-        const compiledSc: ICompiledSmartContract = await utils.compileSmartContractFromWasmFile(smartContractPath);
-        if (!compiledSc.base64) {
-            const msg = chalk.red(`Error compiling smart contract on path ${chalk.yellow(smartContractPath)}. No bytecode to deploy. Check AS compiler`);
-			throw new Error(msg);
-        }
-        spinner.succeed(`Smart Contract ${chalk.green("successfully")} compiled to deployable bytecode`);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
-        const deployTxId = await web3Client.smartContracts().deploySmartContract({
+        const deployTxId = await deploySmartContract(smartContractPath, {
             fee: 0,
             maxGas: 200000,
             gasPrice: 0,
             coins: 0,
-            contractDataBase64: compiledSc.base64
-        } as IContractData);
+        } as IContractData, DefaultProviderUrls.LABNET, baseAccount, true);
         const deploymentOperationId = deployTxId[0];
         spinner.succeed(`Deployed Smart Contract ${chalk.green("successfully")} with opId ${deploymentOperationId}`);
-
-        // await final state
-		spinner = ora(`Awaiting ${chalk.green("FINAL")} transaction status....`).start();
-        const status: EOperationStatus = await web3Client.smartContracts().awaitRequiredOperationStatus(deploymentOperationId, EOperationStatus.FINAL);
-        spinner.succeed(`Transaction with Operation ID ${chalk.yellow(deploymentOperationId)} has reached finality!`);
 
         // poll smart contract events for the opId
         spinner = ora(`Filtering for sc events....`).start();
