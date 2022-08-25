@@ -10,6 +10,15 @@ import { Client } from "./Client";
 export const ON_MASSA_EVENT_DATA = "ON_MASSA_EVENT";
 export const ON_MASSA_EVENT_ERROR = "ON_MASSA_ERROR";
 
+const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
+	const periodOrder = a.period - b.period;
+	if (periodOrder === 0) {
+		const threadOrder = a.thread - b.thread;
+		return threadOrder;
+	}
+	return periodOrder;
+}
+
 /** Smart Contracts Event Poller */
 export class EventPoller extends EventEmitter {
 
@@ -46,30 +55,23 @@ export class EventPoller extends EventEmitter {
 				// check if after last slot
                 let isAfterLastSlot = true;
                 if (this.lastSlot) {
-                    isAfterLastSlot = (event.context.slot.period > this.lastSlot.period) 
-					&& (event.context.slot.thread >= this.lastSlot.thread);
+					isAfterLastSlot = sortByThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
                 }
 				
                 return meetsRegex && isAfterLastSlot;
             });
 
 			// sort after highest period and thread
-			const sortedByHighestThread = filteredEvents.sort((a, b) => {
-				const threadOrder = a.context.slot.thread - b.context.slot.thread;
-				// if equal thread order, sort by period order
-				if (threadOrder == 0) {
-					const periodOrder = a.context.slot.period - b.context.slot.period;
-					return periodOrder;
-				}
-				return threadOrder;
+			const sortedByHighestThreadAndPeriod = filteredEvents.sort((a, b) => {
+				return sortByThreadAndPeriod(a.context.slot, b.context.slot);
 			});
             
-            if (sortedByHighestThread.length > 0) {
+            if (sortedByHighestThreadAndPeriod.length > 0) {
 				// update slot to be the very last slot
-				this.lastSlot = sortedByHighestThread[sortedByHighestThread.length - 1].context.slot;
+				this.lastSlot = sortedByHighestThreadAndPeriod[sortedByHighestThreadAndPeriod.length - 1].context.slot;
 
 				// emit the filtered events
-                this.emit(ON_MASSA_EVENT_DATA, sortedByHighestThread);
+                this.emit(ON_MASSA_EVENT_DATA, sortedByHighestThreadAndPeriod);
             }
 		} catch (ex) {
             this.emit(ON_MASSA_EVENT_ERROR, ex);
