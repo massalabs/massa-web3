@@ -93,31 +93,24 @@ export class EventPoller extends EventEmitter {
 		this.timeoutId = new Timeout(this.pollIntervalMillis, () => that.callback());
 	}
 
-    public static async startEventsPollingAsync(eventsFilter: IEventFilter | IEventRegexFilter,
+    public static startEventsPolling(eventsFilter: IEventFilter | IEventRegexFilter,
 										pollIntervalMillis: number,
 										web3Client: Client,
-                                        onData: (data: Array<IEvent>) => void,
-                                        onError: (err: Error) => void): Promise<EventPoller> {
+                                        onData?: (data: Array<IEvent>) => void,
+                                        onError?: (err: Error) => void): EventPoller {
 		const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, web3Client);
 		eventPoller.startPolling();
-		return new Promise((resolve, reject) => {
+		if (onData) {
 			eventPoller.on(ON_MASSA_EVENT_DATA, (data: [IEvent]) => {
 				onData(data);
 			});
+		}
+		if (onError) {
 			eventPoller.on(ON_MASSA_EVENT_ERROR, (e) => {
 				onError(e);
 			});
-
-            return resolve(eventPoller);
-		});
-	}
-
-    public static startEventPoller(eventsFilter: IEventFilter | IEventRegexFilter,
-										pollIntervalMillis: number,
-										web3Client: Client): EventPoller {
-		const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, web3Client);
-		eventPoller.startPolling();
-        return eventPoller;
+		}
+		return eventPoller;
 	}
 
 	public static getEventsOnce(eventsFilter: IEventFilter | IEventRegexFilter,

@@ -380,7 +380,7 @@ const eventsFilter = {
     is_final: null,
 } as IEventFilter;
 
-const eventPoller = EventPoller.startEventPoller(
+const eventPoller = EventPoller.startEventsPolling(
     eventsFilter,
     1000,
     web3Client
@@ -394,13 +394,13 @@ eventPoller.on(ON_MASSA_EVENT_ERROR, onEventDataError);
 eventPoller.stopPolling();
 ```
 
-Alternatively, one could make direct use of an async promise for doing the latter by providing callback functions which would fire on event data received or generated errors:
+Alternatively, one could make direct use of callback functions as function arguments which would fire on event data received or generated errors:
 
 ```ts
 const onEventData = (events: Array<IEvent>) => {console.log("Event Data Received:" , events);}
 const onEventDataError = (error: Error) => {console.log("Event Data Error:" , error);}
 
-const eventPoller: EventPoller = await EventPoller.startEventsPollingAsync(
+const eventPoller: EventPoller = EventPoller.startEventsPolling(
     eventsFilter,
     1000,
     web3Client,
@@ -423,7 +423,7 @@ export function main(_args: string): i32 {
     const sc_address = createContract();
     call(sc_address, "initialize", "", 0);
     print("Initialized, address:" + sc_address);
-    generate_event(`Address:${sc_address}`); //emit an event with the address
+    generateEvent(`Address:${sc_address}`); //emit an event with the address
     ...
 }
 ```
