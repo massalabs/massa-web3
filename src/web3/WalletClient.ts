@@ -332,8 +332,8 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);
 		return {
-			candidate: addressInfo.ledger_info.candidate_ledger_info.balance,
-			final: addressInfo.ledger_info.final_ledger_info.balance
+			candidate: addressInfo.candidate_balance,
+			final: addressInfo.final_balance
 		} as IBalance;
 	}
 

@@ -20,7 +20,6 @@ import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { wait } from "../utils/Wait";
-import { base58Encode, hashBlake3 } from "../utils/Xbqcrypto";
 import { BaseClient } from "./BaseClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
@@ -141,8 +140,8 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);
 		return {
-			candidate: addressInfo.candidate_sce_ledger_info.balance,
-			final: addressInfo.final_sce_ledger_info.balance
+			candidate: addressInfo.candidate_balance,
+			final: addressInfo.final_balance
 		} as IBalance;
 	}
 
