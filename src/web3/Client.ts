@@ -17,7 +17,7 @@ export class Client implements IClient {
 	private smartContractsClient: SmartContractsClient;
 	private vaultClient: VaultClient;
 
-	public constructor(clientConfig: IClientConfig, baseAccount?: IAccount) {
+	public constructor(private clientConfig: IClientConfig, baseAccount?: IAccount) {
 		this.publicApiClient = new PublicApiClient(clientConfig);
 		this.privateApiClient = new PrivateApiClient(clientConfig);
 		this.walletClient = new WalletClient(clientConfig, this.publicApiClient, baseAccount);
@@ -66,6 +66,12 @@ export class Client implements IClient {
 		this.smartContractsClient.setProviders(providers);
 	}
 
+	/** get currently set providers */
+	public getProviders(): Array<IProvider> {
+		return this.clientConfig.providers;
+	}
+
+	/** sets a new default provider */
 	public setNewDefaultProvider(provider: DefaultProviderUrls): void {
 		const providers = new Array({
 			url: provider,
