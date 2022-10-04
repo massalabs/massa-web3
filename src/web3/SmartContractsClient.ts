@@ -41,7 +41,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		this.getOperationStatus = this.getOperationStatus.bind(this);
 		this.callSmartContract = this.callSmartContract.bind(this);
 		this.readSmartContract = this.readSmartContract.bind(this);
-		this.getParallelBalance = this.getParallelBalance.bind(this);
+		this.getContractBalance = this.getContractBalance.bind(this);
 	}
 
 	/** create and send an operation containing byte code */
@@ -135,7 +135,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 	}
 
 	/** Returns the parallel balance which is the smart contract side balance  */
-	public async getParallelBalance(address: string): Promise<IBalance | null> {
+	public async getContractBalance(address: string): Promise<IBalance | null> {
 		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);

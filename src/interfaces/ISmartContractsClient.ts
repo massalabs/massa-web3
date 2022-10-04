@@ -14,7 +14,7 @@ export interface ISmartContractsClient {
 	deploySmartContract(contractData: IContractData, executor?: IAccount): Promise<Array<string>>;
 	callSmartContract(callData: ICallData, executor?: IAccount): Promise<Array<string>>;
 	readSmartContract(readData: IReadData): Promise<Array<IContractReadOperationData>>;
-	getParallelBalance(address: string): Promise<IBalance | null>;
+	getContractBalance(address: string): Promise<IBalance | null>;
 	getFilteredScOutputEvents(eventFilterData: IEventFilter): Promise<Array<IEvent>>;
 	executeReadOnlySmartContract(contractData: IContractData): Promise<Array<IExecuteReadOnlyResponse>>;
 	getOperationStatus(opId: string): Promise<EOperationStatus>;

@@ -54,7 +54,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		this.sendTransaction = this.sendTransaction.bind(this);
 		this.sellRolls = this.sellRolls.bind(this);
 		this.buyRolls = this.buyRolls.bind(this);
-		this.getAccountSequentialBalance = this.getAccountSequentialBalance.bind(this);
+		this.getAccountBalance = this.getAccountBalance.bind(this);
 	}
 
 	/** set the default (base) account */
@@ -327,7 +327,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 	}
 
 	/** Returns the account sequential balance - the consensus side balance  */
-	public async getAccountSequentialBalance(address: string): Promise<IBalance | null> {
+	public async getAccountBalance(address: string): Promise<IBalance | null> {
 		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);
