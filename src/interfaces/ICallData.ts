@@ -5,10 +5,8 @@ export interface ICallData {
 	maxGas: number;
 	 /// The price per unit of gas that the caller is willing to pay for the execution.
 	gasPrice: number;
-	 /// Extra coins that are spent from the caller's parallel balance and transferred to the target
-	parallelCoins: number;
-	/// Extra coins that are spent from the caller's sequential balance and transferred to the target
-	sequentialCoins: number;
+	 /// Extra coins that are spent from the caller's balance and transferred to the target
+	coins: number;
 	/// Target smart contract address
 	targetAddress: string;
 	/// Target function name. No function is called if empty.

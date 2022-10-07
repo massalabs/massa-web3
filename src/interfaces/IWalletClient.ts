@@ -16,7 +16,7 @@ export interface IWalletClient {
 	removeAddressesFromWallet(addresses: Array<string>): void;
 	walletInfo(): Promise<Array<IFullAddressInfo>>;
 	signMessage(data: string | Buffer, accountSignerAddress: string): Promise<ISignature>;
-	getAccountSequentialBalance(address: string): Promise<IBalance | null>;
+	getAccountBalance(address: string): Promise<IBalance | null>;
 	sendTransaction(txData: ITransactionData, executor: IAccount): Promise<Array<string>>;
 	buyRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
 	sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;

@@ -17,43 +17,41 @@ export interface ILedgerDatastore {
     [name: string]: [number];
 }
 
+export interface ICycleInfos {
+    active_rolls: number;
+    cycle: number;
+    is_final: boolean;
+    nok_count: number;
+    ok_count: number;
+}
+
+export interface IDeferredCredits {
+    slot: {
+        period: number,
+        thread: number,
+    };
+    amount: number;
+}
+
 export interface IAddressInfo {
     address: string;
-    balance: {
-        candidate_balance: string, // represent an Amount in coins
-        final_balance: string, // represent an Amount in coins
-        locked_balance: string, // represent an Amount in coins
-    };
-    block_draws: [
+    candidate_balance: string; // represent an Amount in coins
+    candidate_datastore_keys: string;
+    candidate_roll_count: number;
+    created_blocks: Array<string>;
+    created_endorsements: Array<string>;
+    created_operations: Array<string>;
+    cycle_infos: Array<ICycleInfos>;
+    deferred_credits: Array<IDeferredCredits>;
+    final_balance: string; // represent an Amount in coins
+    final_datastore_keys: Array<string>;
+    final_roll_count: number;
+    next_block_draws: [
         {
             period: number,
             thread: number,
         },
     ];
-    blocks_created: [string]; // Block ids
-    endorsement_draws: Array<IEndorsementDraws>;
-    involved_in_endorsements: [string]; // Endorsement Id
-    involved_in_operations: [string]; // Operation id
-    production_stats: Array<IProductionStats>;
-    rolls: {
-        active_rolls: number,
-        candidate_rolls: number,
-        final_rolls: number,
-    };
+    next_endorsement_draws: Array<IEndorsementDraws>;
     thread: number;
-    ledger_info: {
-        candidate_ledger_info: {balance: string} // represents an amount
-        final_ledger_info: {balance: string} // stored bytecode
-        locked_balance: string
-    };
-    final_sce_ledger_info: {
-        balance: string // represents an amount
-        module: null | [number] // stored bytecode
-        datastore: ILedgerDatastore
-    };
-    candidate_sce_ledger_info: {
-        balance: string // represents an amount
-        module: null | [number] // stored bytecode
-        datastore: ILedgerDatastore
-    };
   }

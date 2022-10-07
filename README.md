@@ -24,7 +24,7 @@ import {
     DefaultProviderUrls,
     IAccount,
     IProvider,
-    ProviderType 
+    ProviderType
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -50,7 +50,7 @@ import {
     DefaultProviderUrls,
     IAccount,
     IProvider,
-    ProviderType 
+    ProviderType
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -307,9 +307,9 @@ Available class methods are:
         baseAccount
     );
     ```
--   `getAccountSequentialBalance`
+-   `getAccountBalance`
     ```ts
-    const balance: IBalance = await web3Client.wallet().getAccountSequentialBalance("A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1");
+    const balance: IBalance = await web3Client.wallet().getAccountBalance("A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1");
     ```
 
 In addition to the class methods, there are also static methods for direct use:
@@ -455,10 +455,10 @@ const status: EOperationStatus = await web3Client.smartContracts().awaitRequired
 
 ### Smart contract balance
 
-Smart contract balances could be easily obtained via usign the `getParallelBalance` method:
+Smart contract balances could be easily obtained via using the `getContractBalance` method:
 
 ```ts
-const balance: IBalance|null = await web3Client.smartContracts().getParallelBalance(contractAddress);
+const balance: IBalance|null = await web3Client.smartContracts().getContractBalance(contractAddress);
 ```
 
 ### Smart contract read and write calls
@@ -487,8 +487,7 @@ const data: Array<string> = await web3Client.smartContracts().callSmartContract(
             fee: 0,
             gasPrice: 0,
             maxGas: 200000,
-            parallelCoins: 0,
-            sequentialCoins: 0,
+            coins: 0,
             targetAddress: scAddress,
             functionName: "play",
             parameter: JSON.stringify({index : 1}),

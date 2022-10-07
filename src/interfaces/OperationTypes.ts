@@ -30,9 +30,8 @@ export interface ICallSmartContractOpType {
     CallSC: {
         gas_price: string;
         max_gas: number;
-        parallel_coins: string;
         param: string;
-        sequential_coins: string;
+        coins: string;
         target_addr: string;
         target_func: string;
     };
