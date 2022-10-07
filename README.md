@@ -24,7 +24,7 @@ import {
     DefaultProviderUrls,
     IAccount,
     IProvider,
-    ProviderType 
+    ProviderType
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -50,7 +50,7 @@ import {
     DefaultProviderUrls,
     IAccount,
     IProvider,
-    ProviderType 
+    ProviderType
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -487,8 +487,7 @@ const data: Array<string> = await web3Client.smartContracts().callSmartContract(
             fee: 0,
             gasPrice: 0,
             maxGas: 200000,
-            parallelCoins: 0,
-            sequentialCoins: 0,
+            coins: 0,
             targetAddress: scAddress,
             functionName: "play",
             parameter: JSON.stringify({index : 1}),

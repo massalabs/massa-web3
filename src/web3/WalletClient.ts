@@ -326,7 +326,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 		return secretKeyBase58Decoded;
 	}
 
-	/** Returns the account sequential balance - the consensus side balance  */
+	/** Returns the account balance  */
 	public async getAccountBalance(address: string): Promise<IBalance | null> {
 		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
 		if (addresses.length === 0) return null;

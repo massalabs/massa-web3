@@ -134,7 +134,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		}
 	}
 
-	/** Returns the parallel balance which is the smart contract side balance  */
+	/** Returns the balance of the smart contract  */
 	public async getContractBalance(address: string): Promise<IBalance | null> {
 		const addresses: Array<IAddressInfo> = await this.publicApiClient.getAddresses([address]);
 		if (addresses.length === 0) return null;

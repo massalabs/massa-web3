@@ -183,11 +183,8 @@ export class BaseClient {
 				// max gas
 				const maxGasEncoded = Buffer.from(varintEncode((data as ICallData).maxGas));
 
-				// parallel coins to send
-				const parallelCoinsEncoded = Buffer.from(varintEncode((data as ICallData).parallelCoins));
-
-				// sequential coins to send
-				const sequentialCoinsEncoded = Buffer.from(varintEncode((data as ICallData).sequentialCoins));
+				// coins to send
+				const coinsEncoded = Buffer.from(varintEncode((data as ICallData).coins));
 
 				// gas price
 				const gasPriceEncoded = Buffer.from(varintEncode((data as ICallData).gasPrice));
@@ -203,7 +200,8 @@ export class BaseClient {
 				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, "utf8"));
 				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, parallelCoinsEncoded, sequentialCoinsEncoded, gasPriceEncoded, targetAddressEncoded, functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, targetAddressEncoded,
+                                      functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount
