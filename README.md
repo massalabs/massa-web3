@@ -24,7 +24,7 @@ import {
     DefaultProviderUrls,
     IAccount,
     IProvider,
-    ProviderType
+    ProviderType 
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -50,7 +50,7 @@ import {
     DefaultProviderUrls,
     IAccount,
     IProvider,
-    ProviderType
+    ProviderType 
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -83,7 +83,6 @@ Once there is an initialized client instance, it is straightforward to call meth
 ```ts
 import { IStatus, IAddressInfo } from "@massalabs/massa-web3";
 
-const nodeStatusResp: IStatus = await web3Client.getStatus();
 const addressesResp: Array<IAddressInfo> = await web3Client
     .publicApi()
     .getAddresses(["some_address"]);
@@ -117,47 +116,47 @@ const blocks: Array<IBlockInfo> = await web3Client
 
 Available methods are:
 
--   `getNodeStatus` (https://github.com/massalabs/massa/wiki/api#get_status)
+-   `getNodeStatus`
     ```ts
     const nodeStatus: INodeStatus = await web3Client
         .publicApi()
         .getNodeStatus();
     ```
--   `getAddresses` (https://github.com/massalabs/massa/wiki/api#get_addresses)
+-   `getAddresses`
     ```ts
     const addressesResp: Array<IAddressInfo> = await web3Client
         .publicApi()
         .getAddresses(["A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"]);
     ```
--   `getBlocks` (https://github.com/massalabs/massa/wiki/api#get_block)
+-   `getBlocks`
     ```ts
     const blocks: Array<IBlockInfo> = await web3Client
         .publicApi()
         .getBlocks(["nKifcnGbd9zu8nu1hb94XEmMGwgoWbjj3DutzrobeHDdUtEuM"]);
     ```
--   `getEndorsements` (https://github.com/massalabs/massa/wiki/api#get_endorsements)
+-   `getEndorsements`
     ```ts
     const endorsements: Array<IEndorsement> = await web3Client
         .publicApi()
         .getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
     ```
--   `getOperations` (https://github.com/massalabs/massa/wiki/api#get_operations)
+-   `getOperations`
     ```ts
     const operations: Array<IOperationData> = await web3Client
         .publicApi()
         .getOperations(["z1cNsWAdgvoASq5RnN6MRbqqo634RRJbgwV9n3jNx3rQrQKTt"]);
     ```
--   `getCliques` (https://github.com/massalabs/massa/wiki/api#get_cliques)
+-   `getCliques`
     ```ts
     const cliques: Array<IClique> = await web3Client.publicApi().getCliques();
     ```
--   `getStakers` (https://github.com/massalabs/massa/wiki/api#get_stakers)
+-   `getStakers`
     ```ts
     const stakers: Array<IStakingAddresses> = await web3Client
         .publicApi()
         .getStakers();
     ```
--   `getDatastoreEntries` (https://github.com/massalabs/massa/wiki/api#get_stakers)
+-   `getDatastoreEntries`
     ```ts
     const datastoreEntries: Array<IContractStorageData> = await web3Client
         .publicApi()
@@ -177,25 +176,25 @@ await web3Client.privateApi().nodeStop();
 
 Available methods are:
 
--   `stopNode` (https://github.com/massalabs/massa/wiki/api#stop_node)
+-   `stopNode`
     ```ts
     await web3Client.privateApi().nodeStop();
     ```
--   `ban` (https://github.com/massalabs/massa/wiki/api#ban)
+-   `ban`
     ```ts
     await web3Client.privateApi().banIpAddress("192.168.1.1");
     ```
--   `unban` (https://github.com/massalabs/massa/wiki/api#unban)
+-   `unban`
     ```ts
     await web3Client.privateApi().unbanIpAddress("192.168.1.1");
     ```
--   `nodeGetStakingAddresses` (https://github.com/massalabs/massa/wiki/api#get_staking_addresses)
+-   `nodeGetStakingAddresses`
     ```ts
     const stakingAddresses = await web3Client
         .privateApi()
         .nodeGetStakingAddresses();
     ```
--   `nodeRemoveStakingAddresses` (https://github.com/massalabs/massa/wiki/api#remove_staking_addresses)
+-   `nodeRemoveStakingAddresses`
     ```ts
     await web3Client
         .privateApi()
@@ -203,7 +202,7 @@ Available methods are:
             "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
         ]);
     ```
--   `nodeAddStakingPrivateKeys` (https://github.com/massalabs/massa/wiki/api#add_staking_private_keys)
+-   `nodeAddStakingPrivateKeys`
     ```ts
     await web3Client
         .privateApi()
@@ -211,7 +210,7 @@ Available methods are:
             "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
         ]);
     ```
--   `nodeSignMessage` (https://github.com/massalabs/massa/wiki/api#node_sign_message)
+-   `nodeSignMessage`
     ```ts
     const message = "hello world";
     const msgBuf = new TextEncoder().encode(message);
