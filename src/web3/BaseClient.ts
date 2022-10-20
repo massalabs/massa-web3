@@ -167,17 +167,17 @@ export class BaseClient {
 				// max gas
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
 
-				// coins to send
-				const coinsEncoded = Buffer.from(varintEncode((data as IContractData).coins));
-
 				// gas price
 				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
+
+				// sc local datastore
+				const scLocalDatastore = Buffer.from(new Uint8Array());
 
 				// contract data
 				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, scLocalDatastore]);
 			}
 			case OperationTypeId.CallSC: {
 				// max gas

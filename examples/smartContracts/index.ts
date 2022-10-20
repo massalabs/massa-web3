@@ -24,7 +24,7 @@ const ora = require("ora");
     try {
         // init client
         const baseAccount: IAccount = await WalletClient.walletGenerateNewAccount();
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, baseAccount);
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
