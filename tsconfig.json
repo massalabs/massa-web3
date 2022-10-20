@@ -18,6 +18,7 @@
         "noImplicitThis": false,
         "skipLibCheck": true,
         "strictNullChecks": false,
+        "downlevelIteration": true,
         "outDir": "dist",
         "types": [
             "node"

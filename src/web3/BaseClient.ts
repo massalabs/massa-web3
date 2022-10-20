@@ -170,14 +170,26 @@ export class BaseClient {
 				// gas price
 				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
 
-				// sc local datastore
-				const scLocalDatastore = Buffer.from(new Uint8Array());
-
 				// contract data
 				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, scLocalDatastore]);
+				// sc local datastore
+				const datastoreKeyMap = (data as IContractData).datastore ? (data as IContractData).datastore : new Map<Uint8Array, Uint8Array>();
+				let datastoreSerializedBuffer = Buffer.from(new Uint8Array());
+				for (let [key, value] of Object.entries(datastoreKeyMap)) {
+					const encodedKeyBytes = Buffer.from(key);
+					const encodedKeyLen = Buffer.from(varintEncode(encodedKeyBytes.length));
+					const encodedValueBytes = Buffer.from(value);
+					const encodedValueLen = Buffer.from(varintEncode(encodedValueBytes.length));
+					datastoreSerializedBuffer = Buffer.concat([encodedKeyLen, encodedKeyBytes, encodedValueLen, encodedValueBytes]);
+				}
+				const datastoreSerializedBufferLen = Buffer.from(varintEncode(datastoreSerializedBuffer.length));
+
+				if (datastoreSerializedBuffer.length === 0) {
+					return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen]);
+				}
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen, datastoreSerializedBuffer]);
 			}
 			case OperationTypeId.CallSC: {
 				// max gas

@@ -6,8 +6,9 @@ import { IEvent } from "../../src/interfaces/IEvent";
 import { ICallData } from "../../src/interfaces/ICallData";
 import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
-import { deploySmartContract } from "@massalabs/massa-sc-utils";
 import { IDatastoreEntryInput } from "../../src/interfaces/IDatastoreEntryInput";
+import { deploySmartContract } from "./deployer";
+
 const chalk = require("chalk");
 const ora = require("ora");
 
@@ -23,8 +24,8 @@ const ora = require("ora");
 
     try {
         // init client
-        const baseAccount: IAccount = await WalletClient.walletGenerateNewAccount();
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, baseAccount);
+        const deployerAccount: IAccount = await WalletClient.walletGenerateNewAccount();
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, deployerAccount);
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
@@ -33,7 +34,7 @@ const ora = require("ora");
             maxGas: 200000,
             gasPrice: 0,
             coins: 0,
-        } as IContractData, DefaultProviderUrls.TESTNET, baseAccount, true);
+        } as IContractData, web3Client, true, deployerAccount);
         const deploymentOperationId = deployTxId[0];
         spinner.succeed(`Deployed Smart Contract ${chalk.green("successfully")} with opId ${deploymentOperationId}`);
 
@@ -91,7 +92,7 @@ const ora = require("ora");
         spinner.succeed(`Got smart contract storage data for key: ${chalk.yellow(JSON.stringify(scStorageData, null, 4))}`);
 
     } catch (ex) {
-        const msg = chalk.red(`Error = ${ex.message}`);
+        const msg = chalk.red(`Error = ${ex}`);
         if (spinner) spinner.fail(msg);
     }
 })();
