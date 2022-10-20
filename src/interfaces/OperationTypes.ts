@@ -22,7 +22,7 @@ export interface IExecSmartContractOpType {
         data: [number], // vec of bytes to execute
         max_gas: number, // maximum amount of gas that the execution of the contract is allowed to cost
         gas_price: string, // represent an Amount in coins, price per unit of gas that the caller is willing to pay for the execution.
-        datastore: any,
+        datastore: Map<Uint8Array, Uint8Array>,
     };
 }
 
