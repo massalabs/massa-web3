@@ -13,4 +13,5 @@ export interface IContractData {
 	contractDataBinary?: Uint8Array;
 	/// smart contract address
 	address?: string;
+	datastore?: Map<Uint8Array, Uint8Array>;
 }
