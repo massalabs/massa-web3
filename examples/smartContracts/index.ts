@@ -33,7 +33,7 @@ const ora = require("ora");
             maxGas: 200000,
             gasPrice: 0,
             coins: 0,
-        } as IContractData, DefaultProviderUrls.LABNET, baseAccount, true);
+        } as IContractData, DefaultProviderUrls.TESTNET, baseAccount, true);
         const deploymentOperationId = deployTxId[0];
         spinner.succeed(`Deployed Smart Contract ${chalk.green("successfully")} with opId ${deploymentOperationId}`);
 
