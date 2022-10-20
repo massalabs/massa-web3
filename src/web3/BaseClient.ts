@@ -174,7 +174,7 @@ export class BaseClient {
 				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 
-				// sc local datastore
+				// smart contract operation datastore
 				const datastoreKeyMap = (data as IContractData).datastore ? (data as IContractData).datastore : new Map<Uint8Array, Uint8Array>();
 				let datastoreSerializedBuffer = Buffer.from(new Uint8Array());
 				for (let [key, value] of Object.entries(datastoreKeyMap)) {
@@ -185,10 +185,10 @@ export class BaseClient {
 					datastoreSerializedBuffer = Buffer.concat([encodedKeyLen, encodedKeyBytes, encodedValueLen, encodedValueBytes]);
 				}
 				const datastoreSerializedBufferLen = Buffer.from(varintEncode(datastoreSerializedBuffer.length));
-
 				if (datastoreSerializedBuffer.length === 0) {
 					return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen]);
 				}
+
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen, datastoreSerializedBuffer]);
 			}
 			case OperationTypeId.CallSC: {
