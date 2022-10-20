@@ -8,6 +8,7 @@ import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
 import { deploySmartContract } from "@massalabs/massa-sc-utils";
 import { IDatastoreEntryInput } from "../../src/interfaces/IDatastoreEntryInput";
+import { IProvider, ProviderType } from "../../src/interfaces/IProvider";
 const chalk = require("chalk");
 const ora = require("ora");
 
@@ -24,9 +25,21 @@ const ora = require("ora");
     try {
         // init client
         const baseAccount: IAccount = await WalletClient.walletGenerateNewAccount();
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
+        const providers: Array<IProvider> = [
+            {
+                url: "https://inno.massa.net",
+                type: ProviderType.PUBLIC
+            } as IProvider,
+            {
+                url: "https://inno.massa.net",
+                type: ProviderType.PRIVATE
+            } as IProvider
+        ];
+		const web3Client = await ClientFactory.createCustomClient(providers, true, baseAccount);
+        //const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, baseAccount);
 
         // deploy smart contract
+        /*
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
         const deployTxId = await deploySmartContract(smartContractPath, {
             fee: 0,
@@ -36,7 +49,8 @@ const ora = require("ora");
         } as IContractData, DefaultProviderUrls.LABNET, baseAccount, true);
         const deploymentOperationId = deployTxId[0];
         spinner.succeed(`Deployed Smart Contract ${chalk.green("successfully")} with opId ${deploymentOperationId}`);
-
+        */
+        /*
         // poll smart contract events for the opId
         spinner = ora(`Filtering for sc events....`).start();
         const eventsFilter = {
@@ -90,9 +104,9 @@ const ora = require("ora");
         spinner = ora(`Reading a smart state entry...`).start();
         const scStorageData = await web3Client.publicApi().getDatastoreEntries([{address: scAddress, key: "gameState" } as IDatastoreEntryInput]);
         spinner.succeed(`Got smart contract storage data for key: ${chalk.yellow(JSON.stringify(scStorageData, null, 4))}`);
-
+        */
     } catch (ex) {
-        const msg = chalk.red(`Error = ${ex.message}`);
-        if (spinner) spinner.fail(msg);
+        //const msg = chalk.red(`Error = ${ex.message}`);
+        //if (spinner) spinner.fail(msg);
     }
 })();
