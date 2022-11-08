@@ -7,7 +7,8 @@ import { IClientConfig } from "../interfaces/IClientConfig";
 export enum DefaultProviderUrls {
 	MAINNET = "https://massa.net/api/v2",
 	TESTNET = "https://test.massa.net/api/v2",
-	LABNET = "https://labnet.massa.net/api/v2"
+	LABNET = "https://labnet.massa.net/api/v2",
+	LOCALNET = "http://127.0.0.1",
 }
 
 /** Massa Web3 Client Factory for easy initialization */
@@ -15,12 +16,27 @@ export class ClientFactory {
 
 	/** Factory Method for easy initializing a client using a default provider */
 	public static async createDefaultClient(provider: DefaultProviderUrls, retryStrategyOn: boolean = true, baseAccount?: IAccount): Promise<Client> {
+		let publicProviderUrl = provider.toString();
+		let privateProviderUrl = provider.toString();
+		switch (provider) {
+			// in the case of localnet append specific default ports to url
+			case DefaultProviderUrls.LOCALNET: {
+				publicProviderUrl = `${publicProviderUrl}:33034`;
+				privateProviderUrl = `${privateProviderUrl}:33035`;
+				break;
+			}
+			// all other networks should be public only access
+			default: {
+				break;
+			}
+		}
+
 		const providers = new Array({
-			url: provider,
+			url: publicProviderUrl,
 			type: ProviderType.PUBLIC
 		} as IProvider,
 		{
-			url: provider,
+			url: privateProviderUrl,
 			type: ProviderType.PRIVATE
 		} as IProvider);
 

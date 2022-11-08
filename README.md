@@ -78,6 +78,15 @@ const customClient: Client = await ClientFactory.createCustomClient(
 );
 ```
 
+Please note that connecting to a locally running node could be easily done using the factory method:
+
+```ts
+const testnetClient: Client = await ClientFactory.createDefaultClient(
+    DefaultProviderUrls.LOCALNET,
+    baseAccount
+);
+```
+
 Once there is an initialized client instance, it is straightforward to call methods on it:
 
 ```ts
