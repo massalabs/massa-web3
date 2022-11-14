@@ -5,13 +5,14 @@ export interface IContractData {
 	maxGas: number;
 	/// The price per unit of gas that the caller is willing to pay for the execution.
 	gasPrice: number;
-	/// Extra coins that are spent by consensus and are available in the execution context of the contract.
-	coins: number;
-	/// Smart contract data as bytecode, text and base64 encoded.
+	/// Smart contract data as bytecode.
 	contractDataBase64?: string;
+	/// Smart contract data as text.
 	contractDataText?: string;
+	/// Smart contract data as base64-encoded.
 	contractDataBinary?: Uint8Array;
 	/// smart contract address
 	address?: string;
+	/// key/value datamap that can store smart contract operational storage data
 	datastore?: Map<Uint8Array, Uint8Array>;
 }
