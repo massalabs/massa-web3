@@ -17,7 +17,7 @@ const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
 		return threadOrder;
 	}
 	return periodOrder;
-}
+};
 
 /** Smart Contracts Event Poller */
 export class EventPoller extends EventEmitter {
@@ -51,13 +51,13 @@ export class EventPoller extends EventEmitter {
 				if ((this.eventsFilter as IEventRegexFilter).eventsNameRegex) {
 					meetsRegex = event.data.includes((this.eventsFilter as IEventRegexFilter).eventsNameRegex);
 				}
-                
+
 				// check if after last slot
                 let isAfterLastSlot = true;
                 if (this.lastSlot) {
 					isAfterLastSlot = sortByThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
                 }
-				
+
                 return meetsRegex && isAfterLastSlot;
             });
 
@@ -65,7 +65,7 @@ export class EventPoller extends EventEmitter {
 			const sortedByHighestThreadAndPeriod = filteredEvents.sort((a, b) => {
 				return sortByThreadAndPeriod(a.context.slot, b.context.slot);
 			});
-            
+
             if (sortedByHighestThreadAndPeriod.length > 0) {
 				// update slot to be the very last slot
 				this.lastSlot = sortedByHighestThreadAndPeriod[sortedByHighestThreadAndPeriod.length - 1].context.slot;
