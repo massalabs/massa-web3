@@ -29,7 +29,7 @@ const DEPLOYER_SECRET_KEY = "S13iFJarF4v6CxYPeguUQHqkxDdGZgFhrsiEMznbnS3is9aXFps
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
-        let datastoreMap: Map<Uint8Array, Uint8Array> = new Map();
+        const datastoreMap: Map<Uint8Array, Uint8Array> = new Map();
         datastoreMap.set(new Uint8Array(Buffer.from("key")), new Uint8Array(Buffer.from("value")));
         const deploymentOperationId = await deploySmartContract(smartContractPath, {
             fee: 0,

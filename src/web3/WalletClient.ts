@@ -26,7 +26,7 @@ const getThreadNumber = (address: string): number => {
 	const pubKeyHash = base58Decode(address.slice(1));
 	const threadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
 	return threadNumber;
-}
+};
 
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class WalletClient extends BaseClient implements IWalletClient {

@@ -177,7 +177,7 @@ export class BaseClient {
 				// smart contract operation datastore
 				const datastoreKeyMap = (data as IContractData).datastore ? (data as IContractData).datastore : new Map<Uint8Array, Uint8Array>();
 				let datastoreSerializedBuffer = Buffer.from(new Uint8Array());
-				for (let [key, value] of Object.entries(datastoreKeyMap)) {
+				for (const [key, value] of Object.entries(datastoreKeyMap)) {
 					const encodedKeyBytes = Buffer.from(key);
 					const encodedKeyLen = Buffer.from(varintEncode(encodedKeyBytes.length));
 					const encodedValueBytes = Buffer.from(value);
