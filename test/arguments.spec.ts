@@ -42,4 +42,20 @@ describe("Args class", () => {
         expect(args4.nextU32()).to.equal(BigInt(97));
         expect(args4.nextU32()).to.equal(BigInt(113));
     });
+
+    it("with string", () => {
+        const valueA = "a".repeat(13)
+        const args1 = new Args();
+        args1.addString(valueA);
+        const byteString = args1.serialize();
+        const args2 = new Args(byteString);
+        expect(args2.nextString()).to.equal(valueA);
+
+        const valueB = "b".repeat(65600)
+        const args3 = new Args();
+        args3.addString(valueB);
+        const byteString2 = args3.serialize();
+        const args4 = new Args(byteString2);
+        expect(args4.nextString()).to.equal(valueB);
+    });
 });

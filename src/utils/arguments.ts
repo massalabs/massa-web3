@@ -49,19 +49,20 @@ export default class Args {
   nextU32(): BigInt {
     const byteArray = this.fromByteString(this.serialized);
 
-    if (byteArray.length - this.offset < 4) {
-      return BigInt(NaN);
+   const numBytes = 4;
+    if (byteArray.length - this.offset < numBytes) {
+      return BigInt(0);
     }
 
     let value = BigInt(0);
 
     // encoding is little endian
-    for (let i = 3; i >= 1; --i) {
+    for (let i = numBytes-1; i > 0; --i) {
       value = (value | BigInt(byteArray[this.offset + i])) << BigInt(8);
     }
 
     value = value | BigInt(byteArray[this.offset]);
-    this.offset += 4;
+    this.offset += numBytes;
 
     return value;
   }
@@ -74,14 +75,13 @@ export default class Args {
    * @return {Args}
    */
   addU32(bigInt): Args {
-    const u32 = BigInt.asUintN(32, bigInt);
+    const u32 = BigInt.asUintN(/* num of significant bits */ 32, bigInt);
     const byteArray = new Uint8Array(4);
+    const byteMask = BigInt(0xff); // extracts all the bits of a given byte
     for (let i = 0; i < byteArray.length; i++) {
-      // extracts the value of the first, second, third or forth byte by moving
-      // the _select all bits_ (0xFF) mask
-      const targetByte = u32 & (BigInt(0xff) << BigInt(8 * i));
-      // reduces the extracted value to one byte by removing
-      // already encoded and zeroed byte
+      // extracts the value of the first, second, third or forth byte by moving the mask
+      const targetByte = u32 & (byteMask << BigInt(8 * i));
+      // reduces the extracted value to targeted byte by removing lower masked bytes
       const byte = targetByte >> BigInt(8 * i);
       byteArray[i] = Number(byte);
     }
@@ -100,14 +100,17 @@ export default class Args {
    * @return {Args} the modified Arg instance
    */
   addString(arg: string): Args {
-    if (typeof arg != "string") {
-      console.warn(
-        "Wrong arg type, required a string with max length 4294967295"
-      );
-    } else {
-        this.addU32(BigInt(arg.length));
-        this.serialized = this.serialized.concat(arg);
+    const maxSize = 4294967295;
+    const size = BigInt(arg.length);
+
+    if (size > maxSize) {
+        console.warn("input string is too long, it will be truncated");
+        arg = arg.slice(0, maxSize);
     }
+
+    this.addU32(size);
+
+    this.serialized = this.serialized.concat(arg);
 
     return this;
   }
@@ -117,13 +120,13 @@ export default class Args {
   /**
    * Returns a byte string.
    *
-   * @param {Uint8Array} byteString
+   * @param {Uint8Array} bytes
    * @return {string}
    */
-  toByteString(byteString: Uint8Array): string {
+  private toByteString(bytes: Uint8Array): string {
     let s = "";
-    for (let i = 0; i < byteString.length; i++) {
-      s += String.fromCharCode(byteString[i]);
+    for (let i = 0; i < bytes.length; i++) {
+      s += String.fromCharCode(bytes[i]);
     }
     return s;
   }
