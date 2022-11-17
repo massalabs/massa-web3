@@ -27,20 +27,10 @@ describe("Args class", () => {
 
     it("with u32", () => {
         const args1 = new Args();
-        args1
-        .addU32(BigInt(97));
-        const byteString = args1.serialize();
-        const args2 = new Args(byteString);
-        expect(args2.nextU32()).to.equal(BigInt(97));
+        args1.addU32(BigInt(97));
 
-        const args3 = new Args();
-        args3
-        .addU32(BigInt(97))
-        .addU32(BigInt(113));
-        const byteString2 = args3.serialize();
-        const args4 = new Args(byteString2);
+        const args4 = new Args(args1.serialize());
         expect(args4.nextU32()).to.equal(BigInt(97));
-        expect(args4.nextU32()).to.equal(BigInt(113));
     });
 
     it("with string", () => {
