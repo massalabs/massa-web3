@@ -8,9 +8,9 @@ describe("Args class", () => {
         const args1 = new Args();
         // add some arguments
         args1
-        .addString("hello")
-        .addString("world")
-        .addU32(BigInt(97));
+            .addString("hello")
+            .addString("world")
+            .addU32(BigInt(97));
 
         // use serialize to get the byte string
         const byteString = args1.serialize();
@@ -104,7 +104,7 @@ describe("Args class", () => {
         args1.addString("world");
 
         const args2 = new Args(args1.serialize());
-        expect(args2.nextF32()).to.equal(1.234);
+        expect(args2.nextF32()).to.be.closeTo(1.234, 1e-7);
         expect(args2.nextI64()).to.equal(BigInt(-97));
         expect(args2.nextString()).to.equal("hello");
         expect(args2.nextString()).to.equal("world");

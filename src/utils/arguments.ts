@@ -101,8 +101,8 @@ export default class Args {
   nextF32(): number {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
-    const value = view.getFloat64(this.offset);
-    this.offset += 8;
+    const value = view.getFloat32(this.offset);
+    this.offset += 4;
     return value;
   }
 
@@ -204,12 +204,12 @@ export default class Args {
    * @return {Args}
    */
   addF32(number: number): Args {
-    const buffer = new ArrayBuffer(8);
+    const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
-    view.setFloat64(0, number);
+    view.setFloat32(0, number);
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
-    this.offset += 8;
+    this.offset += 4;
 
     return this;
   }
