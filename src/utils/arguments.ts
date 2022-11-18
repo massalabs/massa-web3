@@ -51,7 +51,7 @@ export default class Args {
   nextU32(): BigInt {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
-    const value = view.getUint32(this.offset);
+    const value = view.getUint32(this.offset, true);
     this.offset += 4;
     return BigInt(value);
   }
@@ -64,7 +64,7 @@ export default class Args {
   nextU64(): BigInt {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
-    const value = view.getBigUint64(this.offset);
+    const value = view.getBigUint64(this.offset, true);
     this.offset += 8;
     return BigInt(value);
   }
@@ -77,7 +77,7 @@ export default class Args {
   nextI32(): BigInt {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
-    const value = view.getInt32(this.offset);
+    const value = view.getInt32(this.offset, true);
     this.offset += 4;
     return BigInt(value);
   }
@@ -90,7 +90,7 @@ export default class Args {
   nextI64(): BigInt {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
-    const value = view.getBigInt64(this.offset);
+    const value = view.getBigInt64(this.offset, true);
     this.offset += 8;
     return BigInt(value);
   }
@@ -103,7 +103,7 @@ export default class Args {
   nextF32(): number {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
-    const value = view.getFloat32(this.offset);
+    const value = view.getFloat32(this.offset, true);
     this.offset += 4;
     return value;
   }
@@ -116,7 +116,7 @@ export default class Args {
   nextF64(): number {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
-    const value = view.getFloat64(this.offset);
+    const value = view.getFloat64(this.offset, true);
     this.offset += 8;
     return value;
   }
@@ -144,7 +144,7 @@ export default class Args {
   addU32(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
-    view.setUint32(0, Number(bigInt));
+    view.setUint32(0, Number(bigInt), true);
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
     this.offset += 4;
@@ -160,7 +160,7 @@ export default class Args {
   addU64(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(8);
     const view = new DataView(buffer);
-    view.setBigUint64(0, bigInt);
+    view.setBigUint64(0, bigInt, true);
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
     this.offset += 8;
@@ -176,7 +176,7 @@ export default class Args {
   addI32(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
-    view.setInt32(0, Number(bigInt));
+    view.setInt32(0, Number(bigInt), true);
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
     this.offset += 4;
@@ -192,7 +192,7 @@ export default class Args {
   addI64(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(8);
     const view = new DataView(buffer);
-    view.setBigInt64(0, bigInt);
+    view.setBigInt64(0, bigInt, true);
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
     this.offset += 8;
@@ -208,7 +208,7 @@ export default class Args {
   addF32(number: number): Args {
     const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
-    view.setFloat32(0, number);
+    view.setFloat32(0, number, true);
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
     this.offset += 4;
@@ -225,7 +225,7 @@ export default class Args {
   addF64(number: number): Args {
     const buffer = new ArrayBuffer(8);
     const view = new DataView(buffer);
-    view.setFloat64(0, number);
+    view.setFloat64(0, number, true);
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
     this.offset += 8;
