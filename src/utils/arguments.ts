@@ -47,11 +47,89 @@ export default class Args {
    * @return {BigInt}
    */
   nextU32(): BigInt {
-    let buffer = this.serialized.buffer;
-    let view = new DataView(buffer);
-    let value = view.getUint32(this.offset);
-    this.offset += 4
+    const buffer = this.serialized.buffer;
+    const view = new DataView(buffer);
+    const value = view.getUint32(this.offset);
+    this.offset += 4;
     return BigInt(value);
+  }
+
+  /**
+   * Returns the deserialized number.
+   *
+   * @return {BigInt}
+   */
+  nextU64(): BigInt {
+    const buffer = this.serialized.buffer;
+    const view = new DataView(buffer);
+    const value = view.getBigUint64(this.offset);
+    this.offset += 8;
+    return BigInt(value);
+  }
+
+  /**
+  * Returns the deserialized number.
+  *
+  * @return {BigInt}
+  */
+  nextI32(): BigInt {
+    const buffer = this.serialized.buffer;
+    const view = new DataView(buffer);
+    const value = view.getInt32(this.offset);
+    this.offset += 4;
+    return BigInt(value);
+  }
+
+  /**
+  * Returns the deserialized number.
+  *
+  * @return {BigInt}
+  */
+  nextI64(): BigInt {
+    const buffer = this.serialized.buffer;
+    const view = new DataView(buffer);
+    const value = view.getBigInt64(this.offset);
+    this.offset += 8;
+    return BigInt(value);
+  }
+
+  /**
+  * Returns the deserialized number.
+  *
+  * @return {number}
+  */
+  nextF32(): number {
+    const buffer = this.serialized.buffer;
+    const view = new DataView(buffer);
+    const value = view.getFloat64(this.offset);
+    this.offset += 8;
+    return value;
+  }
+
+  /**
+  * Returns the deserialized number.
+  *
+  * @return {number}
+  */
+  nextF64(): number {
+    const buffer = this.serialized.buffer;
+    const view = new DataView(buffer);
+    const value = view.getFloat64(this.offset);
+    this.offset += 8;
+    return value;
+  }
+
+  /**
+   * @return {Uint8Array} bytearray
+  */
+  nextUint8Array(): Uint8Array {
+    const length = Number(this.nextU32());
+    const byteArray = this.serialized.slice(
+      this.offset,
+      (this.offset) + length,
+    );
+    this.offset += length;
+    return byteArray;
   }
 
   // Setter
@@ -61,14 +139,107 @@ export default class Args {
    * @param {BigInt} bigInt
    * @return {Args}
    */
-  addU32(bigInt: BigInt): Args {
-    let buffer = new ArrayBuffer(4);
-    let view = new DataView(buffer);
+  addU32(bigInt: bigint): Args {
+    const buffer = new ArrayBuffer(4);
+    const view = new DataView(buffer);
     view.setUint32(0, Number(bigInt));
     this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
 
     this.offset += 4;
 
+    return this;
+  }
+
+  /**
+   *
+   * @param {BigInt} bigInt
+   * @return {Args}
+   */
+  addU64(bigInt: bigint): Args {
+    const buffer = new ArrayBuffer(8);
+    const view = new DataView(buffer);
+    view.setBigUint64(0, bigInt);
+    this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
+
+    this.offset += 8;
+
+    return this;
+  }
+
+  /**
+   *
+   * @param {BigInt} bigInt
+   * @return {Args}
+   */
+  addI32(bigInt: bigint): Args {
+    const buffer = new ArrayBuffer(4);
+    const view = new DataView(buffer);
+    view.setInt32(0, Number(bigInt));
+    this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
+
+    this.offset += 4;
+
+    return this;
+  }
+
+  /**
+ *
+ * @param {BigInt} bigInt
+ * @return {Args}
+ */
+  addI64(bigInt: bigint): Args {
+    const buffer = new ArrayBuffer(8);
+    const view = new DataView(buffer);
+    view.setBigInt64(0, bigInt);
+    this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
+
+    this.offset += 8;
+
+    return this;
+  }
+
+  /**
+   *
+   * @param {number} bigInt
+   * @return {Args}
+   */
+  addF32(number: number): Args {
+    const buffer = new ArrayBuffer(8);
+    const view = new DataView(buffer);
+    view.setFloat64(0, number);
+    this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
+
+    this.offset += 8;
+
+    return this;
+  }
+
+
+  /**
+  *
+  * @param {number} number
+  * @return {Args}
+  */
+  addF64(number: number): Args {
+    const buffer = new ArrayBuffer(8);
+    const view = new DataView(buffer);
+    view.setFloat64(0, number);
+    this.serialized = this.concatArrays(this.serialized, new Uint8Array(view.buffer));
+
+    this.offset += 8;
+
+    return this;
+  }
+
+  /**
+  *
+  * @param {Uint8Array} array
+  * @return {Args}
+  */
+  addUint8Array(array: Uint8Array): Args {
+    this.addU32(BigInt(array.length));
+    this.serialized = this.concatArrays(this.serialized, array);
+    this.offset += array.length;
     return this;
   }
 
@@ -85,8 +256,8 @@ export default class Args {
     const size = BigInt(arg.length);
 
     if (size > maxSize) {
-        console.warn("input string is too long, it will be truncated");
-        arg = arg.slice(0, maxSize);
+      console.warn("input string is too long, it will be truncated");
+      arg = arg.slice(0, maxSize);
     }
 
     this.addU32(size);
@@ -134,8 +305,8 @@ export default class Args {
    *
    * @return {Uint8Array} the concatenated array
    */
-    private concatArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
-    var c = new Uint8Array(a.length + b.length);
+  private concatArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
+    const c = new Uint8Array(a.length + b.length);
     c.set(a, 0);
     c.set(b, a.length);
     return c;
