@@ -16,7 +16,7 @@
     "update-version-major": "npm version major",
     "update-version-minor": "npm version minor",
     "update-version-patch": "npm version patch",
-    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts",
+    "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
     "test-vault-example": "ts-node ./examples/vault/index.ts",
     "fix-lint": "tslint -c tslint.json '**/*.ts' --fix"
