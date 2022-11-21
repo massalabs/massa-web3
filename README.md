@@ -9,6 +9,8 @@ but also to fetch and poll events from smart contracts on the Massa blockchain, 
 Use NPM in node.js / browser, or include single file from
 [GitHub's releases page](https://github.com/massalabs/massa-web3/releases):
 
+> npm install @massalabs/massa-web3
+
 ### Requirements
 
 -   NodeJS 14+
