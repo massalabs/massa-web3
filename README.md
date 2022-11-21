@@ -6,10 +6,22 @@ but also to fetch and poll events from smart contracts on the Massa blockchain, 
 
 ## Usage
 
-Use NPM in node.js / browser, or include single file from
-[GitHub's releases page](https://github.com/massalabs/massa-web3/releases):
+Massa-web3 could be used as a library for frameworks or as a stand-alone bundled js file which can be easily loaded into the browser.
+
+### Library (Node.js/React/Vue.js) usage
 
 > npm install @massalabs/massa-web3
+
+### Browser usage
+
+Add the following script to your html file:
+
+> <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js'</script>
+
+whereby the x.x.x is one of the available released versions under: 
+[GitHub's releases page](https://github.com/massalabs/massa-web3/releases):
+
+In your code, once the script is fully loaded, just use `window.massa` to access all `massa-web3` exports. 
 
 ### Requirements
 
