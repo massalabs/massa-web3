@@ -1,18 +1,18 @@
-# massa-web3
+# massa-web3 ![Node CI](https://github.com/massalabs/massa-web3/workflows/node.js.yml/badge.svg)
 
-Web3 libraries for Massa (web3.js SDK)
+massa-web3 is a TypeScript library that allow you to interact with the Massa blockchain through a
+local or remote Massa node. In particular the massa-web3 library will allow you to call the JSON-RPC API,
+but also to fetch and poll events from smart contracts on the Massa blockchain, deploy smart contracts and much more.
+
+## Usage
+
+Use NPM in node.js / browser, or include single file from
+[GitHub's releases page](https://github.com/massalabs/massa-web3/releases):
 
 ### Requirements
 
 -   NodeJS 14+
 -   npm / yarn (see package.json)
-
-### Package commands
-
-1. Run `yarn install` to install all deps
-2. Run `yarn run build` to build distribution content
-3. Run `yarn run test` to run integration and unit tests
-
 ### Web3 Client initialization
 
 There are two types of client initialization. The first one is connecting to Massa's public rpc node using a so-called default client. Please note that specifying a base account is only optional at this point. The code below illustrates how to do that:
@@ -517,3 +517,9 @@ const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().
     baseAccount
 );
 ```
+
+## Contributing and testing
+
+1. Run `yarn install` to install all deps
+2. Run `yarn run build` to build distribution content
+3. Run `yarn run test` to run integration and unit tests
