@@ -20,15 +20,15 @@ Add the following script to your html file:
 <script type='text/javascript' src="https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js"</script>
 ```
 
-whereby the x.x.x is one of the available released versions under: 
-[GitHub's releases page](https://github.com/massalabs/massa-web3/releases):
+whereby the x.x.x is one of the available released versions under
+[Massa-web3's releases page](https://github.com/massalabs/massa-web3/releases):
 
 In your code, once the script is fully loaded, just use `window.massa` to access all `massa-web3` exports.
 
 ```ts
-    <script>
-      console.log("Massa Web3 ", window.massa);
-    </script>
+<script>
+    console.log("Massa Web3 ", window.massa);
+</script>
 ```
 
 ### Requirements
