@@ -1,6 +1,6 @@
 # massa-web3 ![Node CI](https://github.com/massalabs/massa-web3/workflows/Node.js%20CI/badge.svg)
 
-massa-web3 is a TypeScript library that allow you to interact with the Massa blockchain through a
+Massa-web3 is a TypeScript library that allow you to interact with the Massa blockchain through a
 local or remote Massa node. In particular the massa-web3 library will allow you to call the JSON-RPC API,
 but also to fetch and poll events from smart contracts on the Massa blockchain, deploy smart contracts and much more.
 
@@ -16,12 +16,18 @@ Massa-web3 could be used as a library for frameworks or as a stand-alone bundled
 
 Add the following script to your html file:
 
-> <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js'</script>
+> <script type='text/javascript' src="https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js"%27%3E</script>
 
 whereby the x.x.x is one of the available released versions under: 
 [GitHub's releases page](https://github.com/massalabs/massa-web3/releases):
 
-In your code, once the script is fully loaded, just use `window.massa` to access all `massa-web3` exports. 
+In your code, once the script is fully loaded, just use `window.massa` to access all `massa-web3` exports.
+
+```ts
+    <script>
+      console.log("Web3 ", window.massa);
+    </script>
+```
 
 ### Requirements
 
