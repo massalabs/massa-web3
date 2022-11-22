@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import Args from "../src/utils/arguments";
+import { Args } from "../src";
 
 describe("Args class", () => {
     it("demonstrative test case", () => {

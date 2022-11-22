@@ -7,7 +7,7 @@ import { encode, decode} from "js-base64";
  * make smart-contract function call easier.
  *
  */
-export default class Args {
+export class Args {
   private offset: number = 0;
   private serialized: Uint8Array;
 
