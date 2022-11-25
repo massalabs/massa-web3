@@ -19,8 +19,8 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
     console.log(`${chalk.green.bold("Massa Smart Contract Interaction Example")}`);
     console.log(header);
 
-    const deployementScPath = "./examples/smartContracts/contracts/deployer.wasm";
-    const deployedScPath = "./examples/smartContracts/contracts/sc.wasm";
+    const deployementScPath = "./examples/smart_contracts_deployer/contracts/deployer.wasm";
+    const deployedScPath = "./examples/smart_contracts_deployer/contracts/sc.wasm";
     let spinner;
 
     try {
