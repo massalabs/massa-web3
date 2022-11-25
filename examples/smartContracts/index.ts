@@ -10,7 +10,7 @@ import { deploySmartContract } from "./deployer";
 const chalk = require("chalk");
 const ora = require("ora");
 
-const DEPLOYER_SECRET_KEY = "S13iFJarF4v6CxYPeguUQHqkxDdGZgFhrsiEMznbnS3is9aXFps";
+const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy";
 
 (async () => {
 
@@ -19,19 +19,20 @@ const DEPLOYER_SECRET_KEY = "S13iFJarF4v6CxYPeguUQHqkxDdGZgFhrsiEMznbnS3is9aXFps
     console.log(`${chalk.green.bold("Massa Smart Contract Interaction Example")}`);
     console.log(header);
 
-    const smartContractPath = "./examples/smartContracts/massaToken.wasm";
+    const deployementScPath = "./examples/smartContracts/contracts/deployer.wasm";
+    const deployedScPath = "./examples/smartContracts/contracts/sc.wasm";
     let spinner;
 
     try {
         // init client
         const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, deployerAccount);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, deployerAccount);
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
         const datastoreMap: Map<Uint8Array, Uint8Array> = new Map();
         datastoreMap.set(new Uint8Array(Buffer.from("key")), new Uint8Array(Buffer.from("value")));
-        const deploymentOperationId = await deploySmartContract(smartContractPath, {
+        const deploymentOperationId = await deploySmartContract(deployementScPath, deployedScPath, {
             fee: 0,
             maxGas: 200000,
             gasPrice: 0,
@@ -55,7 +56,7 @@ const DEPLOYER_SECRET_KEY = "S13iFJarF4v6CxYPeguUQHqkxDdGZgFhrsiEMznbnS3is9aXFps
 
         // find an event that contains the emitted sc address
         spinner = ora(`Extracting deployed sc address from events....`).start();
-        const addressEvent: IEvent|undefined = events.find(event => event.data.includes("Address:"));
+        const addressEvent: IEvent | undefined = events.find(event => event.data.includes("Address:"));
         if (!addressEvent) {
             throw new Error("No events were emitted from contract containing a message `Address:...`. Please make sure to include such a message in order to fetch the sc address");
         }

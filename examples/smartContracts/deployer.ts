@@ -7,11 +7,14 @@ import { ICompiledSmartContract } from "@massalabs/massa-sc-utils/dist/interface
 import { EOperationStatus } from "../../src/interfaces/EOperationStatus";
 const chalk = require("chalk");
 
-export const deploySmartContract = async (wasmFile: PathLike,
-							contractData: IContractData,
-							web3Client: Client,
-							awaitFinalization: boolean,
-							deployerAccount?: IAccount): Promise<string> => {
+export const deploySmartContract = async (
+	deploymentScWasm: PathLike,
+	deployedScWasm: PathLike,
+	contractData: IContractData,
+	web3Client: Client,
+	awaitFinalization: boolean,
+	deployerAccount?: IAccount
+): Promise<string> => {
 
 	let deploymentOperationId: string;
 	try {
@@ -25,25 +28,40 @@ export const deploySmartContract = async (wasmFile: PathLike,
 		contractData.maxGas = contractData.maxGas || 200000;
 		contractData.fee = contractData.fee || 0;
 		contractData.gasPrice = contractData.gasPrice || 0;
-		contractData.coins = contractData.coins || 0;
 
 		// construct a sc utils helper
 		const utils = new SmartContractUtils();
 
-		// compile sc from wasm file ready for deployment
-		console.log(`Running ${chalk.green("compilation")} of smart contract on path ${chalk.yellow(wasmFile)}....`);
+		// compile deployement sc from wasm
+		console.log(`Running ${chalk.green("compilation")} of smart contract on path ${chalk.yellow(deploymentScWasm)}....`);
 		let compiledSc: ICompiledSmartContract;
 		try {
-			compiledSc = await utils.compileSmartContractFromWasmFile(wasmFile);
-			console.log(`Smart Contract ${chalk.green("successfully")} compiled to deployable bytecode under ${wasmFile}`);
+			compiledSc = await utils.compileSmartContractFromWasmFile(deploymentScWasm);
+			console.log(`Smart Contract ${chalk.green("successfully")} compiled to deployable bytecode under ${deploymentScWasm}`);
 		} catch (ex) {
-			const msg = chalk.red(`Error compiling smart contract on path ${chalk.yellow(wasmFile)}`);
+			const msg = chalk.red(`Error compiling smart contract on path ${chalk.yellow(deploymentScWasm)}`);
 			console.error(msg);
 			throw new Error(ex);
 		}
-
 		if (!compiledSc.base64) {
-			const msg = chalk.red(`No bytecode to deploy for wasm file ${chalk.yellow(wasmFile)}. Check AS compiler`);
+			const msg = chalk.red(`No bytecode to deploy for wasm file ${chalk.yellow(deploymentScWasm)}. Check AS compiler`);
+			console.error(msg);
+			throw new Error(msg);
+		}
+
+		// compile deployed sc from wasm
+		console.log(`Running ${chalk.green("compilation")} of smart contract on path ${chalk.yellow(deployedScWasm)}....`);
+		let compiledDeployedSc: ICompiledSmartContract;
+		try {
+			compiledDeployedSc = await utils.compileSmartContractFromWasmFile(deployedScWasm);
+			console.log(`Smart Contract ${chalk.green("successfully")} compiled to deployable bytecode under ${deployedScWasm}`);
+		} catch (ex) {
+			const msg = chalk.red(`Error compiling smart contract on path ${chalk.yellow(deployedScWasm)}`);
+			console.error(msg);
+			throw new Error(ex);
+		}
+		if (!compiledDeployedSc.base64) {
+			const msg = chalk.red(`No bytecode to deploy for wasm file ${chalk.yellow(deployedScWasm)}. Check AS compiler`);
 			console.error(msg);
 			throw new Error(msg);
 		}
@@ -51,6 +69,8 @@ export const deploySmartContract = async (wasmFile: PathLike,
 		contractData.contractDataBase64 = compiledSc.base64;
 		contractData.contractDataBinary = compiledSc.binary;
 		contractData.contractDataText = compiledSc.text;
+		let key1: Uint8Array = Uint8Array.from([0, 1, 2, 3, 4]);
+		contractData.datastore.set(key1, compiledDeployedSc.binary);
 
 		// deploy smart contract
 		console.log(`Running ${chalk.green("deployment")} of smart contract....`);
@@ -64,7 +84,7 @@ export const deploySmartContract = async (wasmFile: PathLike,
 			deploymentOperationId = deployTxId[0];
 			console.log(`Smart Contract ${chalk.green("successfully")} deployed to Massa Network. Operation ID ${chalk.yellow(deploymentOperationId)}`);
 		} catch (ex) {
-			const msg = chalk.red(`Error deploying smart contract ${chalk.yellow(wasmFile)} to Massa Network`);
+			const msg = chalk.red(`Error deploying smart contract ${chalk.yellow(deploymentScWasm)} to Massa Network`);
 			console.error(msg);
 			throw new Error(ex);
 		}
@@ -89,7 +109,7 @@ export const deploySmartContract = async (wasmFile: PathLike,
 			}
 		}
 	} catch (ex) {
-		const msg = chalk.red(`Error deploying smart contract ${chalk.yellow(wasmFile)} to Massa Network`);
+		const msg = chalk.red(`Error deploying smart contract ${chalk.yellow(deploymentScWasm)} to Massa Network`);
 		console.error(msg);
 		throw new Error(ex);
 	}
