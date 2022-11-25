@@ -21,8 +21,8 @@ export class ClientFactory {
 		switch (provider) {
 			// in the case of localnet append specific default ports to url
 			case DefaultProviderUrls.LOCALNET: {
-				publicProviderUrl = `${publicProviderUrl}:33034`;
-				privateProviderUrl = `${privateProviderUrl}:33035`;
+				privateProviderUrl = `${privateProviderUrl}:33034`;
+				publicProviderUrl = `${publicProviderUrl}:33035`;
 				break;
 			}
 			// all other networks should be public only access
