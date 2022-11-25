@@ -174,14 +174,14 @@ export class BaseClient {
 				// smart contract operation datastore
 				const datastoreKeyMap = (data as IContractData).datastore ? (data as IContractData).datastore : new Map<Uint8Array, Uint8Array>();
 				let datastoreSerializedBuffer = Buffer.from(new Uint8Array());
-				for (const [key, value] of Object.entries(datastoreKeyMap)) {
+				for (const [key, value] of datastoreKeyMap) {
 					const encodedKeyBytes = Buffer.from(key);
 					const encodedKeyLen = Buffer.from(varintEncode(encodedKeyBytes.length));
 					const encodedValueBytes = Buffer.from(value);
 					const encodedValueLen = Buffer.from(varintEncode(encodedValueBytes.length));
-					datastoreSerializedBuffer = Buffer.concat([encodedKeyLen, encodedKeyBytes, encodedValueLen, encodedValueBytes]);
+					datastoreSerializedBuffer = Buffer.concat([datastoreSerializedBuffer, encodedKeyLen, encodedKeyBytes, encodedValueLen, encodedValueBytes]);
 				}
-				const datastoreSerializedBufferLen = Buffer.from(varintEncode(datastoreSerializedBuffer.length));
+				const datastoreSerializedBufferLen = Buffer.from(varintEncode(datastoreKeyMap.size));
 				if (datastoreSerializedBuffer.length === 0) {
 					return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen]);
 				}
