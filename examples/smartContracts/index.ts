@@ -10,7 +10,7 @@ import { deploySmartContract } from "./deployer";
 const chalk = require("chalk");
 const ora = require("ora");
 
-const DEPLOYER_SECRET_KEY = "S13iFJarF4v6CxYPeguUQHqkxDdGZgFhrsiEMznbnS3is9aXFps";
+const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy";
 
 (async () => {
 

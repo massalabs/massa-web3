@@ -167,9 +167,6 @@ export class BaseClient {
 				// max gas
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
 
-				// gas price
-				const gasPriceEncoded = Buffer.from(varintEncode((data as IContractData).gasPrice));
-
 				// contract data
 				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
@@ -186,10 +183,10 @@ export class BaseClient {
 				}
 				const datastoreSerializedBufferLen = Buffer.from(varintEncode(datastoreSerializedBuffer.length));
 				if (datastoreSerializedBuffer.length === 0) {
-					return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen]);
+					return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen]);
 				}
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, gasPriceEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen, datastoreSerializedBuffer]);
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, dataLengthEncoded, contractDataEncoded, datastoreSerializedBufferLen, datastoreSerializedBuffer]);
 			}
 			case OperationTypeId.CallSC: {
 				// max gas
