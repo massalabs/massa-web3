@@ -1,5 +1,3 @@
-import { encode, decode} from "js-base64";
-
 /**
  * Args for remote function call.
  *
@@ -15,8 +13,8 @@ export class Args {
    *
    * @param {string} serialized
    */
-  constructor(serialized: string = "") {
-    this.serialized = this.fromByteString(decode(serialized));
+  constructor(serialized: Array<number> = []) {
+    this.serialized = Uint8Array.from(serialized);
   }
 
   /**
@@ -24,8 +22,8 @@ export class Args {
    *
    * @return {string} the serialized string
    */
-  serialize(): string {
-    return encode(this.toByteString(this.serialized));
+  serialize(): Array<number> {
+    return Array.from(this.serialized);
   }
 
   // Getters

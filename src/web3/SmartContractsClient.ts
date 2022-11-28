@@ -6,7 +6,6 @@ import { ICallData } from "../interfaces/ICallData";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IContractData } from "../interfaces/IContractData";
 import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
-import { IContractStorageData } from "../interfaces/IContractStorageData";
 import { IEvent } from "../interfaces/IEvent";
 import { IEventFilter } from "../interfaces/IEventFilter";
 import { IEventRegexFilter } from "../interfaces/IEventRegexFilter";
@@ -119,7 +118,6 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		// request data
 		const data = {
 			max_gas: readData.maxGas,
-			simulated_gas_price: readData.simulatedGasPrice.toString(),
 			target_address: readData.targetAddress,
 			target_function: readData.targetFunction,
 			parameter: readData.parameter,
@@ -180,7 +178,6 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 
 		const data = {
 			max_gas: contractData.maxGas,
-			simulated_gas_price: contractData.gasPrice.toString(),
 			bytecode: Array.from(contractData.contractDataBinary),
 			address: contractData.address,
 		};

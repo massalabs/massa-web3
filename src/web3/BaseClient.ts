@@ -195,9 +195,6 @@ export class BaseClient {
 				// coins to send
 				const coinsEncoded = Buffer.from(varintEncode((data as ICallData).coins));
 
-				// gas price
-				const gasPriceEncoded = Buffer.from(varintEncode((data as ICallData).gasPrice));
-
 				// target address
 				const targetAddressEncoded = base58Decode((data as ICallData).targetAddress.slice(1)).slice(1);
 
@@ -206,10 +203,10 @@ export class BaseClient {
 				const functionNameLengthEncoded = Buffer.from(varintEncode(functionNameEncoded.length));
 
 				// parameter
-				const parametersEncoded = new Uint8Array(Buffer.from((data as ICallData).parameter, "utf8"));
+				const parametersEncoded = new Uint8Array((data as ICallData).parameter);
 				const parametersLengthEncoded = Buffer.from(varintEncode(parametersEncoded.length));
 
-				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, gasPriceEncoded, targetAddressEncoded,
+				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, maxGasEncoded, coinsEncoded, targetAddressEncoded,
                                       functionNameLengthEncoded, functionNameEncoded, parametersLengthEncoded, parametersEncoded]);
 			}
 			case OperationTypeId.Transaction: {

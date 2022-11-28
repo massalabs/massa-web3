@@ -10,7 +10,6 @@ import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
 import { BaseClient } from "./BaseClient";
 import { IPublicApiClient } from "../interfaces/IPublicApiClient";
-import { IContractStorageData } from "../interfaces/IContractStorageData";
 import { IDatastoreEntry } from "../interfaces/IDatastoreEntry";
 import { IDatastoreEntryInput } from "../interfaces/IDatastoreEntryInput";
 
@@ -102,7 +101,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 	}
 
 	/** Returns the data entry both at the latest final and active executed slots. */
-	public async getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IContractStorageData>> {
+	public async getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IDatastoreEntry>> {
 		const data = [];
 		for (const input of addresses_keys) {
 			data.push({
@@ -117,13 +116,6 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 		} else {
 			datastoreEntries = await this.sendJsonRPCRequest<Array<IDatastoreEntry>>(jsonRpcRequestMethod, [data]);
 		}
-		const candidateDatastoreEntries: Array<Array<number>|null> = datastoreEntries.map(elem => elem.candidate_value);
-		const finalDatastoreEntries: Array<Array<number>|null> = datastoreEntries.map(elem => elem.final_value);
-		return datastoreEntries.map((_, index) => {
-			return {
-				candidate: ( candidateDatastoreEntries[index] ) ? candidateDatastoreEntries[index].map((s) => String.fromCharCode(s)).join("") : null,
-				final: ( finalDatastoreEntries[index] ) ? finalDatastoreEntries[index].map((s) => String.fromCharCode(s)).join("") : null
-			} as IContractStorageData;
-		});
+		return datastoreEntries;
 	}
 }

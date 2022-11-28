@@ -23,7 +23,7 @@ export { IStakingAddresses } from "./interfaces/IStakingAddresses";
 export { ITransactionData } from "./interfaces/ITransactionData";
 export { IBalance } from "./interfaces/IBalance";
 export { IVault } from "./interfaces/IVault";
-export { IContractStorageData } from "./interfaces/IContractStorageData";
+export { IDatastoreEntry } from "./interfaces/IDatastoreEntry";
 export { IContractReadOperationData } from "./interfaces/IContractReadOperationData";
 export { IExecuteReadOnlyResponse } from "./interfaces/IExecuteReadOnlyResponse";
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";
