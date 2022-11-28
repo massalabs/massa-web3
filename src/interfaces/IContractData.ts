@@ -3,8 +3,6 @@ export interface IContractData {
 	fee: number;
 	/// The maximum amount of gas that the execution of the contract is allowed to cost.
 	maxGas: number;
-	/// The price per unit of gas that the caller is willing to pay for the execution.
-	gasPrice: number;
 	/// Smart contract data as bytecode.
 	contractDataBase64?: string;
 	/// Smart contract data as text.

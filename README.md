@@ -191,7 +191,7 @@ Available methods are:
     ```ts
     const datastoreEntries: Array<IContractStorageData> = await web3Client
         .publicApi()
-        .getDatastoreEntries([{ address: smartContractAddress, key: "some_key" } as IDatastoreEntryInput]);
+        .getDatastoreEntries([{ address: smartContractAddress, key: "some_key" } as IDatastoreEntry]);
     ```
 
 ### Client private API
@@ -367,7 +367,6 @@ const opIds = await web3Client.smartContracts().deploySmartContract(
     {
         fee: 0,
         maxGas: 2000000,
-        gasPrice: 0,
         coins: 0,
         contractDataBase64: compiledScFromSource.base64,
     } as IContractData,
@@ -499,7 +498,6 @@ Smart contract data could be read via `readSmartContract` method:
 const data: Array<IContractReadOperationData> = await web3Client.smartContracts().readSmartContract({
             fee: 0,
             maxGas: 200000,
-            simulatedGasPrice: 0,
             targetAddress: scAddress,
             targetFunction: "getGameState",
             parameter: "some_stringified_data",
@@ -515,7 +513,6 @@ Smart contract state-changing operations could be executed via `callSmartContrac
 ```ts
 const data: Array<string> = await web3Client.smartContracts().callSmartContract({
             fee: 0,
-            gasPrice: 0,
             maxGas: 200000,
             coins: 0,
             targetAddress: scAddress,
@@ -532,7 +529,6 @@ const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().
     {
         fee: 0,
         maxGas: 2000000,
-        gasPrice: 0,
         coins: 0,
         contractDataBase64: compiledScFromSource.base64,
     } as IContractData,

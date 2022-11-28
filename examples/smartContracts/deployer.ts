@@ -27,7 +27,6 @@ export const deploySmartContract = async (
 		// set default values in case of missing ones
 		contractData.maxGas = contractData.maxGas || 200000;
 		contractData.fee = contractData.fee || 0;
-		contractData.gasPrice = contractData.gasPrice || 0;
 
 		// construct a sc utils helper
 		const utils = new SmartContractUtils();
@@ -69,7 +68,7 @@ export const deploySmartContract = async (
 		contractData.contractDataBase64 = compiledSc.base64;
 		contractData.contractDataBinary = compiledSc.binary;
 		contractData.contractDataText = compiledSc.text;
-		let key1: Uint8Array = Uint8Array.from([0, 1, 2, 3, 4]);
+		const key1: Uint8Array = Uint8Array.from([0, 1, 2, 3, 4]);
 		contractData.datastore.set(key1, compiledDeployedSc.binary);
 
 		// deploy smart contract

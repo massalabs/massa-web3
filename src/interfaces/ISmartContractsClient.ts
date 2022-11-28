@@ -4,7 +4,6 @@ import { IBalance } from "./IBalance";
 import { ICallData } from "./ICallData";
 import { IContractData } from "./IContractData";
 import { IContractReadOperationData } from "./IContractReadOperationData";
-import { IContractStorageData } from "./IContractStorageData";
 import { IEvent } from "./IEvent";
 import { IEventFilter } from "./IEventFilter";
 import { IExecuteReadOnlyResponse } from "./IExecuteReadOnlyResponse";

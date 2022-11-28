@@ -1,7 +1,7 @@
 import { createSC, generateEvent, getOpData } from "@massalabs/massa-as-sdk";
 
 export function main(): void {
-    let key1: StaticArray<u8> = [0, 1, 2, 3, 4];
+    const key1: StaticArray<u8> = [0, 1, 2, 3, 4];
     const bytecode1 = getOpData(key1);
     const address1 = createSC(bytecode1);
     generateEvent("SC created at:" + address1.toByteString());

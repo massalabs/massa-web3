@@ -5,8 +5,8 @@ import { IEndorsement } from "./IEndorsement";
 import { INodeStatus } from "./INodeStatus";
 import { IOperationData } from "./IOperationData";
 import { IStakingAddresses } from "./IStakingAddresses";
-import { IContractStorageData } from "./IContractStorageData";
 import { IDatastoreEntryInput } from "./IDatastoreEntryInput";
+import { IDatastoreEntry } from "./IDatastoreEntry";
 
 export interface IPublicApiClient {
 	getNodeStatus(): Promise<INodeStatus>;
@@ -16,5 +16,5 @@ export interface IPublicApiClient {
 	getOperations(operationIds: Array<string>): Promise<Array<IOperationData>>;
 	getCliques(): Promise<Array<IClique>>;
 	getStakers(): Promise<Array<IStakingAddresses>>;
-	getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IContractStorageData | null>>;
+	getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IDatastoreEntry | null>>;
 }

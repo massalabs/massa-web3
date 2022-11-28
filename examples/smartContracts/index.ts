@@ -68,10 +68,9 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
         const readTxId = await web3Client.smartContracts().readSmartContract({
             fee: 0,
             maxGas: 200000,
-            simulatedGasPrice: 0,
             targetAddress: scAddress,
             targetFunction: "balanceOf",
-            parameter: deployerAccount.address,
+            parameter: Array.from(Buffer.from("gameState", "utf16le")),
         } as IReadData);
         const readScOperationId = readTxId[0];
         spinner.succeed(`Called read contract with operation ID ${chalk.yellow(JSON.stringify(readScOperationId, null, 4))}`);

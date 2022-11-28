@@ -3,8 +3,6 @@ export interface ICallData {
 	fee: number;
 	/// The maximum amount of gas that the execution of the contract is allowed to cost.
 	maxGas: number;
-	 /// The price per unit of gas that the caller is willing to pay for the execution.
-	gasPrice: number;
 	 /// Extra coins that are spent from the caller's balance and transferred to the target
 	coins: number;
 	/// Target smart contract address
@@ -12,5 +10,5 @@ export interface ICallData {
 	/// Target function name. No function is called if empty.
 	functionName: string;
 	/// Parameter to pass to the target function
-	parameter: string;
+	parameter: Array<number>;
 }
