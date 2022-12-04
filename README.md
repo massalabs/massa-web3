@@ -59,6 +59,7 @@ const baseAccount = {
 // initialize a testnet client
 const testnetClient: Client = await ClientFactory.createDefaultClient(
     DefaultProviderUrls.TESTNET,
+    true,
     baseAccount
 );
 ```
@@ -105,6 +106,7 @@ Please note that connecting to a locally running node could be easily done using
 ```ts
 const testnetClient: Client = await ClientFactory.createDefaultClient(
     DefaultProviderUrls.LOCALNET,
+    true,
     baseAccount
 );
 ```
