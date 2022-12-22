@@ -195,6 +195,18 @@ Available methods are:
         .publicApi()
         .getDatastoreEntries([{ address: smartContractAddress, key: "some_key" } as IDatastoreEntry]);
     ```
+-   `getBlockcliqueBlockBySlot`
+```ts
+const blockcliqueBlockBySlot: IBlockcliqueBlockBySlot = await web3Client
+    .publicApi()
+    .getBlockcliqueBlockBySlot([{ period: 12345, thread: 20 } as ISlot]);
+```
+-   `getGraphInterval`
+```ts
+const graphInterval: IGraphInterval = await web3Client
+    .publicApi()
+    .getGraphInterval([{ start: Date.now() - 2000, end: Date.now() } as IGetGraphInterval]);
+```
 
 ### Client private API
 
@@ -213,13 +225,21 @@ Available methods are:
     ```ts
     await web3Client.privateApi().nodeStop();
     ```
--   `ban`
+-   `nodeBanById`
     ```ts
-    await web3Client.privateApi().banIpAddress("192.168.1.1");
+    await web3Client.privateApi().nodeBanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
     ```
--   `unban`
+-   `nodeBanByIpAddress`
     ```ts
-    await web3Client.privateApi().unbanIpAddress("192.168.1.1");
+    await web3Client.privateApi().nodeBanByIpAddress("90.110.239.231");
+    ```
+-   `nodeUnbanById`
+    ```ts
+    await web3Client.privateApi().nodeUnbanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
+    ```
+-   `nodeUnbanByIpAddress`
+    ```ts
+    await web3Client.privateApi().nodeUnbanByIpAddress("90.110.239.231");
     ```
 -   `nodeGetStakingAddresses`
     ```ts
@@ -248,6 +268,14 @@ Available methods are:
     const message = "hello world";
     const msgBuf = new TextEncoder().encode(message);
     const signedMessage = await web3Client.privateApi().nodeSignMessage(msgBuf);
+    ```
+-   `nodeWhitelist`
+    ```ts
+    await web3Client.privateApi().nodeWhitelist("90.110.239.231");
+    ```
+-   `nodeRemoveFromWhitelist`
+    ```ts
+    await web3Client.privateApi().nodeRemoveFromWhitelist("90.110.239.231");
     ```
 
 ### Wallet operations

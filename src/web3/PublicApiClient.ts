@@ -12,6 +12,10 @@ import { BaseClient } from "./BaseClient";
 import { IPublicApiClient } from "../interfaces/IPublicApiClient";
 import { IDatastoreEntry } from "../interfaces/IDatastoreEntry";
 import { IDatastoreEntryInput } from "../interfaces/IDatastoreEntryInput";
+import { ISlot } from "../interfaces/ISlot";
+import { IGetGraphInterval } from "../interfaces/IGetGraphInterval";
+import { IGraphInterval } from "../interfaces/IGraphInterval";
+import { IBlockcliqueBlockBySlot } from "../interfaces/IBlockcliqueBlockBySlot";
 
 /** Public Api Client for interacting with the massa network */
 export class PublicApiClient extends BaseClient implements IPublicApiClient {
@@ -28,6 +32,28 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 		this.getOperations = this.getOperations.bind(this);
 		this.getCliques = this.getCliques.bind(this);
 		this.getStakers = this.getStakers.bind(this);
+		this.getBlockcliqueBlockBySlot = this.getBlockcliqueBlockBySlot.bind(this);
+		this.getGraphInterval = this.getGraphInterval.bind(this);
+	}
+
+	/** Get graph interval */
+	public async getGraphInterval(graphInterval: IGetGraphInterval): Promise<Array<IGraphInterval>> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_GRAPH_INTERVAL;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<Array<IGraphInterval>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [graphInterval]]);
+		} else {
+			return await this.sendJsonRPCRequest<Array<IGraphInterval>>(jsonRpcRequestMethod, [graphInterval]);
+		}
+	}
+
+	/** Get blockclique details by period and thread */
+	public async getBlockcliqueBlockBySlot(slot: ISlot): Promise<IBlockcliqueBlockBySlot> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<IBlockcliqueBlockBySlot>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [slot]]);
+		} else {
+			return await this.sendJsonRPCRequest<IBlockcliqueBlockBySlot>(jsonRpcRequestMethod, [slot]);
+		}
 	}
 
 	/** Show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...) */

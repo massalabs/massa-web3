@@ -7,6 +7,10 @@ import { IOperationData } from "./IOperationData";
 import { IStakingAddresses } from "./IStakingAddresses";
 import { IDatastoreEntryInput } from "./IDatastoreEntryInput";
 import { IDatastoreEntry } from "./IDatastoreEntry";
+import { ISlot } from "./ISlot";
+import { IGetGraphInterval } from "./IGetGraphInterval";
+import { IBlockcliqueBlockBySlot } from "./IBlockcliqueBlockBySlot";
+import { IGraphInterval } from "./IGraphInterval";
 
 export interface IPublicApiClient {
 	getNodeStatus(): Promise<INodeStatus>;
@@ -17,4 +21,6 @@ export interface IPublicApiClient {
 	getCliques(): Promise<Array<IClique>>;
 	getStakers(): Promise<Array<IStakingAddresses>>;
 	getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IDatastoreEntry | null>>;
+	getBlockcliqueBlockBySlot(slot: ISlot): Promise<IBlockcliqueBlockBySlot>;
+	getGraphInterval(graphInterval: IGetGraphInterval): Promise<Array<IGraphInterval>>;
 }
