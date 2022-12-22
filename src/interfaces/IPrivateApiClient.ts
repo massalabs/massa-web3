@@ -1,8 +1,12 @@
 import { ISignedMessage } from "./ISignedMessage";
 
 export interface IPrivateApiClient {
-	unbanIpAddress(ipAddress: string): Promise<void>;
-	banIpAddress(ipAddress: string): Promise<void>;
+	nodeBanById(id: string): Promise<void>;
+	nodeBanByIpAddress(ipAddress: string): Promise<void>;
+	nodeUnbanById(nodeId: string): Promise<void>;
+	nodeUnbanByIpAddress(ipAddress: string): Promise<void>;
+	nodeRemoveFromWhitelist(ipAddress: string): Promise<void>;
+	nodeWhitelist(ipAddress: string): Promise<void>;
 	nodeStop(): Promise<void>;
 	nodeSignMessage(message: Uint8Array): Promise<ISignedMessage>;
 	nodeGetStakingAddresses(): Promise<Array<string>>;

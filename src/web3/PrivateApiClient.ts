@@ -5,7 +5,6 @@ import { ISignedMessage } from "../interfaces/ISignedMessage";
 import { BaseClient } from "./BaseClient";
 import { IPrivateApiClient } from "../interfaces/IPrivateApiClient";
 
-
 /** Private Api Client for interacting with a massa node */
 export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
 	public constructor(clientConfig: IClientConfig) {
@@ -15,17 +14,21 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
 
 		// private api methods
 		this.nodeStop = this.nodeStop.bind(this);
-		this.banIpAddress = this.banIpAddress.bind(this);
-		this.unbanIpAddress = this.unbanIpAddress.bind(this);
+		this.nodeBanById = this.nodeBanById.bind(this);
+		this.nodeBanByIpAddress = this.nodeBanByIpAddress.bind(this);
+		this.nodeUnbanById = this.nodeUnbanById.bind(this);
+		this.nodeUnbanByIpAddress = this.nodeUnbanByIpAddress.bind(this);
 		this.nodeAddStakingSecretKeys = this.nodeAddStakingSecretKeys.bind(this);
 		this.nodeGetStakingAddresses = this.nodeGetStakingAddresses.bind(this);
 		this.nodeRemoveStakingAddresses = this.nodeRemoveStakingAddresses.bind(this);
 		this.nodeSignMessage = this.nodeSignMessage.bind(this);
+		this.nodeRemoveFromWhitelist = this.nodeRemoveFromWhitelist.bind(this);
+		this.nodeWhitelist = this.nodeWhitelist.bind(this);
 	}
 
-	/** Unban a given IP addresses */
-	public async unbanIpAddress(ipAddress: string): Promise<void> {
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.UNBAN;
+	/** Remove a given Node IP address from the whitelist */
+	public async nodeWhitelist(ipAddress: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_WHITELIST;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[ipAddress]]]);
 		} else {
@@ -33,13 +36,53 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
 		}
 	}
 
-	/** Ban a given IP addresses */
-	public async banIpAddress(ipAddress: string): Promise<void> {
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.BAN;
+	/** Remove a given Node IP address from the whitelist */
+	public async nodeRemoveFromWhitelist(ipAddress: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[ipAddress]]]);
 		} else {
 			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
+		}
+	}
+
+	/** Unban a given IP address */
+	public async nodeUnbanByIpAddress(ipAddress: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_IP;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[ipAddress]]]);
+		} else {
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
+		}
+	}
+
+	/** Unban a given node id */
+	public async nodeUnbanById(nodeId: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_ID;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[nodeId]]]);
+		} else {
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[nodeId]]);
+		}
+	}
+
+	/** Ban a given node IP address */
+	public async nodeBanByIpAddress(ipAddress: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_IP;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[ipAddress]]]);
+		} else {
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[ipAddress]]);
+		}
+	}
+
+	/** Ban a given node Id */
+	public async nodeBanById(id: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_ID;
+		if (this.clientConfig.retryStrategyOn) {
+			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[id]]]);
+		} else {
+			return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[id]]);
 		}
 	}
 
