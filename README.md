@@ -368,12 +368,12 @@ const opIds = await web3Client.smartContracts().deploySmartContract(
         fee: 0,
         maxGas: 2000000,
         coins: 0,
-        contractDataBase64: compiledScFromSource.base64,
+        contractDataBinary: compiledScFromSource.binary,
     } as IContractData,
     baseAccount
 );
 ```
-The compiledScFromSource is the base64 compiled smart contract code that could easily be obtained using massa's https://www.npmjs.com/package/massa-sc-utils
+The compiledScFromSource is the compiled smart contract code in binary form.
 
 ### Smart contract event fetching and polling
 
@@ -530,7 +530,7 @@ const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().
         fee: 0,
         maxGas: 2000000,
         coins: 0,
-        contractDataBase64: compiledScFromSource.base64,
+        contractDataBinary: compiledScFromSource.binary,
     } as IContractData,
     baseAccount
 );

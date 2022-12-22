@@ -50,7 +50,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
 		// get the block size
-		if (contractData.contractDataBase64.length > nodeStatusInfo.config.max_block_size / 2) {
+		if (contractData.contractDataBinary.length > nodeStatusInfo.config.max_block_size / 2) {
 			console.warn("bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected");
 		}
 
@@ -66,9 +66,9 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		// sign payload
 		const signature: ISignature = await WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
 
-		// revert base64 sc data to binary
-		if (!contractData.contractDataBase64) {
-			throw new Error(`Contract base64 encoded data required. Got null`);
+		// Check if SC data exists
+		if (!contractData.contractDataBinary) {
+			throw new Error(`Contract data required. Got null`);
 		}
 
 		const data = {
