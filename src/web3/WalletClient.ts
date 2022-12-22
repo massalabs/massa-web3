@@ -1,6 +1,6 @@
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { IAccount } from "../interfaces/IAccount";
-import { BaseClient } from "./BaseClient";
+import { BaseJsonRpcClient } from "./BaseJsonRpcClient";
 import { IAddressInfo } from "../interfaces/IAddressInfo";
 import { IFullAddressInfo } from "../interfaces/IFullAddressInfo";
 import { ISignature } from "../interfaces/ISignature";
@@ -29,7 +29,7 @@ const getThreadNumber = (address: string): number => {
 };
 
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
-export class WalletClient extends BaseClient implements IWalletClient {
+export class WalletClient extends BaseJsonRpcClient implements IWalletClient {
 
 	private wallet: Array<IAccount> = [];
 	private baseAccount: IAccount;

@@ -6,11 +6,11 @@ import { WalletClient } from "./WalletClient";
 import { SmartContractsClient } from "./SmartContractsClient";
 import { VaultClient } from "./VaultClient";
 import { IProvider, ProviderType } from "../interfaces/IProvider";
-import { DefaultProviderUrls } from "./ClientFactory";
-import { IClient } from "../interfaces/IClient";
+import { DefaultJsonRpcProviderUrls, DefaultWsProviderUrls } from "./ClientFactory";
+import { IJsonRpcClient } from "../interfaces/IJsonRpcClient";
 
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
-export class Client implements IClient {
+export class JsonRpcClient implements IJsonRpcClient {
 	private publicApiClient: PublicApiClient;
 	private privateApiClient: PrivateApiClient;
 	private walletClient: WalletClient;
@@ -29,8 +29,8 @@ export class Client implements IClient {
 		this.publicApi = this.publicApi.bind(this);
 		this.wallet = this.wallet.bind(this);
 		this.smartContracts = this.smartContracts.bind(this);
-		this.setCustomProviders = this.setCustomProviders.bind(this);
-		this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
+		this.setCustomJsonRpcProviders = this.setCustomJsonRpcProviders.bind(this);
+		this.setNewDefaultJsonRpcProvider = this.setNewDefaultJsonRpcProvider.bind(this);
 	}
 
 	/** Private Api related RPC methods */
@@ -59,7 +59,7 @@ export class Client implements IClient {
 	}
 
 	/** set new providers */
-	public setCustomProviders(providers: Array<IProvider>): void {
+	public setCustomJsonRpcProviders(providers: Array<IProvider>): void {
 		this.publicApiClient.setProviders(providers);
 		this.privateApiClient.setProviders(providers);
 		this.walletClient.setProviders(providers);
@@ -67,12 +67,12 @@ export class Client implements IClient {
 	}
 
 	/** get currently set providers */
-	public getProviders(): Array<IProvider> {
+	public getJsonRpcProviders(): Array<IProvider> {
 		return this.clientConfig.providers;
 	}
 
 	/** sets a new default provider */
-	public setNewDefaultProvider(provider: DefaultProviderUrls): void {
+	public setNewDefaultJsonRpcProvider(provider: DefaultJsonRpcProviderUrls): void {
 		const providers = new Array({
 			url: provider,
 			type: ProviderType.PUBLIC

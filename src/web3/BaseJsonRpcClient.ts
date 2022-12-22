@@ -23,7 +23,7 @@ const requestHeaders = {
 export const PERIOD_OFFSET = 5;
 
 /**  Base Client which is to be extended by other clients as it provides core methods */
-export class BaseClient {
+export class BaseJsonRpcClient {
 	protected clientConfig: IClientConfig;
 
 	public constructor(clientConfig: IClientConfig) {

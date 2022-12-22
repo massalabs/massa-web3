@@ -4,7 +4,7 @@ import { IEventFilter } from "../interfaces/IEventFilter";
 import { IEventRegexFilter } from "../interfaces/IEventRegexFilter";
 import { ISlot } from "../interfaces/ISlot";
 import { Timeout } from "../utils/Timeout";
-import { Client } from "./Client";
+import { JsonRpcClient } from "./JsonRpcClient";
 
 /** Smart Contracts Event Poller */
 export const ON_MASSA_EVENT_DATA = "ON_MASSA_EVENT";
@@ -27,7 +27,7 @@ export class EventPoller extends EventEmitter {
 
 	public constructor(private readonly eventsFilter: IEventFilter | IEventRegexFilter,
 						private readonly pollIntervalMillis: number,
-						private readonly web3Client: Client) {
+						private readonly web3Client: JsonRpcClient) {
 		super();
 
 		// bind class methods
@@ -95,7 +95,7 @@ export class EventPoller extends EventEmitter {
 
     public static startEventsPolling(eventsFilter: IEventFilter | IEventRegexFilter,
 										pollIntervalMillis: number,
-										web3Client: Client,
+										web3Client: JsonRpcClient,
                                         onData?: (data: Array<IEvent>) => void,
                                         onError?: (err: Error) => void): EventPoller {
 		const eventPoller = new EventPoller(eventsFilter, pollIntervalMillis, web3Client);
@@ -114,7 +114,7 @@ export class EventPoller extends EventEmitter {
 	}
 
 	public static getEventsOnce(eventsFilter: IEventFilter | IEventRegexFilter,
-								web3Client: Client): Promise<Array<IEvent>> {
+								web3Client: JsonRpcClient): Promise<Array<IEvent>> {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);

@@ -19,7 +19,7 @@ import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { wait } from "../utils/Wait";
-import { BaseClient } from "./BaseClient";
+import { BaseJsonRpcClient } from "./BaseJsonRpcClient";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 
@@ -27,7 +27,7 @@ const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
-export class SmartContractsClient extends BaseClient implements ISmartContractsClient {
+export class SmartContractsClient extends BaseJsonRpcClient implements ISmartContractsClient {
 
 	public constructor(clientConfig: IClientConfig, private readonly publicApiClient: PublicApiClient, private readonly walletClient: WalletClient) {
 		super(clientConfig);

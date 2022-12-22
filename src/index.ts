@@ -29,7 +29,7 @@ export { IExecuteReadOnlyResponse } from "./interfaces/IExecuteReadOnlyResponse"
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";
 export { EOperationStatus } from "./interfaces/EOperationStatus";
 export { ITransactionOpType, IRollBuyOpType, IRollSellOpType, IExecSmartContractOpType, OperationTypeId, OpType } from "./interfaces/OperationTypes";
-export { IClient } from "./interfaces/IClient";
+export { IJsonRpcClient } from "./interfaces/IJsonRpcClient";
 export { IPublicApiClient } from "./interfaces/IPublicApiClient";
 export { IPrivateApiClient } from "./interfaces/IPrivateApiClient";
 export { IWalletClient } from "./interfaces/IWalletClient";
@@ -39,10 +39,13 @@ export { IDatastoreEntryInput } from "./interfaces/IDatastoreEntryInput";
 export { IGetGraphInterval } from "./interfaces/IGetGraphInterval";
 export { IGraphInterval } from "./interfaces/IGraphInterval";
 export { IBlockcliqueBlockBySlot } from "./interfaces/IBlockcliqueBlockBySlot";
+import { IWsClientConfig } from "./interfaces/IWsClientConfig";
+import { WebsocketStatus } from "./interfaces/WebsocketStatus";
 
 /** Exposed clients and factories */
-export { ClientFactory, DefaultProviderUrls } from "./web3/ClientFactory";
-export { Client } from "./web3/Client";
+export { ClientFactory, DefaultJsonRpcProviderUrls } from "./web3/ClientFactory";
+export { JsonRpcClient } from "./web3/JsonRpcClient";
+export { WsBlockSubClient } from "./web3/WsBlockSubClient";
 export { PublicApiClient } from "./web3/PublicApiClient";
 export { PrivateApiClient } from "./web3/PrivateApiClient";
 export { WalletClient } from "./web3/WalletClient";

@@ -8,7 +8,7 @@ import { IEndorsement } from "../interfaces/IEndorsement";
 import { IOperationData } from "../interfaces/IOperationData";
 import { IClique } from "../interfaces/IClique";
 import { IStakingAddresses } from "../interfaces/IStakingAddresses";
-import { BaseClient } from "./BaseClient";
+import { BaseJsonRpcClient } from "./BaseJsonRpcClient";
 import { IPublicApiClient } from "../interfaces/IPublicApiClient";
 import { IDatastoreEntry } from "../interfaces/IDatastoreEntry";
 import { IDatastoreEntryInput } from "../interfaces/IDatastoreEntryInput";
@@ -18,7 +18,7 @@ import { IGraphInterval } from "../interfaces/IGraphInterval";
 import { IBlockcliqueBlockBySlot } from "../interfaces/IBlockcliqueBlockBySlot";
 
 /** Public Api Client for interacting with the massa network */
-export class PublicApiClient extends BaseClient implements IPublicApiClient {
+export class PublicApiClient extends BaseJsonRpcClient implements IPublicApiClient {
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
 

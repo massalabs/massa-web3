@@ -1,7 +1,7 @@
 import { IAccount } from "../../src/interfaces/IAccount";
 import { IContractData } from "../../src/interfaces/IContractData";
 import { IEventFilter } from "../../src/interfaces/IEventFilter";
-import { ClientFactory, DefaultProviderUrls } from "../../src/web3/ClientFactory";
+import { ClientFactory, DefaultJsonRpcProviderUrls } from "../../src/web3/ClientFactory";
 import { IEvent } from "../../src/interfaces/IEvent";
 import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
@@ -26,7 +26,7 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
     try {
         // init client
         const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, deployerAccount);
+        const web3Client = await ClientFactory.createDefaultJsonRpcClient(DefaultJsonRpcProviderUrls.LABNET, true, deployerAccount);
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();

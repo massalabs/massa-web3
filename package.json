@@ -11,7 +11,7 @@
     "build-package": "rimraf dist/* && tsc -d -p ./tsconfig.json",
     "build-bundle": "npm run gen-bundle && npm run uglify-bundle-optimize",
     "gen-bundle": "browserify dist/index.js --standalone massa > bundle.js",
-    "uglify-bundle-optimize": "browserify dist/index.js -i node-fetch -i http -i https -o bundle.min.js && browserify dist/index.js -i node-fetch -g uglifyify --compress --mangle -o bundle.min.js",
+    "uglify-bundle-optimize": "browserify dist/index.js -p esmify -i node-fetch -i http -i https -o bundle.min.js && browserify dist/index.js -p esmify -i node-fetch -g uglifyify --compress --mangle -o bundle.min.js",
     "build": "npm run build-package && npm run build-bundle",
     "update-version-major": "npm version major",
     "update-version-minor": "npm version minor",
@@ -19,6 +19,7 @@
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
     "test-vault-example": "ts-node ./examples/vault/index.ts",
+    "test-ws": "ts-node ./examples/websockets/index.ts",
     "fix-lint": "tslint -c tslint.json '**/*.ts' --fix"
   },
   "author": "Massa Labs <info@massa.net>",
@@ -57,8 +58,11 @@
     "bn.js": "^5.2.0",
     "buffer": "^6.0.3",
     "crypto-js": "^4.1.1",
+    "esmify": "^2.1.1",
+    "isomorphic-ws": "^5.0.0",
     "js-base64": "^3.7.3",
-    "varint": "^6.0.0"
+    "varint": "^6.0.0",
+    "ws": "^8.11.0"
   },
   "devDependencies": {
     "@massalabs/massa-sc-utils": "^2.1.6",
@@ -91,5 +95,9 @@
     "typescript": "^4.8.4",
     "uglify-js": "^3.15.4",
     "uglifyify": "^5.0.2"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^5.0.10"
   }
 }
