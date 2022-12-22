@@ -42,7 +42,7 @@ export const deploySmartContract = async (
 			console.error(msg);
 			throw new Error(ex);
 		}
-		if (!compiledSc.base64) {
+		if (!compiledSc.binary) {
 			const msg = chalk.red(`No bytecode to deploy for wasm file ${chalk.yellow(deploymentScWasm)}. Check AS compiler`);
 			console.error(msg);
 			throw new Error(msg);
@@ -59,16 +59,16 @@ export const deploySmartContract = async (
 			console.error(msg);
 			throw new Error(ex);
 		}
-		if (!compiledDeployedSc.base64) {
+		if (!compiledDeployedSc.binary) {
 			const msg = chalk.red(`No bytecode to deploy for wasm file ${chalk.yellow(deployedScWasm)}. Check AS compiler`);
 			console.error(msg);
 			throw new Error(msg);
 		}
 
-		contractData.contractDataBase64 = compiledSc.base64;
 		contractData.contractDataBinary = compiledSc.binary;
 		contractData.contractDataText = compiledSc.text;
 		const key1: Uint8Array = Uint8Array.from([0, 1, 2, 3, 4]);
+		contractData.datastore = new Map<Uint8Array, Uint8Array>();
 		contractData.datastore.set(key1, compiledDeployedSc.binary);
 
 		// deploy smart contract

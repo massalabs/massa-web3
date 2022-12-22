@@ -166,14 +166,14 @@ export class BaseClient {
 		switch (opTypeId) {
 			case OperationTypeId.ExecuteSC: {
 
-				// revert base64 sc data to binary
-				const decodedScBinaryCode = new Uint8Array(Buffer.from((data as IContractData).contractDataBase64, "base64"));
+				// get sc data binary
+				const scBinaryCode = (data as IContractData).contractDataBinary;
 
 				// max gas
 				const maxGasEncoded = Buffer.from(varintEncode((data as IContractData).maxGas));
 
 				// contract data
-				const contractDataEncoded = Buffer.from(decodedScBinaryCode);
+				const contractDataEncoded = Buffer.from(scBinaryCode);
 				const dataLengthEncoded = Buffer.from(varintEncode(contractDataEncoded.length));
 
 				// smart contract operation datastore
