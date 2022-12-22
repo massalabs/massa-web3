@@ -17,7 +17,7 @@ but also to fetch and poll events from smart contracts on the Massa blockchain, 
 Add the following script to your html file:
 
 ```ts
-<script type='text/javascript' src="https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js"</script>
+<script type='text/javascript' src="https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js"></script>
 ```
 
 whereby the x.x.x is one of the available released versions under
