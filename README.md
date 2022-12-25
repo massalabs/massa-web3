@@ -284,7 +284,7 @@ Example:
 
 ```ts
 // generate new wallet
-const newWalletAccount = await web3Client.wallet().walletGenerateNewAccount();
+const newWalletAccount = await WalletClient.walletGenerateNewAccount();
 ```
 
 Available class methods are:
