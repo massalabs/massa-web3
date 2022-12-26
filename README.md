@@ -44,9 +44,7 @@ import {
     ClientFactory,
     Client,
     DefaultProviderUrls,
-    IAccount,
-    IProvider,
-    ProviderType 
+    IAccount
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -70,7 +68,6 @@ The second way is to create a custom client connecting to a node whose ip and po
 import {
     ClientFactory,
     Client,
-    DefaultProviderUrls,
     IAccount,
     IProvider,
     ProviderType 
@@ -97,6 +94,7 @@ const providers: Array<IProvider> = [
 
 const customClient: Client = await ClientFactory.createCustomClient(
     providers,
+    true,
     baseAccount
 );
 ```
@@ -286,7 +284,7 @@ Example:
 
 ```ts
 // generate new wallet
-const newWalletAccount = await web3Client.wallet().walletGenerateNewAccount();
+const newWalletAccount = await WalletClient.walletGenerateNewAccount();
 ```
 
 Available class methods are:
