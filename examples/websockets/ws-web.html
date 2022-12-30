@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Websocket's Test</title>
+    <script type='text/javascript' src='../../bundle.js'></script>
+
+    <script>
+        const wsClient = new window.massa.WsFilledBlocksSubClient({
+            connectionUrl: window.massa.DefaultWsProviderUrls.LABNET,
+            pingTimeoutMs: 10000
+        });
+
+        // bind various methods for handling common socket events
+        wsClient.on(window.massa.WebsocketEvent.ON_CLOSED, () => {
+            console.log("WS CLOSED");
+        });
+
+        wsClient.on(window.massa.WebsocketEvent.ON_CLOSING, () => {
+            console.log("WS CLOSING");
+        });
+
+        wsClient.on(window.massa.WebsocketEvent.ON_CONNECTING, () => {
+            console.log("WS CONNECTING");
+        });
+
+        wsClient.on(window.massa.WebsocketEvent.ON_OPEN, () => {
+            console.log("WS OPEN");
+        });
+
+        wsClient.on(window.massa.WebsocketEvent.ON_PING, () => {
+            console.log("WS PING");
+        });
+
+        // connect to ws
+        wsClient.connect().then(() => {
+            console.log("Connect called");
+        })
+        .catch((ex) => {
+            console.error("Error on calling connect", ex)
+        })
+
+    </script>
+
+  </head>
+
+  <body>
+    <p>Hello World</p>
+  </body>
+</html>
