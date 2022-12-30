@@ -1,14 +1,14 @@
 import { IWsClientConfig } from "../interfaces/IWsClientConfig";
 import { EventEmitter } from "events";
-import { WebsocketStatus } from "../interfaces/WebsocketStatus";
-const IsoWebSocket = require('isomorphic-ws');
+import { WebsocketEvent } from "../interfaces/WebsocketEvent";
+const IsoWebSocket = require("isomorphic-ws");
 
 export const bin2String = (array: Buffer | ArrayBuffer): string => {
     return String.fromCharCode.apply(String, array);
-}
+};
 
 /** Base Ws Client for interacting with the massa network */
-export class BaseWsClient extends EventEmitter {
+export abstract class BaseWsClient extends EventEmitter {
 
 	protected wss: typeof IsoWebSocket;
 	protected isConnected: boolean = false;
@@ -18,34 +18,40 @@ export class BaseWsClient extends EventEmitter {
 		super();
 	}
 
+	protected abstract parseWsMessage(message: any): void;
+
 	public async connect(): Promise<void> {
 
 		this.wss = new IsoWebSocket(this.wsClientConfig.connectionUrl, {
 			perMessageDeflate: false
 		});
 
-		this.wss.on(WebsocketStatus.ON_CLOSED, () => {
+		this.wss.on(WebsocketEvent.ON_CLOSED, () => {
 			this.isConnected = false;
-			this.emit(WebsocketStatus.ON_CLOSED);
+			this.emit(WebsocketEvent.ON_CLOSED);
 		});
-	
-		this.wss.on(WebsocketStatus.ON_CONNECTING, () => {
-			this.emit(WebsocketStatus.ON_CONNECTING);
+
+		this.wss.on(WebsocketEvent.ON_CONNECTING, () => {
+			this.emit(WebsocketEvent.ON_CONNECTING);
 		});
-	
-		this.wss.on(WebsocketStatus.ON_CLOSING, () => {
-			this.emit(WebsocketStatus.ON_CLOSING);
+
+		this.wss.on(WebsocketEvent.ON_CLOSING, () => {
+			this.emit(WebsocketEvent.ON_CLOSING);
 		});
-	
-		this.wss.on(WebsocketStatus.ON_PING, () => {
-			this.emit(WebsocketStatus.ON_PING);
+
+		this.wss.on(WebsocketEvent.ON_PING, () => {
+			this.emit(WebsocketEvent.ON_PING);
 			this.checkNextHeartbeat();
 		});
 
+		this.wss.on(WebsocketEvent.ON_MESSAGE, (data) => {
+			this.parseWsMessage(data);
+		});
+
 		return new Promise<void>((resolve, reject) => {
-			this.wss.on(WebsocketStatus.ON_OPEN, () => {
+			this.wss.on(WebsocketEvent.ON_OPEN, () => {
 				this.isConnected = true;
-				this.emit(WebsocketStatus.ON_OPEN);
+				this.emit(WebsocketEvent.ON_OPEN);
 				return resolve();
 			});
 		});
@@ -53,7 +59,7 @@ export class BaseWsClient extends EventEmitter {
 
 	private checkNextHeartbeat() {
 		clearTimeout(this.pingTimeout);
-	  
+
 		// We Use `WebSocket#terminate()`, which immediately destroys the connection,
 		// Delay should be equal to the interval at which your server
 		// sends out pings plus a conservative assumption of the latency.

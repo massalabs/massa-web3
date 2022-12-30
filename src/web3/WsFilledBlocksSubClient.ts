@@ -1,56 +1,52 @@
 import { IBlockHeaderInfo } from "../interfaces/IBlockcliqueBlockBySlot";
 import { ISubscribeNewBlocksMessage } from "../interfaces/ISubscribeNewBlocksMessage";
 import { IWsClientConfig } from "../interfaces/IWsClientConfig";
-import { WebsocketEvent } from "../interfaces/WebsocketEvent";
 import { WS_RPC_REQUEST_METHOD } from "../interfaces/WsRpcMethods";
 import { BaseWsClient, bin2String } from "./BaseWsClient";
 
 /** Public Ws Client for interacting with the massa network */
-export class WsBlockSubClient extends BaseWsClient {
+export class WsFilledBlocksSubClient extends BaseWsClient {
 
-	// subscription ids
 	private subId: number;
+	private onFilledBlockHandler?: (data: ISubscribeNewBlocksMessage) => void;
 
-	// methods
-	private onNewBlockHandler?: (data: ISubscribeNewBlocksMessage) => void;
-
-	public constructor(wsClientConfig: IWsClientConfig) {
+	public constructor(wsClientConfig: IWsClientConfig, ) {
 		super(wsClientConfig);
-		this.subscribeNewBlocks = this.subscribeNewBlocks.bind(this);
-		this.unsubscribeNewBlocks = this.unsubscribeNewBlocks.bind(this);
-		this.onNewBlock = this.onNewBlock.bind(this);
+		this.subscribeFilledBlocks = this.subscribeFilledBlocks.bind(this);
+		this.unsubscribeFilledBlocks = this.unsubscribeFilledBlocks.bind(this);
+		this.onFilledBlock = this.onFilledBlock.bind(this);
 		this.parseWsMessage = this.parseWsMessage.bind(this);
 	}
 
-	public onNewBlock(onNewBlockHandler?: (data: ISubscribeNewBlocksMessage) => void) {
-		if (onNewBlockHandler) {
-			this.onNewBlockHandler = onNewBlockHandler;
+	public onFilledBlock(onFilledBlockHandler?: (data: ISubscribeNewBlocksMessage) => void) {
+		if (onFilledBlockHandler) {
+			this.onFilledBlockHandler = onFilledBlockHandler;
 		}
 	}
 
-	public subscribeNewBlocks(): void {
+	public subscribeFilledBlocks(): void {
 		if (!((this.wss && this.isConnected))) {
 			throw new Error("Websocket Client is not connected");
 		}
 		this.wss.send(JSON.stringify({
 			"jsonrpc": "2.0",
 			"id": 1,
-			"method": WS_RPC_REQUEST_METHOD.SUBSCRIBE_NEW_BLOCKS,
+			"method": WS_RPC_REQUEST_METHOD.SUBSCRIBE_NEW_FILLED_BLOCKS,
 			"params": []
 		}));
 	}
 
-	public unsubscribeNewBlocks(): void {
+	public unsubscribeFilledBlocks(): void {
 		if (!((this.wss && this.isConnected))) {
 			throw new Error("Websocket Client is not connected");
 		}
 		if (!this.subId) {
-			throw new Error("Cannot unsubscribe to new blocks as subscription id is missing. Subscribe client first!");
+			throw new Error("Cannot unsubscribe to filled block as subscription id is missing. Subscribe client first!");
 		}
 		this.wss.send(JSON.stringify({
 			"jsonrpc": "2.0",
 			"id": 1,
-			"method": WS_RPC_REQUEST_METHOD.UNSUBSCRIBE_NEW_BLOCKS,
+			"method": WS_RPC_REQUEST_METHOD.UNSUBSCRIBE_NEW_FILLED_BLOCKS,
 			"params": [this.subId]
 		}));
 	}
@@ -64,8 +60,8 @@ export class WsBlockSubClient extends BaseWsClient {
 				this.subId = parseInt(parsedMsg["result"]);
 			}
 			if (parsedMsg["params"] && parsedMsg["params"]["result"] && parsedMsg["params"]["subscription"] === this.subId) {
-				if (this.onNewBlockHandler) {
-					this.onNewBlockHandler(parsedMsg["params"]["result"] as ISubscribeNewBlocksMessage);
+				if (this.onFilledBlockHandler) {
+					this.onFilledBlockHandler(parsedMsg["params"]["result"] as ISubscribeNewBlocksMessage);
 				}
 			}
 		} catch (err) {

@@ -1,18 +1,12 @@
-import { IEndorsementInfo } from "./IBlockcliqueBlockBySlot"
-import { ISlot } from "./ISlot"
- 
+import { IBlockHeaderInfo } from "./IBlockcliqueBlockBySlot";
+
 export interface ISubscribeNewBlocksMessage {
     header: {
-        content: {
-            slot: ISlot,
-            parents: Array<string>,
-            operation_merkle_root: string,
-            endorsements: Array<IEndorsementInfo>,
-        },
+        content: IBlockHeaderInfo,
         signature: string,
         creator_public_key: string,
         creator_address: string,
         id: string,
-    },
+    };
     operations: Array<string>;
 }

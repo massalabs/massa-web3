@@ -1,5 +1,12 @@
 import { ISlot } from "./ISlot";
 
+export interface IBlockHeaderInfo {
+	slot: ISlot;
+	parents: Array<string>;
+	operation_merkle_root: string;
+	endorsements: Array<IEndorsementInfo>;
+}
+
 export interface IEndorsementInfo {
 	content: {
 		slot: ISlot,
@@ -14,12 +21,7 @@ export interface IEndorsementInfo {
 
 export interface IBlockcliqueBlockBySlot {
 	header: {
-		content: {
-		  slot: ISlot,
-		  parents: Array<string>,
-		  operation_merkle_root: string,
-		  endorsements: Array<IEndorsementInfo>
-		},
+		content: IBlockHeaderInfo,
 		signature: string,
 		creator_public_key: string,
 		creator_address: string,

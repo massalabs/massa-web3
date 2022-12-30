@@ -10,7 +10,7 @@
     "upgrade": "npm run up && npm run check && npm run build",
     "build-package": "rimraf dist/* && tsc -d -p ./tsconfig.json",
     "build-bundle": "npm run gen-bundle && npm run uglify-bundle-optimize",
-    "gen-bundle": "browserify dist/index.js --standalone massa > bundle.js",
+    "gen-bundle": "browserify dist/index.js -p esmify --standalone massa > bundle.js",
     "uglify-bundle-optimize": "browserify dist/index.js -p esmify -i node-fetch -i http -i https -o bundle.min.js && browserify dist/index.js -p esmify -i node-fetch -g uglifyify --compress --mangle -o bundle.min.js",
     "build": "npm run build-package && npm run build-bundle",
     "update-version-major": "npm version major",
@@ -19,7 +19,9 @@
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
     "test-vault-example": "ts-node ./examples/vault/index.ts",
-    "test-ws": "ts-node ./examples/websockets/index.ts",
+    "test-ws-blocks": "ts-node ./examples/websockets/ws-blocks.ts",
+    "test-ws-block-headers": "ts-node ./examples/websockets/ws-block-headers.ts",
+    "test-ws-filled-blocks": "ts-node ./examples/websockets/ws-filled-blocks.ts",
     "fix-lint": "tslint -c tslint.json '**/*.ts' --fix"
   },
   "author": "Massa Labs <info@massa.net>",
@@ -52,6 +54,7 @@
   "dependencies": {
     "@noble/ed25519": "^1.6.1",
     "@noble/hashes": "^1.1.2",
+    "@types/ws": "^8.5.3",
     "axios": "^0.26.1",
     "base58check": "^2.0.0",
     "bip39": "^3.0.4",
@@ -59,13 +62,13 @@
     "buffer": "^6.0.3",
     "crypto-js": "^4.1.1",
     "esmify": "^2.1.1",
-    "isomorphic-ws": "^5.0.0",
+    "isomorphic-ws": "5.0.0",
     "js-base64": "^3.7.3",
     "varint": "^6.0.0",
     "ws": "^8.11.0"
   },
   "devDependencies": {
-    "@massalabs/massa-sc-utils": "^2.1.6",
+    "@massalabs/massa-sc-utils": "^2.1.10",
     "@types/bn.js": "^5.1.0",
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.0.1",

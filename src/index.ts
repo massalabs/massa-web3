@@ -38,14 +38,17 @@ export { ISmartContractsClient } from "./interfaces/ISmartContractsClient";
 export { IDatastoreEntryInput } from "./interfaces/IDatastoreEntryInput";
 export { IGetGraphInterval } from "./interfaces/IGetGraphInterval";
 export { IGraphInterval } from "./interfaces/IGraphInterval";
-export { IBlockcliqueBlockBySlot } from "./interfaces/IBlockcliqueBlockBySlot";
+export { IBlockcliqueBlockBySlot, IBlockHeaderInfo, IEndorsementInfo } from "./interfaces/IBlockcliqueBlockBySlot";
 import { IWsClientConfig } from "./interfaces/IWsClientConfig";
-import { WebsocketStatus } from "./interfaces/WebsocketStatus";
+import { WebsocketEvent } from "./interfaces/WebsocketEvent";
+import { ISubscribeNewBlocksMessage } from "./interfaces/ISubscribeNewBlocksMessage";
 
 /** Exposed clients and factories */
 export { ClientFactory, DefaultJsonRpcProviderUrls } from "./web3/ClientFactory";
 export { JsonRpcClient } from "./web3/JsonRpcClient";
 export { WsBlockSubClient } from "./web3/WsBlockSubClient";
+export { WsBlockHeadersSubClient } from "./web3/WsBlockHeadersSubClient";
+export { WsFilledBlocksSubClient } from "./web3/WsFilledBlocksSubClient";
 export { PublicApiClient } from "./web3/PublicApiClient";
 export { PrivateApiClient } from "./web3/PrivateApiClient";
 export { WalletClient } from "./web3/WalletClient";

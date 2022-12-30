@@ -4,6 +4,7 @@ import { JsonRpcClient } from "./JsonRpcClient";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { WsBlockSubClient } from "./WsBlockSubClient";
 import { IWsClientConfig } from "../interfaces/IWsClientConfig";
+import { WsBlockHeadersSubClient } from "./WsBlockHeadersSubClient";
 
 /** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
 export enum DefaultJsonRpcProviderUrls {
@@ -14,9 +15,9 @@ export enum DefaultJsonRpcProviderUrls {
 }
 
 export enum DefaultWsProviderUrls {
-	MAINNET = "ws://massa.net/api/v2",
-	TESTNET = "ws://test.massa.net/api/v2",
-	LABNET = "ws://labnet.massa.net/api/v2",
+	MAINNET = "wss://massa.net/api/websocket",
+	TESTNET = "wss://testnet.massa.net/api/websocket",
+	LABNET = "wss://labnet.massa.net/api/websocket",
 	LOCALNET = "ws://localhost",
 }
 
@@ -70,31 +71,4 @@ export class ClientFactory {
 
 		return client;
 	}
-
-		/** Factory Method for establishing a ws connection to a massa node */
-		public static async createDefaultWsClient(provider: DefaultWsProviderUrls): Promise<WsBlockSubClient> {
-			let defaultProvider;
-			switch (provider) {
-				// in the case of localnet append specific default ports to url
-				case DefaultWsProviderUrls.LOCALNET: {
-					defaultProvider = `${provider}:33036`;
-					break;
-				}
-				// all other networks should be retain their urls
-				default: {
-					break;
-				}
-			}
-			const client: WsBlockSubClient = new WsBlockSubClient({
-				connectionUrl: defaultProvider,
-				pingTimeoutMs: 10000
-			});
-			return client;
-		}
-
-		/** Factory Method for establishing a ws connection to a massa node */
-		public static async createCustomWsClient(wsClientConfig: IWsClientConfig): Promise<WsBlockSubClient> {
-			const client: WsBlockSubClient = new WsBlockSubClient(wsClientConfig);
-			return client;
-		}
 }
