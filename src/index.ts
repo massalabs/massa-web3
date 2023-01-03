@@ -46,9 +46,7 @@ export { ISubscribeNewBlocksMessage } from "./interfaces/ISubscribeNewBlocksMess
 /** Exposed clients and factories */
 export { ClientFactory, DefaultJsonRpcProviderUrls, DefaultWsProviderUrls } from "./web3/ClientFactory";
 export { JsonRpcClient } from "./web3/JsonRpcClient";
-export { WsBlockSubClient } from "./web3/WsBlockSubClient";
-export { WsBlockHeadersSubClient } from "./web3/WsBlockHeadersSubClient";
-export { WsFilledBlocksSubClient } from "./web3/WsFilledBlocksSubClient";
+export { WsSubscriptionClient } from "./web3/WsSubscriptionClient";
 export { PublicApiClient } from "./web3/PublicApiClient";
 export { PrivateApiClient } from "./web3/PrivateApiClient";
 export { WalletClient } from "./web3/WalletClient";

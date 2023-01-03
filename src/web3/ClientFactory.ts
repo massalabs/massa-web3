@@ -2,9 +2,6 @@ import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IAccount } from "../interfaces/IAccount";
 import { JsonRpcClient } from "./JsonRpcClient";
 import { IClientConfig } from "../interfaces/IClientConfig";
-import { WsBlockSubClient } from "./WsBlockSubClient";
-import { IWsClientConfig } from "../interfaces/IWsClientConfig";
-import { WsBlockHeadersSubClient } from "./WsBlockHeadersSubClient";
 
 /** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
 export enum DefaultJsonRpcProviderUrls {

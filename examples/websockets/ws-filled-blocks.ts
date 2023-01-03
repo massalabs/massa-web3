@@ -1,12 +1,13 @@
 import { IWsClientConfig } from "../../src/interfaces/IWsClientConfig";
 import { DefaultWsProviderUrls } from "../../src/web3/ClientFactory";
 import { WebsocketEvent } from "../../src/interfaces/WebsocketEvent";
-import { WsFilledBlocksSubClient } from "../../src/web3/WsFilledBlocksSubClient";
+import { WsSubscriptionClient } from "../../src/web3/WsSubscriptionClient";
+import { ISubscribeNewBlocksMessage } from "../../src/interfaces/ISubscribeNewBlocksMessage";
 
 (async () => {
 
     // create a ws client
-    const wsClient: WsFilledBlocksSubClient = new WsFilledBlocksSubClient({
+    const wsClient: WsSubscriptionClient = new WsSubscriptionClient({
         connectionUrl: DefaultWsProviderUrls.LABNET,
         pingTimeoutMs: 10000
     } as IWsClientConfig);
@@ -32,16 +33,17 @@ import { WsFilledBlocksSubClient } from "../../src/web3/WsFilledBlocksSubClient"
         console.log("WS PING");
     });
 
-    // provide a callback function
-    wsClient.onFilledBlock((filledBlock) => {
-        console.log("FILLED BLOCK ", filledBlock);
+    wsClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => {
+        console.error("WS Error", errorMessage);
     });
 
     // connect to ws
     await wsClient.connect();
 
-    // subscribe to new blocks headers
-    wsClient.subscribeFilledBlocks();
+    // subscribe to new blocks
+    wsClient.subscribeFilledBlocks((newFilledBlock) => {
+        console.log("NEW FILLED BLOCK ", newFilledBlock as ISubscribeNewBlocksMessage);
+    });
 
     // unsubscribe after some seconds
     setTimeout(() => {
@@ -49,5 +51,4 @@ import { WsFilledBlocksSubClient } from "../../src/web3/WsFilledBlocksSubClient"
         wsClient.unsubscribeFilledBlocks();
         console.log("Unsubscribed");
     }, 10000);
-
 })();
