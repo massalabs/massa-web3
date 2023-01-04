@@ -3,10 +3,10 @@ import { ISubscribeNewBlocksMessage } from "../interfaces/ISubscribeNewBlocksMes
 import { IWsClientConfig } from "../interfaces/IWsClientConfig";
 import { WebsocketEvent } from "../interfaces/WebsocketEvent";
 import { generateFullRequestName, matchMethodName, WS_RPC_REQUEST_METHOD_BASE, WS_RPC_REQUEST_METHOD_NAME } from "../interfaces/WsRpcMethods";
-import { BaseWsClient, bin2String } from "./BaseWsClient";
+import { WsBaseClient, bin2String } from "./WsBaseClient";
 
 /** Public Ws Client for interacting with the massa network */
-export class WsSubscriptionClient extends BaseWsClient {
+export class WsSubscriptionClient extends WsBaseClient {
 
 	// subscription ids
 	private subIds: Map<number, WS_RPC_REQUEST_METHOD_NAME> = new Map();
@@ -141,14 +141,14 @@ export class WsSubscriptionClient extends BaseWsClient {
 
 	// =========================================================================== //
 
-	protected parseWsMessage(data: any): void {
-		
+	protected parseWsMessage(data: string|Buffer|ArrayBuffer|Buffer[]): void {
+
 		// distinguish between browser ws and nodejs buffered ws mode
 		let messageStr: string = "";
-		if (this.isBrowserWs) { // browser mode
-			messageStr = data["data"];
-		} else { // nodejs mode
-			messageStr = bin2String(data);
+		if (this.isBrowserWs && typeof data === "string") { // browser mode (string data)
+			messageStr = data;
+		} else { // nodejs mode (binary buffer)
+			messageStr = bin2String(data as Buffer|ArrayBuffer|Buffer[]);
 		}
 
 		// start parsing the data
@@ -209,7 +209,7 @@ export class WsSubscriptionClient extends BaseWsClient {
 				}
 			}
 		} catch (err) {
-			console.error(`Error parsing misformed message ${err}`);
+			console.error(`Error ${err} parsing misformed message ${messageStr}`);
 		}
 	}
 }

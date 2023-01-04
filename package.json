@@ -62,7 +62,6 @@
     "buffer": "^6.0.3",
     "crypto-js": "^4.1.1",
     "esmify": "^2.1.1",
-    "isomorphic-ws": "5.0.0",
     "js-base64": "^3.7.3",
     "varint": "^6.0.0",
     "ws": "^8.11.0"
