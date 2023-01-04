@@ -50,6 +50,7 @@ export abstract class BaseWsClient extends EventEmitter {
 
 	protected wss: any;
 	protected isConnected: boolean = false;
+	protected isBrowserWs: boolean = false;
 	private pingTimeout: NodeJS.Timer;
 
 	public constructor(protected wsClientConfig: IWsClientConfig) {
@@ -68,6 +69,7 @@ export abstract class BaseWsClient extends EventEmitter {
 		new NodeWebSocket(this.wsClientConfig.connectionUrl, {
 			perMessageDeflate: false
 		});
+		this.isBrowserWs = browserWs.isBrowser;
 		return browserWs.isBrowser ? this.connectBrowserWs() : this.connectNodeWs();
 	}
 

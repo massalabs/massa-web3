@@ -6,6 +6,42 @@
     <script type='text/javascript' src='../../bundle.js'></script>
 
     <script>
+
+        /*
+        const wsClient = new window.WebSocket('wss://labnet.massa.net/api/websocket');
+
+        wsClient.onclose = () => {
+            console.log("on Close >>>>>>>>>> ", wsClient.url, wsClient.protocol, wsClient.readyState, wsClient.binaryType);
+		};
+
+		wsClient.onerror = (errorMessage) => {
+            console.log("on error >>>>>>>>>> ", errorMessage, wsClient.url, wsClient.protocol, wsClient.readyState, wsClient.binaryType);
+		};
+
+		wsClient.onmessage = (data) => {
+            console.log("on message >>>>>>>>>> ", data.data);
+		};
+
+        wsClient.onopen = (event) => {
+            console.log("on open >>>>>>>>>> ", wsClient.url, wsClient.protocol, wsClient.readyState, wsClient.binaryType);
+
+            wsClient.send(JSON.stringify({
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "subscribe_new_blocks_headers",
+                "params": []
+            }));
+
+
+            setTimeout(() => {
+                console.log("closing ws connection...", wsClient.bufferedAmount);
+                wsClient.close()
+                console.log("closed ws connection");
+            }, 5000)
+        };
+        */
+
+        
         const wsClient = new window.massa.WsSubscriptionClient({
             connectionUrl: window.massa.DefaultWsProviderUrls.LABNET,
             pingTimeoutMs: 10000
@@ -48,6 +84,7 @@
         .catch((ex) => {
             console.error("Error on calling ws connect", ex)
         })
+        
     </script>
 
   </head>

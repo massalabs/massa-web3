@@ -142,7 +142,16 @@ export class WsSubscriptionClient extends BaseWsClient {
 	// =========================================================================== //
 
 	protected parseWsMessage(data: any): void {
-		const messageStr = bin2String(data);
+		
+		// distinguish between browser ws and nodejs buffered ws mode
+		let messageStr: string = "";
+		if (this.isBrowserWs) { // browser mode
+			messageStr = data["data"];
+		} else { // nodejs mode
+			messageStr = bin2String(data);
+		}
+
+		// start parsing the data
 		let parsedMsg: Object = null;
 		try {
 			parsedMsg = JSON.parse(messageStr);
