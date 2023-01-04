@@ -2,7 +2,7 @@ import { IAccount } from "../../src/interfaces/IAccount";
 import { IContractData } from "../../src/interfaces/IContractData";
 import { SmartContractUtils } from "@massalabs/massa-sc-utils";
 import { PathLike } from "fs";
-import { JsonRpcClient } from "../../src/web3/JsonRpcClient";
+import { Client } from "../../src/web3/Client";
 import { ICompiledSmartContract } from "@massalabs/massa-sc-utils/dist/interfaces/ICompiledSmartContract";
 import { EOperationStatus } from "../../src/interfaces/EOperationStatus";
 const chalk = require("chalk");
@@ -11,7 +11,7 @@ export const deploySmartContract = async (
 	deploymentScWasm: PathLike,
 	deployedScWasm: PathLike,
 	contractData: IContractData,
-	web3Client: JsonRpcClient,
+	web3Client: Client,
 	awaitFinalization: boolean,
 	deployerAccount?: IAccount
 ): Promise<string> => {

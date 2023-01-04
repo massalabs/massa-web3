@@ -6,16 +6,18 @@ import { WalletClient } from "./WalletClient";
 import { SmartContractsClient } from "./SmartContractsClient";
 import { VaultClient } from "./VaultClient";
 import { IProvider, ProviderType } from "../interfaces/IProvider";
-import { DefaultJsonRpcProviderUrls, DefaultWsProviderUrls } from "./ClientFactory";
-import { IJsonRpcClient } from "../interfaces/IJsonRpcClient";
+import { DefaultProviderUrls, DefaultWsProviderUrls } from "./ClientFactory";
+import { IClient } from "../interfaces/IClient";
+import { WsSubscriptionClient } from "./WsSubscriptionClient";
 
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
-export class JsonRpcClient implements IJsonRpcClient {
+export class Client implements IClient {
 	private publicApiClient: PublicApiClient;
 	private privateApiClient: PrivateApiClient;
 	private walletClient: WalletClient;
 	private smartContractsClient: SmartContractsClient;
 	private vaultClient: VaultClient;
+	private wsSubscriptionClient: WsSubscriptionClient;
 
 	public constructor(private clientConfig: IClientConfig, baseAccount?: IAccount) {
 		this.publicApiClient = new PublicApiClient(clientConfig);
@@ -23,14 +25,15 @@ export class JsonRpcClient implements IJsonRpcClient {
 		this.walletClient = new WalletClient(clientConfig, this.publicApiClient, baseAccount);
 		this.smartContractsClient = new SmartContractsClient(clientConfig, this.publicApiClient, this.walletClient);
 		this.vaultClient = new VaultClient(clientConfig, this.walletClient);
+		//this.wsSubscriptionClient = new WsSubscriptionClient(clientConfig, this.walletClient);
 
 		// exposed and bound class methods
 		this.privateApi = this.privateApi.bind(this);
 		this.publicApi = this.publicApi.bind(this);
 		this.wallet = this.wallet.bind(this);
 		this.smartContracts = this.smartContracts.bind(this);
-		this.setCustomJsonRpcProviders = this.setCustomJsonRpcProviders.bind(this);
-		this.setNewDefaultJsonRpcProvider = this.setNewDefaultJsonRpcProvider.bind(this);
+		this.setCustomProviders = this.setCustomProviders.bind(this);
+		this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
 	}
 
 	/** Private Api related RPC methods */
@@ -59,7 +62,7 @@ export class JsonRpcClient implements IJsonRpcClient {
 	}
 
 	/** set new providers */
-	public setCustomJsonRpcProviders(providers: Array<IProvider>): void {
+	public setCustomProviders(providers: Array<IProvider>): void {
 		this.publicApiClient.setProviders(providers);
 		this.privateApiClient.setProviders(providers);
 		this.walletClient.setProviders(providers);
@@ -67,12 +70,12 @@ export class JsonRpcClient implements IJsonRpcClient {
 	}
 
 	/** get currently set providers */
-	public getJsonRpcProviders(): Array<IProvider> {
+	public getProviders(): Array<IProvider> {
 		return this.clientConfig.providers;
 	}
 
 	/** sets a new default provider */
-	public setNewDefaultJsonRpcProvider(provider: DefaultJsonRpcProviderUrls): void {
+	public setNewDefaultProvider(provider: DefaultProviderUrls): void {
 		const providers = new Array({
 			url: provider,
 			type: ProviderType.PUBLIC
