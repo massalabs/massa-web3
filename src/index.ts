@@ -39,7 +39,6 @@ export { IDatastoreEntryInput } from "./interfaces/IDatastoreEntryInput";
 export { IGetGraphInterval } from "./interfaces/IGetGraphInterval";
 export { IGraphInterval } from "./interfaces/IGraphInterval";
 export { IBlockcliqueBlockBySlot, IBlockHeaderInfo, IEndorsementInfo } from "./interfaces/IBlockcliqueBlockBySlot";
-export { IWsClientConfig } from "./interfaces/IWsClientConfig";
 export { WebsocketEvent } from "./interfaces/WebsocketEvent";
 export { ISubscribeNewBlocksMessage } from "./interfaces/ISubscribeNewBlocksMessage";
 

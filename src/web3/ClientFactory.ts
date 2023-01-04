@@ -1,6 +1,6 @@
 import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IAccount } from "../interfaces/IAccount";
-import { Client } from "./Client";
+import { Client, getWsProvider } from "./Client";
 import { IClientConfig } from "../interfaces/IClientConfig";
 
 /** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
@@ -45,6 +45,10 @@ export class ClientFactory {
 		{
 			url: privateProviderUrl,
 			type: ProviderType.PRIVATE
+		} as IProvider,
+		{
+			url: getWsProvider(provider),
+			type: ProviderType.WS
 		} as IProvider);
 
 		const client: Client = new Client({

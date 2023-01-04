@@ -1,9 +1,12 @@
-import { IWsClientConfig } from "../interfaces/IWsClientConfig";
+import { IClientConfig } from "../interfaces/IClientConfig";
 import { EventEmitter } from "events";
 import { WebsocketEvent } from "../interfaces/WebsocketEvent";
 const NodeWebSocket = require("ws");
 import { WebSocket as INodeWebSocket } from "ws";
+import { IProvider, ProviderType } from "../interfaces/IProvider";
 let IINodeWebSocket: typeof INodeWebSocket;
+
+export const WS_PING_TIMEOUT_MS = 20000;
 
 export const bin2String = (array: Buffer | ArrayBuffer | Buffer[]): string => {
     return String.fromCharCode.apply(String, array);
@@ -82,13 +85,20 @@ export const checkForBrowserWs = (): {isBrowser: boolean, ws: typeof WebSocket |
 /** Base Ws Client for interacting with the massa network */
 export abstract class WsBaseClient extends EventEmitter {
 
+	protected clientConfig: IClientConfig;
 	protected wss: typeof WebSocket | typeof MozWebSocket | typeof NodeWebSocket | typeof IINodeWebSocket | null | undefined = null;
 	protected isConnected: boolean = false;
 	protected isBrowserWs: boolean = false;
 	private pingTimeout: NodeJS.Timer;
 
-	public constructor(protected wsClientConfig: IWsClientConfig) {
+	public constructor(clientConfig: IClientConfig) {
 		super();
+		this.clientConfig = clientConfig;
+		if (!clientConfig.providers.find((provider) => provider.type === ProviderType.WS)) {
+			throw new Error("No ws provider provided");
+		}
+		this.clientConfig.pingTimeoutMs = this.clientConfig.pingTimeoutMs | WS_PING_TIMEOUT_MS;
+
 		this.connect = this.connect.bind(this);
 		this.closeConnection = this.closeConnection.bind(this);
 		this.connectNodeWs = this.connectNodeWs.bind(this);
@@ -100,6 +110,18 @@ export abstract class WsBaseClient extends EventEmitter {
 		this.getProtocol = this.getProtocol.bind(this);
 		this.getExtensions = this.getExtensions.bind(this);
 		this.getBufferedAmount = this.getBufferedAmount.bind(this);
+		this.setProviders = this.setProviders.bind(this);
+		this.getWsProviders = this.getWsProviders.bind(this);
+	}
+
+	/** set new providers */
+	public setProviders(providers: Array<IProvider>): void {
+		this.clientConfig.providers = providers;
+	}
+
+	/** return all ws providers */
+	protected getWsProviders(): Array<IProvider> {
+		return this.clientConfig.providers.filter((provider) => provider.type === ProviderType.WS);
 	}
 
 	protected abstract parseWsMessage(message: string|Buffer|ArrayBuffer|Buffer[]): void;
@@ -109,8 +131,9 @@ export abstract class WsBaseClient extends EventEmitter {
 			return;
 		}
 		const browserWs = checkForBrowserWs();
-		this.wss = browserWs.isBrowser ? new browserWs.ws(this.wsClientConfig.connectionUrl) :
-		new NodeWebSocket(this.wsClientConfig.connectionUrl, {
+		const provider: IProvider = this.clientConfig.providers.find((provider) => provider.type === ProviderType.WS);
+		this.wss = browserWs.isBrowser ? new browserWs.ws(provider.url) :
+		new NodeWebSocket(provider.url, {
 			perMessageDeflate: false
 		});
 		this.isBrowserWs = browserWs.isBrowser;
@@ -234,6 +257,6 @@ export abstract class WsBaseClient extends EventEmitter {
 		// Here we don't need to check for bufferedAmounts the connection is obviously stale
 		this.pingTimeout = setTimeout(() => {
 		  this.wss.terminate();
-		}, 30000 + this.wsClientConfig.pingTimeoutMs);
+		}, 30000 + this.clientConfig.pingTimeoutMs);
 	  }
 }

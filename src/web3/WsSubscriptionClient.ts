@@ -1,6 +1,6 @@
 import { IBlockHeaderInfo } from "../interfaces/IBlockcliqueBlockBySlot";
 import { ISubscribeNewBlocksMessage } from "../interfaces/ISubscribeNewBlocksMessage";
-import { IWsClientConfig } from "../interfaces/IWsClientConfig";
+import { IClientConfig } from "../interfaces/IClientConfig";
 import { WebsocketEvent } from "../interfaces/WebsocketEvent";
 import { generateFullRequestName, matchMethodName, WS_RPC_REQUEST_METHOD_BASE, WS_RPC_REQUEST_METHOD_NAME } from "../interfaces/WsRpcMethods";
 import { WsBaseClient, bin2String } from "./WsBaseClient";
@@ -17,8 +17,8 @@ export class WsSubscriptionClient extends WsBaseClient {
 	private onNewBlockHeaderHandler?: (data: IBlockHeaderInfo) => void;
 	private onFilledBlockHandler?: (data: ISubscribeNewBlocksMessage) => void;
 
-	public constructor(wsClientConfig: IWsClientConfig) {
-		super(wsClientConfig);
+	public constructor(clientConfig: IClientConfig) {
+		super(clientConfig);
 
 		// subscribe to new blocks methods
 		this.subscribeNewBlocks = this.subscribeNewBlocks.bind(this);
@@ -167,10 +167,10 @@ export class WsSubscriptionClient extends WsBaseClient {
 				// check if there is a method name associated with the subId before timeout
 				setTimeout(() => {
 					if (this.subIds.get(subId) === WS_RPC_REQUEST_METHOD_NAME.UNKNOWN) {
-						this.emit(WebsocketEvent.ON_ERROR, `Websocket for subscription id ${subId} did not deliver a message withing ${this.wsClientConfig.pingTimeoutMs} seconds`);
+						this.emit(WebsocketEvent.ON_ERROR, `Websocket for subscription id ${subId} did not deliver a message withing ${this.clientConfig.pingTimeoutMs} seconds`);
 						this.subIds.delete(subId);
 					}
-				}, this.wsClientConfig.pingTimeoutMs);
+				}, this.clientConfig.pingTimeoutMs);
 			}
 			// successive messages
 			if (parsedMsg["params"] && parsedMsg["params"]["result"] && parsedMsg["params"]["subscription"]) {

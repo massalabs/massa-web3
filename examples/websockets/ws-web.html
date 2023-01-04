@@ -5,7 +5,7 @@
     <title>Websocket's Test</title>
     <script type='text/javascript' src='../../bundle.js'></script>
 
-    <script>
+    <script type="module">
 
         /*
         const wsClient = new window.WebSocket('wss://labnet.massa.net/api/websocket');
@@ -41,49 +41,47 @@
         };
         */
 
+        try {
+            const baseAccount = await window.massa.WalletClient.getAccountFromSecretKey("S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy");
+            const web3Client = await window.massa.ClientFactory.createDefaultClient(window.massa.DefaultProviderUrls.LABNET, true, baseAccount);
+            const wsClient = web3Client.ws();
 
-        const wsClient = new window.massa.WsSubscriptionClient({
-            connectionUrl: window.massa.DefaultWsProviderUrls.LABNET,
-            pingTimeoutMs: 10000
-        });
+            // bind various methods for handling common socket events
+            wsClient.on(window.massa.WebsocketEvent.ON_CLOSED, () => {
+                console.log("ws closed");
+            });
 
-        // bind various methods for handling common socket events
-        wsClient.on(window.massa.WebsocketEvent.ON_CLOSED, () => {
-            console.log("ws closed");
-        });
+            wsClient.on(window.massa.WebsocketEvent.ON_CLOSING, () => {
+                console.log("ws closing");
+            });
 
-        wsClient.on(window.massa.WebsocketEvent.ON_CLOSING, () => {
-            console.log("ws closing");
-        });
+            wsClient.on(window.massa.WebsocketEvent.ON_CONNECTING, () => {
+                console.log("ws connecting");
+            });
 
-        wsClient.on(window.massa.WebsocketEvent.ON_CONNECTING, () => {
-            console.log("ws connecting");
-        });
+            wsClient.on(window.massa.WebsocketEvent.ON_OPEN, () => {
+                console.log("ws open");
+            });
 
-        wsClient.on(window.massa.WebsocketEvent.ON_OPEN, () => {
-            console.log("ws open");
-        });
+            wsClient.on(window.massa.WebsocketEvent.ON_PING, () => {
+                console.log("ws ping");
+            });
 
-        wsClient.on(window.massa.WebsocketEvent.ON_PING, () => {
-            console.log("ws ping");
-        });
+            wsClient.on(window.massa.WebsocketEvent.ON_ERROR, (errorMessage) => {
+                console.error("ws error", errorMessage);
+            });
 
-        wsClient.on(window.massa.WebsocketEvent.ON_ERROR, (errorMessage) => {
-            console.error("ws error", errorMessage);
-        });
-
-        // connect to ws
-        wsClient.connect().then(() => {
+            // connect to ws
+            await wsClient.connect();
             console.log("Ws Connection successfully established!");
 
             // subscribe to new blocks
             wsClient.subscribeNewBlocks((newBlock) => {
                 console.log("New Block Received", newBlock);
-            })
-        })
-        .catch((ex) => {
-            console.error("Error on calling ws connect", ex)
-        })
+            });
+        } catch (ex) {
+            console.log("Error occurred", ex);
+        }
 
     </script>
 
