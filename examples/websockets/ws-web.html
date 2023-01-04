@@ -76,8 +76,8 @@
             console.log("Ws Connection successfully established!");
 
             // subscribe to new blocks
-            wsClient.subscribeNewBlocks((newBlock) => {
-                console.log("New Block Received", newBlock);
+            wsClient.subscribeFilledBlocks((newBlock) => {
+                console.log("New Filled Block Received", newBlock);
             });
         } catch (ex) {
             console.log("Error occurred", ex);

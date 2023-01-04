@@ -44,7 +44,7 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
         await wsSubClient.connect();
 
         // subscribe to new blocks headers
-        wsSubClient.subscribeNewBlockHeaders((newBlockHeader) => {
+        wsSubClient.subscribeNewBlockHeaders((newBlockHeader: IBlockHeaderInfo) => {
             console.log(">>>>>>>>>>> New Block Header Received \n", newBlockHeader as IBlockHeaderInfo);
         });
 

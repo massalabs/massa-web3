@@ -6,10 +6,10 @@ import { WebSocket as INodeWebSocket } from "ws";
 import { IProvider, ProviderType } from "../interfaces/IProvider";
 let IINodeWebSocket: typeof INodeWebSocket;
 
-export const WS_PING_TIMEOUT_MS = 20000;
+export const WS_PING_TIMEOUT_MS = 30000;
 
-export const bin2String = (array: Buffer | ArrayBuffer | Buffer[]): string => {
-    return String.fromCharCode.apply(String, array);
+export const arrayBufferToBase64 = (array: Buffer | ArrayBuffer | Buffer[]): string => {
+	return array.toString("utf-8");
 };
 
 declare global {
@@ -134,7 +134,7 @@ export abstract class WsBaseClient extends EventEmitter {
 		const provider: IProvider = this.clientConfig.providers.find((provider) => provider.type === ProviderType.WS);
 		this.wss = browserWs.isBrowser ? new browserWs.ws(provider.url) :
 		new NodeWebSocket(provider.url, {
-			perMessageDeflate: false
+			perMessageDeflate: false,
 		});
 		this.isBrowserWs = browserWs.isBrowser;
 		return browserWs.isBrowser ? this.connectBrowserWs() : this.connectNodeWs();

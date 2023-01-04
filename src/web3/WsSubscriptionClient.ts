@@ -3,7 +3,8 @@ import { ISubscribeNewBlocksMessage } from "../interfaces/ISubscribeNewBlocksMes
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { WebsocketEvent } from "../interfaces/WebsocketEvent";
 import { generateFullRequestName, matchMethodName, WS_RPC_REQUEST_METHOD_BASE, WS_RPC_REQUEST_METHOD_NAME } from "../interfaces/WsRpcMethods";
-import { WsBaseClient, bin2String } from "./WsBaseClient";
+import { WsBaseClient, arrayBufferToBase64 } from "./WsBaseClient";
+import { ISubscribedFullBlocksMessage } from "../interfaces/ISubscribedFullBlocksMessage";
 
 /** Public Ws Client for interacting with the massa network */
 export class WsSubscriptionClient extends WsBaseClient {
@@ -15,7 +16,7 @@ export class WsSubscriptionClient extends WsBaseClient {
 	// methods
 	private onNewBlockHandler?: (data: ISubscribeNewBlocksMessage) => void;
 	private onNewBlockHeaderHandler?: (data: IBlockHeaderInfo) => void;
-	private onFilledBlockHandler?: (data: ISubscribeNewBlocksMessage) => void;
+	private onFilledBlockHandler?: (data: ISubscribedFullBlocksMessage) => void;
 
 	public constructor(clientConfig: IClientConfig) {
 		super(clientConfig);
@@ -106,7 +107,7 @@ export class WsSubscriptionClient extends WsBaseClient {
 	}
 	// =========================================================================== //
 
-	public subscribeFilledBlocks(onFilledBlockHandler?: (data: ISubscribeNewBlocksMessage) => void): void {
+	public subscribeFilledBlocks(onFilledBlockHandler?: (data: ISubscribedFullBlocksMessage) => void): void {
 		if (!((this.wss && this.isConnected))) {
 			throw new Error("Websocket Client is not connected");
 		}
@@ -148,7 +149,7 @@ export class WsSubscriptionClient extends WsBaseClient {
 		if (this.isBrowserWs && typeof data === "string") { // browser mode (string data)
 			messageStr = data;
 		} else { // nodejs mode (binary buffer)
-			messageStr = bin2String(data as Buffer|ArrayBuffer|Buffer[]);
+			messageStr = arrayBufferToBase64(data as Buffer|ArrayBuffer|Buffer[]);
 		}
 
 		// start parsing the data
@@ -200,7 +201,7 @@ export class WsSubscriptionClient extends WsBaseClient {
 							this.subIds.set(subId, matchMethodName(parsedMsg["method"]));
 							this.subMethods.set(WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS, subId);
 						}
-						this.onFilledBlockHandler(parsedMsg["params"]["result"] as ISubscribeNewBlocksMessage);
+						this.onFilledBlockHandler(parsedMsg["params"]["result"] as ISubscribedFullBlocksMessage);
 						break;
 					}
 					default: {

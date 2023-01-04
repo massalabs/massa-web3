@@ -41,6 +41,7 @@ export { IGraphInterval } from "./interfaces/IGraphInterval";
 export { IBlockcliqueBlockBySlot, IBlockHeaderInfo, IEndorsementInfo } from "./interfaces/IBlockcliqueBlockBySlot";
 export { WebsocketEvent } from "./interfaces/WebsocketEvent";
 export { ISubscribeNewBlocksMessage } from "./interfaces/ISubscribeNewBlocksMessage";
+export { ISubscribedFullBlocksMessage } from "./interfaces/ISubscribedFullBlocksMessage";
 
 /** Exposed clients and factories */
 export { ClientFactory, DefaultProviderUrls, DefaultWsProviderUrls } from "./web3/ClientFactory";

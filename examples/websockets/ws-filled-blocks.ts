@@ -3,7 +3,7 @@ import { ClientFactory, DefaultProviderUrls } from "../../src/web3/ClientFactory
 import { WebsocketEvent } from "../../src/interfaces/WebsocketEvent";
 import { WalletClient } from "../../src/web3/WalletClient";
 import { IAccount } from "../../src/interfaces/IAccount";
-import { ISubscribeNewBlocksMessage } from "../../src/interfaces/ISubscribeNewBlocksMessage";
+import { ISubscribedFullBlocksMessage } from "../../src/interfaces/ISubscribedFullBlocksMessage";
 
 const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy";
 
@@ -44,8 +44,8 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
         await wsSubClient.connect();
 
         // subscribe to new blocks
-        wsSubClient.subscribeFilledBlocks((newFilledBlock) => {
-            console.log(">>>>>>>>>>> New Filled Block Received \n", newFilledBlock as ISubscribeNewBlocksMessage);
+        wsSubClient.subscribeFilledBlocks((newFilledBlock: ISubscribedFullBlocksMessage) => {
+            console.log(">>>>>>>>>>> New Filled Block Received \n", newFilledBlock as ISubscribedFullBlocksMessage);
         });
 
         // unsubscribe after some seconds
@@ -53,6 +53,6 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
             console.log("Unsubscribing...");
             wsSubClient.unsubscribeFilledBlocks();
             console.log("Unsubscribed");
-        }, 10000);
+        }, 60000);
     }
 })();
