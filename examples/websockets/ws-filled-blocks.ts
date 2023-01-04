@@ -45,7 +45,7 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
 
         // subscribe to new blocks
         wsSubClient.subscribeFilledBlocks((newFilledBlock) => {
-            console.log(">>>>>>>>>>> New Block Header Received \n", newFilledBlock as ISubscribeNewBlocksMessage);
+            console.log(">>>>>>>>>>> New Filled Block Received \n", newFilledBlock as ISubscribeNewBlocksMessage);
         });
 
         // unsubscribe after some seconds

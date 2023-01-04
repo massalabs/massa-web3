@@ -56,5 +56,4 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
         },
         60000);
     }
-
 })();
