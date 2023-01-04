@@ -6,45 +6,53 @@
     <script type='text/javascript' src='../../bundle.js'></script>
 
     <script>
-        const wsClient = new window.massa.WsFilledBlocksSubClient({
+        const wsClient = new window.massa.WsSubscriptionClient({
             connectionUrl: window.massa.DefaultWsProviderUrls.LABNET,
             pingTimeoutMs: 10000
         });
 
         // bind various methods for handling common socket events
         wsClient.on(window.massa.WebsocketEvent.ON_CLOSED, () => {
-            console.log("WS CLOSED");
+            console.log("ws closed");
         });
 
         wsClient.on(window.massa.WebsocketEvent.ON_CLOSING, () => {
-            console.log("WS CLOSING");
+            console.log("ws closing");
         });
 
         wsClient.on(window.massa.WebsocketEvent.ON_CONNECTING, () => {
-            console.log("WS CONNECTING");
+            console.log("ws connecting");
         });
 
         wsClient.on(window.massa.WebsocketEvent.ON_OPEN, () => {
-            console.log("WS OPEN");
+            console.log("ws open");
         });
 
         wsClient.on(window.massa.WebsocketEvent.ON_PING, () => {
-            console.log("WS PING");
+            console.log("ws ping");
+        });
+
+        wsClient.on(window.massa.WebsocketEvent.ON_ERROR, (errorMessage) => {
+            console.error("ws error", errorMessage);
         });
 
         // connect to ws
         wsClient.connect().then(() => {
-            console.log("Connect called");
+            console.log("Ws Connection successfully established!");
+
+            // subscribe to new blocks
+            wsClient.subscribeNewBlocks((newBlock) => {
+                console.log("New Block Received", newBlock);
+            })
         })
         .catch((ex) => {
-            console.error("Error on calling connect", ex)
+            console.error("Error on calling ws connect", ex)
         })
-
     </script>
 
   </head>
 
   <body>
-    <p>Hello World</p>
+    <p>Massa Websockets Demo for Browser</p>
   </body>
 </html>

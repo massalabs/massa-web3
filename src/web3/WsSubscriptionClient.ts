@@ -146,11 +146,10 @@ export class WsSubscriptionClient extends BaseWsClient {
 		let parsedMsg: Object = null;
 		try {
 			parsedMsg = JSON.parse(messageStr);
-			console.log("XXXXXXXXXXXXX ", parsedMsg["params"]["result"]["header"]);
 			// first time sub message
 			if (parsedMsg["result"]) {
 				const subId = parseInt(parsedMsg["result"], 10);
-				if (isNaN(subId)) {
+				if (isNaN(subId)) { // ignore any non-integer sub ids
 					return;
 				}
 				if (!this.subIds.has(subId)) {

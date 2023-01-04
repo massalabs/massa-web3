@@ -14,27 +14,27 @@ import { IBlockHeaderInfo } from "../../src/interfaces/IBlockcliqueBlockBySlot";
 
     // bind various methods for handling common socket events
     wsClient.on(WebsocketEvent.ON_CLOSED, () => {
-        console.log("WS CLOSED");
+        console.log(">>>>>>>>>>> Ws Closed");
     });
 
     wsClient.on(WebsocketEvent.ON_CLOSING, () => {
-        console.log("WS CLOSING");
+        console.log(">>>>>>>>>>> Ws Closing");
     });
 
     wsClient.on(WebsocketEvent.ON_CONNECTING, () => {
-        console.log("WS CONNECTING");
+        console.log(">>>>>>>>>>> Ws Connecting");
     });
 
     wsClient.on(WebsocketEvent.ON_OPEN, () => {
-        console.log("WS OPEN");
+        console.log(">>>>>>>>>>> Ws Open");
     });
 
     wsClient.on(WebsocketEvent.ON_PING, () => {
-        console.log("WS PING");
+        console.log(">>>>>>>>>>> Ws Ping");
     });
 
     wsClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => {
-        console.error("WS Error", errorMessage);
+        console.error(">>>>>>>>>>> Ws Error", errorMessage);
     });
 
     // connect to ws
@@ -42,7 +42,7 @@ import { IBlockHeaderInfo } from "../../src/interfaces/IBlockcliqueBlockBySlot";
 
     // subscribe to new blocks headers
     wsClient.subscribeNewBlockHeaders((newBlockHeader) => {
-        console.log("NEW BLOCK HEADER ", newBlockHeader as IBlockHeaderInfo);
+        console.log(">>>>>>>>>>> New Block Header Received \n", newBlockHeader as IBlockHeaderInfo);
     });
 
     // unsubscribe after some seconds

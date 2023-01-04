@@ -14,27 +14,27 @@ import { ISubscribeNewBlocksMessage } from "../../src/interfaces/ISubscribeNewBl
 
     // bind various methods for handling common socket events
     wsClient.on(WebsocketEvent.ON_CLOSED, () => {
-        console.log("WS CLOSED");
+        console.log(">>>>>>>>>>> Ws Closed");
     });
 
     wsClient.on(WebsocketEvent.ON_CLOSING, () => {
-        console.log("WS CLOSING");
+        console.log(">>>>>>>>>>> Ws Closing");
     });
 
     wsClient.on(WebsocketEvent.ON_CONNECTING, () => {
-        console.log("WS CONNECTING");
+        console.log(">>>>>>>>>>> Ws Connecting");
     });
 
     wsClient.on(WebsocketEvent.ON_OPEN, () => {
-        console.log("WS OPEN");
+        console.log(">>>>>>>>>>> Ws Open");
     });
 
     wsClient.on(WebsocketEvent.ON_PING, () => {
-        console.log("WS PING");
+        console.log(">>>>>>>>>>> Ws Ping");
     });
 
     wsClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => {
-        console.error("WS Error", errorMessage);
+        console.error(">>>>>>>>>>> Ws Error", errorMessage);
     });
 
     // connect to ws
@@ -42,7 +42,7 @@ import { ISubscribeNewBlocksMessage } from "../../src/interfaces/ISubscribeNewBl
 
     // subscribe to new blocks
     wsClient.subscribeFilledBlocks((newFilledBlock) => {
-        console.log("NEW FILLED BLOCK ", newFilledBlock as ISubscribeNewBlocksMessage);
+        console.log(">>>>>>>>>>> New Block Header Received \n", newFilledBlock as ISubscribeNewBlocksMessage);
     });
 
     // unsubscribe after some seconds
