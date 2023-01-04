@@ -1,4 +1,4 @@
-import { ClientFactory, DefaultJsonRpcProviderUrls } from "../../src/web3/ClientFactory";
+import { ClientFactory, DefaultProviderUrls } from "../../src/web3/ClientFactory";
 const chalk = require("chalk");
 const ora = require("ora");
 
@@ -13,7 +13,7 @@ const ora = require("ora");
 
     try {
         // init client
-        const web3Client = await ClientFactory.createDefaultJsonRpcClient(DefaultJsonRpcProviderUrls.LABNET, true);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true);
 
         // init vault
         spinner = ora(`Initializing vault....`).start();
