@@ -56,9 +56,9 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
 
         // find an event that contains the emitted sc address
         spinner = ora(`Extracting deployed sc address from events....`).start();
-        const addressEvent: IEvent | undefined = events.find(event => event.data.includes("Address:"));
+        const addressEvent: IEvent | undefined = events.find(event => event.data.includes("SC created at:"));
         if (!addressEvent) {
-            throw new Error("No events were emitted from contract containing a message `Address:...`. Please make sure to include such a message in order to fetch the sc address");
+            throw new Error("No events were emitted from contract containing a message `SC created at:...`. Please make sure to include such a message in order to fetch the sc address");
         }
         const scAddress: string = addressEvent.data.split(":")[1];
         spinner.succeed(`Smart Contract Address: ${chalk.yellow(scAddress)}`);
