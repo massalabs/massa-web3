@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Websocket's Test</title>
+    <script type='text/javascript' src='../../bundle.js'></script>
+
+    <script type="module">
+
+        /*
+        const wsClient = new window.WebSocket('wss://labnet.massa.net/api/websocket');
+
+        wsClient.onclose = () => {
+            console.log("on Close >>>>>>>>>> ", wsClient.url, wsClient.protocol, wsClient.readyState, wsClient.binaryType);
+		};
+
+		wsClient.onerror = (errorMessage) => {
+            console.log("on error >>>>>>>>>> ", errorMessage, wsClient.url, wsClient.protocol, wsClient.readyState, wsClient.binaryType);
+		};
+
+		wsClient.onmessage = (data) => {
+            console.log("on message >>>>>>>>>> ", data.data);
+		};
+
+        wsClient.onopen = (event) => {
+            console.log("on open >>>>>>>>>> ", wsClient.url, wsClient.protocol, wsClient.readyState, wsClient.binaryType);
+
+            wsClient.send(JSON.stringify({
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "subscribe_new_blocks_headers",
+                "params": []
+            }));
+
+
+            setTimeout(() => {
+                console.log("closing ws connection...", wsClient.bufferedAmount);
+                wsClient.close()
+                console.log("closed ws connection");
+            }, 5000)
+        };
+        */
+
+        try {
+            const baseAccount = await window.massa.WalletClient.getAccountFromSecretKey("S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy");
+            const web3Client = await window.massa.ClientFactory.createDefaultClient(window.massa.DefaultProviderUrls.LABNET, true, baseAccount);
+            const wsClient = web3Client.ws();
+
+            // bind various methods for handling common socket events
+            wsClient.on(window.massa.WebsocketEvent.ON_CLOSED, () => {
+                console.log("ws closed");
+            });
+
+            wsClient.on(window.massa.WebsocketEvent.ON_CLOSING, () => {
+                console.log("ws closing");
+            });
+
+            wsClient.on(window.massa.WebsocketEvent.ON_CONNECTING, () => {
+                console.log("ws connecting");
+            });
+
+            wsClient.on(window.massa.WebsocketEvent.ON_OPEN, () => {
+                console.log("ws open");
+            });
+
+            wsClient.on(window.massa.WebsocketEvent.ON_PING, () => {
+                console.log("ws ping");
+            });
+
+            wsClient.on(window.massa.WebsocketEvent.ON_ERROR, (errorMessage) => {
+                console.error("ws error", errorMessage);
+            });
+
+            // connect to ws
+            await wsClient.connect();
+            console.log("Ws Connection successfully established!");
+
+            // subscribe to new blocks
+            wsClient.subscribeFilledBlocks((newBlock) => {
+                console.log("New Filled Block Received", newBlock);
+            });
+        } catch (ex) {
+            console.log("Error occurred", ex);
+        }
+
+    </script>
+
+  </head>
+
+  <body>
+    <p>Massa Websockets Demo for Browser</p>
+  </body>
+</html>

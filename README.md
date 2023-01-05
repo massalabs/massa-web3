@@ -128,6 +128,7 @@ web3Client.publicApi()      -> sub-client for public api                    (int
 web3Client.privateApi()     -> sub-client for private api                   (interface: PrivateApiClient)
 web3Client.wallet()         -> sub-client for wallet-related operations     (interface: WalletClient)
 web3Client.smartContracts() -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
+web3Client.ws()             -> sub-client for websockets                    (interface: WsSubscriptionClient)
 web3Client.vault()          -> sub-client for vault interaction [mainly used by massa-wallet] (interface: VaultClient)
 
 ```
@@ -275,6 +276,133 @@ Available methods are:
     ```ts
     await web3Client.privateApi().nodeRemoveFromWhitelist("90.110.239.231");
     ```
+
+### Websockets API
+
+Websocket subscriptions are accessible under the websockets client, which is accessible via the `ws()` method on the web3 client.
+
+Example:
+
+```ts
+    import { WebsocketEvent } from "@massalabs/massa-web3";
+    // get the websockets client
+    const wsClient = web3Client.ws();
+
+    // bind various methods for handling common socket events
+    wsClient.on(WebsocketEvent.ON_CLOSED, () => {
+        console.log("ws closed");
+    });
+
+    wsClient.on(WebsocketEvent.ON_CLOSING, () => {
+        console.log("ws closing");
+    });
+
+    wsClient.on(WebsocketEvent.ON_CONNECTING, () => {
+        console.log("ws connecting");
+    });
+
+    wsClient.on(WebsocketEvent.ON_OPEN, () => {
+        console.log("ws open");
+    });
+
+    wsClient.on(WebsocketEvent.ON_PING, () => {
+        console.log("ws ping");
+    });
+
+    wsClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => {
+        console.error("ws error", errorMessage);
+    });
+
+    // connect to ws
+    await wsClient.connect();
+
+    // subscribe to new blocks
+    wsClient.subscribeNewBlocks((newBlock) => {
+        console.log("New Block Received", newBlock);
+    });
+```
+
+Available common methods are:
+
+-   `connect`
+    ```ts
+    await wsClient.connect();
+    ```
+-   `getBinaryType`
+    ```ts
+    wsClient.getBinaryType();
+-   `getBufferedAmount`
+    ```ts
+    wsClient.getBufferedAmount();
+    ```
+-   `getExtensions`
+    ```ts
+    wsClient.getExtensions();
+    ```
+-   `getProtocol`
+    ```ts
+    wsClient.getProtocol();
+    ```
+-   `getReadyState`
+    ```ts
+    wsClient.getReadyState();
+    ```
+-   `getUrl`
+    ```ts
+    wsClient.getUrl();
+    ```
+-   `closeConnection`
+    ```ts
+    wsClient.closeConnection();
+    ```
+
+The following events are available to listen to:
+
+    ```ts
+        wsSubClient.on(WebsocketEvent.ON_CLOSED, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_CLOSING, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_CONNECTING, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_OPEN, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_PING, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => { ... });
+    ```
+
+The following subscription methods are available:
+
+```ts
+    import { WebsocketEvent } from "@massalabs/massa-web3";
+    // get the websockets client
+    const wsClient = web3Client.ws();
+
+    // subscribe to new blocks
+    wsSubClient.subscribeNewBlocks((newBlock) => {
+        console.log("New Block Received \n", newBlock as ISubscribeNewBlocksMessage);
+    });
+
+    // unsubscribe to new blocks
+    wsSubClient.unsubscribeNewBlocks();
+
+    // subscribe to new blocks headers
+    wsSubClient.subscribeNewBlockHeaders((newBlockHeader) => {
+        console.log("New Block Header Received \n", newBlockHeader as IBlockHeaderInfo);
+    });
+
+    // unsubscribe to new blocks headers
+    wsSubClient.unsubscribeNewBlockHeaders();
+
+    // subscribe to new blocks
+    wsSubClient.subscribeFilledBlocks((newFilledBlock) => {
+        console.log("New Filled Block Received \n", newFilledBlock as ISubscribeNewBlocksMessage);
+    });
+
+    // unsubscribe to filled blocks
+    wsSubClient.unsubscribeFilledBlocks();
+```
 
 ### Wallet operations
 
