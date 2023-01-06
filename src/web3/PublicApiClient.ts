@@ -80,9 +80,9 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 	public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
 		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
 		if (this.clientConfig.retryStrategyOn) {
-			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, blockIds]);
+			return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [blockIds]]);
 		} else {
-			return await this.sendJsonRPCRequest<Array<IBlockInfo>>(jsonRpcRequestMethod, blockIds);
+			return await this.sendJsonRPCRequest<Array<IBlockInfo>>(jsonRpcRequestMethod, [blockIds]);
 		}
 	}
 

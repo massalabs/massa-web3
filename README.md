@@ -268,9 +268,9 @@ Available methods are:
     const msgBuf = new TextEncoder().encode(message);
     const signedMessage = await web3Client.privateApi().nodeSignMessage(msgBuf);
     ```
--   `nodeWhitelist`
+-   `nodeAddToPeersWhitelist`
     ```ts
-    await web3Client.privateApi().nodeWhitelist("90.110.239.231");
+    await web3Client.privateApi().nodeAddToPeersWhitelist("90.110.239.231");
     ```
 -   `nodeRemoveFromWhitelist`
     ```ts
