@@ -6,9 +6,11 @@ export interface IEvent {
     context: {
         slot: ISlot,
 		block: null | string // block id,
-		read_only: Boolean // wether the event was generated during  read only call
-		call_stack: [string], // Addresses
+		read_only: boolean // wether the event was generated during read only call
+		call_stack: [string], // Addresses (most recent at the end)
         index_in_slot: number,
-        origin_operation_id: null | string // operation id
+        origin_operation_id: null | string, // operation id
+        is_final: boolean, // Whether the event is final
+        is_error: boolean, // Whether the event was generated in a failed executed or not
     };
 }

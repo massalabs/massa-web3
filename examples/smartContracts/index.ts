@@ -6,11 +6,12 @@ import { IEvent } from "../../src/interfaces/IEvent";
 import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
 import { deploySmartContract } from "./deployer";
+import { Args } from "../../src/utils/arguments";
 
 const chalk = require("chalk");
 const ora = require("ora");
 
-const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy";
+const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC";
 
 (async () => {
 
@@ -26,7 +27,7 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
     try {
         // init client
         const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, deployerAccount);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, deployerAccount);
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
@@ -65,15 +66,16 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
 
         // finally get some read state
         spinner = ora(`Reading a smart contract state...`).start();
-        const readTxId = await web3Client.smartContracts().readSmartContract({
+        const args = new Args();
+        const result = await web3Client.smartContracts().readSmartContract({
             fee: 0,
             maxGas: 200000,
             targetAddress: scAddress,
-            targetFunction: "balanceOf",
-            parameter: Array.from(Buffer.from("gameState", "utf16le")),
+            targetFunction: "event",
+            parameter: args.serialize(),
         } as IReadData);
-        const readScOperationId = readTxId[0];
-        spinner.succeed(`Called read contract with operation ID ${chalk.yellow(JSON.stringify(readScOperationId, null, 4))}`);
+        spinner.succeed(`Called read contract with operation ID ${chalk.yellow(JSON.stringify(result, null, 4))}`);
+        console.info("Read Operation Result", Buffer.from(result.returnValue).toString("utf16le"));
     } catch (ex) {
         const msg = chalk.red(`Error = ${ex}`);
         if (spinner) spinner.fail(msg);

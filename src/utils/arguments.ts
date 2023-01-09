@@ -13,7 +13,7 @@ export class Args {
    *
    * @param {string} serialized
    */
-  constructor(serialized: Array<number> = []) {
+  constructor(serialized: Array<number> | Uint8Array = []) {
     this.serialized = Uint8Array.from(serialized);
   }
 
