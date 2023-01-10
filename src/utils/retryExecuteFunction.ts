@@ -9,7 +9,7 @@ export const trySafeExecute = async <T>(func: Function, args?: any[], retryTimes
 		throw new Error(`Function execution init conditions are erroneous: ${func}`);
 
 	let failureCounter = 0;
-	let res: any = null;
+	let res: T = null;
 	while (true) {
 		try {
 			res = await func(...args);

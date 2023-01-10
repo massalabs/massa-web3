@@ -279,7 +279,7 @@ Available methods are:
 
 ### Websockets API
 
-Websocket subscriptions are accessible under the websockets client, which is accessible via the `ws()` method on the web3 client.
+Websocket subscriptions are accessible under the websockets client, which is accessible via the `ws()` method on the web3 client. The massa-web3 library provides a convenient wrapper around browser and NodeJS compatible websockets client implementation.
 
 Example:
 
@@ -404,6 +404,9 @@ The following subscription methods are available:
     wsSubClient.unsubscribeFilledBlocks();
 ```
 
+The underlying NodeJS websockets client API can be found here: [NodeJS Websockets API](https://github.com/websockets/ws/blob/master/doc/ws.md#class-websocket) and for the web browser: [Browser Websockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket). The Massa Websockets Client is compatible with all currently available browsers.
+
+
 ### Wallet operations
 
 Wallet operations are accessible under the wallet sub-client which is accessible via the wallet() method on the client.
@@ -519,7 +522,7 @@ Once the smart contract WASM is available, it becomes quite straightforward to d
 
 ```ts
 // deploy smart contract
-const opIds = await web3Client.smartContracts().deploySmartContract(
+const opId: string = await web3Client.smartContracts().deploySmartContract(
     {
         fee: 0,
         maxGas: 2000000,
@@ -529,7 +532,7 @@ const opIds = await web3Client.smartContracts().deploySmartContract(
     baseAccount
 );
 ```
-The compiledScFromSource is the compiled smart contract code in binary form.
+The compiledScFromSource is the compiled smart contract code in binary form. The returned value is the resulting operation id.
 
 ### Smart contract event fetching and polling
 
@@ -605,9 +608,7 @@ The latter could easily be employed in smart contracts where we need to e.g. get
 import { call, print, create_sc, generate_event } from "massa-sc-std";
 
 export function main(_args: string): i32 {
-    const sc_address = createContract();
-    call(sc_address, "initialize", "", 0);
-    print("Initialized, address:" + sc_address);
+    ... deploy the smart contract ...
     generateEvent(`Address:${sc_address}`); //emit an event with the address
     ...
 }
@@ -651,37 +652,37 @@ const balance: IBalance|null = await web3Client.smartContracts().getContractBala
 Smart contract data could be read via `readSmartContract` method:
 
 ```ts
-const data: Array<IContractReadOperationData> = await web3Client.smartContracts().readSmartContract({
+const data: IContractReadOperationResponse = await web3Client.smartContracts().readSmartContract({
             fee: 0,
             maxGas: 200000,
             targetAddress: scAddress,
             targetFunction: "getGameState",
-            parameter: "some_stringified_data",
-            callerAddress: baseAccount.address
+            parameter: (new Args()).serialize(), // this is based on input arguments
         } as IReadData);
 ```
 
-Please note that this method would currently only return data which is emitted as an event e.g. `generateEvent(...)`. The returned event data is contained in an object of type IContractReadOperationData under the data key!
-
+The returned data is contained in an object of type IContractReadOperationResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
 
 Smart contract state-changing operations could be executed via `callSmartContract` method:
 
 ```ts
-const data: Array<string> = await web3Client.smartContracts().callSmartContract({
+const data: string = await web3Client.smartContracts().callSmartContract({
             fee: 0,
             maxGas: 200000,
             coins: 0,
             targetAddress: scAddress,
             functionName: "play",
-            parameter: JSON.stringify({index : 1}),
+            parameter: (new Args()).serialize(), // this is based on input arguments
         } as ICallData, baseAccount);
 ```
+
+The returned value is the operation id.
 
 Smart contracts could also be constructed in order to read data from another contract. In that case one could use the code below to read the data via a proxy contract:
 
 ```ts
 // read smart contract data
-const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().executeReadOnlySmartContract(
+const data: IExecuteReadOnlyResponse = await web3Client.smartContracts().executeReadOnlySmartContract(
     {
         fee: 0,
         maxGas: 2000000,
@@ -691,6 +692,8 @@ const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().
     baseAccount
 );
 ```
+
+The returned data is contained in an object of type IExecuteReadOnlyResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
 
 ## Contributing and testing
 
