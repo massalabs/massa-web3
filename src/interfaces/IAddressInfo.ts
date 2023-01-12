@@ -1,3 +1,5 @@
+import { ISlot } from "./ISlot";
+
 export interface IProductionStats {
     cycle: number;
     is_final: boolean;
@@ -46,12 +48,7 @@ export interface IAddressInfo {
     final_balance: string; // represent an Amount in coins
     final_datastore_keys: Array<Array<number>>;
     final_roll_count: number;
-    next_block_draws: [
-        {
-            period: number,
-            thread: number,
-        },
-    ];
+    next_block_draws: Array<ISlot>;
     next_endorsement_draws: Array<IEndorsementDraws>;
     thread: number;
   }

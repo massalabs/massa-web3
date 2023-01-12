@@ -18,11 +18,13 @@
     "update-version-patch": "npm version patch",
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
-    "test-vault-example": "ts-node ./examples/vault/index.ts",
     "test-ws-blocks": "ts-node ./examples/websockets/ws-blocks.ts",
     "test-ws-block-headers": "ts-node ./examples/websockets/ws-block-headers.ts",
     "test-ws-filled-blocks": "ts-node ./examples/websockets/ws-filled-blocks.ts",
-    "fix-lint": "tslint -c tslint.json '**/*.ts' --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "fmt:check": "npm run lint",
+    "fmt": "npm run lint:fix"
   },
   "author": "Massa Labs <info@massa.net>",
   "contributors": [
@@ -52,6 +54,7 @@
     "bundle.min.js"
   ],
   "dependencies": {
+    "@massalabs/eslint-config": "^0.0.5",
     "@noble/ed25519": "^1.6.1",
     "@noble/hashes": "^1.1.2",
     "@types/ws": "^8.5.3",

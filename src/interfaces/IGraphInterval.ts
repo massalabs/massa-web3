@@ -7,5 +7,5 @@ export interface IGraphInterval {
     is_in_blockclique: boolean; // has it been added to the blockclique
     slot: ISlot; // slot ?
     creator: string; // creator
-    parents: Array<String>; // parents
+    parents: Array<string>; // parents
 }

@@ -3,7 +3,6 @@ import { IPrivateApiClient } from "./IPrivateApiClient";
 import { IProvider } from "./IProvider";
 import { IPublicApiClient } from "./IPublicApiClient";
 import { ISmartContractsClient } from "./ISmartContractsClient";
-import { IVaultClient } from "./IVaultClient";
 import { IWalletClient } from "./IWalletClient";
 
 export interface IClient {
@@ -11,7 +10,6 @@ export interface IClient {
 	publicApi(): IPublicApiClient;
 	wallet(): IWalletClient;
 	smartContracts(): ISmartContractsClient;
-	vault(): IVaultClient;
 	setCustomProviders(providers: Array<IProvider>): void;
 	setNewDefaultProvider(provider: DefaultProviderUrls): void;
 }

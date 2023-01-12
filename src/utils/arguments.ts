@@ -6,7 +6,7 @@
  *
  */
 export class Args {
-  private offset: number = 0;
+  private offset = 0;
   private serialized: Uint8Array;
 
   /**
@@ -46,7 +46,7 @@ export class Args {
    *
    * @return {BigInt}
    */
-  nextU32(): BigInt {
+  nextU32(): bigint {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
     const value = view.getUint32(this.offset, true);
@@ -59,7 +59,7 @@ export class Args {
    *
    * @return {BigInt}
    */
-  nextU64(): BigInt {
+  nextU64(): bigint {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
     const value = view.getBigUint64(this.offset, true);
@@ -72,7 +72,7 @@ export class Args {
   *
   * @return {BigInt}
   */
-  nextI32(): BigInt {
+  nextI32(): bigint {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
     const value = view.getInt32(this.offset, true);
@@ -85,7 +85,7 @@ export class Args {
   *
   * @return {BigInt}
   */
-  nextI64(): BigInt {
+  nextI64(): bigint {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
     const value = view.getBigInt64(this.offset, true);

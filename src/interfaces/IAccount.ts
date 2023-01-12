@@ -1,6 +1,10 @@
 export interface IAccount {
-	address: string  | null;
-	publicKey: string | null;	  // base58 encoded public key
-	secretKey: string  | null;   // base58 encoded private key
+	/** The account address (base58 encoded) */
+	address?: string;
+	/** The account public key (base58 encoded) */
+	publicKey?: string;
+	/** The account secret key (base58 encoded) */
+	secretKey?: string;
+	/** The thread number in which the address was created */
 	createdInThread?: number;
 }

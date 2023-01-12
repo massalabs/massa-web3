@@ -129,7 +129,6 @@ web3Client.privateApi()     -> sub-client for private api                   (int
 web3Client.wallet()         -> sub-client for wallet-related operations     (interface: WalletClient)
 web3Client.smartContracts() -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
 web3Client.ws()             -> sub-client for websockets                    (interface: WsSubscriptionClient)
-web3Client.vault()          -> sub-client for vault interaction [mainly used by massa-wallet] (interface: VaultClient)
 
 ```
 
