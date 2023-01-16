@@ -20,7 +20,7 @@ export interface IPublicApiClient {
 	getOperations(operationIds: Array<string>): Promise<Array<IOperationData>>;
 	getCliques(): Promise<Array<IClique>>;
 	getStakers(): Promise<Array<IStakingAddresses>>;
-	getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IDatastoreEntry | null>>;
+	getDatastoreEntries(addressesKeys: Array<IDatastoreEntryInput>): Promise<Array<IDatastoreEntry | null>>;
 	getBlockcliqueBlockBySlot(slot: ISlot): Promise<IBlockcliqueBlockBySlot>;
 	getGraphInterval(graphInterval: IGetGraphInterval): Promise<Array<IGraphInterval>>;
 }

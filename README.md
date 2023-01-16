@@ -1,8 +1,9 @@
 # massa-web3 ![Node CI](https://github.com/massalabs/massa-web3/workflows/Node.js%20CI/badge.svg)
 
 `Massa-web3` is a TypeScript library that allow you to interact with the `Massa` blockchain through a
-local or remote Massa node. In particular the massa-web3 library will allow you to call the JSON-RPC API,
-but also to fetch and poll events from smart contracts on the Massa blockchain, deploy smart contracts and much more.
+local or remote Massa node. In particular the massa-web3 library will allow you to call the JSON-RPC API, 
+listen to streams over websockets, but also to fetch and poll events from smart contracts on the Massa blockchain, 
+deploy smart contracts and much more.
 
 ## Usage
 
@@ -696,6 +697,6 @@ The returned data is contained in an object of type IExecuteReadOnlyResponse und
 
 ## Contributing and testing
 
-1. Run `yarn install` to install all deps
-2. Run `yarn run build` to build distribution content
-3. Run `yarn run test` to run integration and unit tests
+1. Run `npm run install` to install all deps
+2. Run `npm run run build` to build distribution content
+3. Run `npm run test` to run integration and unit tests

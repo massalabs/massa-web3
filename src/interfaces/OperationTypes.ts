@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export interface ITransactionOpType {
     Transaction: {
         amount: string, // represent an Amount in coins

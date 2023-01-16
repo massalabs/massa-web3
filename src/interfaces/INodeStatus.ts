@@ -1,3 +1,5 @@
+import { ISlot } from "./ISlot";
+
 export interface NodesMap {
     [name: string]: string;
 }
@@ -29,7 +31,7 @@ export interface INodeStatus {
     };
     current_cycle: number;
     current_time: number;
-    last_slot: { period: number, thread: number };
+    last_slot: ISlot;
     network_stats: {
       active_node_count: number,
       banned_peer_count: number,
@@ -37,7 +39,7 @@ export interface INodeStatus {
       known_peer_count: number,
       out_connection_count: number
     };
-    next_slot: { period: number, thread: number };
+    next_slot: ISlot;
     node_id: string;
     node_ip: string | null;
     pool_stats: { endorsement_count: number, operation_count: number };

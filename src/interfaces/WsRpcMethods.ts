@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export enum WS_RPC_REQUEST_METHOD_BASE {
 	SUBSCRIBE = "subscribe",
 	UNSUBSCRIBE = "unsubscribe"

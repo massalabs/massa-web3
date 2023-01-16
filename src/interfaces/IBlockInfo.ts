@@ -1,3 +1,4 @@
+import { ISlot } from "./ISlot";
 import { OpType } from "./OperationTypes";
 
 export interface IBlockInfo {
@@ -12,19 +13,13 @@ export interface IBlockInfo {
                   endorsed_block: string, // Block id
                   index: number,
                   sender_public_key: string,
-                  slot: { // endorsed block slot: deifferent from block's slot
-                    period: number,
-                    thread: number
-                  }
+                  slot: ISlot
                 },
                 signature: string
             },
             operation_merkle_root: string, // Hash of all operations
             parents: [string], // Block ids, as many as thread count
-            slot: {
-              period: number,
-              thread: number
-            }
+            slot: ISlot
         },
         signature: string,
         operations: [
