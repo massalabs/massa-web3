@@ -127,9 +127,9 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 	}
 
 	/** Returns the data entry both at the latest final and active executed slots. */
-	public async getDatastoreEntries(addresses_keys: Array<IDatastoreEntryInput>): Promise<Array<IDatastoreEntry>> {
+	public async getDatastoreEntries(addressesKeys: Array<IDatastoreEntryInput>): Promise<Array<IDatastoreEntry>> {
 		const data = [];
-		for (const input of addresses_keys) {
+		for (const input of addressesKeys) {
 			data.push({
 				address: input.address,
 				key: Array.prototype.slice.call(Buffer.from(input.key))
