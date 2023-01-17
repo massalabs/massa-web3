@@ -2,19 +2,58 @@ import { ISlot } from "./ISlot";
 import { OpType } from "./OperationTypes";
 
 export interface IBlockInfo {
-    id: string; // BlockId,
+    /**
+     * The block id
+     * */
+    id: string;
+    /**
+     * The block content
+     * */
     content: null | {
+      /**
+       * Indicates if the block is finalized
+       * */
         is_final: boolean,
+        /**
+         * Indicates if the block is stale
+         * */
         is_stale: boolean,
+        /**
+         * Indicates if the block is in a blockclique
+         * */
         is_in_blockclique: boolean,
+        /**
+         * Block data
+         * */
         block: {
+          /**
+           * Block metadata header
+           * */
             header: {
+                /**
+                 * Block metadata header content
+                 * */
                 content: {
-                  endorsed_block: string, // Block id
+                /**
+                 * The endorsed block id
+                 * */
+                  endorsed_block: string,
+                /**
+                 * The block index
+                 * */
                   index: number,
+                /**
+                 * The block sender public key
+                 * */
                   sender_public_key: string,
+                /**
+                 * The block slot
+                 * */
                   slot: ISlot
                 },
+                /**
+                 * The block signature
+                 * */
                 signature: string
             },
             operation_merkle_root: string, // Hash of all operations
