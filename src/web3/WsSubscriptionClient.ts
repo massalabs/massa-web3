@@ -175,7 +175,7 @@ export class WsSubscriptionClient extends WsBaseClient {
 	  }
 
 	  // start parsing the data
-	  let parsedMsg: Object = null;
+	  let parsedMsg: object = null;
 	  try {
 	    parsedMsg = JSON.parse(messageStr);
 	    // first time sub message

@@ -225,7 +225,7 @@ export abstract class WsBaseClient extends EventEmitter {
 	 * @readonly 
 	 * @returns `Object` with extension key-values or `null` if no ws initialized
 	 * */
-	public getExtensions(): Object | null {
+	public getExtensions(): object | null {
 	  if (this.wss && this.isConnected) {
 	    return this.wss.extensions;
 	  }

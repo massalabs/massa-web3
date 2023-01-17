@@ -10,17 +10,17 @@ export class Args {
   private serialized: Uint8Array;
 
   /**
-   *
-   * @param {string} serialized
+   * Constructs a new instance of of the `Args` class
+   * @param {string} serialized Serialized initial data
    */
   constructor(serialized: Array<number> | Uint8Array = []) {
     this.serialized = Uint8Array.from(serialized);
   }
 
   /**
-   * Returns the serialized string to pass to CallSC.
+   * Returns the serialized string to pass to `CallSC`.
    *
-   * @return {string} the serialized string
+   * @returns {string} the serialized string
    */
   serialize(): Array<number> {
     return Array.from(this.serialized);
@@ -29,10 +29,10 @@ export class Args {
   // Getters
 
   /**
-   * Returns the deserialized string.
-   *
-   * @return {string} the string
-   */
+   * Returns the next string from the deserialized `Args`
+   * 
+   * @returns {string} string
+  */
   nextString(): string {
     const length = Number(this.nextU32());
     const end = this.offset + length;
@@ -42,10 +42,10 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number.
-   *
-   * @return {BigInt}
-   */
+   * Returns the next U32 from the deserialized `Args`
+   * 
+   * @returns {bigint} u32 number
+  */
   nextU32(): bigint {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
@@ -55,10 +55,10 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number.
-   *
-   * @return {BigInt}
-   */
+   * Returns the next U64 from the deserialized `Args`
+   * 
+   * @returns {bigint} u64 number
+  */
   nextU64(): bigint {
     const buffer = this.serialized.buffer;
     const view = new DataView(buffer);
@@ -68,9 +68,9 @@ export class Args {
   }
 
   /**
-  * Returns the deserialized number.
-  *
-  * @return {BigInt}
+   * Returns the next I32 from the deserialized `Args`
+   * 
+   * @returns {bigint} i32 number
   */
   nextI32(): bigint {
     const buffer = this.serialized.buffer;
@@ -81,9 +81,9 @@ export class Args {
   }
 
   /**
-  * Returns the deserialized number.
-  *
-  * @return {BigInt}
+   * Returns the next I64 from the deserialized `Args`
+   * 
+   * @returns {bigint} i64 number
   */
   nextI64(): bigint {
     const buffer = this.serialized.buffer;
@@ -94,9 +94,9 @@ export class Args {
   }
 
   /**
-  * Returns the deserialized number.
-  *
-  * @return {number}
+   * Returns the next F32 from the deserialized `Args`
+   * 
+   * @returns {number} f32 number
   */
   nextF32(): number {
     const buffer = this.serialized.buffer;
@@ -107,9 +107,9 @@ export class Args {
   }
 
   /**
-  * Returns the deserialized number.
-  *
-  * @return {number}
+   * Returns the next F64 from the deserialized `Args`
+   * 
+   * @returns {number} f64 number
   */
   nextF64(): number {
     const buffer = this.serialized.buffer;
@@ -120,7 +120,9 @@ export class Args {
   }
 
   /**
-   * @return {Uint8Array} bytearray
+   * Returns the next `Uint8Array` from the deserialized `Args`
+   * 
+   * @returns {Uint8Array} byte array
   */
   nextUint8Array(): Uint8Array {
     const length = Number(this.nextU32());
@@ -135,10 +137,11 @@ export class Args {
   // Setter
 
   /**
-   *
-   * @param {BigInt} bigInt
-   * @return {Args}
-   */
+ * Adds an U32 to an `Args` serializer
+ * @param {BigInt} bigInt the bigInt to be added
+ * 
+ * @returns {Args} the `Args` instance
+ */
   addU32(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
@@ -151,10 +154,11 @@ export class Args {
   }
 
   /**
-   *
-   * @param {BigInt} bigInt
-   * @return {Args}
-   */
+ * Adds an U64 to an `Args` serializer
+ * @param {BigInt} bigInt the bigInt to be added
+ * 
+ * @returns {Args} the `Args` instance
+ */
   addU64(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(8);
     const view = new DataView(buffer);
@@ -167,10 +171,11 @@ export class Args {
   }
 
   /**
-   *
-   * @param {BigInt} bigInt
-   * @return {Args}
-   */
+ * Adds an I32 to an `Args` serializer
+ * @param {BigInt} bigInt the bigInt to be added
+ * 
+ * @returns {Args} the `Args` instance
+ */
   addI32(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
@@ -183,9 +188,10 @@ export class Args {
   }
 
   /**
- *
- * @param {BigInt} bigInt
- * @return {Args}
+ * Adds an I64 to an `Args` serializer
+ * @param {BigInt} bigInt the bigInt to be added
+ * 
+ * @returns {Args} the `Args` instance
  */
   addI64(bigInt: bigint): Args {
     const buffer = new ArrayBuffer(8);
@@ -199,9 +205,10 @@ export class Args {
   }
 
   /**
-   *
-   * @param {number} bigInt
-   * @return {Args}
+   * Adds an F32 to an `Args` serializer
+   * @param {number} bigInt the bigInt to be added
+   * 
+   * @returns {Args} the `Args` instance
    */
   addF32(number: number): Args {
     const buffer = new ArrayBuffer(4);
@@ -216,9 +223,10 @@ export class Args {
 
 
   /**
-  *
-  * @param {number} number
-  * @return {Args}
+  * Adds an F64 to an `Args` serializer
+  * @param {number} number the number to be added
+  * 
+  * @returns {Args} the `Args` instance
   */
   addF64(number: number): Args {
     const buffer = new ArrayBuffer(8);
@@ -232,9 +240,10 @@ export class Args {
   }
 
   /**
-  *
-  * @param {Uint8Array} array
-  * @return {Args}
+  * Adds an Uint8 to an `Args` serializer
+  * @param {Uint8Array} array the byte array of the data to be added
+  * 
+  * @returns {Args} the `Args` instance
   */
   addUint8Array(array: Uint8Array): Args {
     this.addU32(BigInt(array.length));
@@ -249,7 +258,7 @@ export class Args {
    *
    * @param {string} arg the argument to add
    *
-   * @return {Args} the modified Arg instance
+   * @returns {Args} the modified Arg instance
    */
   addString(arg: string): Args {
     const maxSize = 4294967295;
@@ -270,10 +279,11 @@ export class Args {
   // Utils
 
   /**
-   * Returns a byte string.
+   * Converts a byte array into a string
    *
-   * @param {Uint8Array} bytes
-   * @return {string}
+   * @param {Uint8Array} bytes The bytes array to convert to a string
+   * 
+   * @returns {string} The bytes string
    */
   private toByteString(bytes: Uint8Array): string {
     let s = "";
@@ -286,8 +296,9 @@ export class Args {
   /**
    * Converts a string into a byte array.
    *
-   * @param {string} byteString
-   * @return {Uint8Array}
+   * @param {string} byteString The string to be converted
+   *
+   * @returns {Uint8Array} The converted byte array
    */
   private fromByteString(byteString: string): Uint8Array {
     const byteArray = new Uint8Array(byteString.length);
@@ -303,7 +314,7 @@ export class Args {
    * @param {Uint8Array} a first array to concat
    * @param {Uint8Array} b second array to concat
    *
-   * @return {Uint8Array} the concatenated array
+   * @returns {Uint8Array} the concatenated array
    */
   private concatArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
     const c = new Uint8Array(a.length + b.length);
