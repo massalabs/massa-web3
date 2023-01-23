@@ -2,8 +2,8 @@ const U8_MAX = 0xff;
 const U32_MAX = 0xffffffff;
 const U64_MAX = BigInt("0xffffffffffffffff");
 
-const I32_MIN = -2147483648;
-const I32_MAX = 2147483647;
+const I32_MIN = -0x80000000;
+const I32_MAX = 0x7fffffff;
 
 const I64_MIN = BigInt("-9223372036854775808");
 const I64_MAX = BigInt("0x7fffffffffffffff");

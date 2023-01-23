@@ -10,7 +10,7 @@ describe("Args class", () => {
         args1
             .addString("hello")
             .addString("world")
-            .addU32(BigInt(97));
+            .addU32(97);
 
         // use serialize to get the byte string
         const byteString = args1.serialize();
@@ -22,15 +22,15 @@ describe("Args class", () => {
         expect(args2.nextString()).to.equal("hello");
         // and so on with the 2 following arguments
         expect(args2.nextString()).to.equal("world");
-        expect(args2.nextU32()).to.equal(BigInt(97));
+        expect(args2.nextU32()).to.equal(97);
     });
 
     it("with u32", () => {
         const args1 = new Args();
-        args1.addU32(BigInt(97));
+        args1.addU32(97);
 
         const args4 = new Args(args1.serialize());
-        expect(args4.nextU32()).to.equal(BigInt(97));
+        expect(args4.nextU32()).to.equal(97);
     });
 
     it("with string", () => {
@@ -51,33 +51,33 @@ describe("Args class", () => {
 
     it("u32 and string", () => {
         const args1 = new Args();
-        args1.addU32(BigInt(97));
+        args1.addU32(97);
         args1.addString("hello");
         args1.addString("world");
 
         const args2 = new Args(args1.serialize());
-        expect(args2.nextU32()).to.equal(BigInt(97));
+        expect(args2.nextU32()).to.equal(97);
         expect(args2.nextString()).to.equal("hello");
         expect(args2.nextString()).to.equal("world");
     });
 
     it("i32", () => {
         const args1 = new Args();
-        args1.addI32(BigInt(-97));
+        args1.addI32(-97);
         const args2 = new Args(args1.serialize());
-        expect(args2.nextI32()).to.equal(BigInt(-97));
+        expect(args2.nextI32()).to.equal(-97);
     });
 
     it("u64, i32 and string", () => {
         const args1 = new Args();
         args1.addU64(BigInt(97));
-        args1.addI32(BigInt(-97));
+        args1.addI32(-97);
         args1.addString("hello");
         args1.addString("world");
 
         const args2 = new Args(args1.serialize());
         expect(args2.nextU64()).to.equal(BigInt(97));
-        expect(args2.nextI32()).to.equal(BigInt(-97));
+        expect(args2.nextI32()).to.equal(-97);
         expect(args2.nextString()).to.equal("hello");
         expect(args2.nextString()).to.equal("world");
     });
@@ -85,13 +85,13 @@ describe("Args class", () => {
     it("i64, i32 and string", () => {
         const args1 = new Args();
         args1.addI64(BigInt(-97));
-        args1.addI32(BigInt(-97));
+        args1.addI32(-97);
         args1.addString("hello");
         args1.addString("world");
 
         const args2 = new Args(args1.serialize());
         expect(args2.nextI64()).to.equal(BigInt(-97));
-        expect(args2.nextI32()).to.equal(BigInt(-97));
+        expect(args2.nextI32()).to.equal(-97);
         expect(args2.nextString()).to.equal("hello");
         expect(args2.nextString()).to.equal("world");
     });
