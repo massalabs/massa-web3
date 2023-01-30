@@ -57,6 +57,7 @@ export { VaultClient } from "./web3/VaultClient";
 export { EventPoller, ON_MASSA_EVENT_DATA, ON_MASSA_EVENT_ERROR } from "./web3/EventPoller";
 export { SmartContractsClient } from "./web3/SmartContractsClient";
 export { Args } from "./utils/arguments";
+export { fromMAS, toMAS } from "./utils/converters";
 
 /** Exposed utils */
 export * as utils from "./utils/Xbqcrypto";
