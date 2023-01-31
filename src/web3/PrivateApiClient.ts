@@ -23,12 +23,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
 		this.nodeRemoveStakingAddresses = this.nodeRemoveStakingAddresses.bind(this);
 		this.nodeSignMessage = this.nodeSignMessage.bind(this);
 		this.nodeRemoveFromWhitelist = this.nodeRemoveFromWhitelist.bind(this);
-		this.nodeWhitelist = this.nodeWhitelist.bind(this);
+		this.nodeAddToPeersWhitelist = this.nodeAddToPeersWhitelist.bind(this);
 	}
 
 	/** Remove a given Node IP address from the whitelist */
-	public async nodeWhitelist(ipAddress: string): Promise<void> {
-		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_WHITELIST;
+	public async nodeAddToPeersWhitelist(ipAddress: string): Promise<void> {
+		const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_ADD_TO_PEERS_WHITELIST;
 		if (this.clientConfig.retryStrategyOn) {
 			return await trySafeExecute<void>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[ipAddress]]]);
 		} else {

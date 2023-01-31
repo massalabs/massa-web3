@@ -44,9 +44,7 @@ import {
     ClientFactory,
     Client,
     DefaultProviderUrls,
-    IAccount,
-    IProvider,
-    ProviderType 
+    IAccount
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
@@ -70,7 +68,6 @@ The second way is to create a custom client connecting to a node whose ip and po
 import {
     ClientFactory,
     Client,
-    DefaultProviderUrls,
     IAccount,
     IProvider,
     ProviderType 
@@ -97,6 +94,7 @@ const providers: Array<IProvider> = [
 
 const customClient: Client = await ClientFactory.createCustomClient(
     providers,
+    true,
     baseAccount
 );
 ```
@@ -130,6 +128,7 @@ web3Client.publicApi()      -> sub-client for public api                    (int
 web3Client.privateApi()     -> sub-client for private api                   (interface: PrivateApiClient)
 web3Client.wallet()         -> sub-client for wallet-related operations     (interface: WalletClient)
 web3Client.smartContracts() -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
+web3Client.ws()             -> sub-client for websockets                    (interface: WsSubscriptionClient)
 web3Client.vault()          -> sub-client for vault interaction [mainly used by massa-wallet] (interface: VaultClient)
 
 ```
@@ -269,14 +268,144 @@ Available methods are:
     const msgBuf = new TextEncoder().encode(message);
     const signedMessage = await web3Client.privateApi().nodeSignMessage(msgBuf);
     ```
--   `nodeWhitelist`
+-   `nodeAddToPeersWhitelist`
     ```ts
-    await web3Client.privateApi().nodeWhitelist("90.110.239.231");
+    await web3Client.privateApi().nodeAddToPeersWhitelist("90.110.239.231");
     ```
 -   `nodeRemoveFromWhitelist`
     ```ts
     await web3Client.privateApi().nodeRemoveFromWhitelist("90.110.239.231");
     ```
+
+### Websockets API
+
+Websocket subscriptions are accessible under the websockets client, which is accessible via the `ws()` method on the web3 client. The massa-web3 library provides a convenient wrapper around browser and NodeJS compatible websockets client implementation.
+
+Example:
+
+```ts
+    import { WebsocketEvent } from "@massalabs/massa-web3";
+    // get the websockets client
+    const wsClient = web3Client.ws();
+
+    // bind various methods for handling common socket events
+    wsClient.on(WebsocketEvent.ON_CLOSED, () => {
+        console.log("ws closed");
+    });
+
+    wsClient.on(WebsocketEvent.ON_CLOSING, () => {
+        console.log("ws closing");
+    });
+
+    wsClient.on(WebsocketEvent.ON_CONNECTING, () => {
+        console.log("ws connecting");
+    });
+
+    wsClient.on(WebsocketEvent.ON_OPEN, () => {
+        console.log("ws open");
+    });
+
+    wsClient.on(WebsocketEvent.ON_PING, () => {
+        console.log("ws ping");
+    });
+
+    wsClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => {
+        console.error("ws error", errorMessage);
+    });
+
+    // connect to ws
+    await wsClient.connect();
+
+    // subscribe to new blocks
+    wsClient.subscribeNewBlocks((newBlock) => {
+        console.log("New Block Received", newBlock);
+    });
+```
+
+Available common methods are:
+
+-   `connect`
+    ```ts
+    await wsClient.connect();
+    ```
+-   `getBinaryType`
+    ```ts
+    wsClient.getBinaryType();
+-   `getBufferedAmount`
+    ```ts
+    wsClient.getBufferedAmount();
+    ```
+-   `getExtensions`
+    ```ts
+    wsClient.getExtensions();
+    ```
+-   `getProtocol`
+    ```ts
+    wsClient.getProtocol();
+    ```
+-   `getReadyState`
+    ```ts
+    wsClient.getReadyState();
+    ```
+-   `getUrl`
+    ```ts
+    wsClient.getUrl();
+    ```
+-   `closeConnection`
+    ```ts
+    wsClient.closeConnection();
+    ```
+
+The following events are available to listen to:
+
+    ```ts
+        wsSubClient.on(WebsocketEvent.ON_CLOSED, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_CLOSING, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_CONNECTING, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_OPEN, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_PING, () => { ... });
+
+        wsSubClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => { ... });
+    ```
+
+The following subscription methods are available:
+
+```ts
+    import { WebsocketEvent } from "@massalabs/massa-web3";
+    // get the websockets client
+    const wsClient = web3Client.ws();
+
+    // subscribe to new blocks
+    wsSubClient.subscribeNewBlocks((newBlock) => {
+        console.log("New Block Received \n", newBlock as ISubscribeNewBlocksMessage);
+    });
+
+    // unsubscribe to new blocks
+    wsSubClient.unsubscribeNewBlocks();
+
+    // subscribe to new blocks headers
+    wsSubClient.subscribeNewBlockHeaders((newBlockHeader) => {
+        console.log("New Block Header Received \n", newBlockHeader as IBlockHeaderInfo);
+    });
+
+    // unsubscribe to new blocks headers
+    wsSubClient.unsubscribeNewBlockHeaders();
+
+    // subscribe to new blocks
+    wsSubClient.subscribeFilledBlocks((newFilledBlock) => {
+        console.log("New Filled Block Received \n", newFilledBlock as ISubscribeNewBlocksMessage);
+    });
+
+    // unsubscribe to filled blocks
+    wsSubClient.unsubscribeFilledBlocks();
+```
+
+The underlying NodeJS websockets client API can be found here: [NodeJS Websockets API](https://github.com/websockets/ws/blob/master/doc/ws.md#class-websocket) and for the web browser: [Browser Websockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket). The Massa Websockets Client is compatible with all currently available browsers.
+
 
 ### Wallet operations
 
@@ -286,7 +415,7 @@ Example:
 
 ```ts
 // generate new wallet
-const newWalletAccount = await web3Client.wallet().walletGenerateNewAccount();
+const newWalletAccount = await WalletClient.walletGenerateNewAccount();
 ```
 
 Available class methods are:
@@ -393,7 +522,7 @@ Once the smart contract WASM is available, it becomes quite straightforward to d
 
 ```ts
 // deploy smart contract
-const opIds = await web3Client.smartContracts().deploySmartContract(
+const opId: string = await web3Client.smartContracts().deploySmartContract(
     {
         fee: 0,
         maxGas: 2000000,
@@ -403,7 +532,7 @@ const opIds = await web3Client.smartContracts().deploySmartContract(
     baseAccount
 );
 ```
-The compiledScFromSource is the compiled smart contract code in binary form.
+The compiledScFromSource is the compiled smart contract code in binary form. The returned value is the resulting operation id.
 
 ### Smart contract event fetching and polling
 
@@ -479,9 +608,7 @@ The latter could easily be employed in smart contracts where we need to e.g. get
 import { call, print, create_sc, generate_event } from "massa-sc-std";
 
 export function main(_args: string): i32 {
-    const sc_address = createContract();
-    call(sc_address, "initialize", "", 0);
-    print("Initialized, address:" + sc_address);
+    ... deploy the smart contract ...
     generateEvent(`Address:${sc_address}`); //emit an event with the address
     ...
 }
@@ -525,37 +652,37 @@ const balance: IBalance|null = await web3Client.smartContracts().getContractBala
 Smart contract data could be read via `readSmartContract` method:
 
 ```ts
-const data: Array<IContractReadOperationData> = await web3Client.smartContracts().readSmartContract({
+const data: IContractReadOperationResponse = await web3Client.smartContracts().readSmartContract({
             fee: 0,
             maxGas: 200000,
             targetAddress: scAddress,
             targetFunction: "getGameState",
-            parameter: "some_stringified_data",
-            callerAddress: baseAccount.address
+            parameter: (new Args()).serialize(), // this is based on input arguments
         } as IReadData);
 ```
 
-Please note that this method would currently only return data which is emitted as an event e.g. `generateEvent(...)`. The returned event data is contained in an object of type IContractReadOperationData under the data key!
-
+The returned data is contained in an object of type IContractReadOperationResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
 
 Smart contract state-changing operations could be executed via `callSmartContract` method:
 
 ```ts
-const data: Array<string> = await web3Client.smartContracts().callSmartContract({
+const data: string = await web3Client.smartContracts().callSmartContract({
             fee: 0,
             maxGas: 200000,
             coins: 0,
             targetAddress: scAddress,
             functionName: "play",
-            parameter: JSON.stringify({index : 1}),
+            parameter: (new Args()).serialize(), // this is based on input arguments
         } as ICallData, baseAccount);
 ```
+
+The returned value is the operation id.
 
 Smart contracts could also be constructed in order to read data from another contract. In that case one could use the code below to read the data via a proxy contract:
 
 ```ts
 // read smart contract data
-const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().executeReadOnlySmartContract(
+const data: IExecuteReadOnlyResponse = await web3Client.smartContracts().executeReadOnlySmartContract(
     {
         fee: 0,
         maxGas: 2000000,
@@ -565,6 +692,8 @@ const data: Array<IExecuteReadOnlyResponse> = await web3Client.smartContracts().
     baseAccount
 );
 ```
+
+The returned data is contained in an object of type IExecuteReadOnlyResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
 
 ## Contributing and testing
 

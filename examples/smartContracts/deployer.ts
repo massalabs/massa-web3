@@ -73,14 +73,8 @@ export const deploySmartContract = async (
 
 		// deploy smart contract
 		console.log(`Running ${chalk.green("deployment")} of smart contract....`);
-		let deployTxId: string[] = [];
-
 		try {
-			deployTxId = await web3Client.smartContracts().deploySmartContract(contractData, deployerAccount);
-			if (deployTxId.length === 0) {
-				throw new Error(`No transaction ids were produced by the deployment. Something went wrong. Please check your contract and network`);
-			}
-			deploymentOperationId = deployTxId[0];
+			deploymentOperationId = await web3Client.smartContracts().deploySmartContract(contractData, deployerAccount);
 			console.log(`Smart Contract ${chalk.green("successfully")} deployed to Massa Network. Operation ID ${chalk.yellow(deploymentOperationId)}`);
 		} catch (ex) {
 			const msg = chalk.red(`Error deploying smart contract ${chalk.yellow(deploymentScWasm)} to Massa Network`);

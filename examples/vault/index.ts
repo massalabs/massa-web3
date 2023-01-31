@@ -13,7 +13,7 @@ const ora = require("ora");
 
     try {
         // init client
-        const web3Client = ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true);
 
         // init vault
         spinner = ora(`Initializing vault....`).start();

@@ -3,7 +3,7 @@ export enum JSON_RPC_REQUEST_METHOD {
 	GET_STATUS = "get_status",
 	GET_ADDRESSES = "get_addresses",
 	SEND_OPERATIONS = "send_operations",
-	GET_BLOCKS = "get_block",
+	GET_BLOCKS = "get_blocks",
 	GET_ENDORSEMENTS = "get_endorsements",
 	GET_OPERATIONS = "get_operations",
 	GET_CLIQUES = "get_cliques",
@@ -26,5 +26,5 @@ export enum JSON_RPC_REQUEST_METHOD {
 	ADD_STAKING_PRIVATE_KEYS = "add_staking_private_keys",
 	NODE_SIGN_MESSAGE = "node_sign_message",
 	NODE_REMOVE_FROM_WHITELIST = "node_remove_from_whitelist",
-	NODE_WHITELIST = "node_whitelist",
+	NODE_ADD_TO_PEERS_WHITELIST = "node_add_to_peers_whitelist",
 }
