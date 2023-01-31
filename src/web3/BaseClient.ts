@@ -11,7 +11,7 @@ import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
 import { ICallData } from "../interfaces/ICallData";
-import { toMAS } from "../utils/converters";
+import { MassaCoin } from "./MassaCoin";
 
 export type DataType = IContractData | ITransactionData | IRollsData | ICallData;
 
@@ -151,7 +151,8 @@ export class BaseClient {
 
 	/** compact bytes payload per operation */
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
-		const feeEncoded = Buffer.from(varintEncode(toMAS(data.fee)));
+		const fee = new MassaCoin(data.fee);
+		const feeEncoded = Buffer.from(varintEncode(fee.toValue()));
 		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
@@ -190,7 +191,8 @@ export class BaseClient {
 				const maxGasEncoded = Buffer.from(varintEncode((data as ICallData).maxGas));
 
 				// coins to send
-				const coinsEncoded = Buffer.from(varintEncode(toMAS((data as ICallData).coins)));
+				const coins = new MassaCoin((data as ICallData).coins);
+				const coinsEncoded = Buffer.from(varintEncode(coins.toValue()));
 
 				// target address
 				const targetAddressEncoded = base58Decode((data as ICallData).targetAddress.slice(1)).slice(1);
@@ -208,7 +210,8 @@ export class BaseClient {
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount
-				const transferAmountEncoded = Buffer.from(varintEncode(toMAS((data as ITransactionData).amount)));
+				const amount = new MassaCoin((data as ITransactionData).amount);
+				const transferAmountEncoded = Buffer.from(varintEncode(amount.toValue()));
 				// recipient
 				const recipientAddressEncoded = base58Decode((data as ITransactionData).recipientAddress.slice(1)).slice(1);
 
