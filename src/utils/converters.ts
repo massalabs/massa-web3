@@ -13,5 +13,5 @@ export const fromMAS = (inputAmount: number | string): BigNumber => {
     const amount = new BigNumber(inputAmount);
     const scaleFactor = (new BigNumber(10)).pow(new BigNumber(MASSA_SCALING_FACTOR));
     const amountScaled = amount.dividedBy(scaleFactor);
-    return amountScaled;
+    return new BigNumber(amountScaled.toFixed(MASSA_SCALING_FACTOR));
 };
