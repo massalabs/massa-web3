@@ -113,6 +113,40 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		}
 	}
 
+		/** call smart contract method */
+		public async callSmartContracts(callDatas: ICallData[], executor?: IAccount): Promise<Array<string>> {
+			// get next period info
+			const nodeStatusInfo: INodeStatus = await this.publicApiClient.getNodeStatus();
+			const expiryPeriod: number = nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+	
+			// check sender account
+			const sender = executor || this.walletClient.getBaseAccount();
+			if (!sender) {
+				throw new Error(`No tx sender available`);
+			}
+			let data = [];
+			for (const callData of callDatas) {
+				// bytes compaction
+				const bytesCompact: Buffer = this.compactBytesForOperation(callData, OperationTypeId.CallSC, sender, expiryPeriod);
+		
+				// sign payload
+				const signature: ISignature = await WalletClient.walletSignMessage(Buffer.concat([WalletClient.getBytesPublicKey(sender.publicKey), bytesCompact]), sender);
+				// request data
+				data.push({
+					serialized_content: Array.prototype.slice.call(bytesCompact),
+					creator_public_key: sender.publicKey,
+					signature: signature.base58Encoded,
+				});
+			}
+			// returns operation ids
+			const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
+			if (this.clientConfig.retryStrategyOn) {
+				return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [data]]);
+			} else {
+				return await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+			}
+		}
+
 	/** read smart contract method */
 	public async readSmartContract(readData: IReadData): Promise<Array<IContractReadOperationData>> {
 		// request data
