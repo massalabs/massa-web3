@@ -2,7 +2,6 @@ import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
 import { base58Decode, varintEncode } from "../utils/Xbqcrypto";
-import BigNumber from "bignumber.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
@@ -218,7 +217,7 @@ export class BaseClient {
 			case OperationTypeId.RollBuy:
 			case OperationTypeId.RollSell: {
 				// rolls amount
-				const rollsAmountEncoded = Buffer.from(varintEncode(toMAS((data as IRollsData).amount)));
+				const rollsAmountEncoded = Buffer.from(varintEncode((data as IRollsData).amount));
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, rollsAmountEncoded]);
 			}
