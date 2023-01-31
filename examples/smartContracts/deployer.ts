@@ -1,22 +1,23 @@
 import { IAccount } from "../../src/interfaces/IAccount";
 import { IContractData } from "../../src/interfaces/IContractData";
 import { Client } from "../../src/web3/Client";
+import { MassaCoin } from "../../src/web3/MassaCoin";
 import { EOperationStatus } from "../../src/interfaces/EOperationStatus";
 import { Args } from "../../src/utils/arguments";
 import { readFileSync } from "fs";
+import BigNumber from "bignumber.js";
 const path = require("path");
 const chalk = require("chalk");
 
 interface ISCData {
 	data: Uint8Array;
 	args?: Args;
-	coins: number;
+	coins: MassaCoin;
 }
 
-async function checkBalance(web3Client: Client, account: IAccount) {
+async function checkBalance(web3Client: Client, account: IAccount, requiredBalance: number) {
 	const balance = await web3Client.wallet().getAccountBalance(account.address as string);
-	console.log("Wallet balance: ", balance?.final);
-	if (!balance?.final || !parseFloat(balance.final) || parseFloat(balance.final) === 0.0) {
+	if (!balance?.final || !parseFloat(balance.final.rawValue().toString()) || balance.final.rawValue().lt(new BigNumber(requiredBalance))) {
 	  throw new Error("Insufficient MAS balance.");
 	}
 }
@@ -58,7 +59,8 @@ export const deploySmartContracts = async (
 		}
 
 		// check deployer account balance
-		await checkBalance(web3Client, deployerAccount);
+		const coinsRequired = contractsToDeploy.reduce((acc, contract) => acc + contract.coins.rawValue().toNumber(), 0);
+		await checkBalance(web3Client, deployerAccount, coinsRequired);
 
 		// construct a new datastore
 		const datastore = new Map<Uint8Array, Uint8Array>();
@@ -87,7 +89,7 @@ export const deploySmartContracts = async (
 					new Uint8Array(contract.args.serialize()),
 				);
 			}
-			if (contract.coins > 0) {
+			if (contract.coins.rawValue().isGreaterThan(0)) {
 				datastore.set(
 					new Uint8Array(
 					new Args()
@@ -95,7 +97,7 @@ export const deploySmartContracts = async (
 						.addUint8Array(new Uint8Array([0x01]))
 						.serialize(),
 					),
-					new Uint8Array(new Args().addU64(BigInt(contract.coins)).serialize()),
+					new Uint8Array(new Args().addU64(BigInt(contract.coins.toValue())).serialize()), // scaled value to be provided here
 				);
 			}
 		}
@@ -103,7 +105,7 @@ export const deploySmartContracts = async (
 		// deploy deployer contract
 		console.log(`Running ${chalk.green("deployment")} of smart contract....`);
 		try {
-			const coins = contractsToDeploy.reduce((acc, contract) => acc + contract.coins, 0);
+			const coins = contractsToDeploy.reduce((acc, contract) => acc + contract.coins.toValue(), 0); // scaled value to be provided here
 			console.log("Sending coins ... ", coins);
 			deploymentOperationId = await web3Client.smartContracts().deploySmartContract({
 				coins,

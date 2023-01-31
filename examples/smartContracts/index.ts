@@ -7,12 +7,12 @@ import { WalletClient } from "../../src/web3/WalletClient";
 import { deploySmartContracts } from "./deployer";
 import { Args } from "../../src/utils/arguments";
 import { readFileSync } from "fs";
-import { toMAS } from "../../src/utils/converters";
+import { MassaCoin } from "../../src/web3/MassaCoin";
 const path = require("path");
 const chalk = require("chalk");
 const ora = require("ora");
 
-const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC";
+const DEPLOYER_SECRET_KEY = "S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d";
 
 (async () => {
 
@@ -25,8 +25,9 @@ const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC
     try {
         // init client
         const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-        console.log(`Deployer Wallet Address: ${deployerAccount.address}`);
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, deployerAccount);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, deployerAccount);
+        const deployerAccountBalance = await web3Client.wallet().getAccountBalance(deployerAccount.address as string);
+        console.log(`Deployer Wallet Address: ${deployerAccount.address} with balance (candidate, final) = (${deployerAccountBalance?.candidate.rawValue()}, ${deployerAccountBalance?.final.rawValue()})`);
 
         // deploy smart contract
         spinner = ora(`Running ${chalk.green("deployment")} of deployer smart contract....`).start();
@@ -36,7 +37,7 @@ const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC
 					path.join(__dirname, ".", "contracts", "/sc.wasm"),
 				),
                 args: undefined,
-                coins: toMAS(12.5)
+                coins: new MassaCoin(12.5)
             }],
             web3Client,
             true,
@@ -79,11 +80,11 @@ const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC
             parameter: args.serialize(),
         } as IReadData);
         spinner.succeed(`Called read contract with operation ID ${chalk.yellow(JSON.stringify(result, null, 4))}`);
-        console.info("Read Operation Result", Buffer.from(result.returnValue).toString("utf16le"));
+        console.info("Read Operation Result", Buffer.from(result.returnValue).toString("utf-8"));
 
         // read contract balance
         const contractBalance = await web3Client.smartContracts().getContractBalance(scAddress);
-        console.info("Deployed smart contract balance (MAS)", contractBalance);
+        console.info(`Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.rawValue()},${contractBalance?.final.rawValue()})`);
     } catch (ex) {
         const msg = chalk.red(`Error = ${ex}`);
         if (spinner) spinner.fail(msg);

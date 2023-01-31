@@ -57,7 +57,7 @@ import {
         call(contractAddr, CONSTRUCTOR, args, coins);
       }
       generateEvent(
-        `Contract deployed at address: ${contractAddr.toByteString()}`,
+        `Contract deployed at address: ${contractAddr.toString()}`,
       );
     }
     return [];
