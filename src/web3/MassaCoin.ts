@@ -9,7 +9,6 @@ export class MassaCoin {
     constructor(value: BigNumber | number | string) {
         this.value = new BigNumber(value);
         this.toValue = this.toValue.bind(this);
-        this.rawValue = this.rawValue.bind(this);
     }
 
     public toValue(): number {
