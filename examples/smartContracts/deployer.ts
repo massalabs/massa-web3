@@ -6,6 +6,7 @@ import { EOperationStatus } from "../../src/interfaces/EOperationStatus";
 import { Args } from "../../src/utils/arguments";
 import { readFileSync } from "fs";
 import BigNumber from "bignumber.js";
+import { u64ToBytes, u8toByte } from "../../src/utils/serializers";
 const path = require("path");
 const chalk = require("chalk");
 
@@ -68,36 +69,36 @@ export const deploySmartContracts = async (
 		// set the number of contracts
 		datastore.set(
 		  new Uint8Array([0x00]),
-		  new Uint8Array(new Args().addU64(BigInt(contractsToDeploy.length)).serialize()),
+		  u64ToBytes(BigInt(contractsToDeploy.length)),
 		);
 		// loop through all contracts and fill datastore
 		for (let i = 0; i < contractsToDeploy.length; i++) {
 			const contract: ISCData = contractsToDeploy[i];
 
 			datastore.set(
-				new Uint8Array(new Args().addU64(BigInt(i + 1)).serialize()),
+				u64ToBytes(BigInt(i + 1)),
 				contract.data,
 			);
 			if (contract.args) {
 				datastore.set(
 					new Uint8Array(
-					new Args()
-						.addU64(BigInt(i + 1))
-						.addUint8Array(new Uint8Array([0x00]))
-						.serialize(),
-					),
+						new Args()
+							.addU64(BigInt(i + 1))
+							.addUint8Array(u8toByte(0))
+							.serialize(),
+						),
 					new Uint8Array(contract.args.serialize()),
 				);
 			}
 			if (contract.coins.rawValue().isGreaterThan(0)) {
 				datastore.set(
 					new Uint8Array(
-					new Args()
-						.addU64(BigInt(i + 1))
-						.addUint8Array(new Uint8Array([0x01]))
-						.serialize(),
-					),
-					new Uint8Array(new Args().addU64(BigInt(contract.coins.toValue())).serialize()), // scaled value to be provided here
+						new Args()
+							.addU64(BigInt(i + 1))
+							.addUint8Array(u8toByte(1))
+							.serialize(),
+						),
+					u64ToBytes(BigInt(contract.coins.toValue())) // scaled value to be provided here
 				);
 			}
 		}

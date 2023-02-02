@@ -565,7 +565,7 @@ const eventsFilter = {
     original_caller_address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
-    is_final: null,
+    is_final: true,
 } as IEventFilter;
 
 const eventPoller = EventPoller.startEventsPolling(
