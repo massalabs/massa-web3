@@ -2,7 +2,6 @@ import { IProvider, ProviderType } from "../interfaces/IProvider";
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { Buffer } from "buffer";
 import { base58Decode, varintEncode } from "../utils/Xbqcrypto";
-import { BN } from "bn.js";
 import { IAccount } from "../interfaces/IAccount";
 import { IContractData } from "../interfaces/IContractData";
 import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
@@ -12,6 +11,7 @@ import { ITransactionData } from "../interfaces/ITransactionData";
 import { OperationTypeId } from "../interfaces/OperationTypes";
 import { IRollsData } from "../interfaces/IRollsData";
 import { ICallData } from "../interfaces/ICallData";
+import { MassaCoin } from "./MassaCoin";
 
 export type DataType = IContractData | ITransactionData | IRollsData | ICallData;
 
@@ -149,17 +149,10 @@ export class BaseClient {
 		return resp.result;
 	}
 
-	/** scale an amount to blockchain precision */
-	protected scaleAmount(inputAmount: number | string): number {
-		const amount = new BN(inputAmount);
-		const scaleFactor = (new BN(10)).pow(new BN(9));
-		const amountScaled = amount.mul(scaleFactor);
-		return amountScaled.toNumber();
-	}
-
 	/** compact bytes payload per operation */
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
-		const feeEncoded = Buffer.from(varintEncode(this.scaleAmount(data.fee)));
+		const fee = new MassaCoin(data.fee);
+		const feeEncoded = Buffer.from(varintEncode(fee.toValue()));
 		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
@@ -198,7 +191,8 @@ export class BaseClient {
 				const maxGasEncoded = Buffer.from(varintEncode((data as ICallData).maxGas));
 
 				// coins to send
-				const coinsEncoded = Buffer.from(varintEncode((data as ICallData).coins));
+				const coins = new MassaCoin((data as ICallData).coins);
+				const coinsEncoded = Buffer.from(varintEncode(coins.toValue()));
 
 				// target address
 				const targetAddressEncoded = base58Decode((data as ICallData).targetAddress.slice(1)).slice(1);
@@ -216,7 +210,8 @@ export class BaseClient {
 			}
 			case OperationTypeId.Transaction: {
 				// transfer amount
-				const transferAmountEncoded = Buffer.from(varintEncode(this.scaleAmount((data as ITransactionData).amount)));
+				const amount = new MassaCoin((data as ITransactionData).amount);
+				const transferAmountEncoded = Buffer.from(varintEncode(amount.toValue()));
 				// recipient
 				const recipientAddressEncoded = base58Decode((data as ITransactionData).recipientAddress.slice(1)).slice(1);
 
@@ -225,8 +220,7 @@ export class BaseClient {
 			case OperationTypeId.RollBuy:
 			case OperationTypeId.RollSell: {
 				// rolls amount
-				const amount = new BN((data as IRollsData).amount);
-				const rollsAmountEncoded = Buffer.from(varintEncode(amount.toNumber()));
+				const rollsAmountEncoded = Buffer.from(varintEncode((data as IRollsData).amount));
 
 				return Buffer.concat([feeEncoded, expirePeriodEncoded, typeIdEncoded, rollsAmountEncoded]);
 			}

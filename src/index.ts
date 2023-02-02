@@ -54,6 +54,7 @@ export { PublicApiClient } from "./web3/PublicApiClient";
 export { PrivateApiClient } from "./web3/PrivateApiClient";
 export { WalletClient } from "./web3/WalletClient";
 export { VaultClient } from "./web3/VaultClient";
+export { MassaCoin } from "./web3/MassaCoin";
 export { EventPoller, ON_MASSA_EVENT_DATA, ON_MASSA_EVENT_ERROR } from "./web3/EventPoller";
 export { SmartContractsClient } from "./web3/SmartContractsClient";
 export { Args } from "./utils/arguments";

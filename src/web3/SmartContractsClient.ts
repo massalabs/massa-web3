@@ -21,6 +21,7 @@ import { OperationTypeId } from "../interfaces/OperationTypes";
 import { trySafeExecute } from "../utils/retryExecuteFunction";
 import { wait } from "../utils/Wait";
 import { BaseClient } from "./BaseClient";
+import { MassaCoin } from "./MassaCoin";
 import { PublicApiClient } from "./PublicApiClient";
 import { WalletClient } from "./WalletClient";
 
@@ -159,8 +160,8 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 		if (addresses.length === 0) return null;
 		const addressInfo: IAddressInfo = addresses.at(0);
 		return {
-			candidate: addressInfo.candidate_balance,
-			final: addressInfo.final_balance
+			candidate: new MassaCoin(addressInfo.candidate_balance),
+			final: new MassaCoin(addressInfo.final_balance)
 		} as IBalance;
 	}
 

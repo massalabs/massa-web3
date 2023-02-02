@@ -1,17 +1,18 @@
 import { IAccount } from "../../src/interfaces/IAccount";
-import { IContractData } from "../../src/interfaces/IContractData";
 import { IEventFilter } from "../../src/interfaces/IEventFilter";
 import { ClientFactory, DefaultProviderUrls } from "../../src/web3/ClientFactory";
 import { IEvent } from "../../src/interfaces/IEvent";
 import { IReadData } from "../../src/interfaces/IReadData";
 import { WalletClient } from "../../src/web3/WalletClient";
-import { deploySmartContract } from "./deployer";
+import { deploySmartContracts } from "./deployer";
 import { Args } from "../../src/utils/arguments";
-
+import { readFileSync } from "fs";
+import { MassaCoin } from "../../src/web3/MassaCoin";
+const path = require("path");
 const chalk = require("chalk");
 const ora = require("ora");
 
-const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC";
+const DEPLOYER_SECRET_KEY = "S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d";
 
 (async () => {
 
@@ -20,26 +21,30 @@ const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC
     console.log(`${chalk.green.bold("Massa Smart Contract Interaction Example")}`);
     console.log(header);
 
-    const deployementScPath = "./examples/smartContracts/contracts/deployer.wasm";
-    const deployedScPath = "./examples/smartContracts/contracts/sc.wasm";
     let spinner;
-
     try {
         // init client
         const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, deployerAccount);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, deployerAccount);
+        const deployerAccountBalance = await web3Client.wallet().getAccountBalance(deployerAccount.address as string);
+        console.log(`Deployer Wallet Address: ${deployerAccount.address} with balance (candidate, final) = (${deployerAccountBalance?.candidate.rawValue()}, ${deployerAccountBalance?.final.rawValue()})`);
 
         // deploy smart contract
-        spinner = ora(`Running ${chalk.green("deployment")} of smart contract....`).start();
-        const datastoreMap: Map<Uint8Array, Uint8Array> = new Map();
-        datastoreMap.set(new Uint8Array(Buffer.from("key")), new Uint8Array(Buffer.from("value")));
-        const deploymentOperationId = await deploySmartContract(deployementScPath, deployedScPath, {
-            fee: 0,
-            maxGas: 200000,
-            gasPrice: 0,
-            coins: 0,
-            datastore: datastoreMap
-        } as IContractData, web3Client, true, deployerAccount);
+        spinner = ora(`Running ${chalk.green("deployment")} of deployer smart contract....`).start();
+        const deploymentOperationId = await deploySmartContracts(
+            [{
+                data: readFileSync(
+					path.join(__dirname, ".", "contracts", "/sc.wasm"),
+				),
+                args: undefined,
+                coins: new MassaCoin(12.5)
+            }],
+            web3Client,
+            true,
+            0,
+            1_000_000,
+            deployerAccount,
+        );
         spinner.succeed(`Deployed Smart Contract ${chalk.green("successfully")} with opId ${deploymentOperationId}`);
 
         // poll smart contract events for the opId
@@ -57,11 +62,11 @@ const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC
 
         // find an event that contains the emitted sc address
         spinner = ora(`Extracting deployed sc address from events....`).start();
-        const addressEvent: IEvent | undefined = events.find(event => event.data.includes("SC created at:"));
+        const addressEvent: IEvent | undefined = events.find(event => event.data.includes("Contract deployed at address"));
         if (!addressEvent) {
             throw new Error("No events were emitted from contract containing a message `SC created at:...`. Please make sure to include such a message in order to fetch the sc address");
         }
-        const scAddress: string = addressEvent.data.split(":")[1];
+        const scAddress: string = addressEvent.data.split(":")[1].trim();
         spinner.succeed(`Smart Contract Address: ${chalk.yellow(scAddress)}`);
 
         // finally get some read state
@@ -69,13 +74,17 @@ const DEPLOYER_SECRET_KEY = "S1LoQ2cyq273f2TTi1qMYH6qgntAtpn85PbMd9qr2tS7S6A64cC
         const args = new Args();
         const result = await web3Client.smartContracts().readSmartContract({
             fee: 0,
-            maxGas: 200000,
+            maxGas: 700000,
             targetAddress: scAddress,
             targetFunction: "event",
             parameter: args.serialize(),
         } as IReadData);
         spinner.succeed(`Called read contract with operation ID ${chalk.yellow(JSON.stringify(result, null, 4))}`);
-        console.info("Read Operation Result", Buffer.from(result.returnValue).toString("utf16le"));
+        console.info("Read Operation Result", Buffer.from(result.returnValue).toString("utf-8"));
+
+        // read contract balance
+        const contractBalance = await web3Client.smartContracts().getContractBalance(scAddress);
+        console.info(`Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.rawValue()},${contractBalance?.final.rawValue()})`);
     } catch (ex) {
         const msg = chalk.red(`Error = ${ex}`);
         if (spinner) spinner.fail(msg);

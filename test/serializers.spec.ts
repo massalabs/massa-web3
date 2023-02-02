@@ -57,7 +57,7 @@ describe("Serialization tests", () => {
 });
 
 describe("Test against assemblyscript serializer", () => {
-    for (let test of asTests) {
+    for (const test of asTests) {
         it(`AS tests ${test.name}: serialize`, () => {
             expect(ser[test.ser](test.val)).eql(
                 new Uint8Array(test.serialized)
