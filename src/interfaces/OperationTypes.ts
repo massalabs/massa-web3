@@ -19,7 +19,7 @@ export interface IRollSellOpType {
 
 export interface IExecSmartContractOpType {
     ExecuteSC: {
-        data: [number], // vec of bytes to execute
+        data: number[], // vec of bytes to execute
         max_gas: number, // maximum amount of gas that the execution of the contract is allowed to cost
         datastore: Map<Uint8Array, Uint8Array>,
     };

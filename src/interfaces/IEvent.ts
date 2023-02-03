@@ -7,7 +7,7 @@ export interface IEvent {
         slot: ISlot,
 		block: null | string // block id,
 		read_only: boolean // wether the event was generated during read only call
-		call_stack: [string], // Addresses (most recent at the end)
+		call_stack: string[], // Addresses (most recent at the end)
         index_in_slot: number,
         origin_operation_id: null | string, // operation id
         is_final: boolean, // Whether the event is final

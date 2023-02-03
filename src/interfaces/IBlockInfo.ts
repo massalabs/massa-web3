@@ -20,7 +20,7 @@ export interface IBlockInfo {
                 signature: string
             },
             operation_merkle_root: string, // Hash of all operations
-            parents: [string], // Block ids, as many as thread count
+            parents: string[], // Block ids, as many as thread count
             slot: {
               period: number,
               thread: number
