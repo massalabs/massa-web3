@@ -98,7 +98,7 @@ export const deploySmartContracts = async (
 							.addUint8Array(u8toByte(1))
 							.serialize(),
 						),
-					u64ToBytes(BigInt(contract.coins.toValue())) // scaled value to be provided here
+					u64ToBytes(BigInt(contract.coins.toNumber())) // scaled value to be provided here
 				);
 			}
 		}
@@ -106,10 +106,9 @@ export const deploySmartContracts = async (
 		// deploy deployer contract
 		console.log(`Running ${chalk.green("deployment")} of smart contract....`);
 		try {
-			const coins = contractsToDeploy.reduce((acc, contract) => acc + contract.coins.toValue(), 0); // scaled value to be provided here
+			const coins = contractsToDeploy.reduce((acc, contract) => acc + contract.coins.toNumber(), 0); // scaled value to be provided here
 			console.log("Sending coins ... ", coins);
 			deploymentOperationId = await web3Client.smartContracts().deploySmartContract({
-				coins,
 				contractDataBinary: readFileSync(
 					path.join(__dirname, ".", "contracts", "/deployer.wasm"),
 				),

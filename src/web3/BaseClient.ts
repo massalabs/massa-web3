@@ -152,7 +152,7 @@ export class BaseClient {
 	/** compact bytes payload per operation */
 	protected compactBytesForOperation(data: DataType, opTypeId: OperationTypeId, account: IAccount, expirePeriod: number): Buffer {
 		const fee = new MassaCoin(data.fee);
-		const feeEncoded = Buffer.from(varintEncode(fee.toValue()));
+		const feeEncoded = Buffer.from(varintEncode(fee.toNumber()));
 		const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
 		const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
@@ -191,8 +191,7 @@ export class BaseClient {
 				const maxGasEncoded = Buffer.from(varintEncode((data as ICallData).maxGas));
 
 				// coins to send
-				const coins = new MassaCoin((data as ICallData).coins);
-				const coinsEncoded = Buffer.from(varintEncode(coins.toValue()));
+				const coinsEncoded = Buffer.from(varintEncode((data as ICallData).coins.toNumber()));
 
 				// target address
 				const targetAddressEncoded = base58Decode((data as ICallData).targetAddress.slice(1)).slice(1);
@@ -211,7 +210,7 @@ export class BaseClient {
 			case OperationTypeId.Transaction: {
 				// transfer amount
 				const amount = new MassaCoin((data as ITransactionData).amount);
-				const transferAmountEncoded = Buffer.from(varintEncode(amount.toValue()));
+				const transferAmountEncoded = Buffer.from(varintEncode(amount.toNumber()));
 				// recipient
 				const recipientAddressEncoded = base58Decode((data as ITransactionData).recipientAddress.slice(1)).slice(1);
 
