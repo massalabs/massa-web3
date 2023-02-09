@@ -106,8 +106,12 @@ export const deploySmartContracts = async (
 		// deploy deployer contract
 		console.log(`Running ${chalk.green("deployment")} of smart contract....`);
 		try {
-			const coins = contractsToDeploy.reduce((acc, contract) => acc + contract.coins.toNumber(), 0); // scaled value to be provided here
-			console.log("Sending coins ... ", coins);
+            const coins = contractsToDeploy.reduce( // scaled value to be provided here
+                (acc, contract) => contract.coins.rawValue().plus(acc),
+                BigNumber(0)
+            );
+            console.log("Sending coins ... ", coins.toString());
+
 			deploymentOperationId = await web3Client.smartContracts().deploySmartContract({
 				contractDataBinary: readFileSync(
 					path.join(__dirname, ".", "contracts", "/deployer.wasm"),
