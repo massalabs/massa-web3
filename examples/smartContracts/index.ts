@@ -25,7 +25,7 @@ const DEPLOYER_SECRET_KEY = "S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d
     try {
         // init client
         const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, deployerAccount);
+        const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, deployerAccount);
         const deployerAccountBalance = await web3Client.wallet().getAccountBalance(deployerAccount.address as string);
         console.log(`Deployer Wallet Address: ${deployerAccount.address} with balance (candidate, final) = (${deployerAccountBalance?.candidate.rawValue()}, ${deployerAccountBalance?.final.rawValue()})`);
 
@@ -37,7 +37,7 @@ const DEPLOYER_SECRET_KEY = "S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d
 					path.join(__dirname, ".", "contracts", "/sc.wasm"),
 				),
                 args: undefined,
-                coins: new MassaCoin(12.5)
+                coins: new MassaCoin(0.1)
             }],
             web3Client,
             true,
@@ -55,6 +55,7 @@ const DEPLOYER_SECRET_KEY = "S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d
             original_caller_address: null,
             original_operation_id: deploymentOperationId,
             emitter_address: null,
+            is_final: true
         } as IEventFilter;
 
         const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);

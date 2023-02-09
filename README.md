@@ -526,8 +526,8 @@ const opId: string = await web3Client.smartContracts().deploySmartContract(
     {
         fee: 0,
         maxGas: 2000000,
-        coins: 0,
         contractDataBinary: compiledScFromSource.binary,
+        datastore: new Map<Uint8Array, Uint8Array>()
     } as IContractData,
     baseAccount
 );
@@ -669,7 +669,7 @@ Smart contract state-changing operations could be executed via `callSmartContrac
 const data: string = await web3Client.smartContracts().callSmartContract({
             fee: 0,
             maxGas: 200000,
-            coins: 0,
+            coins: new MassaCoin(0),
             targetAddress: scAddress,
             functionName: "play",
             parameter: (new Args()).serialize(), // this is based on input arguments
@@ -686,7 +686,7 @@ const data: IExecuteReadOnlyResponse = await web3Client.smartContracts().execute
     {
         fee: 0,
         maxGas: 2000000,
-        coins: 0,
+        coins: new MassaCoin(0),
         contractDataBinary: compiledScFromSource.binary,
     } as IContractData,
     baseAccount
@@ -697,6 +697,6 @@ The returned data is contained in an object of type IExecuteReadOnlyResponse und
 
 ## Contributing and testing
 
-1. Run `yarn install` to install all deps
-2. Run `yarn run build` to build distribution content
-3. Run `yarn run test` to run integration and unit tests
+1. Run `npm run install` to install all deps
+2. Run `npm run build` to build distribution content
+3. Run `npm run test` to run integration and unit tests

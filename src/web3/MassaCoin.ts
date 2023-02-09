@@ -8,15 +8,18 @@ export class MassaCoin {
 
     constructor(value: BigNumber | number | string) {
         this.value = new BigNumber(value);
-        this.toValue = this.toValue.bind(this);
     }
 
-    public toValue(): number {
+    public toNumber(): number {
         return toMAS(this.value);
     }
 
     public rawValue(): BigNumber {
         return this.value;
+    }
+
+    public toString(): string {
+        return this.rawValue.toString();
     }
 
     public static fromValue(value: number | string): MassaCoin {
