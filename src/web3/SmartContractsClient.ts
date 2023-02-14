@@ -146,7 +146,7 @@ export class SmartContractsClient extends BaseClient implements ISmartContractsC
 			throw new Error(`Read operation bad response. No results array in json rpc response. Inspect smart contract`);
 		}
 		if (jsonRpcCallResult[0].result.Error) {
-			throw new Error("Read operation error", { cause: jsonRpcCallResult[0].result.Error });
+			throw new Error(jsonRpcCallResult[0].result.Error);
 		}
 		return {
 			returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,
