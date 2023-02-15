@@ -10,153 +10,153 @@ import { IClient } from "../interfaces/IClient";
 import { WsSubscriptionClient } from "./WsSubscriptionClient";
 
 export const getWsProvider = (
-    provider: DefaultProviderUrls
+  provider: DefaultProviderUrls
 ): DefaultWsProviderUrls => {
-    let wsProvider: DefaultWsProviderUrls;
-    switch (provider) {
-        case DefaultProviderUrls.LABNET: {
-            wsProvider = DefaultWsProviderUrls.LABNET;
-            break;
-        }
-        case DefaultProviderUrls.MAINNET: {
-            wsProvider = DefaultWsProviderUrls.MAINNET;
-            break;
-        }
-        case DefaultProviderUrls.LOCALNET: {
-            wsProvider = DefaultWsProviderUrls.LOCALNET;
-            break;
-        }
-        case DefaultProviderUrls.TESTNET: {
-            wsProvider = DefaultWsProviderUrls.TESTNET;
-            break;
-        }
-        default: {
-            wsProvider = DefaultWsProviderUrls.LOCALNET;
-        }
+  let wsProvider: DefaultWsProviderUrls;
+  switch (provider) {
+    case DefaultProviderUrls.LABNET: {
+      wsProvider = DefaultWsProviderUrls.LABNET;
+      break;
     }
-    return wsProvider;
+    case DefaultProviderUrls.MAINNET: {
+      wsProvider = DefaultWsProviderUrls.MAINNET;
+      break;
+    }
+    case DefaultProviderUrls.LOCALNET: {
+      wsProvider = DefaultWsProviderUrls.LOCALNET;
+      break;
+    }
+    case DefaultProviderUrls.TESTNET: {
+      wsProvider = DefaultWsProviderUrls.TESTNET;
+      break;
+    }
+    default: {
+      wsProvider = DefaultWsProviderUrls.LOCALNET;
+    }
+  }
+  return wsProvider;
 };
 
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 export class Client implements IClient {
-    private publicApiClient: PublicApiClient;
-    private privateApiClient: PrivateApiClient;
-    private walletClient: WalletClient;
-    private smartContractsClient: SmartContractsClient;
-    private wsSubscriptionClient: WsSubscriptionClient | null;
+  private publicApiClient: PublicApiClient;
+  private privateApiClient: PrivateApiClient;
+  private walletClient: WalletClient;
+  private smartContractsClient: SmartContractsClient;
+  private wsSubscriptionClient: WsSubscriptionClient | null;
 
-    public constructor(
+  public constructor(
         private clientConfig: IClientConfig,
         baseAccount?: IAccount
+  ) {
+    this.publicApiClient = new PublicApiClient(clientConfig);
+    this.privateApiClient = new PrivateApiClient(clientConfig);
+    this.walletClient = new WalletClient(
+      clientConfig,
+      this.publicApiClient,
+      baseAccount
+    );
+    this.smartContractsClient = new SmartContractsClient(
+      clientConfig,
+      this.publicApiClient,
+      this.walletClient
+    );
+    if (
+      clientConfig.providers.find(
+        (provider) => provider.type === ProviderType.WS
+      )
     ) {
-        this.publicApiClient = new PublicApiClient(clientConfig);
-        this.privateApiClient = new PrivateApiClient(clientConfig);
-        this.walletClient = new WalletClient(
-            clientConfig,
-            this.publicApiClient,
-            baseAccount
-        );
-        this.smartContractsClient = new SmartContractsClient(
-            clientConfig,
-            this.publicApiClient,
-            this.walletClient
-        );
-        if (
-            clientConfig.providers.find(
-                (provider) => provider.type === ProviderType.WS
-            )
-        ) {
-            this.wsSubscriptionClient = new WsSubscriptionClient(clientConfig);
-        }
-
-        // subclients
-        this.privateApi = this.privateApi.bind(this);
-        this.publicApi = this.publicApi.bind(this);
-        this.wallet = this.wallet.bind(this);
-        this.smartContracts = this.smartContracts.bind(this);
-        this.ws = this.ws.bind(this);
-        // setters
-        this.setCustomProviders = this.setCustomProviders.bind(this);
-        this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
-        // getters
-        this.getProviders = this.getProviders.bind(this);
-        this.getPrivateProviders = this.getPrivateProviders.bind(this);
-        this.getPublicProviders = this.getPublicProviders.bind(this);
+      this.wsSubscriptionClient = new WsSubscriptionClient(clientConfig);
     }
 
-    /** Private Api related RPC methods */
-    public privateApi(): PrivateApiClient {
-        return this.privateApiClient;
-    }
+    // subclients
+    this.privateApi = this.privateApi.bind(this);
+    this.publicApi = this.publicApi.bind(this);
+    this.wallet = this.wallet.bind(this);
+    this.smartContracts = this.smartContracts.bind(this);
+    this.ws = this.ws.bind(this);
+    // setters
+    this.setCustomProviders = this.setCustomProviders.bind(this);
+    this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
+    // getters
+    this.getProviders = this.getProviders.bind(this);
+    this.getPrivateProviders = this.getPrivateProviders.bind(this);
+    this.getPublicProviders = this.getPublicProviders.bind(this);
+  }
 
-    /** Public Api related RPC methods */
-    public publicApi(): PublicApiClient {
-        return this.publicApiClient;
-    }
+  /** Private Api related RPC methods */
+  public privateApi(): PrivateApiClient {
+    return this.privateApiClient;
+  }
 
-    /** Wallet related methods */
-    public wallet(): WalletClient {
-        return this.walletClient;
-    }
+  /** Public Api related RPC methods */
+  public publicApi(): PublicApiClient {
+    return this.publicApiClient;
+  }
 
-    /** Smart Contracts related methods */
-    public smartContracts(): SmartContractsClient {
-        return this.smartContractsClient;
-    }
+  /** Wallet related methods */
+  public wallet(): WalletClient {
+    return this.walletClient;
+  }
 
-    /** Websocket RPC methods */
-    public ws(): WsSubscriptionClient | null {
-        return this.wsSubscriptionClient;
-    }
+  /** Smart Contracts related methods */
+  public smartContracts(): SmartContractsClient {
+    return this.smartContractsClient;
+  }
 
-    /** set new providers */
-    public setCustomProviders(providers: Array<IProvider>): void {
-        this.publicApiClient.setProviders(providers);
-        this.privateApiClient.setProviders(providers);
-        this.walletClient.setProviders(providers);
-        this.smartContractsClient.setProviders(providers);
-        this.wsSubscriptionClient.setProviders(providers);
-    }
+  /** Websocket RPC methods */
+  public ws(): WsSubscriptionClient | null {
+    return this.wsSubscriptionClient;
+  }
 
-    /** get currently set providers */
-    public getProviders(): Array<IProvider> {
-        return this.clientConfig.providers;
-    }
+  /** set new providers */
+  public setCustomProviders(providers: Array<IProvider>): void {
+    this.publicApiClient.setProviders(providers);
+    this.privateApiClient.setProviders(providers);
+    this.walletClient.setProviders(providers);
+    this.smartContractsClient.setProviders(providers);
+    this.wsSubscriptionClient.setProviders(providers);
+  }
 
-    /** return all private providers */
-    public getPrivateProviders(): Array<IProvider> {
-        return this.clientConfig.providers.filter(
-            (provider) => provider.type === ProviderType.PRIVATE
-        );
-    }
+  /** get currently set providers */
+  public getProviders(): Array<IProvider> {
+    return this.clientConfig.providers;
+  }
 
-    /** return all public providers */
-    public getPublicProviders(): Array<IProvider> {
-        return this.clientConfig.providers.filter(
-            (provider) => provider.type === ProviderType.PUBLIC
-        );
-    }
+  /** return all private providers */
+  public getPrivateProviders(): Array<IProvider> {
+    return this.clientConfig.providers.filter(
+      (provider) => provider.type === ProviderType.PRIVATE
+    );
+  }
 
-    /** sets a new default json rpc provider */
-    public setNewDefaultProvider(provider: DefaultProviderUrls): void {
-        const providers = [
+  /** return all public providers */
+  public getPublicProviders(): Array<IProvider> {
+    return this.clientConfig.providers.filter(
+      (provider) => provider.type === ProviderType.PUBLIC
+    );
+  }
+
+  /** sets a new default json rpc provider */
+  public setNewDefaultProvider(provider: DefaultProviderUrls): void {
+    const providers = [
             {
-                url: provider,
-                type: ProviderType.PUBLIC,
+              url: provider,
+              type: ProviderType.PUBLIC,
             } as IProvider,
             {
-                url: provider,
-                type: ProviderType.PRIVATE,
+              url: provider,
+              type: ProviderType.PRIVATE,
             } as IProvider,
             {
-                url: getWsProvider(provider),
-                type: ProviderType.WS,
+              url: getWsProvider(provider),
+              type: ProviderType.WS,
             } as IProvider,
-        ];
-        this.publicApiClient.setProviders(providers);
-        this.privateApiClient.setProviders(providers);
-        this.walletClient.setProviders(providers);
-        this.smartContractsClient.setProviders(providers);
-        this.wsSubscriptionClient.setProviders(providers);
-    }
+    ];
+    this.publicApiClient.setProviders(providers);
+    this.privateApiClient.setProviders(providers);
+    this.walletClient.setProviders(providers);
+    this.smartContractsClient.setProviders(providers);
+    this.wsSubscriptionClient.setProviders(providers);
+  }
 }

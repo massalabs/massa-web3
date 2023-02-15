@@ -4,7 +4,7 @@
  * @param arr - the Uint8Array to convert
  */
 export function byteToBool(arr: Uint8Array): boolean {
-    return !!arr[0];
+  return !!arr[0];
 }
 
 /**
@@ -13,5 +13,5 @@ export function byteToBool(arr: Uint8Array): boolean {
  * @param val - the number to convert
  */
 export function boolToByte(val: boolean): Uint8Array {
-    return new Uint8Array([val ? 1 : 0]);
+  return new Uint8Array([val ? 1 : 0]);
 }

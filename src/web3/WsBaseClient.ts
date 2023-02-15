@@ -9,9 +9,9 @@ let IINodeWebSocket: typeof INodeWebSocket;
 export const WS_PING_TIMEOUT_MS = 30000;
 
 export const arrayBufferToBase64 = (
-    array: Buffer | ArrayBuffer | Buffer[]
+  array: Buffer | ArrayBuffer | Buffer[]
 ): string => {
-    return array.toString("utf-8");
+  return array.toString("utf-8");
 };
 
 declare global {
@@ -84,218 +84,218 @@ export const checkForBrowserWs = (): {
     isBrowser: boolean;
     ws: typeof WebSocket | typeof MozWebSocket;
 } => {
-    let ws: typeof WebSocket | typeof MozWebSocket | null | undefined = null;
-    if (typeof WebSocket !== "undefined") {
-        ws = WebSocket;
-    } else if (typeof MozWebSocket !== "undefined") {
-        ws = MozWebSocket;
-    } else if (typeof global !== "undefined") {
-        ws = global.WebSocket || global.MozWebSocket;
-    } else if (typeof window !== "undefined") {
-        ws = window.WebSocket || window.MozWebSocket;
-    } else if (typeof self !== "undefined") {
-        ws = self.WebSocket || self.MozWebSocket;
-    }
-    return {
-        isBrowser: ws !== null && ws !== undefined,
-        ws,
-    };
+  let ws: typeof WebSocket | typeof MozWebSocket | null | undefined = null;
+  if (typeof WebSocket !== "undefined") {
+    ws = WebSocket;
+  } else if (typeof MozWebSocket !== "undefined") {
+    ws = MozWebSocket;
+  } else if (typeof global !== "undefined") {
+    ws = global.WebSocket || global.MozWebSocket;
+  } else if (typeof window !== "undefined") {
+    ws = window.WebSocket || window.MozWebSocket;
+  } else if (typeof self !== "undefined") {
+    ws = self.WebSocket || self.MozWebSocket;
+  }
+  return {
+    isBrowser: ws !== null && ws !== undefined,
+    ws,
+  };
 };
 
 /** Base Ws Client for interacting with the massa network */
 export abstract class WsBaseClient extends EventEmitter {
-    protected clientConfig: IClientConfig;
-    protected wss:
+  protected clientConfig: IClientConfig;
+  protected wss:
         | typeof WebSocket
         | typeof MozWebSocket
         | typeof NodeWebSocket
         | typeof IINodeWebSocket
         | null
         | undefined = null;
-    protected isConnected = false;
-    protected isBrowserWs = false;
-    private pingTimeout: NodeJS.Timer;
+  protected isConnected = false;
+  protected isBrowserWs = false;
+  private pingTimeout: NodeJS.Timer;
 
-    public constructor(clientConfig: IClientConfig) {
-        super();
-        this.clientConfig = clientConfig;
-        if (
-            !clientConfig.providers.find(
-                (provider) => provider.type === ProviderType.WS
-            )
-        ) {
-            throw new Error("No ws provider provided");
-        }
-        this.clientConfig.pingTimeoutMs =
+  public constructor(clientConfig: IClientConfig) {
+    super();
+    this.clientConfig = clientConfig;
+    if (
+      !clientConfig.providers.find(
+        (provider) => provider.type === ProviderType.WS
+      )
+    ) {
+      throw new Error("No ws provider provided");
+    }
+    this.clientConfig.pingTimeoutMs =
             this.clientConfig.pingTimeoutMs | WS_PING_TIMEOUT_MS;
 
-        this.connect = this.connect.bind(this);
-        this.closeConnection = this.closeConnection.bind(this);
-        this.connectNodeWs = this.connectNodeWs.bind(this);
-        this.connectBrowserWs = this.connectBrowserWs.bind(this);
-        this.checkNextHeartbeat = this.checkNextHeartbeat.bind(this);
-        this.getReadyState = this.getReadyState.bind(this);
-        this.getBinaryType = this.getBinaryType.bind(this);
-        this.getUrl = this.getUrl.bind(this);
-        this.getProtocol = this.getProtocol.bind(this);
-        this.getExtensions = this.getExtensions.bind(this);
-        this.getBufferedAmount = this.getBufferedAmount.bind(this);
-        this.setProviders = this.setProviders.bind(this);
-        this.getWsProviders = this.getWsProviders.bind(this);
-    }
+    this.connect = this.connect.bind(this);
+    this.closeConnection = this.closeConnection.bind(this);
+    this.connectNodeWs = this.connectNodeWs.bind(this);
+    this.connectBrowserWs = this.connectBrowserWs.bind(this);
+    this.checkNextHeartbeat = this.checkNextHeartbeat.bind(this);
+    this.getReadyState = this.getReadyState.bind(this);
+    this.getBinaryType = this.getBinaryType.bind(this);
+    this.getUrl = this.getUrl.bind(this);
+    this.getProtocol = this.getProtocol.bind(this);
+    this.getExtensions = this.getExtensions.bind(this);
+    this.getBufferedAmount = this.getBufferedAmount.bind(this);
+    this.setProviders = this.setProviders.bind(this);
+    this.getWsProviders = this.getWsProviders.bind(this);
+  }
 
-    /** set new providers */
-    public setProviders(providers: Array<IProvider>): void {
-        this.clientConfig.providers = providers;
-    }
+  /** set new providers */
+  public setProviders(providers: Array<IProvider>): void {
+    this.clientConfig.providers = providers;
+  }
 
-    /** return all ws providers */
-    protected getWsProviders(): Array<IProvider> {
-        return this.clientConfig.providers.filter(
-            (provider) => provider.type === ProviderType.WS
-        );
-    }
+  /** return all ws providers */
+  protected getWsProviders(): Array<IProvider> {
+    return this.clientConfig.providers.filter(
+      (provider) => provider.type === ProviderType.WS
+    );
+  }
 
     protected abstract parseWsMessage(
         message: string | Buffer | ArrayBuffer | Buffer[]
     ): void;
 
     public async connect(): Promise<void> {
-        if (this.wss || this.isConnected) {
-            return;
-        }
-        const browserWs = checkForBrowserWs();
-        const provider: IProvider = this.clientConfig.providers.find(
-            (provider) => provider.type === ProviderType.WS
-        );
-        this.wss = browserWs.isBrowser
-            ? new browserWs.ws(provider.url)
-            : new NodeWebSocket(provider.url, {
+      if (this.wss || this.isConnected) {
+        return;
+      }
+      const browserWs = checkForBrowserWs();
+      const provider: IProvider = this.clientConfig.providers.find(
+        (provider) => provider.type === ProviderType.WS
+      );
+      this.wss = browserWs.isBrowser
+        ? new browserWs.ws(provider.url)
+        : new NodeWebSocket(provider.url, {
                   perMessageDeflate: false,
               });
-        this.isBrowserWs = browserWs.isBrowser;
-        return browserWs.isBrowser
-            ? this.connectBrowserWs()
-            : this.connectNodeWs();
+      this.isBrowserWs = browserWs.isBrowser;
+      return browserWs.isBrowser
+        ? this.connectBrowserWs()
+        : this.connectNodeWs();
     }
 
     public getReadyState(): number | null {
-        if (this.wss && this.isConnected) {
-            return this.wss.readyState;
-        }
-        return null;
+      if (this.wss && this.isConnected) {
+        return this.wss.readyState;
+      }
+      return null;
     }
 
     public getBinaryType(): string | null {
-        if (this.wss && this.isConnected) {
-            return this.wss.binaryType;
-        }
-        return null;
+      if (this.wss && this.isConnected) {
+        return this.wss.binaryType;
+      }
+      return null;
     }
 
     public getUrl(): string | null {
-        if (this.wss && this.isConnected) {
-            return this.wss.url;
-        }
-        return null;
+      if (this.wss && this.isConnected) {
+        return this.wss.url;
+      }
+      return null;
     }
 
     public getProtocol(): string | null {
-        if (this.wss && this.isConnected) {
-            return this.wss.protocol;
-        }
-        return null;
+      if (this.wss && this.isConnected) {
+        return this.wss.protocol;
+      }
+      return null;
     }
 
     public getExtensions(): Object | null {
-        if (this.wss && this.isConnected) {
-            return this.wss.extensions;
-        }
-        return null;
+      if (this.wss && this.isConnected) {
+        return this.wss.extensions;
+      }
+      return null;
     }
 
     public getBufferedAmount(): number | null {
-        if (this.wss && this.isConnected) {
-            return this.wss.bufferedAmount;
-        }
-        return null;
+      if (this.wss && this.isConnected) {
+        return this.wss.bufferedAmount;
+      }
+      return null;
     }
 
     public closeConnection(): boolean {
-        // check for undrained connection
-        if (this.wss && this.isConnected && this.wss.bufferedAmount === 0) {
-            this.wss.close();
-            return true;
-        }
-        return false;
+      // check for undrained connection
+      if (this.wss && this.isConnected && this.wss.bufferedAmount === 0) {
+        this.wss.close();
+        return true;
+      }
+      return false;
     }
 
     private connectNodeWs(): Promise<void> {
-        this.wss.on(WebsocketEvent.ON_CLOSED, () => {
-            this.isConnected = false;
-            this.emit(WebsocketEvent.ON_CLOSED);
-        });
+      this.wss.on(WebsocketEvent.ON_CLOSED, () => {
+        this.isConnected = false;
+        this.emit(WebsocketEvent.ON_CLOSED);
+      });
 
-        this.wss.on(WebsocketEvent.ON_CONNECTING, () => {
-            this.emit(WebsocketEvent.ON_CONNECTING);
-        });
+      this.wss.on(WebsocketEvent.ON_CONNECTING, () => {
+        this.emit(WebsocketEvent.ON_CONNECTING);
+      });
 
-        this.wss.on(WebsocketEvent.ON_CLOSING, () => {
-            this.emit(WebsocketEvent.ON_CLOSING);
-        });
+      this.wss.on(WebsocketEvent.ON_CLOSING, () => {
+        this.emit(WebsocketEvent.ON_CLOSING);
+      });
 
-        this.wss.on(WebsocketEvent.ON_PING, () => {
-            this.emit(WebsocketEvent.ON_PING);
-            this.checkNextHeartbeat();
-        });
+      this.wss.on(WebsocketEvent.ON_PING, () => {
+        this.emit(WebsocketEvent.ON_PING);
+        this.checkNextHeartbeat();
+      });
 
-        this.wss.on(WebsocketEvent.ON_MESSAGE, (data) => {
-            this.parseWsMessage(data);
-        });
+      this.wss.on(WebsocketEvent.ON_MESSAGE, (data) => {
+        this.parseWsMessage(data);
+      });
 
-        return new Promise<void>((resolve, reject) => {
-            this.wss.on(WebsocketEvent.ON_OPEN, () => {
-                this.isConnected = true;
-                this.emit(WebsocketEvent.ON_OPEN);
-                return resolve();
-            });
+      return new Promise<void>((resolve, reject) => {
+        this.wss.on(WebsocketEvent.ON_OPEN, () => {
+          this.isConnected = true;
+          this.emit(WebsocketEvent.ON_OPEN);
+          return resolve();
         });
+      });
     }
 
     private connectBrowserWs(): Promise<void> {
-        const wss = this.wss as WebSocket | typeof MozWebSocket;
-        wss.onclose = () => {
-            this.isConnected = false;
-            this.emit(WebsocketEvent.ON_CLOSED);
-        };
+      const wss = this.wss as WebSocket | typeof MozWebSocket;
+      wss.onclose = () => {
+        this.isConnected = false;
+        this.emit(WebsocketEvent.ON_CLOSED);
+      };
 
-        wss.onerror = (errorMessage) => {
-            this.isConnected = false;
-            this.emit(WebsocketEvent.ON_ERROR, errorMessage.toString());
-        };
+      wss.onerror = (errorMessage) => {
+        this.isConnected = false;
+        this.emit(WebsocketEvent.ON_ERROR, errorMessage.toString());
+      };
 
-        wss.onmessage = (data) => {
-            this.parseWsMessage(data.data);
-        };
+      wss.onmessage = (data) => {
+        this.parseWsMessage(data.data);
+      };
 
-        return new Promise<void>((resolve, reject) => {
-            wss.onopen = () => {
-                this.isConnected = true;
-                this.emit(WebsocketEvent.ON_OPEN);
-                return resolve();
-            };
-        });
+      return new Promise<void>((resolve, reject) => {
+        wss.onopen = () => {
+          this.isConnected = true;
+          this.emit(WebsocketEvent.ON_OPEN);
+          return resolve();
+        };
+      });
     }
 
     private checkNextHeartbeat() {
-        clearTimeout(this.pingTimeout);
+      clearTimeout(this.pingTimeout);
 
-        // We Use `WebSocket#terminate()`, which immediately destroys the connection,
-        // Delay should be equal to the interval at which your server
-        // sends out pings plus a conservative assumption of the latency.
-        // Here we don't need to check for bufferedAmounts the connection is obviously stale
-        this.pingTimeout = setTimeout(() => {
-            this.wss.terminate();
-        }, 30000 + this.clientConfig.pingTimeoutMs);
+      // We Use `WebSocket#terminate()`, which immediately destroys the connection,
+      // Delay should be equal to the interval at which your server
+      // sends out pings plus a conservative assumption of the latency.
+      // Here we don't need to check for bufferedAmounts the connection is obviously stale
+      this.pingTimeout = setTimeout(() => {
+        this.wss.terminate();
+      }, 30000 + this.clientConfig.pingTimeoutMs);
     }
 }
