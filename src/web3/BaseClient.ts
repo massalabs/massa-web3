@@ -115,7 +115,7 @@ export class BaseClient {
   /** send a post JSON rpc request to the node */
   protected async sendJsonRPCRequest<T>(
     resource: JSON_RPC_REQUEST_METHOD,
-    params: Object
+    params: object
   ): Promise<T> {
     const promise = new Promise<JsonRpcResponseData<T>>(
       async (resolve, reject) => {

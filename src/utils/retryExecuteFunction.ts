@@ -1,9 +1,10 @@
 import { wait } from "./Wait";
 
 const MAX_NUMBER_RETRIALS = 5;
+type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;
 
 export const trySafeExecute = async <T>(
-  func: Function,
+  func: CallbackFunctionVariadicAnyReturn,
   args?: any[],
   retryTimes: number = MAX_NUMBER_RETRIALS
 ): Promise<T> => {

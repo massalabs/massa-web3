@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { IClientConfig } from "../interfaces/IClientConfig";
 import { EventEmitter } from "events";
 import { WebsocketEvent } from "../interfaces/WebsocketEvent";
@@ -82,23 +83,23 @@ declare var MozWebSocket: {
 
 export const checkForBrowserWs = (): {
     isBrowser: boolean;
-    ws: typeof WebSocket | typeof MozWebSocket;
+    Ws: typeof WebSocket | typeof MozWebSocket;
 } => {
-  let ws: typeof WebSocket | typeof MozWebSocket | null | undefined = null;
+  let Ws: typeof WebSocket | typeof MozWebSocket | null | undefined = null;
   if (typeof WebSocket !== "undefined") {
-    ws = WebSocket;
+    Ws = WebSocket;
   } else if (typeof MozWebSocket !== "undefined") {
-    ws = MozWebSocket;
+    Ws = MozWebSocket;
   } else if (typeof global !== "undefined") {
-    ws = global.WebSocket || global.MozWebSocket;
+    Ws = global.WebSocket || global.MozWebSocket;
   } else if (typeof window !== "undefined") {
-    ws = window.WebSocket || window.MozWebSocket;
+    Ws = window.WebSocket || window.MozWebSocket;
   } else if (typeof self !== "undefined") {
-    ws = self.WebSocket || self.MozWebSocket;
+    Ws = self.WebSocket || self.MozWebSocket;
   }
   return {
-    isBrowser: ws !== null && ws !== undefined,
-    ws,
+    isBrowser: Ws !== null && Ws !== undefined,
+    Ws,
   };
 };
 
@@ -169,7 +170,7 @@ export abstract class WsBaseClient extends EventEmitter {
         (provider) => provider.type === ProviderType.WS
       );
       this.wss = browserWs.isBrowser
-        ? new browserWs.ws(provider.url)
+        ? new browserWs.Ws(provider.url)
         : new NodeWebSocket(provider.url, {
                   perMessageDeflate: false,
               });
@@ -207,7 +208,7 @@ export abstract class WsBaseClient extends EventEmitter {
       return null;
     }
 
-    public getExtensions(): Object | null {
+    public getExtensions(): object | null {
       if (this.wss && this.isConnected) {
         return this.wss.extensions;
       }

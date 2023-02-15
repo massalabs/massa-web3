@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { IAccount } from "../../src/interfaces/IAccount";
 import { IEventFilter } from "../../src/interfaces/IEventFilter";
 import {

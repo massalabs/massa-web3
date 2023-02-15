@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { IAccount } from "../../src/interfaces/IAccount";
 import { IContractData } from "../../src/interfaces/IContractData";
 import { Client } from "../../src/web3/Client";

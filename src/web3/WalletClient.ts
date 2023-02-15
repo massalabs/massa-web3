@@ -115,7 +115,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
         `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${secretKeys.length}`
       );
     }
-    const accountsToCreate = new Array<IAccount>();
+    const accountsToCreate: IAccount[] = [];
 
     for (const secretKey of secretKeys) {
       const secretKeyBase58Decoded =
