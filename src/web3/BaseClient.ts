@@ -53,6 +53,7 @@ export class BaseClient {
     this.compactBytesForOperation =
             this.compactBytesForOperation.bind(this);
     this.setProviders = this.setProviders.bind(this);
+    this.promisifyJsonRpcCall = this.promisifyJsonRpcCall.bind(this);
   }
 
   /** set new providers */
@@ -112,56 +113,57 @@ export class BaseClient {
     }
   }
 
+  private async promisifyJsonRpcCall<T>(
+    resource: JSON_RPC_REQUEST_METHOD,
+    params: object
+  ): Promise<JsonRpcResponseData<T>> {
+    let resp: AxiosResponse = null;
+
+    const body = {
+      jsonrpc: "2.0",
+      method: resource,
+      params: params,
+      id: 0,
+    };
+
+    try {
+      resp = await axios.post(
+        this.getProviderForRpcMethod(resource).url,
+        body,
+        { headers: requestHeaders }
+      );
+    } catch (ex) {
+      return {
+        isError: true,
+        result: null,
+        error: new Error("JSON.parse error: " + String(ex)),
+      } as JsonRpcResponseData<T>;
+    }
+
+    const responseData: any = resp.data;
+
+    if (responseData.error) {
+      return {
+        isError: true,
+        result: null,
+        error: new Error(responseData.error.message),
+      } as JsonRpcResponseData<T>;
+    }
+
+    return {
+      isError: false,
+      result: responseData.result as T,
+      error: null,
+    } as JsonRpcResponseData<T>;
+  }
+
   /** send a post JSON rpc request to the node */
   protected async sendJsonRPCRequest<T>(
     resource: JSON_RPC_REQUEST_METHOD,
     params: object
   ): Promise<T> {
-    const promise = new Promise<JsonRpcResponseData<T>>(
-      async (resolve, reject) => {
-        let resp: AxiosResponse = null;
-
-        const body = {
-          jsonrpc: "2.0",
-          method: resource,
-          params: params,
-          id: 0,
-        };
-
-        try {
-          resp = await axios.post(
-            this.getProviderForRpcMethod(resource).url,
-            body,
-            { headers: requestHeaders }
-          );
-        } catch (ex) {
-          return resolve({
-            isError: true,
-            result: null,
-            error: new Error("JSON.parse error: " + String(ex)),
-          } as JsonRpcResponseData<T>);
-        }
-
-        const responseData: any = resp.data;
-
-        if (responseData.error) {
-          return resolve({
-            isError: true,
-            result: null,
-            error: new Error(responseData.error.message),
-          } as JsonRpcResponseData<T>);
-        }
-
-        return resolve({
-          isError: false,
-          result: responseData.result as T,
-          error: null,
-        } as JsonRpcResponseData<T>);
-      }
-    );
-
     let resp: JsonRpcResponseData<T> = null;
-    resp = await promise;
+    resp = await this.promisifyJsonRpcCall(resource, params);
 
     // in case of rpc error, rethrow the error
     if (resp.error && resp.error) {
