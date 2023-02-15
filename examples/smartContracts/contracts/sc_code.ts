@@ -1,4 +1,11 @@
-import { print, generateEvent, call, Context, Address, callerHasWriteAccess } from "@massalabs/massa-as-sdk";
+import {
+    print,
+    generateEvent,
+    call,
+    Context,
+    Address,
+    callerHasWriteAccess,
+} from "@massalabs/massa-as-sdk";
 import { Args, bytesToString, stringToBytes } from "@massalabs/as-types";
 
 /**
@@ -7,19 +14,21 @@ import { Args, bytesToString, stringToBytes } from "@massalabs/as-types";
  * @param args - Arguments serialized with Args
  */
 export function constructor(args: StaticArray<u8>): StaticArray<u8> {
-  // This line is important. It ensure that this function can't be called in the future.
-  // If you remove this check someone could call your constructor function and reset your SC.
-  if (!callerHasWriteAccess()) {
+    // This line is important. It ensure that this function can't be called in the future.
+    // If you remove this check someone could call your constructor function and reset your SC.
+    if (!callerHasWriteAccess()) {
+        return [];
+    }
+    generateEvent(
+        `Constructor called on contract ${Context.callee().toString()}`
+    );
     return [];
-  }
-  generateEvent(`Constructor called on contract ${Context.callee().toString()}`);
-  return [];
 }
 
 export function event(_: StaticArray<u8>): StaticArray<u8> {
-  const message = "I'm an event!";
-  generateEvent(message);
-  return stringToBytes(message);
+    const message = "I'm an event!";
+    generateEvent(message);
+    return stringToBytes(message);
 }
 
 export function receive(data: StaticArray<u8>): void {

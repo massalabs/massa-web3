@@ -7,10 +7,7 @@ describe("Args class", () => {
         // Create an argument class instance
         const args1 = new Args();
         // add some arguments
-        args1
-            .addString("hello")
-            .addString("world")
-            .addU32(97);
+        args1.addString("hello").addString("world").addU32(97);
 
         // use serialize to get the byte string
         const byteString = args1.serialize();

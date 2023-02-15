@@ -22,7 +22,6 @@ export { ISignedMessage } from "./interfaces/ISignedMessage";
 export { IStakingAddresses } from "./interfaces/IStakingAddresses";
 export { ITransactionData } from "./interfaces/ITransactionData";
 export { IBalance } from "./interfaces/IBalance";
-export { IVault } from "./interfaces/IVault";
 export { IDatastoreEntry } from "./interfaces/IDatastoreEntry";
 export { IContractReadOperationData } from "./interfaces/IContractReadOperationData";
 export { IContractReadOperationResponse } from "./interfaces/IContractReadOperationResponse";
@@ -31,31 +30,48 @@ export { IExecuteReadOnlyData } from "./interfaces/IExecuteReadOnlyData";
 export { IExecuteReadOnlyResponse } from "./interfaces/IExecuteReadOnlyResponse";
 export { JsonRpcResponseData } from "./interfaces/JsonRpcResponseData";
 export { EOperationStatus } from "./interfaces/EOperationStatus";
-export { ITransactionOpType, IRollBuyOpType, IRollSellOpType, IExecSmartContractOpType, OperationTypeId, OpType } from "./interfaces/OperationTypes";
+export {
+    ITransactionOpType,
+    IRollBuyOpType,
+    IRollSellOpType,
+    IExecSmartContractOpType,
+    OperationTypeId,
+    OpType,
+} from "./interfaces/OperationTypes";
 export { IClient } from "./interfaces/IClient";
 export { IPublicApiClient } from "./interfaces/IPublicApiClient";
 export { IPrivateApiClient } from "./interfaces/IPrivateApiClient";
 export { IWalletClient } from "./interfaces/IWalletClient";
-export { IVaultClient } from "./interfaces/IVaultClient";
 export { ISmartContractsClient } from "./interfaces/ISmartContractsClient";
 export { IDatastoreEntryInput } from "./interfaces/IDatastoreEntryInput";
 export { IGetGraphInterval } from "./interfaces/IGetGraphInterval";
 export { IGraphInterval } from "./interfaces/IGraphInterval";
-export { IBlockcliqueBlockBySlot, IBlockHeaderInfo, IEndorsementInfo } from "./interfaces/IBlockcliqueBlockBySlot";
+export {
+    IBlockcliqueBlockBySlot,
+    IBlockHeaderInfo,
+    IEndorsementInfo,
+} from "./interfaces/IBlockcliqueBlockBySlot";
 export { WebsocketEvent } from "./interfaces/WebsocketEvent";
 export { ISubscribeNewBlocksMessage } from "./interfaces/ISubscribeNewBlocksMessage";
 export { ISubscribedFullBlocksMessage } from "./interfaces/ISubscribedFullBlocksMessage";
 
 /** Exposed clients and factories */
-export { ClientFactory, DefaultProviderUrls, DefaultWsProviderUrls } from "./web3/ClientFactory";
+export {
+    ClientFactory,
+    DefaultProviderUrls,
+    DefaultWsProviderUrls,
+} from "./web3/ClientFactory";
 export { Client } from "./web3/Client";
 export { WsSubscriptionClient } from "./web3/WsSubscriptionClient";
 export { PublicApiClient } from "./web3/PublicApiClient";
 export { PrivateApiClient } from "./web3/PrivateApiClient";
 export { WalletClient } from "./web3/WalletClient";
-export { VaultClient } from "./web3/VaultClient";
 export { MassaCoin } from "./web3/MassaCoin";
-export { EventPoller, ON_MASSA_EVENT_DATA, ON_MASSA_EVENT_ERROR } from "./web3/EventPoller";
+export {
+    EventPoller,
+    ON_MASSA_EVENT_DATA,
+    ON_MASSA_EVENT_ERROR,
+} from "./web3/EventPoller";
 export { SmartContractsClient } from "./web3/SmartContractsClient";
 export { Args } from "./utils/arguments";
 export * from "./utils/serializers";

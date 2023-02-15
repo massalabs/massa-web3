@@ -1,4 +1,4 @@
 export interface ISignedMessage {
-	public_key: string;
-	signature: string;
+    public_key: string;
+    signature: string;
 }

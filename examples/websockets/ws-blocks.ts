@@ -1,18 +1,26 @@
 import { WsSubscriptionClient } from "../../src/web3/WsSubscriptionClient";
-import { ClientFactory, DefaultProviderUrls } from "../../src/web3/ClientFactory";
+import {
+    ClientFactory,
+    DefaultProviderUrls,
+} from "../../src/web3/ClientFactory";
 import { WebsocketEvent } from "../../src/interfaces/WebsocketEvent";
 import { ISubscribeNewBlocksMessage } from "../../src/interfaces/ISubscribeNewBlocksMessage";
 import { WalletClient } from "../../src/web3/WalletClient";
 import { IAccount } from "../../src/interfaces/IAccount";
 
-const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy";
+const DEPLOYER_SECRET_KEY =
+    "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy";
 
 (async () => {
-
     // create a web3 client
-    const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-    const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.TESTNET, true, deployerAccount);
-    const wsSubClient: WsSubscriptionClient|null = web3Client.ws();
+    const deployerAccount: IAccount =
+        await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
+    const web3Client = await ClientFactory.createDefaultClient(
+        DefaultProviderUrls.TESTNET,
+        true,
+        deployerAccount
+    );
+    const wsSubClient: WsSubscriptionClient | null = web3Client.ws();
 
     // bind various methods for handling common socket events
     if (wsSubClient) {
@@ -45,7 +53,10 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
 
         // subscribe to new blocks
         wsSubClient.subscribeNewBlocks((newBlock) => {
-            console.log(">>>>>>>>>>> New Block Received \n", newBlock as ISubscribeNewBlocksMessage);
+            console.log(
+                ">>>>>>>>>>> New Block Received \n",
+                newBlock as ISubscribeNewBlocksMessage
+            );
         });
 
         // unsubscribe after some seconds
@@ -53,7 +64,6 @@ const DEPLOYER_SECRET_KEY = "S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy
             console.log("Unsubscribing...");
             wsSubClient.unsubscribeNewBlocks();
             console.log("Unsubscribed");
-        },
-        60000);
+        }, 60000);
     }
 })();

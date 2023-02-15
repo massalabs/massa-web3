@@ -1,4 +1,3 @@
-
 import { toMAS, fromMAS } from "../utils/converters";
 import BigNumber from "bignumber.js";
 

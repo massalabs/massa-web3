@@ -1,10 +1,10 @@
 export interface IProvider {
-	url: string;
-	type: ProviderType;
+    url: string;
+    type: ProviderType;
 }
 
 export enum ProviderType {
-	PRIVATE,
-	PUBLIC,
-	WS
+    PRIVATE,
+    PUBLIC,
+    WS,
 }

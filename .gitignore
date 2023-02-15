@@ -65,3 +65,6 @@ dist/
 
 # bundle files
 bundle.*
+
+# docs files
+docs

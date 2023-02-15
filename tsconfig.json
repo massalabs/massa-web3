@@ -1,4 +1,7 @@
 {
+    "ts-node": {
+        "experimentalResolver": true
+    },
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
@@ -20,12 +23,8 @@
         "strictNullChecks": false,
         "downlevelIteration": true,
         "outDir": "dist",
-        "types": [
-            "node"
-        ],
-        "typeRoots": [
-            "node_modules/@types"
-        ],
+        "types": ["node"],
+        "typeRoots": ["node_modules/@types"],
         "lib": [
             "es7",
             "es6",
@@ -53,12 +52,8 @@
         "esnext",
         "esnext.asynciterable"
     ],
-    "files": [
-        "./node_modules/@types/node/index.d.ts"
-    ],
-    "include": [
-        "./src/**/*.ts"
-    ],
+    "files": ["./node_modules/@types/node/index.d.ts"],
+    "include": ["./src/**/*.ts"],
     "exclude": [
         "./node_modules/**/*",
         "typings/browser.d.ts",

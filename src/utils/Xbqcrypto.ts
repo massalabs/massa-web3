@@ -8,7 +8,10 @@ export function hashBlake3(data: Uint8Array | string): Uint8Array {
 
 export function base58Encode(data: Buffer | Uint8Array): string {
     const bufData = Buffer.from(data);
-    return base58check.encode(bufData.slice(1), bufData[0].toString(16).padStart(2, "0"));
+    return base58check.encode(
+        bufData.slice(1),
+        bufData[0].toString(16).padStart(2, "0")
+    );
 }
 
 export function base58Decode(data: string): Buffer {

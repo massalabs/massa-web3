@@ -5,14 +5,14 @@ export interface IEndorsement {
     is_final: boolean;
     endorsement: {
         content: {
-            sender_public_key: string,
+            sender_public_key: string;
             slot: {
-                period: number,
-                thread: number
-            },
-            index: number,
-            endorsed_block: string // BlockId,
-        }
-        signature: string
+                period: number;
+                thread: number;
+            };
+            index: number;
+            endorsed_block: string; // BlockId,
+        };
+        signature: string;
     };
-  }
+}

@@ -7,8 +7,8 @@ export interface IProductionStats {
 
 export interface IEndorsementDraws {
     slot: {
-        period: number,
-        thread: number,
+        period: number;
+        thread: number;
     };
     index: number;
 }
@@ -27,8 +27,8 @@ export interface ICycleInfos {
 
 export interface IDeferredCredits {
     slot: {
-        period: number,
-        thread: number,
+        period: number;
+        thread: number;
     };
     amount: number;
 }
@@ -48,10 +48,10 @@ export interface IAddressInfo {
     final_roll_count: number;
     next_block_draws: [
         {
-            period: number,
-            thread: number,
-        },
+            period: number;
+            thread: number;
+        }
     ];
     next_endorsement_draws: Array<IEndorsementDraws>;
     thread: number;
-  }
+}

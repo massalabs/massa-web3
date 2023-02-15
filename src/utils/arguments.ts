@@ -25,7 +25,7 @@ import {
  *
  */
 export class Args {
-    private offset: number = 0;
+    private offset = 0;
     private serialized: Uint8Array;
 
     /**
@@ -65,7 +65,7 @@ export class Args {
      *
      * @returns
      */
-    nextU8(): BigInt {
+    nextU8(): bigint {
         const value = byteToU8(this.serialized, this.offset);
         this.offset++;
         return BigInt(value);
@@ -87,7 +87,7 @@ export class Args {
      *
      * @return {BigInt}
      */
-    nextU64(): BigInt {
+    nextU64(): bigint {
         const value = bytesToU64(this.serialized, this.offset);
         this.offset += 8;
         return value;
@@ -109,7 +109,7 @@ export class Args {
      *
      * @return {BigInt}
      */
-    nextI64(): BigInt {
+    nextI64(): bigint {
         const value = bytesToI64(this.serialized, this.offset);
         this.offset += 8;
         return BigInt(value);
@@ -158,10 +158,7 @@ export class Args {
      * @return {Args}
      */
     addU8(value: number): Args {
-        this.serialized = this.concatArrays(
-            this.serialized,
-            u8toByte(value)
-        );
+        this.serialized = this.concatArrays(this.serialized, u8toByte(value));
         this.offset++;
         return this;
     }
@@ -172,10 +169,7 @@ export class Args {
      * @return {Args}
      */
     addU32(value: number): Args {
-        this.serialized = this.concatArrays(
-            this.serialized,
-            u32ToBytes(value)
-        );
+        this.serialized = this.concatArrays(this.serialized, u32ToBytes(value));
         this.offset += 4;
         return this;
     }
@@ -202,10 +196,7 @@ export class Args {
      * @return {Args}
      */
     addI32(value: number): Args {
-        this.serialized = this.concatArrays(
-            this.serialized,
-            i32ToBytes(value)
-        );
+        this.serialized = this.concatArrays(this.serialized, i32ToBytes(value));
         this.offset += 4;
         return this;
     }
