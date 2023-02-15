@@ -1,4 +1,4 @@
-import { StringDecoder } from "string_decoder";
+import { StringDecoder } from 'string_decoder';
 
 /**
  * Converts utf-16 string to a Uint8Array.
@@ -8,7 +8,7 @@ export function strToBytes(str: string): Uint8Array {
   if (!str.length) {
     return new Uint8Array(0);
   }
-  return new Uint8Array(Buffer.from(str, "utf-8"));
+  return new Uint8Array(Buffer.from(str, 'utf-8'));
 }
 
 /**
@@ -17,7 +17,7 @@ export function strToBytes(str: string): Uint8Array {
  */
 export function bytesToStr(arr: Uint8Array): string {
   if (!arr.length) {
-    return "";
+    return '';
   }
-  return new StringDecoder("utf8").write(Buffer.from(arr));
+  return new StringDecoder('utf8').write(Buffer.from(arr));
 }

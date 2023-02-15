@@ -5,10 +5,10 @@ import {
   call,
   functionExists,
   hasOpKey,
-} from "@massalabs/massa-as-sdk";
-import { Args } from "@massalabs/as-types";
+} from '@massalabs/massa-as-sdk';
+import { Args } from '@massalabs/as-types';
 
-const CONSTRUCTOR = "constructor";
+const CONSTRUCTOR = 'constructor';
 
 /**
  * This function deploys and calls the constructor function of the deployed smart contract.
@@ -56,9 +56,7 @@ export function main(_: StaticArray<u8>): StaticArray<u8> {
       }
       call(contractAddr, CONSTRUCTOR, args, coins);
     }
-    generateEvent(
-      `Contract deployed at address: ${contractAddr.toString()}`
-    );
+    generateEvent(`Contract deployed at address: ${contractAddr.toString()}`);
   }
   return [];
 }

@@ -1,9 +1,9 @@
-import { IClientConfig } from "../interfaces/IClientConfig";
-import { trySafeExecute } from "../utils/retryExecuteFunction";
-import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
-import { ISignedMessage } from "../interfaces/ISignedMessage";
-import { BaseClient } from "./BaseClient";
-import { IPrivateApiClient } from "../interfaces/IPrivateApiClient";
+import { IClientConfig } from '../interfaces/IClientConfig';
+import { trySafeExecute } from '../utils/retryExecuteFunction';
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
+import { ISignedMessage } from '../interfaces/ISignedMessage';
+import { BaseClient } from './BaseClient';
+import { IPrivateApiClient } from '../interfaces/IPrivateApiClient';
 
 /** Private Api Client for interacting with a massa node */
 export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
@@ -18,11 +18,10 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     this.nodeBanByIpAddress = this.nodeBanByIpAddress.bind(this);
     this.nodeUnbanById = this.nodeUnbanById.bind(this);
     this.nodeUnbanByIpAddress = this.nodeUnbanByIpAddress.bind(this);
-    this.nodeAddStakingSecretKeys =
-            this.nodeAddStakingSecretKeys.bind(this);
+    this.nodeAddStakingSecretKeys = this.nodeAddStakingSecretKeys.bind(this);
     this.nodeGetStakingAddresses = this.nodeGetStakingAddresses.bind(this);
     this.nodeRemoveStakingAddresses =
-            this.nodeRemoveStakingAddresses.bind(this);
+      this.nodeRemoveStakingAddresses.bind(this);
     this.nodeSignMessage = this.nodeSignMessage.bind(this);
     this.nodeRemoveFromWhitelist = this.nodeRemoveFromWhitelist.bind(this);
     this.nodeAddToPeersWhitelist = this.nodeAddToPeersWhitelist.bind(this);
@@ -31,7 +30,7 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   /** Remove a given Node IP address from the whitelist */
   public async nodeAddToPeersWhitelist(ipAddress: string): Promise<void> {
     const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.NODE_ADD_TO_PEERS_WHITELIST;
+      JSON_RPC_REQUEST_METHOD.NODE_ADD_TO_PEERS_WHITELIST;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<void>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
@@ -47,7 +46,7 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   /** Remove a given Node IP address from the whitelist */
   public async nodeRemoveFromWhitelist(ipAddress: string): Promise<void> {
     const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST;
+      JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<void>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
@@ -114,9 +113,7 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
         [[id]],
       ]);
     } else {
-      return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [
-        [id],
-      ]);
+      return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, [[id]]);
     }
   }
 
@@ -129,10 +126,7 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
         [],
       ]);
     } else {
-      return await this.sendJsonRPCRequest<void>(
-        jsonRpcRequestMethod,
-        []
-      );
+      return await this.sendJsonRPCRequest<void>(jsonRpcRequestMethod, []);
     }
   }
 
@@ -140,41 +134,40 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   public async nodeSignMessage(message: Uint8Array): Promise<ISignedMessage> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE;
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<ISignedMessage>(
-        this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, []]
-      );
+      return await trySafeExecute<ISignedMessage>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [],
+      ]);
     } else {
       return await this.sendJsonRPCRequest<ISignedMessage>(
         jsonRpcRequestMethod,
-        []
+        [],
       );
     }
   }
 
   /** Show staking addresses */
   public async nodeGetStakingAddresses(): Promise<Array<string>> {
-    const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES;
+    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES;
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<Array<string>>(
-        this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, []]
-      );
+      return await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [],
+      ]);
     } else {
       return await this.sendJsonRPCRequest<Array<string>>(
         jsonRpcRequestMethod,
-        []
+        [],
       );
     }
   }
 
   /** Remove staking addresses */
   public async nodeRemoveStakingAddresses(
-    addresses: Array<string>
+    addresses: Array<string>,
   ): Promise<void> {
     const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES;
+      JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<void>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
@@ -189,10 +182,10 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
 
   /** Add staking private keys */
   public async nodeAddStakingSecretKeys(
-    secretKeys: Array<string>
+    secretKeys: Array<string>,
   ): Promise<void> {
     const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS;
+      JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<void>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,

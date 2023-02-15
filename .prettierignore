@@ -4,3 +4,7 @@ node_modules
 bundle.*
 docs
 dist
+*.json
+.lintstagedrc
+README.md
+*.html

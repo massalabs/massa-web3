@@ -1,5 +1,5 @@
-import { toMAS, fromMAS } from "../utils/converters";
-import BigNumber from "bignumber.js";
+import { toMAS, fromMAS } from '../utils/converters';
+import BigNumber from 'bignumber.js';
 
 export class MassaCoin {
   // unscaled original value

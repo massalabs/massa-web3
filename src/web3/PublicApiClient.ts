@@ -1,21 +1,21 @@
-import { IClientConfig } from "../interfaces/IClientConfig";
-import { INodeStatus } from "../interfaces/INodeStatus";
-import { IAddressInfo } from "../interfaces/IAddressInfo";
-import { trySafeExecute } from "../utils/retryExecuteFunction";
-import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
-import { IBlockInfo } from "../interfaces/IBlockInfo";
-import { IEndorsement } from "../interfaces/IEndorsement";
-import { IOperationData } from "../interfaces/IOperationData";
-import { IClique } from "../interfaces/IClique";
-import { IStakingAddresses } from "../interfaces/IStakingAddresses";
-import { BaseClient } from "./BaseClient";
-import { IPublicApiClient } from "../interfaces/IPublicApiClient";
-import { IDatastoreEntry } from "../interfaces/IDatastoreEntry";
-import { IDatastoreEntryInput } from "../interfaces/IDatastoreEntryInput";
-import { ISlot } from "../interfaces/ISlot";
-import { IGetGraphInterval } from "../interfaces/IGetGraphInterval";
-import { IGraphInterval } from "../interfaces/IGraphInterval";
-import { IBlockcliqueBlockBySlot } from "../interfaces/IBlockcliqueBlockBySlot";
+import { IClientConfig } from '../interfaces/IClientConfig';
+import { INodeStatus } from '../interfaces/INodeStatus';
+import { IAddressInfo } from '../interfaces/IAddressInfo';
+import { trySafeExecute } from '../utils/retryExecuteFunction';
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
+import { IBlockInfo } from '../interfaces/IBlockInfo';
+import { IEndorsement } from '../interfaces/IEndorsement';
+import { IOperationData } from '../interfaces/IOperationData';
+import { IClique } from '../interfaces/IClique';
+import { IStakingAddresses } from '../interfaces/IStakingAddresses';
+import { BaseClient } from './BaseClient';
+import { IPublicApiClient } from '../interfaces/IPublicApiClient';
+import { IDatastoreEntry } from '../interfaces/IDatastoreEntry';
+import { IDatastoreEntryInput } from '../interfaces/IDatastoreEntryInput';
+import { ISlot } from '../interfaces/ISlot';
+import { IGetGraphInterval } from '../interfaces/IGetGraphInterval';
+import { IGraphInterval } from '../interfaces/IGraphInterval';
+import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot';
 
 /** Public Api Client for interacting with the massa network */
 export class PublicApiClient extends BaseClient implements IPublicApiClient {
@@ -32,44 +32,43 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     this.getOperations = this.getOperations.bind(this);
     this.getCliques = this.getCliques.bind(this);
     this.getStakers = this.getStakers.bind(this);
-    this.getBlockcliqueBlockBySlot =
-            this.getBlockcliqueBlockBySlot.bind(this);
+    this.getBlockcliqueBlockBySlot = this.getBlockcliqueBlockBySlot.bind(this);
     this.getGraphInterval = this.getGraphInterval.bind(this);
   }
 
   /** Get graph interval */
   public async getGraphInterval(
-    graphInterval: IGetGraphInterval
+    graphInterval: IGetGraphInterval,
   ): Promise<Array<IGraphInterval>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_GRAPH_INTERVAL;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<Array<IGraphInterval>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [graphInterval]]
+        [jsonRpcRequestMethod, [graphInterval]],
       );
     } else {
       return await this.sendJsonRPCRequest<Array<IGraphInterval>>(
         jsonRpcRequestMethod,
-        [graphInterval]
+        [graphInterval],
       );
     }
   }
 
   /** Get blockclique details by period and thread */
   public async getBlockcliqueBlockBySlot(
-    slot: ISlot
+    slot: ISlot,
   ): Promise<IBlockcliqueBlockBySlot> {
     const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT;
+      JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<IBlockcliqueBlockBySlot>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [slot]]
+        [jsonRpcRequestMethod, [slot]],
       );
     } else {
       return await this.sendJsonRPCRequest<IBlockcliqueBlockBySlot>(
         jsonRpcRequestMethod,
-        [slot]
+        [slot],
       );
     }
   }
@@ -85,79 +84,77 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     } else {
       return await this.sendJsonRPCRequest<INodeStatus>(
         jsonRpcRequestMethod,
-        []
+        [],
       );
     }
   }
 
   /** Get info about a list of addresses (balances, block creation, ...) */
   public async getAddresses(
-    addresses: Array<string>
+    addresses: Array<string>,
   ): Promise<Array<IAddressInfo>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<Array<IAddressInfo>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [addresses]]
+        [jsonRpcRequestMethod, [addresses]],
       );
     } else {
       return await this.sendJsonRPCRequest<Array<IAddressInfo>>(
         jsonRpcRequestMethod,
-        [addresses]
+        [addresses],
       );
     }
   }
 
   /** Show info about a block (content, finality ...) */
-  public async getBlocks(
-    blockIds: Array<string>
-  ): Promise<Array<IBlockInfo>> {
+  public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<Array<IBlockInfo>>(
-        this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [blockIds]]
-      );
+      return await trySafeExecute<Array<IBlockInfo>>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [blockIds],
+      ]);
     } else {
       return await this.sendJsonRPCRequest<Array<IBlockInfo>>(
         jsonRpcRequestMethod,
-        [blockIds]
+        [blockIds],
       );
     }
   }
 
   /** Show info about a list of endorsements (content, finality ...) */
   public async getEndorsements(
-    endorsementIds: Array<string>
+    endorsementIds: Array<string>,
   ): Promise<Array<IEndorsement>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<Array<IEndorsement>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [endorsementIds]]
+        [jsonRpcRequestMethod, [endorsementIds]],
       );
     } else {
       return await this.sendJsonRPCRequest<Array<IEndorsement>>(
         jsonRpcRequestMethod,
-        [endorsementIds]
+        [endorsementIds],
       );
     }
   }
 
   /** Show info about a list of operations = (content, finality ...) */
   public async getOperations(
-    operationIds: Array<string>
+    operationIds: Array<string>,
   ): Promise<Array<IOperationData>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_OPERATIONS;
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<Array<IOperationData>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [operationIds]]
+        [jsonRpcRequestMethod, [operationIds]],
       );
     } else {
       return await this.sendJsonRPCRequest<Array<IOperationData>>(
         jsonRpcRequestMethod,
-        [operationIds]
+        [operationIds],
       );
     }
   }
@@ -166,14 +163,14 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   public async getCliques(): Promise<Array<IClique>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQUES;
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<Array<IClique>>(
-        this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, []]
-      );
+      return await trySafeExecute<Array<IClique>>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [],
+      ]);
     } else {
       return await this.sendJsonRPCRequest<Array<IClique>>(
         jsonRpcRequestMethod,
-        []
+        [],
       );
     }
   }
@@ -184,19 +181,19 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<Array<IStakingAddresses>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, []]
+        [jsonRpcRequestMethod, []],
       );
     } else {
       return await this.sendJsonRPCRequest<Array<IStakingAddresses>>(
         jsonRpcRequestMethod,
-        []
+        [],
       );
     }
   }
 
   /** Returns the data entry both at the latest final and active executed slots. */
   public async getDatastoreEntries(
-    addressesKeys: Array<IDatastoreEntryInput>
+    addressesKeys: Array<IDatastoreEntryInput>,
   ): Promise<Array<IDatastoreEntry>> {
     const data = [];
     for (const input of addressesKeys) {
@@ -205,18 +202,18 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
         key: Array.prototype.slice.call(Buffer.from(input.key)),
       });
     }
-    const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;
+    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;
     let datastoreEntries: Array<IDatastoreEntry> = [];
     if (this.clientConfig.retryStrategyOn) {
       datastoreEntries = await trySafeExecute<Array<IDatastoreEntry>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [data]]
+        [jsonRpcRequestMethod, [data]],
       );
     } else {
-      datastoreEntries = await this.sendJsonRPCRequest<
-                Array<IDatastoreEntry>
-            >(jsonRpcRequestMethod, [data]);
+      datastoreEntries = await this.sendJsonRPCRequest<Array<IDatastoreEntry>>(
+        jsonRpcRequestMethod,
+        [data],
+      );
     }
     return datastoreEntries;
   }

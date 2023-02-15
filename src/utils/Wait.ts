@@ -1,4 +1,4 @@
-import { Timeout } from "./Timeout";
+import { Timeout } from './Timeout';
 
 export const wait = async (timeMilli: number): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
@@ -12,7 +12,7 @@ export const wait = async (timeMilli: number): Promise<void> => {
 export const promiseWithTimeout = async (
   timeLimit: number,
   task: Promise<any>,
-  failureValue: any
+  failureValue: any,
 ): Promise<any> => {
   let timeout: NodeJS.Timer;
   const timeoutPromise = new Promise((resolve, reject) => {

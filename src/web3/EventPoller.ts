@@ -1,14 +1,14 @@
-import { EventEmitter } from "events";
-import { IEvent } from "../interfaces/IEvent";
-import { IEventFilter } from "../interfaces/IEventFilter";
-import { IEventRegexFilter } from "../interfaces/IEventRegexFilter";
-import { ISlot } from "../interfaces/ISlot";
-import { Timeout } from "../utils/Timeout";
-import { Client } from "./Client";
+import { EventEmitter } from 'events';
+import { IEvent } from '../interfaces/IEvent';
+import { IEventFilter } from '../interfaces/IEventFilter';
+import { IEventRegexFilter } from '../interfaces/IEventRegexFilter';
+import { ISlot } from '../interfaces/ISlot';
+import { Timeout } from '../utils/Timeout';
+import { Client } from './Client';
 
 /** Smart Contracts Event Poller */
-export const ON_MASSA_EVENT_DATA = "ON_MASSA_EVENT";
-export const ON_MASSA_EVENT_ERROR = "ON_MASSA_ERROR";
+export const ON_MASSA_EVENT_DATA = 'ON_MASSA_EVENT';
+export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR';
 
 const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   const periodOrder = a.period - b.period;
@@ -25,9 +25,9 @@ export class EventPoller extends EventEmitter {
   private lastSlot: ISlot;
 
   public constructor(
-        private readonly eventsFilter: IEventFilter | IEventRegexFilter,
-        private readonly pollIntervalMillis: number,
-        private readonly web3Client: Client
+    private readonly eventsFilter: IEventFilter | IEventRegexFilter,
+    private readonly pollIntervalMillis: number,
+    private readonly web3Client: Client,
   ) {
     super();
 
@@ -50,7 +50,7 @@ export class EventPoller extends EventEmitter {
         let meetsRegex = true;
         if ((this.eventsFilter as IEventRegexFilter).eventsNameRegex) {
           meetsRegex = event.data.includes(
-            (this.eventsFilter as IEventRegexFilter).eventsNameRegex
+            (this.eventsFilter as IEventRegexFilter).eventsNameRegex,
           );
         }
 
@@ -58,31 +58,23 @@ export class EventPoller extends EventEmitter {
         let isAfterLastSlot = true;
         if (this.lastSlot) {
           isAfterLastSlot =
-                        sortByThreadAndPeriod(
-                          event.context.slot,
-                          this.lastSlot
-                        ) > 0;
+            sortByThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
         }
 
         return meetsRegex && isAfterLastSlot;
       });
 
       // sort after highest period and thread
-      const sortedByHighestThreadAndPeriod = filteredEvents.sort(
-        (a, b) => {
-          return sortByThreadAndPeriod(
-            a.context.slot,
-            b.context.slot
-          );
-        }
-      );
+      const sortedByHighestThreadAndPeriod = filteredEvents.sort((a, b) => {
+        return sortByThreadAndPeriod(a.context.slot, b.context.slot);
+      });
 
       if (sortedByHighestThreadAndPeriod.length > 0) {
         // update slot to be the very last slot
         this.lastSlot =
-                    sortedByHighestThreadAndPeriod[
-                      sortedByHighestThreadAndPeriod.length - 1
-                    ].context.slot;
+          sortedByHighestThreadAndPeriod[
+            sortedByHighestThreadAndPeriod.length - 1
+          ].context.slot;
 
         // emit the filtered events
         this.emit(ON_MASSA_EVENT_DATA, sortedByHighestThreadAndPeriod);
@@ -93,7 +85,7 @@ export class EventPoller extends EventEmitter {
 
     // reset the interval
     this.timeoutId = new Timeout(this.pollIntervalMillis, () =>
-      this.callback()
+      this.callback(),
     );
   }
 
@@ -107,7 +99,7 @@ export class EventPoller extends EventEmitter {
       return;
     }
     this.timeoutId = new Timeout(this.pollIntervalMillis, () =>
-      that.callback()
+      that.callback(),
     );
   }
 
@@ -116,12 +108,12 @@ export class EventPoller extends EventEmitter {
     pollIntervalMillis: number,
     web3Client: Client,
     onData?: (data: Array<IEvent>) => void,
-    onError?: (err: Error) => void
+    onError?: (err: Error) => void,
   ): EventPoller {
     const eventPoller = new EventPoller(
       eventsFilter,
       pollIntervalMillis,
-      web3Client
+      web3Client,
     );
     eventPoller.startPolling();
     if (onData) {
@@ -139,7 +131,7 @@ export class EventPoller extends EventEmitter {
 
   public static async getEventsOnce(
     eventsFilter: IEventFilter | IEventRegexFilter,
-    web3Client: Client
+    web3Client: Client,
   ): Promise<Array<IEvent>> {
     const events: Array<IEvent> = await web3Client
       .smartContracts()

@@ -1,17 +1,17 @@
-import { wait } from "./Wait";
+import { wait } from './Wait';
 
 const MAX_NUMBER_RETRIALS = 5;
 
 export const trySafeExecute = async <T>(
   func: Function,
   args?: any[],
-  retryTimes: number = MAX_NUMBER_RETRIALS
+  retryTimes: number = MAX_NUMBER_RETRIALS,
 ): Promise<T> => {
   args = args || [];
 
   if (!func)
     throw new Error(
-      `Function execution init conditions are erroneous: ${func}`
+      `Function execution init conditions are erroneous: ${func}`,
     );
 
   let failureCounter = 0;

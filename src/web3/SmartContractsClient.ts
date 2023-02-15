@@ -1,29 +1,29 @@
-import { EOperationStatus } from "../interfaces/EOperationStatus";
-import { IAccount } from "../interfaces/IAccount";
-import { IAddressInfo } from "../interfaces/IAddressInfo";
-import { IBalance } from "../interfaces/IBalance";
-import { ICallData } from "../interfaces/ICallData";
-import { IClientConfig } from "../interfaces/IClientConfig";
-import { IContractData } from "../interfaces/IContractData";
-import { IContractReadOperationData } from "../interfaces/IContractReadOperationData";
-import { IContractReadOperationResponse } from "../interfaces/IContractReadOperationResponse";
-import { IEvent } from "../interfaces/IEvent";
-import { IEventFilter } from "../interfaces/IEventFilter";
-import { IExecuteReadOnlyData } from "../interfaces/IExecuteReadOnlyData";
-import { IExecuteReadOnlyResponse } from "../interfaces/IExecuteReadOnlyResponse";
-import { INodeStatus } from "../interfaces/INodeStatus";
-import { IOperationData } from "../interfaces/IOperationData";
-import { IReadData } from "../interfaces/IReadData";
-import { ISignature } from "../interfaces/ISignature";
-import { ISmartContractsClient } from "../interfaces/ISmartContractsClient";
-import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
-import { OperationTypeId } from "../interfaces/OperationTypes";
-import { trySafeExecute } from "../utils/retryExecuteFunction";
-import { wait } from "../utils/Wait";
-import { BaseClient } from "./BaseClient";
-import { MassaCoin } from "./MassaCoin";
-import { PublicApiClient } from "./PublicApiClient";
-import { WalletClient } from "./WalletClient";
+import { EOperationStatus } from '../interfaces/EOperationStatus';
+import { IAccount } from '../interfaces/IAccount';
+import { IAddressInfo } from '../interfaces/IAddressInfo';
+import { IBalance } from '../interfaces/IBalance';
+import { ICallData } from '../interfaces/ICallData';
+import { IClientConfig } from '../interfaces/IClientConfig';
+import { IContractData } from '../interfaces/IContractData';
+import { IContractReadOperationData } from '../interfaces/IContractReadOperationData';
+import { IContractReadOperationResponse } from '../interfaces/IContractReadOperationResponse';
+import { IEvent } from '../interfaces/IEvent';
+import { IEventFilter } from '../interfaces/IEventFilter';
+import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData';
+import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse';
+import { INodeStatus } from '../interfaces/INodeStatus';
+import { IOperationData } from '../interfaces/IOperationData';
+import { IReadData } from '../interfaces/IReadData';
+import { ISignature } from '../interfaces/ISignature';
+import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
+import { OperationTypeId } from '../interfaces/OperationTypes';
+import { trySafeExecute } from '../utils/retryExecuteFunction';
+import { wait } from '../utils/Wait';
+import { BaseClient } from './BaseClient';
+import { MassaCoin } from './MassaCoin';
+import { PublicApiClient } from './PublicApiClient';
+import { WalletClient } from './WalletClient';
 
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
@@ -35,19 +35,18 @@ export class SmartContractsClient
 {
   public constructor(
     clientConfig: IClientConfig,
-        private readonly publicApiClient: PublicApiClient,
-        private readonly walletClient: WalletClient
+    private readonly publicApiClient: PublicApiClient,
+    private readonly walletClient: WalletClient,
   ) {
     super(clientConfig);
 
     // bind class methods
     this.deploySmartContract = this.deploySmartContract.bind(this);
-    this.getFilteredScOutputEvents =
-            this.getFilteredScOutputEvents.bind(this);
+    this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
     this.executeReadOnlySmartContract =
-            this.executeReadOnlySmartContract.bind(this);
+      this.executeReadOnlySmartContract.bind(this);
     this.awaitRequiredOperationStatus =
-            this.awaitRequiredOperationStatus.bind(this);
+      this.awaitRequiredOperationStatus.bind(this);
     this.getOperationStatus = this.getOperationStatus.bind(this);
     this.callSmartContract = this.callSmartContract.bind(this);
     this.readSmartContract = this.readSmartContract.bind(this);
@@ -57,21 +56,21 @@ export class SmartContractsClient
   /** create and send an operation containing byte code */
   public async deploySmartContract(
     contractData: IContractData,
-    executor?: IAccount
+    executor?: IAccount,
   ): Promise<string> {
     // get next period info
     const nodeStatusInfo: INodeStatus =
-            await this.publicApiClient.getNodeStatus();
+      await this.publicApiClient.getNodeStatus();
     const expiryPeriod: number =
-            nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
     // get the block size
     if (
       contractData.contractDataBinary.length >
-            nodeStatusInfo.config.max_block_size / 2
+      nodeStatusInfo.config.max_block_size / 2
     ) {
       console.warn(
-        "bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected"
+        'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
       );
     }
 
@@ -86,7 +85,7 @@ export class SmartContractsClient
       contractData,
       OperationTypeId.ExecuteSC,
       sender,
-      expiryPeriod
+      expiryPeriod,
     );
 
     // sign payload
@@ -95,7 +94,7 @@ export class SmartContractsClient
         WalletClient.getBytesPublicKey(sender.publicKey),
         bytesCompact,
       ]),
-      sender
+      sender,
     );
 
     // Check if SC data exists
@@ -111,11 +110,11 @@ export class SmartContractsClient
     // returns operation ids
     const opIds: Array<string> = await this.sendJsonRPCRequest(
       JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]]
+      [[data]],
     );
     if (opIds.length <= 0) {
       throw new Error(
-        `Deploy smart contract operation bad response. No results array in json rpc response. Inspect smart contract`
+        `Deploy smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
     }
     return opIds[0];
@@ -124,13 +123,13 @@ export class SmartContractsClient
   /** call smart contract method */
   public async callSmartContract(
     callData: ICallData,
-    executor?: IAccount
+    executor?: IAccount,
   ): Promise<string> {
     // get next period info
     const nodeStatusInfo: INodeStatus =
-            await this.publicApiClient.getNodeStatus();
+      await this.publicApiClient.getNodeStatus();
     const expiryPeriod: number =
-            nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
     // check sender account
     const sender = executor || this.walletClient.getBaseAccount();
@@ -143,7 +142,7 @@ export class SmartContractsClient
       callData,
       OperationTypeId.CallSC,
       sender,
-      expiryPeriod
+      expiryPeriod,
     );
 
     // sign payload
@@ -152,7 +151,7 @@ export class SmartContractsClient
         WalletClient.getBytesPublicKey(sender.publicKey),
         bytesCompact,
       ]),
-      sender
+      sender,
     );
     // request data
     const data = {
@@ -164,18 +163,16 @@ export class SmartContractsClient
     let opIds: Array<string> = [];
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
     if (this.clientConfig.retryStrategyOn) {
-      opIds = await trySafeExecute<Array<string>>(
-        this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [[data]]]
-      );
-    } else {
-      opIds = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [
-        [data],
+      opIds = await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [[data]],
       ]);
+    } else {
+      opIds = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
     }
     if (opIds.length <= 0) {
       throw new Error(
-        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`
+        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
     }
     return opIds[0];
@@ -183,7 +180,7 @@ export class SmartContractsClient
 
   /** read smart contract method */
   public async readSmartContract(
-    readData: IReadData
+    readData: IReadData,
   ): Promise<IContractReadOperationResponse> {
     // request data
     const data = {
@@ -192,27 +189,24 @@ export class SmartContractsClient
       target_function: readData.targetFunction,
       parameter: readData.parameter,
       caller_address:
-                readData.callerAddress ||
-                this.walletClient.getBaseAccount().address,
+        readData.callerAddress || this.walletClient.getBaseAccount().address,
     };
     // returns operation ids
-    const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
+    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
     let jsonRpcCallResult: Array<IContractReadOperationData> = [];
     if (this.clientConfig.retryStrategyOn) {
       jsonRpcCallResult = await trySafeExecute<
-                Array<IContractReadOperationData>
-            >(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+        Array<IContractReadOperationData>
+      >(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
     } else {
-      jsonRpcCallResult = await this.sendJsonRPCRequest(
-        jsonRpcRequestMethod,
-        [[data]]
-      );
+      jsonRpcCallResult = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [
+        [data],
+      ]);
     }
 
     if (jsonRpcCallResult.length <= 0) {
       throw new Error(
-        `Read operation bad response. No results array in json rpc response. Inspect smart contract`
+        `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
     }
     if (jsonRpcCallResult[0].result.Error) {
@@ -227,7 +221,7 @@ export class SmartContractsClient
   /** Returns the balance of the smart contract  */
   public async getContractBalance(address: string): Promise<IBalance | null> {
     const addresses: Array<IAddressInfo> =
-            await this.publicApiClient.getAddresses([address]);
+      await this.publicApiClient.getAddresses([address]);
     if (addresses.length === 0) return null;
     const addressInfo: IAddressInfo = addresses.at(0);
     return {
@@ -238,7 +232,7 @@ export class SmartContractsClient
 
   /** get filtered smart contract events */
   public async getFilteredScOutputEvents(
-    eventFilterData: IEventFilter
+    eventFilterData: IEventFilter,
   ): Promise<Array<IEvent>> {
     const data = {
       start: eventFilterData.start,
@@ -250,25 +244,25 @@ export class SmartContractsClient
     };
 
     const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT;
+      JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT;
 
     // returns filtered events
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<Array<IEvent>>(
-        this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [data]]
-      );
+      return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [data],
+      ]);
     } else {
       return await this.sendJsonRPCRequest<Array<IEvent>>(
         jsonRpcRequestMethod,
-        [data]
+        [data],
       );
     }
   }
 
   /** Read-only smart contracts */
   public async executeReadOnlySmartContract(
-    contractData: IContractData
+    contractData: IContractData,
   ): Promise<IExecuteReadOnlyResponse> {
     if (!contractData.contractDataBinary) {
       throw new Error(`Contract binary data required. Got null`);
@@ -286,24 +280,25 @@ export class SmartContractsClient
 
     let jsonRpcCallResult: Array<IExecuteReadOnlyData> = [];
     const jsonRpcRequestMethod =
-            JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
+      JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
     if (this.clientConfig.retryStrategyOn) {
-      jsonRpcCallResult = await trySafeExecute<
-                Array<IExecuteReadOnlyData>
-            >(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+      jsonRpcCallResult = await trySafeExecute<Array<IExecuteReadOnlyData>>(
+        this.sendJsonRPCRequest,
+        [jsonRpcRequestMethod, [[data]]],
+      );
     } else {
       jsonRpcCallResult = await this.sendJsonRPCRequest<
-                Array<IExecuteReadOnlyData>
-            >(jsonRpcRequestMethod, [[data]]);
+        Array<IExecuteReadOnlyData>
+      >(jsonRpcRequestMethod, [[data]]);
     }
 
     if (jsonRpcCallResult.length <= 0) {
       throw new Error(
-        `Read operation bad response. No results array in json rpc response. Inspect smart contract`
+        `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
     }
     if (jsonRpcCallResult[0].result.Error) {
-      throw new Error("Execute read-only smart contract error", {
+      throw new Error('Execute read-only smart contract error', {
         cause: jsonRpcCallResult[0].result.Error,
       });
     }
@@ -315,7 +310,7 @@ export class SmartContractsClient
 
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
     const operationData: Array<IOperationData> =
-            await this.publicApiClient.getOperations([opId]);
+      await this.publicApiClient.getOperations([opId]);
     if (!operationData || operationData.length === 0)
       return EOperationStatus.NOT_FOUND;
     const opData = operationData[0];
@@ -334,7 +329,7 @@ export class SmartContractsClient
 
   public async awaitRequiredOperationStatus(
     opId: string,
-    requiredStatus: EOperationStatus
+    requiredStatus: EOperationStatus,
   ): Promise<EOperationStatus> {
     let errCounter = 0;
     let pendingCounter = 0;
