@@ -1,3 +1,3 @@
 export interface ISignature {
-	base58Encoded: string;
+  base58Encoded: string;
 }

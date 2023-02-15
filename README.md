@@ -17,7 +17,10 @@ but also to fetch and poll events from smart contracts on the Massa blockchain, 
 Add the following script to your html file:
 
 ```ts
-<script type='text/javascript' src="https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js"></script>
+<script
+    type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js"
+></script>
 ```
 
 whereby the x.x.x is one of the available released versions under
@@ -26,15 +29,20 @@ whereby the x.x.x is one of the available released versions under
 In your code, once the script is fully loaded, just use `window.massa` to access all `massa-web3` exports.
 
 ```ts
-<script>
-    console.log("Massa Web3 ", window.massa);
-</script>
+<script>console.log("Massa Web3 ", window.massa);</script>
 ```
+
+### Documentation
+
+Complete documentation of all available web3 entities can be found here:
+
+-   [`massa-web3 documentation`](https://massa-web3.docs.massa.net)
 
 ### Requirements
 
 -   NodeJS 14+
 -   npm / yarn (see package.json)
+
 ### Web3 Client initialization
 
 There are two types of client initialization. The first one is connecting to Massa's public rpc node using a so-called default client. Please note that specifying a base account is only optional at this point. The code below illustrates how to do that:
@@ -44,14 +52,14 @@ import {
     ClientFactory,
     Client,
     DefaultProviderUrls,
-    IAccount
+    IAccount,
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
 const baseAccount = {
-  address: 'A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1',
-  secretKey: 'S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L',
-  publicKey: 'P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR'
+    address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+    secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
+    publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
 } as IAccount;
 
 // initialize a testnet client
@@ -70,26 +78,26 @@ import {
     Client,
     IAccount,
     IProvider,
-    ProviderType 
+    ProviderType,
 } from "@massalabs/massa-web3";
 
 // create a base account for signing transactions
 const baseAccount = {
-  address: 'A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1',
-  secretKey: 'S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L',
-  publicKey: 'P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR'
+    address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+    secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
+    publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
 } as IAccount;
 
 // initialize a custom client using an own provider
 const providers: Array<IProvider> = [
     {
         url: "http://127.0.0.1:33035",
-        type: ProviderType.PUBLIC
+        type: ProviderType.PUBLIC,
     } as IProvider,
     {
         url: "http://127.0.0.1:33034",
-        type: ProviderType.PRIVATE
-    } as IProvider
+        type: ProviderType.PRIVATE,
+    } as IProvider,
 ];
 
 const customClient: Client = await ClientFactory.createCustomClient(
@@ -129,7 +137,6 @@ web3Client.privateApi()     -> sub-client for private api                   (int
 web3Client.wallet()         -> sub-client for wallet-related operations     (interface: WalletClient)
 web3Client.smartContracts() -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
 web3Client.ws()             -> sub-client for websockets                    (interface: WsSubscriptionClient)
-web3Client.vault()          -> sub-client for vault interaction [mainly used by massa-wallet] (interface: VaultClient)
 
 ```
 
@@ -192,19 +199,29 @@ Available methods are:
     ```ts
     const datastoreEntries: Array<IContractStorageData> = await web3Client
         .publicApi()
-        .getDatastoreEntries([{ address: smartContractAddress, key: "some_key" } as IDatastoreEntry]);
+        .getDatastoreEntries([
+            {
+                address: smartContractAddress,
+                key: "some_key",
+            } as IDatastoreEntry,
+        ]);
     ```
 -   `getBlockcliqueBlockBySlot`
+
 ```ts
 const blockcliqueBlockBySlot: IBlockcliqueBlockBySlot = await web3Client
     .publicApi()
     .getBlockcliqueBlockBySlot([{ period: 12345, thread: 20 } as ISlot]);
 ```
+
 -   `getGraphInterval`
+
 ```ts
 const graphInterval: IGraphInterval = await web3Client
     .publicApi()
-    .getGraphInterval([{ start: Date.now() - 2000, end: Date.now() } as IGetGraphInterval]);
+    .getGraphInterval([
+        { start: Date.now() - 2000, end: Date.now() } as IGetGraphInterval,
+    ]);
 ```
 
 ### Client private API
@@ -226,7 +243,9 @@ Available methods are:
     ```
 -   `nodeBanById`
     ```ts
-    await web3Client.privateApi().nodeBanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
+    await web3Client
+        .privateApi()
+        .nodeBanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
     ```
 -   `nodeBanByIpAddress`
     ```ts
@@ -234,7 +253,9 @@ Available methods are:
     ```
 -   `nodeUnbanById`
     ```ts
-    await web3Client.privateApi().nodeUnbanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
+    await web3Client
+        .privateApi()
+        .nodeUnbanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
     ```
 -   `nodeUnbanByIpAddress`
     ```ts
@@ -284,42 +305,42 @@ Websocket subscriptions are accessible under the websockets client, which is acc
 Example:
 
 ```ts
-    import { WebsocketEvent } from "@massalabs/massa-web3";
-    // get the websockets client
-    const wsClient = web3Client.ws();
+import { WebsocketEvent } from "@massalabs/massa-web3";
+// get the websockets client
+const wsClient = web3Client.ws();
 
-    // bind various methods for handling common socket events
-    wsClient.on(WebsocketEvent.ON_CLOSED, () => {
-        console.log("ws closed");
-    });
+// bind various methods for handling common socket events
+wsClient.on(WebsocketEvent.ON_CLOSED, () => {
+    console.log("ws closed");
+});
 
-    wsClient.on(WebsocketEvent.ON_CLOSING, () => {
-        console.log("ws closing");
-    });
+wsClient.on(WebsocketEvent.ON_CLOSING, () => {
+    console.log("ws closing");
+});
 
-    wsClient.on(WebsocketEvent.ON_CONNECTING, () => {
-        console.log("ws connecting");
-    });
+wsClient.on(WebsocketEvent.ON_CONNECTING, () => {
+    console.log("ws connecting");
+});
 
-    wsClient.on(WebsocketEvent.ON_OPEN, () => {
-        console.log("ws open");
-    });
+wsClient.on(WebsocketEvent.ON_OPEN, () => {
+    console.log("ws open");
+});
 
-    wsClient.on(WebsocketEvent.ON_PING, () => {
-        console.log("ws ping");
-    });
+wsClient.on(WebsocketEvent.ON_PING, () => {
+    console.log("ws ping");
+});
 
-    wsClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => {
-        console.error("ws error", errorMessage);
-    });
+wsClient.on(WebsocketEvent.ON_ERROR, (errorMessage) => {
+    console.error("ws error", errorMessage);
+});
 
-    // connect to ws
-    await wsClient.connect();
+// connect to ws
+await wsClient.connect();
 
-    // subscribe to new blocks
-    wsClient.subscribeNewBlocks((newBlock) => {
-        console.log("New Block Received", newBlock);
-    });
+// subscribe to new blocks
+wsClient.subscribeNewBlocks((newBlock) => {
+    console.log("New Block Received", newBlock);
+});
 ```
 
 Available common methods are:
@@ -331,6 +352,7 @@ Available common methods are:
 -   `getBinaryType`
     ```ts
     wsClient.getBinaryType();
+    ```
 -   `getBufferedAmount`
     ```ts
     wsClient.getBufferedAmount();
@@ -375,37 +397,45 @@ The following events are available to listen to:
 The following subscription methods are available:
 
 ```ts
-    import { WebsocketEvent } from "@massalabs/massa-web3";
-    // get the websockets client
-    const wsClient = web3Client.ws();
+import { WebsocketEvent } from "@massalabs/massa-web3";
+// get the websockets client
+const wsClient = web3Client.ws();
 
-    // subscribe to new blocks
-    wsSubClient.subscribeNewBlocks((newBlock) => {
-        console.log("New Block Received \n", newBlock as ISubscribeNewBlocksMessage);
-    });
+// subscribe to new blocks
+wsSubClient.subscribeNewBlocks((newBlock) => {
+    console.log(
+        "New Block Received \n",
+        newBlock as ISubscribeNewBlocksMessage
+    );
+});
 
-    // unsubscribe to new blocks
-    wsSubClient.unsubscribeNewBlocks();
+// unsubscribe to new blocks
+wsSubClient.unsubscribeNewBlocks();
 
-    // subscribe to new blocks headers
-    wsSubClient.subscribeNewBlockHeaders((newBlockHeader) => {
-        console.log("New Block Header Received \n", newBlockHeader as IBlockHeaderInfo);
-    });
+// subscribe to new blocks headers
+wsSubClient.subscribeNewBlockHeaders((newBlockHeader) => {
+    console.log(
+        "New Block Header Received \n",
+        newBlockHeader as IBlockHeaderInfo
+    );
+});
 
-    // unsubscribe to new blocks headers
-    wsSubClient.unsubscribeNewBlockHeaders();
+// unsubscribe to new blocks headers
+wsSubClient.unsubscribeNewBlockHeaders();
 
-    // subscribe to new blocks
-    wsSubClient.subscribeFilledBlocks((newFilledBlock) => {
-        console.log("New Filled Block Received \n", newFilledBlock as ISubscribeNewBlocksMessage);
-    });
+// subscribe to new blocks
+wsSubClient.subscribeFilledBlocks((newFilledBlock) => {
+    console.log(
+        "New Filled Block Received \n",
+        newFilledBlock as ISubscribeNewBlocksMessage
+    );
+});
 
-    // unsubscribe to filled blocks
-    wsSubClient.unsubscribeFilledBlocks();
+// unsubscribe to filled blocks
+wsSubClient.unsubscribeFilledBlocks();
 ```
 
 The underlying NodeJS websockets client API can be found here: [NodeJS Websockets API](https://github.com/websockets/ws/blob/master/doc/ws.md#class-websocket) and for the web browser: [Browser Websockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket). The Massa Websockets Client is compatible with all currently available browsers.
-
 
 ### Wallet operations
 
@@ -438,7 +468,9 @@ Available class methods are:
     ```
 -   `getWalletAccounts`
     ```ts
-    const walletAccounts: Array<IAccount> = web3Client.wallet().getWalletAccounts();
+    const walletAccounts: Array<IAccount> = web3Client
+        .wallet()
+        .getWalletAccounts();
     ```
 -   `getWalletAccountByAddress`
     ```ts
@@ -452,9 +484,9 @@ Available class methods are:
     ```ts
     await web3Client.wallet().addAccountsToWallet([
         {
-            address: 'A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1',
-            secretKey: 'S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L',
-            publicKey: 'P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR'
+            address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+            secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
+            publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
         },
     ]);
     ```
@@ -498,22 +530,32 @@ Available class methods are:
     ```
 -   `getAccountBalance`
     ```ts
-    const balance: IBalance = await web3Client.wallet().getAccountBalance("A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1");
+    const balance: IBalance = await web3Client
+        .wallet()
+        .getAccountBalance(
+            "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"
+        );
     ```
 
 In addition to the class methods, there are also static methods for direct use:
 
 -   `getAccountFromPrivateKey`
     ```ts
-    const account: IAccount = await WalletClient.getAccountFromSecretKey("S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L");
+    const account: IAccount = await WalletClient.getAccountFromSecretKey(
+        "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L"
+    );
     ```
 -   `walletGenerateNewAccount`
     ```ts
-    const newWalletAccount: IAccount = await WalletClient.walletGenerateNewAccount();
+    const newWalletAccount: IAccount =
+        await WalletClient.walletGenerateNewAccount();
     ```
 -   `walletSignMessage`
     ```ts
-    const sig: ISignature = await WalletClient.walletSignMessage("hello", baseAccount);
+    const sig: ISignature = await WalletClient.walletSignMessage(
+        "hello",
+        baseAccount
+    );
     ```
 
 ### Smart contract deployment
@@ -527,11 +569,12 @@ const opId: string = await web3Client.smartContracts().deploySmartContract(
         fee: 0,
         maxGas: 2000000,
         contractDataBinary: compiledScFromSource.binary,
-        datastore: new Map<Uint8Array, Uint8Array>()
+        datastore: new Map<Uint8Array, Uint8Array>(),
     } as IContractData,
     baseAccount
 );
 ```
+
 The compiledScFromSource is the compiled smart contract code in binary form. The returned value is the resulting operation id.
 
 ### Smart contract event fetching and polling
@@ -548,21 +591,27 @@ const eventsFilter = {
     emitter_address: null,
 } as IEventFilter;
 
-const filteredEvents: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventFilterData);
+const filteredEvents: Array<IEvent> = await web3Client
+    .smartContracts()
+    .getFilteredScOutputEvents(eventFilterData);
 ```
 
 Events could also be polled. The js sdk has two methods for doing this as shown below. In both, a filter, a web3 client and a poll interval which we can set in order to poll the events needs to be provided:
 
 ```ts
-
-const onEventData = (events: Array<IEvent>) => {console.log("Event Data Received:" , events);}
-const onEventDataError = (error: Error) => {console.log("Event Data Error:" , error);}
+const onEventData = (events: Array<IEvent>) => {
+    console.log("Event Data Received:", events);
+};
+const onEventDataError = (error: Error) => {
+    console.log("Event Data Error:", error);
+};
 
 // poll smart contract events
 const eventsFilter = {
     start: null,
     end: null,
-    original_caller_address: "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
+    original_caller_address:
+        "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
     is_final: true,
@@ -585,21 +634,25 @@ eventPoller.stopPolling();
 Alternatively, one could make direct use of callback functions as function arguments which would fire on event data received or generated errors:
 
 ```ts
-const onEventData = (events: Array<IEvent>) => {console.log("Event Data Received:" , events);}
-const onEventDataError = (error: Error) => {console.log("Event Data Error:" , error);}
+const onEventData = (events: Array<IEvent>) => {
+    console.log("Event Data Received:", events);
+};
+const onEventDataError = (error: Error) => {
+    console.log("Event Data Error:", error);
+};
 
 const eventPoller: EventPoller = EventPoller.startEventsPolling(
     eventsFilter,
     1000,
     web3Client,
     onEventData,
-    onEventDataError);
+    onEventDataError
+);
 
 //...do some work...
 
 // cleanup and finish
 eventPoller.stopPolling();
-
 ```
 
 The latter could easily be employed in smart contracts where we need to e.g. get the contract address. For example, this contract would emit the address at creation:
@@ -613,6 +666,7 @@ export function main(_args: string): i32 {
     ...
 }
 ```
+
 ### Smart contract blockchain status
 
 Smart contracts undergo various transaction statuses before they reach block finality on chain. The public enum describing these statuses is:
@@ -630,13 +684,20 @@ EOperationStatus {
 The current smart contract status could be easily obtained via:
 
 ```ts
-const status: EOperationStatus = await web3Client.smartContracts().getOperationStatus(deploymentOperationId);
+const status: EOperationStatus = await web3Client
+    .smartContracts()
+    .getOperationStatus(deploymentOperationId);
 ```
 
 There are however cases when one would require to await a given status and that could be done via. It is important to note here that the algorithm will giv up after a certain amount of time or a limited error count. These values have proven to be sufficient for most standard cases.
 
 ```ts
-const status: EOperationStatus = await web3Client.smartContracts().awaitRequiredOperationStatus(deploymentOperationId, EOperationStatus.INCLUDED_PENDING);
+const status: EOperationStatus = await web3Client
+    .smartContracts()
+    .awaitRequiredOperationStatus(
+        deploymentOperationId,
+        EOperationStatus.INCLUDED_PENDING
+    );
 ```
 
 ### Smart contract balance
@@ -644,7 +705,9 @@ const status: EOperationStatus = await web3Client.smartContracts().awaitRequired
 Smart contract balances could be easily obtained via using the `getContractBalance` method:
 
 ```ts
-const balance: IBalance|null = await web3Client.smartContracts().getContractBalance(contractAddress);
+const balance: IBalance | null = await web3Client
+    .smartContracts()
+    .getContractBalance(contractAddress);
 ```
 
 ### Smart contract read and write calls
@@ -652,13 +715,15 @@ const balance: IBalance|null = await web3Client.smartContracts().getContractBala
 Smart contract data could be read via `readSmartContract` method:
 
 ```ts
-const data: IContractReadOperationResponse = await web3Client.smartContracts().readSmartContract({
-            fee: 0,
-            maxGas: 200000,
-            targetAddress: scAddress,
-            targetFunction: "getGameState",
-            parameter: (new Args()).serialize(), // this is based on input arguments
-        } as IReadData);
+const data: IContractReadOperationResponse = await web3Client
+    .smartContracts()
+    .readSmartContract({
+        fee: 0,
+        maxGas: 200000,
+        targetAddress: scAddress,
+        targetFunction: "getGameState",
+        parameter: new Args().serialize(), // this is based on input arguments
+    } as IReadData);
 ```
 
 The returned data is contained in an object of type IContractReadOperationResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
@@ -666,14 +731,17 @@ The returned data is contained in an object of type IContractReadOperationRespon
 Smart contract state-changing operations could be executed via `callSmartContract` method:
 
 ```ts
-const data: string = await web3Client.smartContracts().callSmartContract({
-            fee: 0,
-            maxGas: 200000,
-            coins: new MassaCoin(0),
-            targetAddress: scAddress,
-            functionName: "play",
-            parameter: (new Args()).serialize(), // this is based on input arguments
-        } as ICallData, baseAccount);
+const data: string = await web3Client.smartContracts().callSmartContract(
+    {
+        fee: 0,
+        maxGas: 200000,
+        coins: new MassaCoin(0),
+        targetAddress: scAddress,
+        functionName: "play",
+        parameter: new Args().serialize(), // this is based on input arguments
+    } as ICallData,
+    baseAccount
+);
 ```
 
 The returned value is the operation id.
@@ -682,15 +750,17 @@ Smart contracts could also be constructed in order to read data from another con
 
 ```ts
 // read smart contract data
-const data: IExecuteReadOnlyResponse = await web3Client.smartContracts().executeReadOnlySmartContract(
-    {
-        fee: 0,
-        maxGas: 2000000,
-        coins: new MassaCoin(0),
-        contractDataBinary: compiledScFromSource.binary,
-    } as IContractData,
-    baseAccount
-);
+const data: IExecuteReadOnlyResponse = await web3Client
+    .smartContracts()
+    .executeReadOnlySmartContract(
+        {
+            fee: 0,
+            maxGas: 2000000,
+            coins: new MassaCoin(0),
+            contractDataBinary: compiledScFromSource.binary,
+        } as IContractData,
+        baseAccount
+    );
 ```
 
 The returned data is contained in an object of type IExecuteReadOnlyResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.

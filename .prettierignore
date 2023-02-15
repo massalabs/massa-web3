@@ -1,0 +1,10 @@
+build
+node_modules
+.github
+bundle.*
+docs
+dist
+*.json
+.lintstagedrc
+README.md
+*.html

@@ -1,6 +1,6 @@
-import { MassaCoin } from "../web3/MassaCoin";
+import { MassaCoin } from '../web3/MassaCoin';
 
 export interface IBalance {
-    final: MassaCoin;
-    candidate: MassaCoin;
+  final: MassaCoin;
+  candidate: MassaCoin;
 }

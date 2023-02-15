@@ -1,5 +1,5 @@
 export interface ITransactionData {
-	fee: number;
-	amount: string;
-	recipientAddress: string;
+  fee: number;
+  amount: string;
+  recipientAddress: string;
 }
