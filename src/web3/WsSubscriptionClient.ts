@@ -1,15 +1,15 @@
-import { IBlockHeaderInfo } from "../interfaces/IBlockcliqueBlockBySlot";
-import { ISubscribeNewBlocksMessage } from "../interfaces/ISubscribeNewBlocksMessage";
-import { IClientConfig } from "../interfaces/IClientConfig";
-import { WebsocketEvent } from "../interfaces/WebsocketEvent";
+import { IBlockHeaderInfo } from '../interfaces/IBlockcliqueBlockBySlot';
+import { ISubscribeNewBlocksMessage } from '../interfaces/ISubscribeNewBlocksMessage';
+import { IClientConfig } from '../interfaces/IClientConfig';
+import { WebsocketEvent } from '../interfaces/WebsocketEvent';
 import {
   generateFullRequestName,
   matchMethodName,
   WS_RPC_REQUEST_METHOD_BASE,
   WS_RPC_REQUEST_METHOD_NAME,
-} from "../interfaces/WsRpcMethods";
-import { WsBaseClient, arrayBufferToBase64 } from "./WsBaseClient";
-import { ISubscribedFullBlocksMessage } from "../interfaces/ISubscribedFullBlocksMessage";
+} from '../interfaces/WsRpcMethods';
+import { WsBaseClient, arrayBufferToBase64 } from './WsBaseClient';
+import { ISubscribedFullBlocksMessage } from '../interfaces/ISubscribedFullBlocksMessage';
 
 /** Public Ws Client for interacting with the massa network */
 export class WsSubscriptionClient extends WsBaseClient {
@@ -30,10 +30,9 @@ export class WsSubscriptionClient extends WsBaseClient {
     this.unsubscribeNewBlocks = this.unsubscribeNewBlocks.bind(this);
 
     // subscribe to new blocks headers methods
-    this.subscribeNewBlockHeaders =
-            this.subscribeNewBlockHeaders.bind(this);
+    this.subscribeNewBlockHeaders = this.subscribeNewBlockHeaders.bind(this);
     this.unsubscribeNewBlockHeaders =
-            this.unsubscribeNewBlockHeaders.bind(this);
+      this.unsubscribeNewBlockHeaders.bind(this);
 
     // subscribe to filled blocks methods
     this.subscribeFilledBlocks = this.subscribeFilledBlocks.bind(this);
@@ -45,18 +44,16 @@ export class WsSubscriptionClient extends WsBaseClient {
   // =========================================================================== //
 
   public subscribeNewBlockHeaders(
-    onNewBlockHeaderHandler?: (data: IBlockHeaderInfo) => void
+    onNewBlockHeaderHandler?: (data: IBlockHeaderInfo) => void,
   ): void {
     if (!(this.wss && this.isConnected)) {
-      throw new Error("Websocket Client is not connected");
+      throw new Error('Websocket Client is not connected');
     }
-    if (
-      this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS)
-    ) {
+    if (this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS)) {
       throw new Error(
         `Cannot subscribe as there is an already existing subscription with id ${this.subMethods.get(
-          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS
-        )}`
+          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS,
+        )}`,
       );
     }
     if (onNewBlockHeaderHandler) {
@@ -64,58 +61,54 @@ export class WsSubscriptionClient extends WsBaseClient {
     }
     this.wss.send(
       JSON.stringify({
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         id: 1,
         method: generateFullRequestName(
           WS_RPC_REQUEST_METHOD_BASE.SUBSCRIBE,
-          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS
+          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS,
         ),
         params: [],
-      })
+      }),
     );
   }
 
   public unsubscribeNewBlockHeaders(): void {
     if (!(this.wss && this.isConnected)) {
-      throw new Error("Websocket Client is not connected");
+      throw new Error('Websocket Client is not connected');
     }
-    if (
-      !this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS)
-    ) {
+    if (!this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS)) {
       throw new Error(
-        "Cannot unsubscribe to new block headers as subscription id is missing. Subscribe client first!"
+        'Cannot unsubscribe to new block headers as subscription id is missing. Subscribe client first!',
       );
     }
     this.wss.send(
       JSON.stringify({
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         id: 1,
         method: generateFullRequestName(
           WS_RPC_REQUEST_METHOD_BASE.UNSUBSCRIBE,
-          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS
+          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS,
         ),
         params: [
-          this.subMethods.get(
-            WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS
-          ),
+          this.subMethods.get(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS),
         ],
-      })
+      }),
     );
   }
 
   // =========================================================================== //
 
   public subscribeNewBlocks(
-    onNewBlockHandler?: (data: ISubscribeNewBlocksMessage) => void
+    onNewBlockHandler?: (data: ISubscribeNewBlocksMessage) => void,
   ): void {
     if (!(this.wss && this.isConnected)) {
-      throw new Error("Websocket Client is not connected");
+      throw new Error('Websocket Client is not connected');
     }
     if (this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS)) {
       throw new Error(
         `Cannot subscribe as there is an already existing subscription with id ${this.subMethods.get(
-          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS
-        )}`
+          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS,
+        )}`,
       );
     }
     if (onNewBlockHandler) {
@@ -123,53 +116,51 @@ export class WsSubscriptionClient extends WsBaseClient {
     }
     this.wss.send(
       JSON.stringify({
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         id: 1,
         method: generateFullRequestName(
           WS_RPC_REQUEST_METHOD_BASE.SUBSCRIBE,
-          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS
+          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS,
         ),
         params: [],
-      })
+      }),
     );
   }
 
   public unsubscribeNewBlocks(): void {
     if (!(this.wss && this.isConnected)) {
-      throw new Error("Websocket Client is not connected");
+      throw new Error('Websocket Client is not connected');
     }
     if (!this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS)) {
       throw new Error(
-        "Cannot unsubscribe to new blocks as subscription id is missing. Subscribe client first!"
+        'Cannot unsubscribe to new blocks as subscription id is missing. Subscribe client first!',
       );
     }
     this.wss.send(
       JSON.stringify({
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         id: 1,
         method: generateFullRequestName(
           WS_RPC_REQUEST_METHOD_BASE.UNSUBSCRIBE,
-          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS
+          WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS,
         ),
-        params: [
-          this.subMethods.get(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS),
-        ],
-      })
+        params: [this.subMethods.get(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS)],
+      }),
     );
   }
   // =========================================================================== //
 
   public subscribeFilledBlocks(
-    onFilledBlockHandler?: (data: ISubscribedFullBlocksMessage) => void
+    onFilledBlockHandler?: (data: ISubscribedFullBlocksMessage) => void,
   ): void {
     if (!(this.wss && this.isConnected)) {
-      throw new Error("Websocket Client is not connected");
+      throw new Error('Websocket Client is not connected');
     }
     if (this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS)) {
       throw new Error(
         `Cannot subscribe as there is an already existing subscription with id ${this.subMethods.get(
-          WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS
-        )}`
+          WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS,
+        )}`,
       );
     }
     if (onFilledBlockHandler) {
@@ -177,60 +168,54 @@ export class WsSubscriptionClient extends WsBaseClient {
     }
     this.wss.send(
       JSON.stringify({
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         id: 1,
         method: generateFullRequestName(
           WS_RPC_REQUEST_METHOD_BASE.SUBSCRIBE,
-          WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS
+          WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS,
         ),
         params: [],
-      })
+      }),
     );
   }
 
   public unsubscribeFilledBlocks(): void {
     if (!(this.wss && this.isConnected)) {
-      throw new Error("Websocket Client is not connected");
+      throw new Error('Websocket Client is not connected');
     }
-    if (
-      !this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS)
-    ) {
+    if (!this.subMethods.has(WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS)) {
       throw new Error(
-        "Cannot unsubscribe to new blocks as subscription id is missing. Subscribe client first!"
+        'Cannot unsubscribe to new blocks as subscription id is missing. Subscribe client first!',
       );
     }
     this.wss.send(
       JSON.stringify({
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         id: 1,
         method: generateFullRequestName(
           WS_RPC_REQUEST_METHOD_BASE.UNSUBSCRIBE,
-          WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS
+          WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS,
         ),
         params: [
-          this.subMethods.get(
-            WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS
-          ),
+          this.subMethods.get(WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS),
         ],
-      })
+      }),
     );
   }
 
   // =========================================================================== //
 
   protected parseWsMessage(
-    data: string | Buffer | ArrayBuffer | Buffer[]
+    data: string | Buffer | ArrayBuffer | Buffer[],
   ): void {
     // distinguish between browser ws and nodejs buffered ws mode
-    let messageStr = "";
-    if (this.isBrowserWs && typeof data === "string") {
+    let messageStr = '';
+    if (this.isBrowserWs && typeof data === 'string') {
       // browser mode (string data)
       messageStr = data;
     } else {
       // nodejs mode (binary buffer)
-      messageStr = arrayBufferToBase64(
-                data as Buffer | ArrayBuffer | Buffer[]
-      );
+      messageStr = arrayBufferToBase64(data as Buffer | ArrayBuffer | Buffer[]);
     }
 
     // start parsing the data
@@ -238,8 +223,8 @@ export class WsSubscriptionClient extends WsBaseClient {
     try {
       parsedMsg = JSON.parse(messageStr);
       // first time sub message
-      if (parsedMsg["result"]) {
-        const subId = parseInt(parsedMsg["result"], 10);
+      if (parsedMsg['result']) {
+        const subId = parseInt(parsedMsg['result'], 10);
         if (isNaN(subId)) {
           // ignore any non-integer sub ids
           return;
@@ -249,13 +234,10 @@ export class WsSubscriptionClient extends WsBaseClient {
         }
         // check if there is a method name associated with the subId before timeout
         setTimeout(() => {
-          if (
-            this.subIds.get(subId) ===
-                        WS_RPC_REQUEST_METHOD_NAME.UNKNOWN
-          ) {
+          if (this.subIds.get(subId) === WS_RPC_REQUEST_METHOD_NAME.UNKNOWN) {
             this.emit(
               WebsocketEvent.ON_ERROR,
-              `Websocket for subscription id ${subId} did not deliver a message withing ${this.clientConfig.pingTimeoutMs} seconds`
+              `Websocket for subscription id ${subId} did not deliver a message withing ${this.clientConfig.pingTimeoutMs} seconds`,
             );
             this.subIds.delete(subId);
           }
@@ -263,90 +245,71 @@ export class WsSubscriptionClient extends WsBaseClient {
       }
       // successive messages
       if (
-        parsedMsg["params"] &&
-                parsedMsg["params"]["result"] &&
-                parsedMsg["params"]["subscription"]
+        parsedMsg['params'] &&
+        parsedMsg['params']['result'] &&
+        parsedMsg['params']['subscription']
       ) {
         // get sub id
-        const subId = parseInt(parsedMsg["params"]["subscription"]);
+        const subId = parseInt(parsedMsg['params']['subscription']);
 
         // get sub method
-        switch (matchMethodName(parsedMsg["method"])) {
+        switch (matchMethodName(parsedMsg['method'])) {
           case WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS: {
             if (
               this.subIds.has(subId) &&
-                            this.subIds.get(subId) !==
-                                WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS
+              this.subIds.get(subId) !== WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS
             ) {
-              this.subIds.set(
-                subId,
-                matchMethodName(parsedMsg["method"])
-              );
-              this.subMethods.set(
-                WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS,
-                subId
-              );
+              this.subIds.set(subId, matchMethodName(parsedMsg['method']));
+              this.subMethods.set(WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS, subId);
             }
             this.onNewBlockHandler(
-                            parsedMsg["params"][
-                              "result"
-                            ] as ISubscribeNewBlocksMessage
+              parsedMsg['params']['result'] as ISubscribeNewBlocksMessage,
             );
             break;
           }
           case WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS: {
             if (
               this.subIds.has(subId) &&
-                            this.subIds.get(subId) !==
-                                WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS
+              this.subIds.get(subId) !==
+                WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS
             ) {
-              this.subIds.set(
-                subId,
-                matchMethodName(parsedMsg["method"])
-              );
+              this.subIds.set(subId, matchMethodName(parsedMsg['method']));
               this.subMethods.set(
                 WS_RPC_REQUEST_METHOD_NAME.NEW_BLOCKS_HEADERS,
-                subId
+                subId,
               );
             }
             this.onNewBlockHeaderHandler(
-                            parsedMsg["params"]["result"] as IBlockHeaderInfo
+              parsedMsg['params']['result'] as IBlockHeaderInfo,
             );
             break;
           }
           case WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS: {
             if (
               this.subIds.has(subId) &&
-                            this.subIds.get(subId) !==
-                                WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS
+              this.subIds.get(subId) !==
+                WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS
             ) {
-              this.subIds.set(
-                subId,
-                matchMethodName(parsedMsg["method"])
-              );
+              this.subIds.set(subId, matchMethodName(parsedMsg['method']));
               this.subMethods.set(
                 WS_RPC_REQUEST_METHOD_NAME.NEW_FILLED_BLOCKS,
-                subId
+                subId,
               );
             }
             this.onFilledBlockHandler(
-                            parsedMsg["params"][
-                              "result"
-                            ] as ISubscribedFullBlocksMessage
+              parsedMsg['params']['result'] as ISubscribedFullBlocksMessage,
             );
             break;
           }
           default: {
             console.error(
-              `Message received from unregistered method ${parsedMsg["method"]}`
+              `Message received from unregistered method ${parsedMsg['method']}`,
             );
           }
         }
       }
     } catch (err) {
-      console.error(
-        `Error ${err} parsing misformed message ${messageStr}`
-      );
+      console.error(`Error ${err} parsing misformed message ${messageStr}`);
     }
   }
 }

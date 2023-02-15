@@ -1,16 +1,16 @@
-import { IClientConfig } from "../interfaces/IClientConfig";
-import { IAccount } from "../interfaces/IAccount";
-import { PrivateApiClient } from "./PrivateApiClient";
-import { PublicApiClient } from "./PublicApiClient";
-import { WalletClient } from "./WalletClient";
-import { SmartContractsClient } from "./SmartContractsClient";
-import { IProvider, ProviderType } from "../interfaces/IProvider";
-import { DefaultProviderUrls, DefaultWsProviderUrls } from "./ClientFactory";
-import { IClient } from "../interfaces/IClient";
-import { WsSubscriptionClient } from "./WsSubscriptionClient";
+import { IClientConfig } from '../interfaces/IClientConfig';
+import { IAccount } from '../interfaces/IAccount';
+import { PrivateApiClient } from './PrivateApiClient';
+import { PublicApiClient } from './PublicApiClient';
+import { WalletClient } from './WalletClient';
+import { SmartContractsClient } from './SmartContractsClient';
+import { IProvider, ProviderType } from '../interfaces/IProvider';
+import { DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
+import { IClient } from '../interfaces/IClient';
+import { WsSubscriptionClient } from './WsSubscriptionClient';
 
 export const getWsProvider = (
-  provider: DefaultProviderUrls
+  provider: DefaultProviderUrls,
 ): DefaultWsProviderUrls => {
   let wsProvider: DefaultWsProviderUrls;
   switch (provider) {
@@ -46,24 +46,24 @@ export class Client implements IClient {
   private wsSubscriptionClient: WsSubscriptionClient | null;
 
   public constructor(
-        private clientConfig: IClientConfig,
-        baseAccount?: IAccount
+    private clientConfig: IClientConfig,
+    baseAccount?: IAccount,
   ) {
     this.publicApiClient = new PublicApiClient(clientConfig);
     this.privateApiClient = new PrivateApiClient(clientConfig);
     this.walletClient = new WalletClient(
       clientConfig,
       this.publicApiClient,
-      baseAccount
+      baseAccount,
     );
     this.smartContractsClient = new SmartContractsClient(
       clientConfig,
       this.publicApiClient,
-      this.walletClient
+      this.walletClient,
     );
     if (
       clientConfig.providers.find(
-        (provider) => provider.type === ProviderType.WS
+        (provider) => provider.type === ProviderType.WS,
       )
     ) {
       this.wsSubscriptionClient = new WsSubscriptionClient(clientConfig);
@@ -126,32 +126,32 @@ export class Client implements IClient {
   /** return all private providers */
   public getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PRIVATE
+      (provider) => provider.type === ProviderType.PRIVATE,
     );
   }
 
   /** return all public providers */
   public getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PUBLIC
+      (provider) => provider.type === ProviderType.PUBLIC,
     );
   }
 
   /** sets a new default json rpc provider */
   public setNewDefaultProvider(provider: DefaultProviderUrls): void {
     const providers = [
-            {
-              url: provider,
-              type: ProviderType.PUBLIC,
-            } as IProvider,
-            {
-              url: provider,
-              type: ProviderType.PRIVATE,
-            } as IProvider,
-            {
-              url: getWsProvider(provider),
-              type: ProviderType.WS,
-            } as IProvider,
+      {
+        url: provider,
+        type: ProviderType.PUBLIC,
+      } as IProvider,
+      {
+        url: provider,
+        type: ProviderType.PRIVATE,
+      } as IProvider,
+      {
+        url: getWsProvider(provider),
+        type: ProviderType.WS,
+      } as IProvider,
     ];
     this.publicApiClient.setProviders(providers);
     this.privateApiClient.setProviders(providers);

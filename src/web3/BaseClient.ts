@@ -1,27 +1,28 @@
-import { IProvider, ProviderType } from "../interfaces/IProvider";
-import { IClientConfig } from "../interfaces/IClientConfig";
-import { Buffer } from "buffer";
-import { base58Decode, varintEncode } from "../utils/Xbqcrypto";
-import { IAccount } from "../interfaces/IAccount";
-import { IContractData } from "../interfaces/IContractData";
-import { JsonRpcResponseData } from "../interfaces/JsonRpcResponseData";
-import axios, { AxiosResponse } from "axios";
-import { JSON_RPC_REQUEST_METHOD } from "../interfaces/JsonRpcMethods";
-import { ITransactionData } from "../interfaces/ITransactionData";
-import { OperationTypeId } from "../interfaces/OperationTypes";
-import { IRollsData } from "../interfaces/IRollsData";
-import { ICallData } from "../interfaces/ICallData";
-import { MassaCoin } from "./MassaCoin";
+import { IProvider, ProviderType } from '../interfaces/IProvider';
+import { IClientConfig } from '../interfaces/IClientConfig';
+import { Buffer } from 'buffer';
+import { base58Decode, varintEncode } from '../utils/Xbqcrypto';
+import { IAccount } from '../interfaces/IAccount';
+import { IContractData } from '../interfaces/IContractData';
+import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
+import axios, { AxiosResponse } from 'axios';
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
+import { ITransactionData } from '../interfaces/ITransactionData';
+import { OperationTypeId } from '../interfaces/OperationTypes';
+import { IRollsData } from '../interfaces/IRollsData';
+import { ICallData } from '../interfaces/ICallData';
+import { MassaCoin } from './MassaCoin';
 
 export type DataType =
-    | IContractData
-    | ITransactionData
-    | IRollsData
-    | ICallData;
+  | IContractData
+  | ITransactionData
+  | IRollsData
+  | ICallData;
 
 const requestHeaders = {
-  Accept: "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-  "Access-Control-Allow-Origin": "*",
+  Accept:
+    'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Access-Control-Allow-Origin': '*',
 };
 
 export const PERIOD_OFFSET = 5;
@@ -33,15 +34,15 @@ export class BaseClient {
   public constructor(clientConfig: IClientConfig) {
     this.clientConfig = clientConfig;
     this.clientConfig.periodOffset =
-            this.clientConfig.periodOffset | PERIOD_OFFSET;
+      this.clientConfig.periodOffset | PERIOD_OFFSET;
     if (this.getPrivateProviders().length === 0) {
       throw new Error(
-        "Cannot initialize web3 with no private providers. Need at least one"
+        'Cannot initialize web3 with no private providers. Need at least one',
       );
     }
     if (this.getPublicProviders().length === 0) {
       throw new Error(
-        "Cannot initialize web3 with no public providers. Need at least one"
+        'Cannot initialize web3 with no public providers. Need at least one',
       );
     }
 
@@ -50,8 +51,7 @@ export class BaseClient {
     this.getProviderForRpcMethod = this.getProviderForRpcMethod.bind(this);
     this.getPublicProviders = this.getPublicProviders.bind(this);
     this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
-    this.compactBytesForOperation =
-            this.compactBytesForOperation.bind(this);
+    this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
     this.setProviders = this.setProviders.bind(this);
     this.promisifyJsonRpcCall = this.promisifyJsonRpcCall.bind(this);
   }
@@ -64,20 +64,20 @@ export class BaseClient {
   /** return all private providers */
   protected getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PRIVATE
+      (provider) => provider.type === ProviderType.PRIVATE,
     );
   }
 
   /** return all public providers */
   protected getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PUBLIC
+      (provider) => provider.type === ProviderType.PUBLIC,
     );
   }
 
   /** find provider for a concrete rpc method */
   private getProviderForRpcMethod(
-    requestMethod: JSON_RPC_REQUEST_METHOD
+    requestMethod: JSON_RPC_REQUEST_METHOD,
   ): IProvider {
     switch (requestMethod) {
       case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
@@ -115,12 +115,12 @@ export class BaseClient {
 
   private async promisifyJsonRpcCall<T>(
     resource: JSON_RPC_REQUEST_METHOD,
-    params: object
+    params: object,
   ): Promise<JsonRpcResponseData<T>> {
     let resp: AxiosResponse = null;
 
     const body = {
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       method: resource,
       params: params,
       id: 0,
@@ -130,13 +130,13 @@ export class BaseClient {
       resp = await axios.post(
         this.getProviderForRpcMethod(resource).url,
         body,
-        { headers: requestHeaders }
+        { headers: requestHeaders },
       );
     } catch (ex) {
       return {
         isError: true,
         result: null,
-        error: new Error("JSON.parse error: " + String(ex)),
+        error: new Error('JSON.parse error: ' + String(ex)),
       } as JsonRpcResponseData<T>;
     }
 
@@ -160,7 +160,7 @@ export class BaseClient {
   /** send a post JSON rpc request to the node */
   protected async sendJsonRPCRequest<T>(
     resource: JSON_RPC_REQUEST_METHOD,
-    params: object
+    params: object,
   ): Promise<T> {
     let resp: JsonRpcResponseData<T> = null;
     resp = await this.promisifyJsonRpcCall(resource, params);
@@ -178,7 +178,7 @@ export class BaseClient {
     data: DataType,
     opTypeId: OperationTypeId,
     account: IAccount,
-    expirePeriod: number
+    expirePeriod: number,
   ): Buffer {
     const fee = new MassaCoin(data.fee);
     const feeEncoded = Buffer.from(varintEncode(fee.toNumber()));
@@ -192,13 +192,13 @@ export class BaseClient {
 
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxGas)
+          varintEncode((data as IContractData).maxGas),
         );
 
         // contract data
         const contractDataEncoded = Buffer.from(scBinaryCode);
         const dataLengthEncoded = Buffer.from(
-          varintEncode(contractDataEncoded.length)
+          varintEncode(contractDataEncoded.length),
         );
 
         // smart contract operation datastore
@@ -209,11 +209,11 @@ export class BaseClient {
         for (const [key, value] of datastoreKeyMap) {
           const encodedKeyBytes = Buffer.from(key);
           const encodedKeyLen = Buffer.from(
-            varintEncode(encodedKeyBytes.length)
+            varintEncode(encodedKeyBytes.length),
           );
           const encodedValueBytes = Buffer.from(value);
           const encodedValueLen = Buffer.from(
-            varintEncode(encodedValueBytes.length)
+            varintEncode(encodedValueBytes.length),
           );
           datastoreSerializedBuffer = Buffer.concat([
             datastoreSerializedBuffer,
@@ -224,7 +224,7 @@ export class BaseClient {
           ]);
         }
         const datastoreSerializedBufferLen = Buffer.from(
-          varintEncode(datastoreKeyMap.size)
+          varintEncode(datastoreKeyMap.size),
         );
         if (datastoreSerializedBuffer.length === 0) {
           return Buffer.concat([
@@ -252,33 +252,31 @@ export class BaseClient {
       case OperationTypeId.CallSC: {
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as ICallData).maxGas)
+          varintEncode((data as ICallData).maxGas),
         );
 
         // coins to send
         const coinsEncoded = Buffer.from(
-          varintEncode((data as ICallData).coins.toNumber())
+          varintEncode((data as ICallData).coins.toNumber()),
         );
 
         // target address
         const targetAddressEncoded = base58Decode(
-          (data as ICallData).targetAddress.slice(1)
+          (data as ICallData).targetAddress.slice(1),
         ).slice(1);
 
         // target function name and name length
         const functionNameEncoded = new Uint8Array(
-          Buffer.from((data as ICallData).functionName, "utf8")
+          Buffer.from((data as ICallData).functionName, 'utf8'),
         );
         const functionNameLengthEncoded = Buffer.from(
-          varintEncode(functionNameEncoded.length)
+          varintEncode(functionNameEncoded.length),
         );
 
         // parameter
-        const parametersEncoded = new Uint8Array(
-          (data as ICallData).parameter
-        );
+        const parametersEncoded = new Uint8Array((data as ICallData).parameter);
         const parametersLengthEncoded = Buffer.from(
-          varintEncode(parametersEncoded.length)
+          varintEncode(parametersEncoded.length),
         );
 
         return Buffer.concat([
@@ -298,11 +296,11 @@ export class BaseClient {
         // transfer amount
         const amount = new MassaCoin((data as ITransactionData).amount);
         const transferAmountEncoded = Buffer.from(
-          varintEncode(amount.toNumber())
+          varintEncode(amount.toNumber()),
         );
         // recipient
         const recipientAddressEncoded = base58Decode(
-          (data as ITransactionData).recipientAddress.slice(1)
+          (data as ITransactionData).recipientAddress.slice(1),
         ).slice(1);
 
         return Buffer.concat([
@@ -317,7 +315,7 @@ export class BaseClient {
       case OperationTypeId.RollSell: {
         // rolls amount
         const rollsAmountEncoded = Buffer.from(
-          varintEncode((data as IRollsData).amount)
+          varintEncode((data as IRollsData).amount),
         );
 
         return Buffer.concat([

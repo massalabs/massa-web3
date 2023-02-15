@@ -1,3 +1,3 @@
-export * from "./strings";
-export * from "./numbers";
-export * from "./bool";
+export * from './strings';
+export * from './numbers';
+export * from './bool';

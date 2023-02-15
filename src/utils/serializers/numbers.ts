@@ -1,12 +1,12 @@
 const U8_MAX = 0xff;
 const U32_MAX = 0xffffffff;
-const U64_MAX = BigInt("0xffffffffffffffff");
+const U64_MAX = BigInt('0xffffffffffffffff');
 
 const I32_MIN = -0x80000000;
 const I32_MAX = 0x7fffffff;
 
-const I64_MIN = BigInt("-9223372036854775808");
-const I64_MAX = BigInt("0x7fffffffffffffff");
+const I64_MIN = BigInt('-9223372036854775808');
+const I64_MAX = BigInt('0x7fffffffffffffff');
 
 /**
  * Converts a u8 in a Uint8Array.
@@ -112,7 +112,7 @@ export function bytesToI32(arr: Uint8Array, offset = 0): number {
 export function i64ToBytes(val: bigint): Uint8Array {
   if (val < I64_MIN || val > I64_MAX) {
     throw new Error(
-      `Unable to serialize invalid int64 value ${val.toString()}`
+      `Unable to serialize invalid int64 value ${val.toString()}`,
     );
   }
   const buffer = new ArrayBuffer(8);

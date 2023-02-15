@@ -5,8 +5,8 @@ import {
   Context,
   Address,
   callerHasWriteAccess,
-} from "@massalabs/massa-as-sdk";
-import { Args, bytesToString, stringToBytes } from "@massalabs/as-types";
+} from '@massalabs/massa-as-sdk';
+import { Args, bytesToString, stringToBytes } from '@massalabs/as-types';
 
 /**
  * This function is meant to be called only one time: when the contract is deployed.
@@ -20,7 +20,7 @@ export function constructor(args: StaticArray<u8>): StaticArray<u8> {
     return [];
   }
   generateEvent(
-    `Constructor called on contract ${Context.callee().toString()}`
+    `Constructor called on contract ${Context.callee().toString()}`,
   );
   return [];
 }
@@ -32,19 +32,19 @@ export function event(_: StaticArray<u8>): StaticArray<u8> {
 }
 
 export function receive(data: StaticArray<u8>): void {
-  print("Gas at start inner: " + Context.remainingGas().toString());
+  print('Gas at start inner: ' + Context.remainingGas().toString());
   generateEvent(Context.remainingGas().toString());
   print(bytesToString(data));
-  print("Gas at end inner: " + Context.remainingGas().toString());
+  print('Gas at end inner: ' + Context.remainingGas().toString());
   generateEvent(Context.remainingGas().toString());
 }
 
 export function test(address: StaticArray<u8>): void {
-  print("Gas at start: " + Context.remainingGas().toString());
+  print('Gas at start: ' + Context.remainingGas().toString());
   generateEvent(Context.remainingGas().toString());
   const args = new Args();
-  args.add("massa");
-  call(new Address(bytesToString(address)), "receive", args, 0);
-  print("Gas at end: " + Context.remainingGas().toString());
+  args.add('massa');
+  call(new Address(bytesToString(address)), 'receive', args, 0);
+  print('Gas at end: ' + Context.remainingGas().toString());
   generateEvent(Context.remainingGas().toString());
 }
