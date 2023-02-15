@@ -2,8 +2,6 @@ name: Deploy documentation
 
 on:
   push:
-    tags:
-      - v*
 
 jobs:
   deploy-typedoc:
