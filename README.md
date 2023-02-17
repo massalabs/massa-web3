@@ -36,7 +36,7 @@ In your code, once the script is fully loaded, just use `window.massa` to access
 
 Complete documentation of all available web3 entities can be found here:
 
--   [`massa-web3 documentation`](https://massa-web3.docs.massa.net)
+-   [`massa-web3 documentation`](https://web3.docs.massa.net)
 
 ### Requirements
 
