@@ -41,7 +41,7 @@ export class Args {
    *
    * @returns the serialized array
    */
-  serialize(): Array<number> {
+  public serialize(): Array<number> {
     return Array.from(this.serialized);
   }
 
@@ -52,7 +52,7 @@ export class Args {
    *
    * @returns the deserialized string
    */
-  nextString(): string {
+  public nextString(): string {
     const length = this.nextU32();
     const end = this.offset + length;
     const result = bytesToStr(this.serialized.slice(this.offset, end));
@@ -65,7 +65,7 @@ export class Args {
    *
    * @returns
    */
-  nextU8(): bigint {
+  public nextU8(): bigint {
     const value = byteToU8(this.serialized, this.offset);
     this.offset++;
     return BigInt(value);
@@ -76,7 +76,7 @@ export class Args {
    *
    * @return {number}
    */
-  nextU32(): number {
+  public nextU32(): number {
     const value = bytesToU32(this.serialized, this.offset);
     this.offset += 4;
     return value;
@@ -87,7 +87,7 @@ export class Args {
    *
    * @return {BigInt}
    */
-  nextU64(): bigint {
+  public nextU64(): bigint {
     const value = bytesToU64(this.serialized, this.offset);
     this.offset += 8;
     return value;
@@ -98,7 +98,7 @@ export class Args {
    *
    * @return {number}
    */
-  nextI32(): number {
+  public nextI32(): number {
     const value = bytesToI32(this.serialized, this.offset);
     this.offset += 4;
     return value;
@@ -109,7 +109,7 @@ export class Args {
    *
    * @return {BigInt}
    */
-  nextI64(): bigint {
+  public nextI64(): bigint {
     const value = bytesToI64(this.serialized, this.offset);
     this.offset += 8;
     return BigInt(value);
@@ -120,7 +120,7 @@ export class Args {
    *
    * @return {number}
    */
-  nextF32(): number {
+  public nextF32(): number {
     const value = bytesToF32(this.serialized, this.offset);
     this.offset += 4;
     return value;
@@ -131,7 +131,7 @@ export class Args {
    *
    * @return {number}
    */
-  nextF64(): number {
+  public nextF64(): number {
     const value = bytesToF64(this.serialized, this.offset);
     this.offset += 8;
     return value;
@@ -140,7 +140,7 @@ export class Args {
   /**
    * @return {Uint8Array} bytearray
    */
-  nextUint8Array(): Uint8Array {
+  public nextUint8Array(): Uint8Array {
     const length = this.nextU32();
     const byteArray = this.serialized.slice(this.offset, this.offset + length);
     this.offset += length;
@@ -154,7 +154,7 @@ export class Args {
    * @param {number} value
    * @return {Args}
    */
-  addU8(value: number): Args {
+  public addU8(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, u8toByte(value));
     this.offset++;
     return this;
@@ -165,7 +165,7 @@ export class Args {
    * @param {number} value
    * @return {Args}
    */
-  addU32(value: number): Args {
+  public addU32(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, u32ToBytes(value));
     this.offset += 4;
     return this;
@@ -176,7 +176,7 @@ export class Args {
    * @param {BigInt} bigInt
    * @return {Args}
    */
-  addU64(bigInt: bigint): Args {
+  public addU64(bigInt: bigint): Args {
     this.serialized = this.concatArrays(this.serialized, u64ToBytes(bigInt));
 
     this.offset += 8;
@@ -189,7 +189,7 @@ export class Args {
    * @param {number} value
    * @return {Args}
    */
-  addI32(value: number): Args {
+  public addI32(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, i32ToBytes(value));
     this.offset += 4;
     return this;
@@ -200,7 +200,7 @@ export class Args {
    * @param {BigInt} bigInt
    * @return {Args}
    */
-  addI64(bigInt: bigint): Args {
+  public addI64(bigInt: bigint): Args {
     this.serialized = this.concatArrays(this.serialized, i64ToBytes(bigInt));
     this.offset += 8;
     return this;
@@ -211,7 +211,7 @@ export class Args {
    * @param {number} value
    * @return {Args}
    */
-  addF32(value: number): Args {
+  public addF32(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, f32ToBytes(value));
     this.offset += 4;
     return this;
@@ -222,7 +222,7 @@ export class Args {
    * @param {number} value
    * @return {Args}
    */
-  addF64(value: number): Args {
+  public addF64(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, f64ToBytes(value));
     this.offset += 8;
     return this;
@@ -233,7 +233,7 @@ export class Args {
    * @param {Uint8Array} array
    * @return {Args}
    */
-  addUint8Array(array: Uint8Array): Args {
+  public addUint8Array(array: Uint8Array): Args {
     this.addU32(array.length);
     this.serialized = this.concatArrays(this.serialized, array);
     this.offset += array.length;
@@ -248,7 +248,7 @@ export class Args {
    *
    * @return {Args} the modified Arg instance
    */
-  addString(arg: string): Args {
+  public addString(arg: string): Args {
     const maxSize = 4294967295;
     const size = arg.length;
 
