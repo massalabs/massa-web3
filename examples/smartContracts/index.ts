@@ -208,8 +208,8 @@ const pollAsyncEvents = async (
     ).start();
     const args = new Args();
     const result = await web3Client.smartContracts().readSmartContract({
-      fee: 0,
-      maxGas: 700000,
+      fee: new MassaAmount(0, MASSA_UNIT.MASSA),
+      maxGas: new MassaAmount(700000, MASSA_UNIT.MASSA),
       targetAddress: scAddress,
       targetFunction: 'event',
       parameter: args.serialize(),
@@ -227,9 +227,9 @@ const pollAsyncEvents = async (
     const callOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
-        fee: 0,
-        maxGas: 10_500_000,
-        coins: new MassaCoin(0),
+        fee: new MassaAmount(0, MASSA_UNIT.MASSA),
+        maxGas: new MassaAmount(10_500_000, MASSA_UNIT.MASSA),
+        coins: new MassaAmount(0, MASSA_UNIT.MASSA),
         targetAddress: scAddress,
         functionName: 'setValueToStorage',
         parameter: callArgs.serialize(),

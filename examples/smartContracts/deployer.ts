@@ -3,6 +3,8 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { Client } from '../../src/web3/Client';
 import { MassaCoin } from '../../src/web3/MassaCoin';
+import { MassaFee } from '../../src/web3/MassaFee';
+import { MassaGas } from '../../src/web3/MassaGas';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
@@ -149,8 +151,8 @@ export const deploySmartContracts = async (
               path.join(__dirname, '.', 'contracts', '/deployer.wasm'),
             ),
             datastore,
-            fee,
-            maxGas,
+            fee: new MassaFee(fee),
+            maxGas: new MassaGas(maxGas),
           } as IContractData,
           deployerAccount,
         );

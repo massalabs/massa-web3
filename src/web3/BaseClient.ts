@@ -11,7 +11,6 @@ import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
-import { MassaCoin } from './MassaCoin';
 
 const encodeAddressToBytes = (
   address: string,
@@ -194,8 +193,7 @@ export class BaseClient {
     account: IAccount,
     expirePeriod: number,
   ): Buffer {
-    const fee = new MassaCoin(data.fee);
-    const feeEncoded = Buffer.from(varintEncode(fee.toNumber()));
+    const feeEncoded = Buffer.from(varintEncode(data.fee.toNumber()));
     const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
     const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
@@ -206,7 +204,7 @@ export class BaseClient {
 
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxGas),
+          varintEncode((data as IContractData).maxGas.toNumber()),
         );
 
         // contract data
@@ -266,7 +264,7 @@ export class BaseClient {
       case OperationTypeId.CallSC: {
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as ICallData).maxGas),
+          varintEncode((data as ICallData).maxGas.toNumber()),
         );
 
         // coins to send
@@ -309,7 +307,7 @@ export class BaseClient {
       }
       case OperationTypeId.Transaction: {
         // transfer amount
-        const amount = new MassaCoin((data as ITransactionData).amount);
+        const amount = (data as ITransactionData).amount;
         const transferAmountEncoded = Buffer.from(
           varintEncode(amount.toNumber()),
         );
@@ -331,7 +329,7 @@ export class BaseClient {
       case OperationTypeId.RollSell: {
         // rolls amount
         const rollsAmountEncoded = Buffer.from(
-          varintEncode((data as IRollsData).amount),
+          varintEncode((data as IRollsData).amount.toNumber()),
         );
 
         return Buffer.concat([

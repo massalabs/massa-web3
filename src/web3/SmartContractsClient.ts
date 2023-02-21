@@ -184,7 +184,7 @@ export class SmartContractsClient
   ): Promise<IContractReadOperationResponse> {
     // request data
     const data = {
-      max_gas: readData.maxGas,
+      max_gas: readData.maxGas.toNumber(),
       target_address: readData.targetAddress,
       target_function: readData.targetFunction,
       parameter: readData.parameter,
@@ -273,7 +273,7 @@ export class SmartContractsClient
     }
 
     const data = {
-      max_gas: contractData.maxGas,
+      max_gas: contractData.maxGas.toNumber(),
       bytecode: Array.from(contractData.contractDataBinary),
       address: contractData.address,
     };
