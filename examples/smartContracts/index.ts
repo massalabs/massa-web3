@@ -23,6 +23,8 @@ import { withTimeoutRejection } from '../../src/utils/time';
 import { bytesToStr, strToBytes } from '../../src/utils/serializers';
 import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput';
 import { ICallData } from '../../src/interfaces/ICallData';
+import { MassaFee } from '../../src/web3/MassaFee';
+import { MassaGas } from '../../src/web3/MassaGas';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
@@ -186,8 +188,8 @@ const pollAsyncEvents = async (
     ).start();
     const args = new Args();
     const result = await web3Client.smartContracts().readSmartContract({
-      fee: 0,
-      maxGas: 700000,
+      fee: new MassaFee(0),
+      maxGas: new MassaGas(700000),
       targetAddress: scAddress,
       targetFunction: 'event',
       parameter: args.serialize(),
@@ -205,8 +207,8 @@ const pollAsyncEvents = async (
     const callOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
-        fee: 0,
-        maxGas: 10_500_000,
+        fee: new MassaFee(0),
+        maxGas: new MassaGas(10_500_000),
         coins: new MassaCoin(0),
         targetAddress: scAddress,
         functionName: 'setValueToStorage',
