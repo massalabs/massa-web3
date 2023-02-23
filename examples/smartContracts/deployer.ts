@@ -34,7 +34,7 @@ async function checkBalance(
   }
 }
 
-async function awaitTxConfirmation(
+export async function awaitTxConfirmation(
   web3Client: Client,
   deploymentOperationId: string,
 ): Promise<void> {
@@ -76,7 +76,6 @@ async function awaitTxConfirmation(
 export const deploySmartContracts = async (
   contractsToDeploy: ISCData[],
   web3Client: Client,
-  awaitFinalization = false,
   fee = 0,
   maxGas = 1_000_000,
   deployerAccount?: IAccount,
@@ -169,10 +168,6 @@ export const deploySmartContracts = async (
       console.error(msg);
       throw new Error(ex);
     }
-
-    // await finalization if required
-    if (awaitFinalization)
-      await awaitTxConfirmation(web3Client, deploymentOperationId);
   } catch (ex) {
     const msg = chalk.red(
       `Error deploying deployer smart contract to Massa Network`,

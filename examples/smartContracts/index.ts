@@ -8,16 +8,91 @@ import {
 import { IEvent } from '../../src/interfaces/IEvent';
 import { IReadData } from '../../src/interfaces/IReadData';
 import { WalletClient } from '../../src/web3/WalletClient';
-import { deploySmartContracts } from './deployer';
+import { awaitTxConfirmation, deploySmartContracts } from './deployer';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
 import { MassaCoin } from '../../src/web3/MassaCoin';
+import { Client } from '../../src/web3/Client';
+import {
+  EventPoller,
+  ON_MASSA_EVENT_DATA,
+  ON_MASSA_EVENT_ERROR,
+} from '../../src/web3/EventPoller';
+import { INodeStatus } from '../../src/interfaces/INodeStatus';
+import { withTimeoutRejection } from '../../src/utils/time';
+import { bytesToStr, strToBytes } from '../../src/utils/serializers';
+import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput';
+import { ICallData } from '../../src/interfaces/ICallData';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
 
+const MASSA_EXEC_ERROR = 'massa_execution_error';
+
 const DEPLOYER_SECRET_KEY =
   'S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d';
+
+interface IEventPollerResult {
+  isError: boolean;
+  eventPoller: EventPoller;
+  events: IEvent[];
+}
+
+const pollAsyncEvents = async (
+  web3Client: Client,
+  opId: string,
+): Promise<IEventPollerResult> => {
+  // determine the last slot
+  let nodeStatusInfo: INodeStatus | null | undefined = await web3Client
+    .publicApi()
+    .getNodeStatus();
+
+  // set the events filter
+  const eventsFilter = {
+    start: (nodeStatusInfo as INodeStatus).last_slot,
+    end: null,
+    original_caller_address: null,
+    original_operation_id: opId,
+    emitter_address: null,
+    is_final: false,
+  } as IEventFilter;
+
+  const eventPoller = EventPoller.startEventsPolling(
+    eventsFilter,
+    1000,
+    web3Client,
+  );
+
+  return new Promise((resolve, reject) => {
+    eventPoller.on(ON_MASSA_EVENT_DATA, (events: Array<IEvent>) => {
+      console.log('Event Data Received:', events);
+      let errorEvents: IEvent[] = events.filter((e) =>
+        e.data.includes(MASSA_EXEC_ERROR),
+      );
+      if (errorEvents.length > 0) {
+        return resolve({
+          isError: true,
+          eventPoller,
+          events: errorEvents,
+        } as IEventPollerResult);
+      }
+
+      if (events.length) {
+        return resolve({
+          isError: false,
+          eventPoller,
+          events,
+        } as IEventPollerResult);
+      } else {
+        console.log('No events have been emitted during deployment');
+      }
+    });
+    eventPoller.on(ON_MASSA_EVENT_ERROR, (error: Error) => {
+      console.log('Event Data Error:', error);
+      return reject(error);
+    });
+  });
+};
 
 (async () => {
   const header = '='.repeat(process.stdout.columns - 1);
@@ -61,7 +136,6 @@ const DEPLOYER_SECRET_KEY =
         },
       ],
       web3Client,
-      true,
       0,
       1_000_000,
       deployerAccount,
@@ -72,23 +146,25 @@ const DEPLOYER_SECRET_KEY =
       )} with opId ${deploymentOperationId}`,
     );
 
-    // poll smart contract events for the opId
-    spinner = ora(`Filtering for sc events....`).start();
-    const eventsFilter = {
-      start: null,
-      end: null,
-      original_caller_address: null,
-      original_operation_id: deploymentOperationId,
-      emitter_address: null,
-      is_final: true,
-    } as IEventFilter;
+    // async poll events in the background for the given opId
+    const { isError, eventPoller, events }: IEventPollerResult =
+      await withTimeoutRejection<IEventPollerResult>(
+        pollAsyncEvents(web3Client, deploymentOperationId),
+        20000,
+      );
 
-    const events: Array<IEvent> = await web3Client
-      .smartContracts()
-      .getFilteredScOutputEvents(eventsFilter);
-    spinner.succeed(
-      `Sc events received: ${chalk.yellow(JSON.stringify(events, null, 4))}`,
-    );
+    // stop polling
+    eventPoller.stopPolling;
+
+    // if errors, dont await finalization
+    if (isError) {
+      throw new Error(
+        `Massa Deployment Error: ${JSON.stringify(events, null, 4)}`,
+      );
+    }
+
+    // await finalization
+    await awaitTxConfirmation(web3Client, deploymentOperationId);
 
     // find an event that contains the emitted sc address
     spinner = ora(`Extracting deployed sc address from events....`).start();
@@ -103,8 +179,11 @@ const DEPLOYER_SECRET_KEY =
     const scAddress: string = addressEvent.data.split(':')[1].trim();
     spinner.succeed(`Smart Contract Address: ${chalk.yellow(scAddress)}`);
 
-    // finally get some read state
-    spinner = ora(`Reading a smart contract state...`).start();
+    // =========================================
+    // get function return value
+    spinner = ora(
+      `Getting a function return value from the deployed smart contract...`,
+    ).start();
     const args = new Args();
     const result = await web3Client.smartContracts().readSmartContract({
       fee: 0,
@@ -113,25 +192,61 @@ const DEPLOYER_SECRET_KEY =
       targetFunction: 'event',
       parameter: args.serialize(),
     } as IReadData);
-    spinner.succeed(
-      `Called read contract with operation ID ${chalk.yellow(
-        JSON.stringify(result, null, 4),
-      )}`,
-    );
-    console.info(
-      'Read Operation Result',
-      Buffer.from(result.returnValue).toString('utf-8'),
-    );
+    spinner.succeed(`Function Return Value: ${bytesToStr(result.returnValue)}`);
 
+    // =========================================
+    // make a smart contract call
+    spinner = ora(
+      `Calling a set function on the deployed smart contract...`,
+    ).start();
+    const callArgs = new Args();
+    callArgs.addString('MY_KEY');
+    callArgs.addString('MY_VALUE');
+    const callOperationId = await web3Client
+      .smartContracts()
+      .callSmartContract({
+        fee: 0,
+        maxGas: 10_500_000,
+        coins: new MassaCoin(0),
+        targetAddress: scAddress,
+        functionName: 'setValueToStorage',
+        parameter: callArgs.serialize(),
+      } as ICallData);
+    spinner.succeed(`Call operation ID: ${callOperationId}`);
+    await awaitTxConfirmation(web3Client, callOperationId);
+
+    // =========================================
+    // read value from store
+    spinner = ora(
+      `Reading from the deployed smart contract storage...`,
+    ).start();
+    const scStorage = await web3Client.publicApi().getDatastoreEntries([
+      {
+        address: scAddress,
+        key: strToBytes('MY_KEY'),
+      } as IDatastoreEntryInput,
+    ]);
+    if (!scStorage[0].final_value) {
+      spinner.fail(`Storage contains null for that key. Something is wrong`);
+    } else {
+      spinner.succeed(
+        `Deployed SC Storage entry: ${bytesToStr(scStorage[0].final_value)}`,
+      );
+    }
+
+    // =========================================
     // read contract balance
+    spinner = ora(`Getting deployed smart contract balance...`).start();
     const contractBalance = await web3Client
       .smartContracts()
       .getContractBalance(scAddress);
-    console.info(
+    spinner.succeed(
       `Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.rawValue()},${contractBalance?.final.rawValue()})`,
     );
+    process.exit(0);
   } catch (ex) {
     const msg = chalk.red(`Error = ${ex}`);
     if (spinner) spinner.fail(msg);
+    process.exit(-1);
   }
 })();

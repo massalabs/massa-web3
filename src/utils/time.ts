@@ -49,3 +49,30 @@ export class Interval {
     }
   }
 }
+
+export const wait = async (timeMilli: number): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    const timeout = new Timeout(timeMilli, () => {
+      timeout.clear();
+      return resolve();
+    });
+  });
+};
+
+export async function withTimeoutRejection<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+): Promise<T> {
+  const sleep = new Promise((resolve, reject) =>
+    setTimeout(
+      () =>
+        reject(
+          new Error(
+            `Timeout of ${timeoutMs} has passed and promise did not resolve`,
+          ),
+        ),
+      timeoutMs,
+    ),
+  );
+  return Promise.race([promise, sleep]) as Promise<T>;
+}
