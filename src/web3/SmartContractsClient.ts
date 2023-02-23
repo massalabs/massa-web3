@@ -19,7 +19,7 @@ import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
-import { wait } from '../utils/Wait';
+import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
 import { MassaCoin } from './MassaCoin';
 import { PublicApiClient } from './PublicApiClient';

@@ -3,7 +3,7 @@ import { IEvent } from '../interfaces/IEvent';
 import { IEventFilter } from '../interfaces/IEventFilter';
 import { IEventRegexFilter } from '../interfaces/IEventRegexFilter';
 import { ISlot } from '../interfaces/ISlot';
-import { Timeout } from '../utils/Timeout';
+import { Timeout } from '../utils/time';
 import { Client } from './Client';
 
 /** Smart Contracts Event Poller */

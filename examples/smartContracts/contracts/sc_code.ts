@@ -5,8 +5,12 @@ import {
   Context,
   Address,
   callerHasWriteAccess,
+  Storage,
 } from '@massalabs/massa-as-sdk';
 import { Args, bytesToString, stringToBytes } from '@massalabs/as-types';
+
+const DATA_KEY = 'key';
+const DATA_VALUE = 'value';
 
 /**
  * This function is meant to be called only one time: when the contract is deployed.
@@ -31,20 +35,9 @@ export function event(_: StaticArray<u8>): StaticArray<u8> {
   return stringToBytes(message);
 }
 
-export function receive(data: StaticArray<u8>): void {
-  print('Gas at start inner: ' + Context.remainingGas().toString());
-  generateEvent(Context.remainingGas().toString());
-  print(bytesToString(data));
-  print('Gas at end inner: ' + Context.remainingGas().toString());
-  generateEvent(Context.remainingGas().toString());
-}
-
-export function test(address: StaticArray<u8>): void {
-  print('Gas at start: ' + Context.remainingGas().toString());
-  generateEvent(Context.remainingGas().toString());
-  const args = new Args();
-  args.add('massa');
-  call(new Address(bytesToString(address)), 'receive', args, 0);
-  print('Gas at end: ' + Context.remainingGas().toString());
-  generateEvent(Context.remainingGas().toString());
+export function setValueToStorage(_args: StaticArray<u8>): void {
+  const args = new Args(_args);
+  const key = args.nextString().unwrap();
+  const value = args.nextString().unwrap();
+  Storage.set(stringToBytes(key), stringToBytes(value));
 }

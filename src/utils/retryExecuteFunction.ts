@@ -1,4 +1,4 @@
-import { wait } from './Wait';
+import { wait } from './time';
 
 const MAX_NUMBER_RETRIALS = 5;
 type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;

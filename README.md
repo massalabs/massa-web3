@@ -197,14 +197,14 @@ Available methods are:
     ```
 -   `getDatastoreEntries`
     ```ts
-    const datastoreEntries: Array<IContractStorageData> = await web3Client
-        .publicApi()
-        .getDatastoreEntries([
-            {
-                address: smartContractAddress,
-                key: "some_key",
-            } as IDatastoreEntry,
-        ]);
+    const scStorageValue: IDatastoreEntry[] = await web3Client.publicApi().getDatastoreEntries([
+      {
+        address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+        key: strToBytes("key"),
+      } as IDatastoreEntryInput,
+    ]);
+
+    // NOTE: returned values could be easily converted into string if needed using e.g.: bytesToStr(scStorageValue[0].final_value)
     ```
 -   `getBlockcliqueBlockBySlot`
 

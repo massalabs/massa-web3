@@ -1,4 +1,4 @@
 export interface IDatastoreEntryInput {
   address: string;
-  key: Array<number>;
+  key: Uint8Array;
 }

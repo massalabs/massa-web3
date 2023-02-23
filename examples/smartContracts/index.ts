@@ -19,6 +19,10 @@ import {
   ON_MASSA_EVENT_ERROR,
 } from '../../src/web3/EventPoller';
 import { INodeStatus } from '../../src/interfaces/INodeStatus';
+import { withTimeoutRejection } from '../../src/utils/time';
+import { bytesToStr, strToBytes } from '../../src/utils/serializers';
+import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput';
+import { ICallData } from '../../src/interfaces/ICallData';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
@@ -27,24 +31,6 @@ const MASSA_EXEC_ERROR = 'massa_execution_error';
 
 const DEPLOYER_SECRET_KEY =
   'S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d';
-
-export async function withTimeoutRejection<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-): Promise<T> {
-  const sleep = new Promise((resolve, reject) =>
-    setTimeout(
-      () =>
-        reject(
-          new Error(
-            `Timeout of ${timeoutMs} has passed and promise did not resolve`,
-          ),
-        ),
-      timeoutMs,
-    ),
-  );
-  return Promise.race([promise, sleep]) as Promise<T>;
-}
 
 interface IEventPollerResult {
   isError: boolean;
@@ -193,8 +179,11 @@ const pollAsyncEvents = async (
     const scAddress: string = addressEvent.data.split(':')[1].trim();
     spinner.succeed(`Smart Contract Address: ${chalk.yellow(scAddress)}`);
 
-    // finally get some read state
-    spinner = ora(`Reading a smart contract state...`).start();
+    // =========================================
+    // get function return value
+    spinner = ora(
+      `Getting a function return value from the deployed smart contract...`,
+    ).start();
     const args = new Args();
     const result = await web3Client.smartContracts().readSmartContract({
       fee: 0,
@@ -203,21 +192,55 @@ const pollAsyncEvents = async (
       targetFunction: 'event',
       parameter: args.serialize(),
     } as IReadData);
-    spinner.succeed(
-      `Called read contract with operation ID ${chalk.yellow(
-        JSON.stringify(result, null, 4),
-      )}`,
-    );
-    console.info(
-      'Read Operation Result',
-      Buffer.from(result.returnValue).toString('utf-8'),
-    );
+    spinner.succeed(`Function Return Value: ${bytesToStr(result.returnValue)}`);
 
+    // =========================================
+    // make a smart contract call
+    spinner = ora(
+      `Calling a set function on the deployed smart contract...`,
+    ).start();
+    const callArgs = new Args();
+    callArgs.addString('MY_KEY');
+    callArgs.addString('MY_VALUE');
+    const callOperationId = await web3Client
+      .smartContracts()
+      .callSmartContract({
+        fee: 0,
+        maxGas: 10_500_000,
+        coins: new MassaCoin(0),
+        targetAddress: scAddress,
+        functionName: 'setValueToStorage',
+        parameter: callArgs.serialize(),
+      } as ICallData);
+    spinner.succeed(`Call operation ID: ${callOperationId}`);
+    await awaitTxConfirmation(web3Client, callOperationId);
+
+    // =========================================
+    // read value from store
+    spinner = ora(
+      `Reading from the deployed smart contract storage...`,
+    ).start();
+    const scStorage = await web3Client.publicApi().getDatastoreEntries([
+      {
+        address: scAddress,
+        key: strToBytes('MY_KEY'),
+      } as IDatastoreEntryInput,
+    ]);
+    if (!scStorage[0].final_value) {
+      spinner.fail(`Storage contains null for that key. Something is wrong`);
+    } else {
+      spinner.succeed(
+        `Deployed SC Storage entry: ${bytesToStr(scStorage[0].final_value)}`,
+      );
+    }
+
+    // =========================================
     // read contract balance
+    spinner = ora(`Getting deployed smart contract balance...`).start();
     const contractBalance = await web3Client
       .smartContracts()
       .getContractBalance(scAddress);
-    console.info(
+    spinner.succeed(
       `Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.rawValue()},${contractBalance?.final.rawValue()})`,
     );
     process.exit(0);
