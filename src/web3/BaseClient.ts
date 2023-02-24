@@ -5,7 +5,7 @@ import { base58Decode, varintEncode } from '../utils/Xbqcrypto';
 import { IAccount } from '../interfaces/IAccount';
 import { IContractData } from '../interfaces/IContractData';
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
@@ -21,11 +21,11 @@ export type DataType =
 
 const requestHeaders = {
   Accept:
-  'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
-  'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-};
+  'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+} as AxiosRequestHeaders;
 
 export const PERIOD_OFFSET = 5;
 
@@ -132,7 +132,7 @@ export class BaseClient {
       resp = await axios.post(
         this.getProviderForRpcMethod(resource).url,
         body,
-        { headers: requestHeaders },
+        requestHeaders,
       );
     } catch (ex) {
       return {
