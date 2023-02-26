@@ -263,9 +263,13 @@ export class BaseClient {
         );
 
         // target address
-        const targetAddressEncoded = base58Decode(
-          (data as ICallData).targetAddress.slice(1),
+        let targetAddressEncoded = base58Decode(
+          (data as ICallData).targetAddress.slice(2),
         ).slice(1);
+        targetAddressEncoded = Buffer.concat([
+          Buffer.from([1]),
+          targetAddressEncoded,
+        ]);
 
         // target function name and name length
         const functionNameEncoded = new Uint8Array(
@@ -301,9 +305,13 @@ export class BaseClient {
           varintEncode(amount.toNumber()),
         );
         // recipient
-        const recipientAddressEncoded = base58Decode(
-          (data as ITransactionData).recipientAddress.slice(1),
+        let recipientAddressEncoded = base58Decode(
+          (data as ITransactionData).recipientAddress.slice(2),
         ).slice(1);
+        recipientAddressEncoded = Buffer.concat([
+          Buffer.from([0]),
+          recipientAddressEncoded,
+        ]);
 
         return Buffer.concat([
           feeEncoded,

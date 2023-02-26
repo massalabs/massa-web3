@@ -30,7 +30,7 @@ const ora = require('ora');
 const MASSA_EXEC_ERROR = 'massa_execution_error';
 
 const DEPLOYER_SECRET_KEY =
-  'S1NA786im4CFL5cHSmsGkGZFEPxqvgaRP8HXyThQSsVnWj4tR7d';
+  'S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1';
 
 interface IEventPollerResult {
   isError: boolean;
@@ -108,7 +108,7 @@ const pollAsyncEvents = async (
     const deployerAccount: IAccount =
       await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
     const web3Client = await ClientFactory.createDefaultClient(
-      DefaultProviderUrls.TESTNET,
+      DefaultProviderUrls.LOCALNET,
       true,
       deployerAccount,
     );
