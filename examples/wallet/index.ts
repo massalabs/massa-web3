@@ -36,7 +36,7 @@ const RECEIVER_SECRET_KEY =
 
     // init web3 client with base account
     const web3Client = await ClientFactory.createDefaultClient(
-      DefaultProviderUrls.LOCALNET,
+      DefaultProviderUrls.TESTNET,
       true,
       deployerAccount,
     );

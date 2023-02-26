@@ -108,7 +108,7 @@ const pollAsyncEvents = async (
     const deployerAccount: IAccount =
       await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
     const web3Client = await ClientFactory.createDefaultClient(
-      DefaultProviderUrls.LOCALNET,
+      DefaultProviderUrls.TESTNET,
       true,
       deployerAccount,
     );
