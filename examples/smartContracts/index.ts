@@ -8,7 +8,6 @@ import { WalletClient } from '../../src/web3/WalletClient';
 import { awaitTxConfirmation, deploySmartContracts } from './deployer';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
-import { MassaCoin } from '../../src/web3/MassaCoin';
 import { Client } from '../../src/web3/Client';
 import {
   EventPoller,
@@ -22,6 +21,7 @@ import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput'
 import { ICallData } from '../../src/interfaces/ICallData';
 import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
+import { MassaAmount, MASSA_UNIT } from '../../src/web3/MassaAmount';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
@@ -140,7 +140,7 @@ const pollAsyncEvents = async (
     console.log(
       `Deployer Wallet Address: ${
         deployerAccount.address
-      } with balance (candidate, final) = (${deployerAccountBalance?.candidate.rawValue()}, ${deployerAccountBalance?.final.rawValue()})`,
+      } with balance (candidate, final) = (${deployerAccountBalance?.candidate.toString()}, ${deployerAccountBalance?.final.toString()})`,
     );
 
     // deploy smart contract
@@ -154,7 +154,7 @@ const pollAsyncEvents = async (
             path.join(__dirname, '.', 'contracts', '/sc.wasm'),
           ),
           args: undefined,
-          coins: new MassaCoin(0.1),
+          coins: new MassaAmount(0.1, MASSA_UNIT.MASSA),
         },
       ],
       web3Client,
@@ -235,6 +235,8 @@ const pollAsyncEvents = async (
         parameter: callArgs.serialize(),
       } as ICallData);
     spinner.succeed(`Call operation ID: ${callOperationId}`);
+
+    // await finalization
     await awaitTxConfirmation(web3Client, callOperationId);
 
     // =========================================
@@ -263,7 +265,7 @@ const pollAsyncEvents = async (
       .smartContracts()
       .getContractBalance(scAddress);
     spinner.succeed(
-      `Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.rawValue()},${contractBalance?.final.rawValue()})`,
+      `Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.toString()},${contractBalance?.final.toString()})`,
     );
     process.exit(0);
   } catch (ex) {

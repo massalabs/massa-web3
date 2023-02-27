@@ -1,8 +1,7 @@
-import { MassaCoin } from '../web3/MassaCoin';
-import { MassaFee } from '../web3/MassaFee';
+import { MassaAmount } from '../web3/MassaAmount';
 
 export interface ITransactionData {
-  fee: MassaFee;
-  amount: MassaCoin;
+  fee: MassaAmount;
+  amount: MassaAmount;
   recipientAddress: string;
 }

@@ -193,7 +193,9 @@ export class BaseClient {
     account: IAccount,
     expirePeriod: number,
   ): Buffer {
-    const feeEncoded = Buffer.from(varintEncode(data.fee.toNumber()));
+    const feeEncoded = Buffer.from(
+      varintEncode(data.fee.toCoins().getValue().toNumber()),
+    );
     const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
     const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
@@ -204,7 +206,9 @@ export class BaseClient {
 
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxGas.toNumber()),
+          varintEncode(
+            (data as IContractData).maxGas.toGas().getValue().toNumber(),
+          ),
         );
 
         // contract data
@@ -264,12 +268,16 @@ export class BaseClient {
       case OperationTypeId.CallSC: {
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as ICallData).maxGas.toNumber()),
+          varintEncode(
+            (data as ICallData).maxGas.toGas().getValue().toNumber(),
+          ),
         );
 
         // coins to send
         const coinsEncoded = Buffer.from(
-          varintEncode((data as ICallData).coins.toNumber()),
+          varintEncode(
+            (data as ICallData).coins.toCoins().getValue().toNumber(),
+          ),
         );
 
         // target address
@@ -309,7 +317,7 @@ export class BaseClient {
         // transfer amount
         const amount = (data as ITransactionData).amount;
         const transferAmountEncoded = Buffer.from(
-          varintEncode(amount.toNumber()),
+          varintEncode(amount.toCoins().getValue().toNumber()),
         );
         // recipient
         const recipientAddressEncoded = encodeAddressToBytes(
@@ -329,7 +337,9 @@ export class BaseClient {
       case OperationTypeId.RollSell: {
         // rolls amount
         const rollsAmountEncoded = Buffer.from(
-          varintEncode((data as IRollsData).amount.toNumber()),
+          varintEncode(
+            (data as IRollsData).amount.toRolls().getValue().toNumber(),
+          ),
         );
 
         return Buffer.concat([

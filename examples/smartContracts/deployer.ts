@@ -2,9 +2,7 @@
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { Client } from '../../src/web3/Client';
-import { MassaCoin } from '../../src/web3/MassaCoin';
-import { MassaFee } from '../../src/web3/MassaFee';
-import { MassaGas } from '../../src/web3/MassaGas';
+import { MassaAmount, MASSA_UNIT } from '../../src/web3/MassaAmount';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
@@ -16,7 +14,7 @@ const chalk = require('chalk');
 interface ISCData {
   data: Uint8Array;
   args?: Args;
-  coins: MassaCoin;
+  coins: MassaAmount;
 }
 
 async function checkBalance(
@@ -29,8 +27,8 @@ async function checkBalance(
     .getAccountBalance(account.address as string);
   if (
     !balance?.final ||
-    !parseFloat(balance.final.rawValue().toString()) ||
-    balance.final.rawValue().lt(new BigNumber(requiredBalance))
+    !parseFloat(balance.final.getValue().toString()) ||
+    balance.final.getValue().lt(new BigNumber(requiredBalance))
   ) {
     throw new Error('Insufficient MAS balance.');
   }
@@ -91,7 +89,7 @@ export const deploySmartContracts = async (
 
     // check deployer account balance
     const coinsRequired = contractsToDeploy.reduce(
-      (acc, contract) => acc + contract.coins.rawValue().toNumber(),
+      (acc, contract) => acc + contract.coins.getValue().toNumber(),
       0,
     );
     await checkBalance(web3Client, deployerAccount, coinsRequired);
@@ -120,7 +118,7 @@ export const deploySmartContracts = async (
           new Uint8Array(contract.args.serialize()),
         );
       }
-      if (contract.coins.rawValue().isGreaterThan(0)) {
+      if (contract.coins.getValue().isGreaterThan(0)) {
         datastore.set(
           new Uint8Array(
             new Args()
@@ -128,7 +126,7 @@ export const deploySmartContracts = async (
               .addUint8Array(u8toByte(1))
               .serialize(),
           ),
-          u64ToBytes(BigInt(contract.coins.toNumber())), // scaled value to be provided here
+          u64ToBytes(BigInt(contract.coins.toCoins().getValue().toNumber())), // scaled value to be provided here
         );
       }
     }
@@ -138,7 +136,7 @@ export const deploySmartContracts = async (
     try {
       const coins = contractsToDeploy.reduce(
         // scaled value to be provided here
-        (acc, contract) => contract.coins.rawValue().plus(acc),
+        (acc, contract) => contract.coins.getValue().plus(acc),
         new BigNumber(0),
       );
       console.log('Sending coins ... ', coins.toString());
@@ -151,8 +149,8 @@ export const deploySmartContracts = async (
               path.join(__dirname, '.', 'contracts', '/deployer.wasm'),
             ),
             datastore,
-            fee: new MassaFee(fee),
-            maxGas: new MassaGas(maxGas),
+            fee: new MassaAmount(fee, MASSA_UNIT.MASSA),
+            maxGas: new MassaAmount(maxGas, MASSA_UNIT.MASSA),
           } as IContractData,
           deployerAccount,
         );

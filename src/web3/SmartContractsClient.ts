@@ -21,7 +21,7 @@ import { OperationTypeId } from '../interfaces/OperationTypes';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
-import { MassaCoin } from './MassaCoin';
+import { MassaAmount, MASSA_UNIT } from './MassaAmount';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 
@@ -184,7 +184,7 @@ export class SmartContractsClient
   ): Promise<IContractReadOperationResponse> {
     // request data
     const data = {
-      max_gas: readData.maxGas.toNumber(),
+      max_gas: readData.maxGas.toGas().getValue().toNumber(),
       target_address: readData.targetAddress,
       target_function: readData.targetFunction,
       parameter: readData.parameter,
@@ -225,8 +225,11 @@ export class SmartContractsClient
     if (addresses.length === 0) return null;
     const addressInfo: IAddressInfo = addresses.at(0);
     return {
-      candidate: new MassaCoin(addressInfo.candidate_balance),
-      final: new MassaCoin(addressInfo.final_balance),
+      candidate: new MassaAmount(
+        addressInfo.candidate_balance,
+        MASSA_UNIT.MASSA,
+      ),
+      final: new MassaAmount(addressInfo.final_balance, MASSA_UNIT.MASSA),
     } as IBalance;
   }
 
@@ -273,7 +276,7 @@ export class SmartContractsClient
     }
 
     const data = {
-      max_gas: contractData.maxGas.toNumber(),
+      max_gas: contractData.maxGas.toGas().getValue().toNumber(),
       bytecode: Array.from(contractData.contractDataBinary),
       address: contractData.address,
     };
