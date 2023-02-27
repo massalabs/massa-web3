@@ -7,18 +7,29 @@ export enum MASSA_UNIT {
   NANO_MASSA, // 10-9
 }
 
-// smallest massa unit
-const MASSA_SCALING_FACTOR = 9;
+const MILLI = 3;
+const MICRO = 6;
+const NANO = 9;
 
 export class MassaAmount {
   private value: BigNumber;
   private unit: MASSA_UNIT;
 
   constructor(value: BigNumber | number | string, unit: MASSA_UNIT) {
-    // truncate value to smallest massa unit
-    this.value = new BigNumber(
-      new BigNumber(value).toFixed(MASSA_SCALING_FACTOR),
-    );
+    switch (unit) {
+      case MASSA_UNIT.MASSA:
+        this.value = new BigNumber(new BigNumber(value).toFixed(NANO));
+        break;
+      case MASSA_UNIT.MILLI_MASSA:
+        this.value = new BigNumber(new BigNumber(value).toFixed(MICRO));
+        break;
+      case MASSA_UNIT.MICRO_MASSA:
+        this.value = new BigNumber(new BigNumber(value).toFixed(MILLI));
+        break;
+      case MASSA_UNIT.NANO_MASSA:
+        this.value = new BigNumber(new BigNumber(value).toFixed(0));
+        break;
+    }
     this.unit = unit;
   }
 
