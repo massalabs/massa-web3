@@ -176,7 +176,7 @@ const pollAsyncEvents = async (
       );
 
     // stop polling
-    eventPoller.stopPolling;
+    eventPoller.stopPolling();
 
     // if errors, don't await finalization
     if (isError) {
