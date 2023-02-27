@@ -45,6 +45,24 @@ describe('MassaAmount Class', () => {
 
     const nanoMassa = amount.toUnit(MASSA_UNIT.NANO_MASSA);
     expect(nanoMassa.toString()).to.equal('1523876236 NANO_MASSA');
+
+    const vNano = new MassaAmount(1.35238762359, MASSA_UNIT.NANO_MASSA);
+    expect(vNano.toString()).to.equal('1 NANO_MASSA');
+
+    const vMicro = new MassaAmount(1.35238762359, MASSA_UNIT.MICRO_MASSA);
+    expect(vMicro.toUnit(MASSA_UNIT.NANO_MASSA).toString()).to.equal(
+      '1352 NANO_MASSA',
+    );
+
+    const vMilli = new MassaAmount(1.35238762359, MASSA_UNIT.MILLI_MASSA);
+    expect(vMilli.toUnit(MASSA_UNIT.NANO_MASSA).toString()).to.equal(
+      '1352388 NANO_MASSA',
+    );
+
+    const v = new MassaAmount(1.35238762359, MASSA_UNIT.MASSA);
+    expect(v.toUnit(MASSA_UNIT.NANO_MASSA).toString()).to.equal(
+      '1352387624 NANO_MASSA',
+    );
   });
 
   it('test conversion to rolls', () => {
