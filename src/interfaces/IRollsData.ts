@@ -1,7 +1,6 @@
-import { MassaFee } from '../web3/MassaFee';
-import { MassaRoll } from '../web3/MassaRoll';
+import { MassaAmount } from '../web3/MassaAmount';
 
 export interface IRollsData {
-  fee: MassaFee;
-  amount: MassaRoll;
+  fee: MassaAmount;
+  amount: MassaAmount;
 }

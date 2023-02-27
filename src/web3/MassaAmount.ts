@@ -16,7 +16,9 @@ export class MassaAmount {
 
   constructor(value: BigNumber | number | string, unit: MASSA_UNIT) {
     // truncate value to smallest massa unit
-    this.value = new BigNumber(new BigNumber(value).toFixed(MASSA_SCALING_FACTOR));
+    this.value = new BigNumber(
+      new BigNumber(value).toFixed(MASSA_SCALING_FACTOR),
+    );
     this.unit = unit;
   }
 

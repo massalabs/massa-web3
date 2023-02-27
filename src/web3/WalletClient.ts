@@ -20,7 +20,7 @@ import { INodeStatus } from '../interfaces/INodeStatus';
 import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
-import { MassaCoin } from './MassaCoin';
+import { MassaAmount, MASSA_UNIT } from './MassaAmount';
 
 const VERSION_NUMBER = 0;
 const ADDRESS_PREFIX = 'A';
@@ -412,8 +412,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
     if (addresses.length === 0) return null;
     const addressInfo: IAddressInfo = addresses.at(0);
     return {
-      candidate: new MassaCoin(addressInfo.candidate_balance),
-      final: new MassaCoin(addressInfo.final_balance),
+      candidate: new MassaAmount(
+        addressInfo.candidate_balance,
+        MASSA_UNIT.MASSA,
+      ),
+      final: new MassaAmount(addressInfo.final_balance, MASSA_UNIT.MASSA),
     } as IBalance;
   }
 
