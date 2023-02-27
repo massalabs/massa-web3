@@ -1,23 +1,38 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
-import {
-  ClientFactory,
-  DefaultProviderUrls,
-} from '../../src/web3/ClientFactory';
+import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { EventPoller } from '../../src/web3/EventPoller';
 import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { IRollsData } from '../../src/interfaces/IRollsData';
+import * as dotenv from 'dotenv';
+import { Client } from '../../src/web3/Client';
+import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 const path = require('path');
 const chalk = require('chalk');
-const ora = require('ora');
 
-const DEPLOYER_SECRET_KEY =
-  'S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1';
-const RECEIVER_SECRET_KEY =
-  'S1ykLaxXyMnJoaWLYds8UntqKTamZ4vcxrZ1fdToR8WpWEpk3FC';
+dotenv.config({
+  path: path.resolve(__dirname, '..', '.env'),
+});
+
+const publicApi = process.env.JSON_RPC_URL_PUBLIC;
+if (!publicApi) {
+  throw new Error('Missing JSON_RPC_URL_PUBLIC in .env file');
+}
+const privateApi = process.env.JSON_RPC_URL_PRIVATE;
+if (!privateApi) {
+  throw new Error('Missing JSON_RPC_URL_PRIVATE in .env file');
+}
+const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
+if (!deployerPrivateKey) {
+  throw new Error('Missing DEPLOYER_PRIVATE_KEY in .env file');
+}
+const receiverPrivateKey = process.env.RECEIVER_PRIVATE_KEY;
+if (!receiverPrivateKey) {
+  throw new Error('Missing RECEIVER_PRIVATE_KEY in .env file');
+}
 
 (async () => {
   const header = '='.repeat(process.stdout.columns - 1);
@@ -30,13 +45,16 @@ const RECEIVER_SECRET_KEY =
   try {
     // init account
     const deployerAccount: IAccount =
-      await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
+      await WalletClient.getAccountFromSecretKey(deployerPrivateKey);
 
     console.log('Deployer Wallet ', deployerAccount);
 
     // init web3 client with base account
-    const web3Client = await ClientFactory.createDefaultClient(
-      DefaultProviderUrls.TESTNET,
+    const web3Client: Client = await ClientFactory.createCustomClient(
+      [
+        { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+        { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+      ],
       true,
       deployerAccount,
     );
@@ -61,7 +79,7 @@ const RECEIVER_SECRET_KEY =
 
     // add a new wallet
     console.log('Adding a new Account ...');
-    await web3Client.wallet().addSecretKeysToWallet([RECEIVER_SECRET_KEY]);
+    await web3Client.wallet().addSecretKeysToWallet([receiverPrivateKey]);
 
     // get wallet accounts
     walletAccounts = await web3Client.wallet().getWalletAccounts();

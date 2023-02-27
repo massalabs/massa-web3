@@ -70,7 +70,8 @@
         "esmify": "^2.1.1",
         "js-base64": "^3.7.5",
         "varint": "^6.0.0",
-        "ws": "^8.12.1"
+        "ws": "^8.12.1",
+        "dotenv": "^16.0.3"
     },
     "devDependencies": {
         "@massalabs/eslint-config": "^0.0.9",

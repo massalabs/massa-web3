@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
-import {
-  ClientFactory,
-  DefaultProviderUrls,
-} from '../../src/web3/ClientFactory';
+import { ClientFactory } from '../../src/web3/ClientFactory';
 import { IEvent } from '../../src/interfaces/IEvent';
 import { IReadData } from '../../src/interfaces/IReadData';
 import { WalletClient } from '../../src/web3/WalletClient';
@@ -23,14 +20,34 @@ import { withTimeoutRejection } from '../../src/utils/time';
 import { bytesToStr, strToBytes } from '../../src/utils/serializers';
 import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput';
 import { ICallData } from '../../src/interfaces/ICallData';
+import * as dotenv from 'dotenv';
+import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
 
-const MASSA_EXEC_ERROR = 'massa_execution_error';
+dotenv.config({
+  path: path.resolve(__dirname, '..', '.env'),
+});
 
-const DEPLOYER_SECRET_KEY =
-  'S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1';
+const publicApi = process.env.JSON_RPC_URL_PUBLIC;
+if (!publicApi) {
+  throw new Error('Missing JSON_RPC_URL_PUBLIC in .env file');
+}
+const privateApi = process.env.JSON_RPC_URL_PRIVATE;
+if (!privateApi) {
+  throw new Error('Missing JSON_RPC_URL_PRIVATE in .env file');
+}
+const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
+if (!deployerPrivateKey) {
+  throw new Error('Missing DEPLOYER_PRIVATE_KEY in .env file');
+}
+const receiverPrivateKey = process.env.RECEIVER_PRIVATE_KEY;
+if (!receiverPrivateKey) {
+  throw new Error('Missing RECEIVER_PRIVATE_KEY in .env file');
+}
+
+const MASSA_EXEC_ERROR = 'massa_execution_error';
 
 interface IEventPollerResult {
   isError: boolean;
@@ -106,12 +123,17 @@ const pollAsyncEvents = async (
   try {
     // init client
     const deployerAccount: IAccount =
-      await WalletClient.getAccountFromSecretKey(DEPLOYER_SECRET_KEY);
-    const web3Client = await ClientFactory.createDefaultClient(
-      DefaultProviderUrls.TESTNET,
+      await WalletClient.getAccountFromSecretKey(deployerPrivateKey);
+
+    const web3Client: Client = await ClientFactory.createCustomClient(
+      [
+        { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+        { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+      ],
       true,
       deployerAccount,
     );
+
     const deployerAccountBalance = await web3Client
       .wallet()
       .getAccountBalance(deployerAccount.address as string);
@@ -156,7 +178,7 @@ const pollAsyncEvents = async (
     // stop polling
     eventPoller.stopPolling;
 
-    // if errors, dont await finalization
+    // if errors, don't await finalization
     if (isError) {
       throw new Error(
         `Massa Deployment Error: ${JSON.stringify(events, null, 4)}`,
