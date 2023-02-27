@@ -13,6 +13,18 @@ import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
 import { MassaCoin } from './MassaCoin';
 
+const encodeAddressToBytes = (
+  address: string,
+  isSmartContract = false,
+): Buffer => {
+  let targetAddressEncoded = base58Decode(address.slice(2)).slice(1);
+  targetAddressEncoded = Buffer.concat([
+    isSmartContract ? Buffer.from([1]) : Buffer.from([0]),
+    targetAddressEncoded,
+  ]);
+  return targetAddressEncoded;
+};
+
 export type DataType =
   | IContractData
   | ITransactionData
@@ -263,13 +275,10 @@ export class BaseClient {
         );
 
         // target address
-        let targetAddressEncoded = base58Decode(
-          (data as ICallData).targetAddress.slice(2),
-        ).slice(1);
-        targetAddressEncoded = Buffer.concat([
-          Buffer.from([1]),
-          targetAddressEncoded,
-        ]);
+        const targetAddressEncoded = encodeAddressToBytes(
+          (data as ICallData).targetAddress,
+          true,
+        );
 
         // target function name and name length
         const functionNameEncoded = new Uint8Array(
@@ -305,13 +314,10 @@ export class BaseClient {
           varintEncode(amount.toNumber()),
         );
         // recipient
-        let recipientAddressEncoded = base58Decode(
-          (data as ITransactionData).recipientAddress.slice(2),
-        ).slice(1);
-        recipientAddressEncoded = Buffer.concat([
-          Buffer.from([0]),
-          recipientAddressEncoded,
-        ]);
+        const recipientAddressEncoded = encodeAddressToBytes(
+          (data as ITransactionData).recipientAddress,
+          false,
+        );
 
         return Buffer.concat([
           feeEncoded,
