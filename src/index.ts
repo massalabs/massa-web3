@@ -70,6 +70,7 @@ export { MassaCoin } from './web3/MassaCoin';
 export { MassaFee } from './web3/MassaFee';
 export { MassaGas } from './web3/MassaGas';
 export { MassaRoll } from './web3/MassaRoll';
+export { MASSA_UNIT, MassaAmount } from './web3/MassaAmount';
 export {
   EventPoller,
   ON_MASSA_EVENT_DATA,
