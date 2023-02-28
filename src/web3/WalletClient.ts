@@ -23,13 +23,13 @@ import { IWalletClient } from '../interfaces/IWalletClient';
 import { MassaCoin } from './MassaCoin';
 
 const VERSION_NUMBER = 0;
-const ADDRESS_PREFIX = 'A';
+const ADDRESS_PREFIX = 'AU';
 const PUBLIC_KEY_PREFIX = 'P';
 const SECRET_KEY_PREFIX = 'S';
 const MAX_WALLET_ACCOUNTS = 256;
 
 const getThreadNumber = (address: string): number => {
-  const pubKeyHash = base58Decode(address.slice(1));
+  const pubKeyHash = base58Decode(address.slice(2));
   const threadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
   return threadNumber;
 };
@@ -277,7 +277,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const addressBase58Encoded =
       ADDRESS_PREFIX +
       base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
-
     return {
       address: addressBase58Encoded,
       secretKey: secretKeyBase58,

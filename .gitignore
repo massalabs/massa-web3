@@ -68,3 +68,6 @@ bundle.*
 
 # docs files
 docs
+
+#.env files
+.env

@@ -1,23 +1,42 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { WsSubscriptionClient } from '../../src/web3/WsSubscriptionClient';
-import {
-  ClientFactory,
-  DefaultProviderUrls,
-} from '../../src/web3/ClientFactory';
+import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WebsocketEvent } from '../../src/interfaces/WebsocketEvent';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IBlockHeaderInfo } from '../../src/interfaces/IBlockcliqueBlockBySlot';
+import * as dotenv from 'dotenv';
+import { Client } from '../../src/web3/Client';
+import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
+const path = require('path');
 
-const DEPLOYER_SECRET_KEY =
-  'S1PNNeC922hHaveiosug8GzLidmbfHeu57GnUZsXcbtQm5Gfdfy';
+dotenv.config({
+  path: path.resolve(__dirname, '..', '.env'),
+});
+
+const publicApi = process.env.JSON_RPC_URL_PUBLIC;
+if (!publicApi) {
+  throw new Error('Missing JSON_RPC_URL_PUBLIC in .env file');
+}
+const privateApi = process.env.JSON_RPC_URL_PRIVATE;
+if (!privateApi) {
+  throw new Error('Missing JSON_RPC_URL_PRIVATE in .env file');
+}
+const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
+if (!deployerPrivateKey) {
+  throw new Error('Missing DEPLOYER_PRIVATE_KEY in .env file');
+}
 
 (async () => {
   // create a web3 client
   const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
-    DEPLOYER_SECRET_KEY,
+    deployerPrivateKey,
   );
-  const web3Client = await ClientFactory.createDefaultClient(
-    DefaultProviderUrls.TESTNET,
+  const web3Client: Client = await ClientFactory.createCustomClient(
+    [
+      { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+      { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+    ],
     true,
     deployerAccount,
   );

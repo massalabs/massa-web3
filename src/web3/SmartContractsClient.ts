@@ -314,7 +314,7 @@ export class SmartContractsClient
     if (!operationData || operationData.length === 0)
       return EOperationStatus.NOT_FOUND;
     const opData = operationData[0];
-    if (opData.is_final) {
+    if (opData.is_operation_final) {
       return EOperationStatus.FINAL;
     }
     if (opData.in_blocks.length > 0) {

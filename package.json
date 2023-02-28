@@ -18,6 +18,7 @@
         "update-version-patch": "npm version patch",
         "test": "mocha -r ts-node/register test/**/*.spec.ts",
         "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
+        "test-wallet": "ts-node ./examples/wallet/index.ts",
         "test-ws-blocks": "ts-node ./examples/websockets/ws-blocks.ts",
         "test-ws-block-headers": "ts-node ./examples/websockets/ws-block-headers.ts",
         "test-ws-filled-blocks": "ts-node ./examples/websockets/ws-filled-blocks.ts",
@@ -69,7 +70,8 @@
         "esmify": "^2.1.1",
         "js-base64": "^3.7.5",
         "varint": "^6.0.0",
-        "ws": "^8.12.1"
+        "ws": "^8.12.1",
+        "dotenv": "^16.0.3"
     },
     "devDependencies": {
         "@massalabs/eslint-config": "^0.0.9",
