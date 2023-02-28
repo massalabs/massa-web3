@@ -126,7 +126,7 @@ export const deploySmartContracts = async (
               .addUint8Array(u8toByte(1))
               .serialize(),
           ),
-          u64ToBytes(BigInt(contract.coins.toCoins().getValue().toNumber())), // scaled value to be provided here
+          u64ToBytes(BigInt(contract.coins.toCoins().getValue().toString())), // scaled value to be provided here
         );
       }
     }
