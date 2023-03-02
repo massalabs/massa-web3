@@ -21,7 +21,7 @@ import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput'
 import { ICallData } from '../../src/interfaces/ICallData';
 import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
-import { MassaAmount, MASSA_UNIT } from '../../src/web3/MassaAmount';
+import { MassaAmount, MassaUnit } from '../../src/web3/MassaAmount';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
@@ -154,7 +154,7 @@ const pollAsyncEvents = async (
             path.join(__dirname, '.', 'contracts', '/sc.wasm'),
           ),
           args: undefined,
-          coins: new MassaAmount(0.1, MASSA_UNIT.MASSA),
+          coins: new MassaAmount(0.1, MassaUnit.Massa),
         },
       ],
       web3Client,
@@ -208,8 +208,8 @@ const pollAsyncEvents = async (
     ).start();
     const args = new Args();
     const result = await web3Client.smartContracts().readSmartContract({
-      fee: new MassaAmount(0, MASSA_UNIT.MASSA),
-      maxGas: new MassaAmount(700000, MASSA_UNIT.MASSA),
+      fee: new MassaAmount(0, MassaUnit.Massa),
+      maxGas: new MassaAmount(700000, MassaUnit.Massa),
       targetAddress: scAddress,
       targetFunction: 'event',
       parameter: args.serialize(),
@@ -227,9 +227,9 @@ const pollAsyncEvents = async (
     const callOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
-        fee: new MassaAmount(0, MASSA_UNIT.MASSA),
-        maxGas: new MassaAmount(10_500_000, MASSA_UNIT.MASSA),
-        coins: new MassaAmount(0, MASSA_UNIT.MASSA),
+        fee: new MassaAmount(0, MassaUnit.Massa),
+        maxGas: new MassaAmount(10_500_000, MassaUnit.Massa),
+        coins: new MassaAmount(0, MassaUnit.Massa),
         targetAddress: scAddress,
         functionName: 'setValueToStorage',
         parameter: callArgs.serialize(),

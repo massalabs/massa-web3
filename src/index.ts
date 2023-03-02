@@ -66,7 +66,7 @@ export { WsSubscriptionClient } from './web3/WsSubscriptionClient';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';
 export { WalletClient } from './web3/WalletClient';
-export { MASSA_UNIT, MassaAmount } from './web3/MassaAmount';
+export { MassaUnit, MassaAmount } from './web3/MassaAmount';
 export {
   EventPoller,
   ON_MASSA_EVENT_DATA,

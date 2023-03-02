@@ -20,7 +20,7 @@ import { INodeStatus } from '../interfaces/INodeStatus';
 import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
-import { MassaAmount, MASSA_UNIT } from './MassaAmount';
+import { MassaAmount, MassaUnit } from './MassaAmount';
 
 const VERSION_NUMBER = 0;
 const ADDRESS_PREFIX = 'AU';
@@ -413,9 +413,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return {
       candidate: new MassaAmount(
         addressInfo.candidate_balance,
-        MASSA_UNIT.MASSA,
+        MassaUnit.Massa,
       ),
-      final: new MassaAmount(addressInfo.final_balance, MASSA_UNIT.MASSA),
+      final: new MassaAmount(addressInfo.final_balance, MassaUnit.Massa),
     } as IBalance;
   }
 

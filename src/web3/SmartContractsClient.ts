@@ -21,7 +21,7 @@ import { OperationTypeId } from '../interfaces/OperationTypes';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
-import { MassaAmount, MASSA_UNIT } from './MassaAmount';
+import { MassaAmount, MassaUnit } from './MassaAmount';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 
@@ -227,9 +227,9 @@ export class SmartContractsClient
     return {
       candidate: new MassaAmount(
         addressInfo.candidate_balance,
-        MASSA_UNIT.MASSA,
+        MassaUnit.Massa,
       ),
-      final: new MassaAmount(addressInfo.final_balance, MASSA_UNIT.MASSA),
+      final: new MassaAmount(addressInfo.final_balance, MassaUnit.Massa),
     } as IBalance;
   }
 

@@ -1,32 +1,22 @@
 import BigNumber from 'bignumber.js';
 
-export enum MASSA_UNIT {
-  MASSA,
-  MILLI_MASSA, // 10-3
-  MICRO_MASSA, // 10-6
-  NANO_MASSA, // 10-9
+export enum MassaUnit {
+  Massa,
+  NanoMassa, // 10-9
 }
 
-const MILLI = 3;
-const MICRO = 6;
 const NANO = 9;
 
 export class MassaAmount {
   private value: BigNumber;
-  private unit: MASSA_UNIT;
+  private unit: MassaUnit;
 
-  constructor(value: BigNumber | number | string, unit: MASSA_UNIT) {
+  constructor(value: BigNumber | number | string, unit: MassaUnit) {
     switch (unit) {
-      case MASSA_UNIT.MASSA:
+      case MassaUnit.Massa:
         this.value = new BigNumber(new BigNumber(value).toFixed(NANO));
         break;
-      case MASSA_UNIT.MILLI_MASSA:
-        this.value = new BigNumber(new BigNumber(value).toFixed(MICRO));
-        break;
-      case MASSA_UNIT.MICRO_MASSA:
-        this.value = new BigNumber(new BigNumber(value).toFixed(MILLI));
-        break;
-      case MASSA_UNIT.NANO_MASSA:
+      case MassaUnit.NanoMassa:
         this.value = new BigNumber(new BigNumber(value).toFixed(0));
         break;
     }
@@ -37,13 +27,13 @@ export class MassaAmount {
     return this.value;
   }
 
-  public getUnit(): MASSA_UNIT {
+  public getUnit(): MassaUnit {
     return this.unit;
   }
 
   public toRolls(): MassaAmount {
-    const valueInMassa = this.toUnit(MASSA_UNIT.MASSA);
-    return new MassaAmount(valueInMassa.value.toFixed(0), MASSA_UNIT.MASSA);
+    const valueInMassa = this.toUnit(MassaUnit.Massa);
+    return new MassaAmount(valueInMassa.value.toFixed(0), MassaUnit.Massa);
   }
 
   public toGas(): MassaAmount {
@@ -51,14 +41,23 @@ export class MassaAmount {
   }
 
   public toCoins(): MassaAmount {
-    return this.toUnit(MASSA_UNIT.NANO_MASSA);
+    return this.toUnit(MassaUnit.NanoMassa);
   }
 
   public toString(): string {
-    return `${this.value.toFixed()} ${MASSA_UNIT[this.unit]}`;
+    let outputUnit = '';
+    switch (this.unit) {
+      case MassaUnit.Massa:
+        outputUnit = "MASSA";
+        break;
+      case MassaUnit.NanoMassa:
+        outputUnit = "nMASSA";
+        break;
+    }
+    return `${this.value.toFixed()} ${outputUnit}`;
   }
 
-  public toUnit(targetUnit: MASSA_UNIT): MassaAmount {
+  public toUnit(targetUnit: MassaUnit): MassaAmount {
     if (this.unit === targetUnit) {
       return this;
     }
