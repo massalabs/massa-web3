@@ -411,9 +411,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     if (addresses.length === 0) return null;
     const addressInfo: IAddressInfo = addresses.at(0);
     return {
-      candidate: fromMAS(
-        addressInfo.candidate_balance,
-      ),
+      candidate: fromMAS(addressInfo.candidate_balance),
       final: fromMAS(addressInfo.final_balance),
     } as IBalance;
   }

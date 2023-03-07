@@ -25,10 +25,7 @@ async function checkBalance(
   const balance = await web3Client
     .wallet()
     .getAccountBalance(account.address as string);
-  if (
-    !balance?.final ||
-    balance.final < requiredBalance
-  ) {
+  if (!balance?.final || balance.final < requiredBalance) {
     throw new Error('Insufficient MAS balance.');
   }
 }

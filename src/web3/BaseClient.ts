@@ -193,9 +193,7 @@ export class BaseClient {
     account: IAccount,
     expirePeriod: number,
   ): Buffer {
-    const feeEncoded = Buffer.from(
-      varintEncode(data.fee),
-    );
+    const feeEncoded = Buffer.from(varintEncode(data.fee));
     const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
     const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
@@ -206,9 +204,7 @@ export class BaseClient {
 
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode(
-            (data as IContractData).maxGas,
-          ),
+          varintEncode((data as IContractData).maxGas),
         );
 
         // contract data
@@ -268,16 +264,12 @@ export class BaseClient {
       case OperationTypeId.CallSC: {
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode(
-            (data as ICallData).maxGas,
-          ),
+          varintEncode((data as ICallData).maxGas),
         );
 
         // coins to send
         const coinsEncoded = Buffer.from(
-          varintEncode(
-            (data as ICallData).coins,
-          ),
+          varintEncode((data as ICallData).coins),
         );
 
         // target address
@@ -316,9 +308,7 @@ export class BaseClient {
       case OperationTypeId.Transaction: {
         // transfer amount
         const amount = (data as ITransactionData).amount;
-        const transferAmountEncoded = Buffer.from(
-          varintEncode(amount),
-        );
+        const transferAmountEncoded = Buffer.from(varintEncode(amount));
         // recipient
         const recipientAddressEncoded = encodeAddressToBytes(
           (data as ITransactionData).recipientAddress,
@@ -337,9 +327,7 @@ export class BaseClient {
       case OperationTypeId.RollSell: {
         // rolls amount
         const rollsAmountEncoded = Buffer.from(
-          varintEncode(
-            (data as IRollsData).amount,
-          ),
+          varintEncode((data as IRollsData).amount),
         );
 
         return Buffer.concat([

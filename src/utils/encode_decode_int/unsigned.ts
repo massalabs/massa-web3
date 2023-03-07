@@ -13,10 +13,10 @@ export function encodingLength(value: bigint): number {
 export function encode(
   i: bigint,
   buffer?: ArrayBuffer,
-  byteOffset?: number
+  byteOffset?: number,
 ): Uint8Array {
   if (i < 0n) {
-    throw new RangeError("value must be unsigned");
+    throw new RangeError('value must be unsigned');
   }
 
   const byteLength = encodingLength(i);
@@ -24,7 +24,7 @@ export function encode(
   byteOffset = byteOffset || 0;
   if (buffer.byteLength < byteOffset + byteLength) {
     throw new RangeError(
-      "the buffer is too small to encode the number at the offset"
+      'the buffer is too small to encode the number at the offset',
     );
   }
 
@@ -48,7 +48,7 @@ export function decode(data: Uint8Array, offset = 0): bigint {
   do {
     b = data[offset + n];
     if (b === undefined) {
-      throw new RangeError("offset out of range");
+      throw new RangeError('offset out of range');
     }
 
     i += BigInt(b & 0x7f) << BigInt(n * 7);
