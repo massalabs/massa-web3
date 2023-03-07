@@ -1,10 +1,13 @@
-const LIMIT = 0x7fn;
+const LIMIT = BigInt(0x7f);
+
+const zeroBI = BigInt(0);
+const sevenBI = BigInt(7);
 
 export function encodingLength(value: bigint): number {
   let i = 0;
 
-  for (; value >= 0x80n; i++) {
-    value >>= 7n;
+  for (; value >= BigInt(0x80); i++) {
+    value >>= sevenBI;
   }
 
   return i + 1;
@@ -15,7 +18,7 @@ export function encode(
   buffer?: ArrayBuffer,
   byteOffset?: number,
 ): Uint8Array {
-  if (i < 0n) {
+  if (i < zeroBI) {
     throw new RangeError('value must be unsigned');
   }
 
@@ -33,7 +36,7 @@ export function encode(
   let offset = 0;
   while (LIMIT < i) {
     array[offset++] = Number(i & LIMIT) | 0x80;
-    i >>= 7n;
+    i >>= sevenBI;
   }
 
   array[offset] = Number(i);
@@ -42,7 +45,7 @@ export function encode(
 }
 
 export function decode(data: Uint8Array, offset = 0): bigint {
-  let i = 0n;
+  let i = zeroBI;
   let n = 0;
   let b: number;
   do {
