@@ -775,7 +775,7 @@ const rolls = BigInt(10);
 // or. ...
 const rolls = 10n;
 ```
-- **Gas/MaxGas**: expressed in BigInt's. For Gas/MaxGas there is no metric system as rolls are unit-less. The gas represents the computational units required for a given operation to be executed by the network. Example:
+- **Gas/MaxGas**: expressed in BigInt's. For Gas/MaxGas there is no metric system as gas is unit-less. The gas represents the computational units required for a given operation to be executed by the network. Example:
 ```ts
 const gas = BigInt(2000000);
 // or. ...
