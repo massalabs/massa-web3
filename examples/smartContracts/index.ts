@@ -227,9 +227,9 @@ const pollAsyncEvents = async (
     const callOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
-        fee: fromMAS(0),
+        fee: 0n,
         maxGas: BigInt(10_500_000),
-        coins: fromMAS(0),
+        coins: 0n,
         targetAddress: scAddress,
         functionName: 'setValueToStorage',
         parameter: callArgs.serialize(),
