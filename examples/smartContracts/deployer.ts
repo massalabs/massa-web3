@@ -2,33 +2,32 @@
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { Client } from '../../src/web3/Client';
-import { MassaAmount, MassaUnit } from '../../src/web3/MassaAmount';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
 import BigNumber from 'bignumber.js';
 import { u64ToBytes, u8toByte } from '../../src/utils/serializers';
+import { fromMAS } from '../../src';
 const path = require('path');
 const chalk = require('chalk');
 
 interface ISCData {
   data: Uint8Array;
   args?: Args;
-  coins: MassaAmount;
+  coins: bigint;
 }
 
 async function checkBalance(
   web3Client: Client,
   account: IAccount,
-  requiredBalance: number,
+  requiredBalance: bigint,
 ) {
   const balance = await web3Client
     .wallet()
     .getAccountBalance(account.address as string);
   if (
     !balance?.final ||
-    !parseFloat(balance.final.getValue().toString()) ||
-    balance.final.getValue().lt(new BigNumber(requiredBalance))
+    balance.final < requiredBalance
   ) {
     throw new Error('Insufficient MAS balance.');
   }
@@ -76,8 +75,8 @@ export async function awaitTxConfirmation(
 export const deploySmartContracts = async (
   contractsToDeploy: ISCData[],
   web3Client: Client,
-  fee = 0,
-  maxGas = 1_000_000,
+  fee = 0n,
+  maxGas = 1_000_000n,
   deployerAccount?: IAccount,
 ): Promise<string> => {
   let deploymentOperationId: string;
@@ -89,8 +88,8 @@ export const deploySmartContracts = async (
 
     // check deployer account balance
     const coinsRequired = contractsToDeploy.reduce(
-      (acc, contract) => acc + contract.coins.getValue().toNumber(),
-      0,
+      (acc, contract) => acc + contract.coins,
+      0n,
     );
     await checkBalance(web3Client, deployerAccount, coinsRequired);
 
@@ -118,7 +117,7 @@ export const deploySmartContracts = async (
           new Uint8Array(contract.args.serialize()),
         );
       }
-      if (contract.coins.getValue().isGreaterThan(0)) {
+      if (contract.coins > 0) {
         datastore.set(
           new Uint8Array(
             new Args()
@@ -126,7 +125,7 @@ export const deploySmartContracts = async (
               .addUint8Array(u8toByte(1))
               .serialize(),
           ),
-          u64ToBytes(BigInt(contract.coins.toCoins().getValue().toString())), // scaled value to be provided here
+          u64ToBytes(contract.coins), // scaled value to be provided here
         );
       }
     }
@@ -136,8 +135,8 @@ export const deploySmartContracts = async (
     try {
       const coins = contractsToDeploy.reduce(
         // scaled value to be provided here
-        (acc, contract) => contract.coins.getValue().plus(acc),
-        new BigNumber(0),
+        (acc, contract) => contract.coins + acc,
+        0n,
       );
       console.log('Sending coins ... ', coins.toString());
 
@@ -149,8 +148,8 @@ export const deploySmartContracts = async (
               path.join(__dirname, '.', 'contracts', '/deployer.wasm'),
             ),
             datastore,
-            fee: new MassaAmount(fee, MassaUnit.Massa),
-            maxGas: new MassaAmount(maxGas, MassaUnit.Massa),
+            fee,
+            maxGas,
           } as IContractData,
           deployerAccount,
         );

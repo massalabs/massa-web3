@@ -57,7 +57,7 @@ import {
 
 // create a base account for signing transactions
 const baseAccount = {
-    address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+    address: "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
     secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
     publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
 } as IAccount;
@@ -83,7 +83,7 @@ import {
 
 // create a base account for signing transactions
 const baseAccount = {
-    address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+    address: "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
     secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
     publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
 } as IAccount;
@@ -165,7 +165,7 @@ Available methods are:
     ```ts
     const addressesResp: Array<IAddressInfo> = await web3Client
         .publicApi()
-        .getAddresses(["A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"]);
+        .getAddresses(["AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"]);
     ```
 -   `getBlocks`
     ```ts
@@ -199,7 +199,7 @@ Available methods are:
     ```ts
     const scStorageValue: IDatastoreEntry[] = await web3Client.publicApi().getDatastoreEntries([
       {
-        address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+        address: "AS12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
         key: strToBytes("key"),
       } as IDatastoreEntryInput,
     ]);
@@ -272,7 +272,7 @@ Available methods are:
     await web3Client
         .privateApi()
         .nodeRemoveStakingAddresses([
-            "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+            "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
         ]);
     ```
 -   `nodeAddStakingPrivateKeys`
@@ -455,7 +455,7 @@ Available class methods are:
     const addedAccounts: Array<IAccount> = await web3Client
         .wallet()
         .addSecretKeysToWallet([
-            "2SPTTLK6Vgk5zmZEkokqC3wgpKgKpyV5Pu3uncEGawoGyd4yzC",
+            "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
         ]);
     ```
 -   `removeAddressesFromWallet`
@@ -463,7 +463,7 @@ Available class methods are:
     web3Client
         .wallet()
         .removeAddressesFromWallet([
-            "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
+            "AU12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
         ]);
     ```
 -   `getWalletAccounts`
@@ -477,14 +477,14 @@ Available class methods are:
     const walletAccount: IAccount | undefined = web3Client
         .wallet()
         .getWalletAccountByAddress(
-            "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB"
+            "AU12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB"
         );
     ```
 -   `addAccountsToWallet`
     ```ts
     await web3Client.wallet().addAccountsToWallet([
         {
-            address: "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+            address: "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
             secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
             publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
         },
@@ -500,10 +500,10 @@ Available class methods are:
     ```ts
     const sendTxIds: Array<string> = await web3Client.wallet().sendTransaction(
         {
-            fee: 0, // int
-            amount: "1", //MAS
+            fee: 0n,
+            amount: fromMAS("1"),
             recipientAddress:
-                "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
+                "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
         } as ITransactionData,
         baseAccount
     );
@@ -512,8 +512,8 @@ Available class methods are:
     ```ts
     const buyRollsIds: Array<string> = await web3Client.wallet().buyRolls(
         {
-            fee: 0, // int
-            amount: 1, //ROLLS
+            fee: 0n,
+            amount: 1n,
         } as IRollsData,
         baseAccount
     );
@@ -522,8 +522,8 @@ Available class methods are:
     ```ts
     const sellRollsIds: Array<string> = await web3Client.wallet().sellRolls(
         {
-            fee: 0, // int
-            amount: 1, //ROLLS
+            fee: 0n,
+            amount: 1n,
         } as IRollsData,
         baseAccount
     );
@@ -533,7 +533,7 @@ Available class methods are:
     const balance: IBalance = await web3Client
         .wallet()
         .getAccountBalance(
-            "A12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"
+            "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"
         );
     ```
 
@@ -566,8 +566,8 @@ Once the smart contract WASM is available, it becomes quite straightforward to d
 // deploy smart contract
 const opId: string = await web3Client.smartContracts().deploySmartContract(
     {
-        fee: 0,
-        maxGas: 2000000,
+        fee: 0n,
+        maxGas: 2000000n,
         contractDataBinary: compiledScFromSource.binary,
         datastore: new Map<Uint8Array, Uint8Array>(),
     } as IContractData,
@@ -586,7 +586,7 @@ const eventsFilter = {
     start: null,
     end: null,
     original_caller_address:
-        "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
+        "AS12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
 } as IEventFilter;
@@ -611,7 +611,7 @@ const eventsFilter = {
     start: null,
     end: null,
     original_caller_address:
-        "A12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
+        "AS12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
     original_operation_id: null,
     emitter_address: null,
     is_final: true,
@@ -718,8 +718,8 @@ Smart contract data could be read via `readSmartContract` method:
 const data: IContractReadOperationResponse = await web3Client
     .smartContracts()
     .readSmartContract({
-        fee: 0,
-        maxGas: 200000,
+        fee: 0n,
+        maxGas: 200000n,
         targetAddress: scAddress,
         targetFunction: "getGameState",
         parameter: new Args().serialize(), // this is based on input arguments
@@ -733,9 +733,9 @@ Smart contract state-changing operations could be executed via `callSmartContrac
 ```ts
 const data: string = await web3Client.smartContracts().callSmartContract(
     {
-        fee: 0,
-        maxGas: 200000,
-        coins: new MassaCoin(0),
+        fee: 0n,
+        maxGas: 200000n,
+        coins: fromMAS("0.1"),
         targetAddress: scAddress,
         functionName: "play",
         parameter: new Args().serialize(), // this is based on input arguments
@@ -754,9 +754,9 @@ const data: IExecuteReadOnlyResponse = await web3Client
     .smartContracts()
     .executeReadOnlySmartContract(
         {
-            fee: 0,
-            maxGas: 2000000,
-            coins: new MassaCoin(0),
+            fee: 0n,
+            maxGas: 2000000n,
+            coins: fromMAS("0.1"),
             contractDataBinary: compiledScFromSource.binary,
         } as IContractData,
         baseAccount
@@ -764,6 +764,47 @@ const data: IExecuteReadOnlyResponse = await web3Client
 ```
 
 The returned data is contained in an object of type IExecuteReadOnlyResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
+
+### Massa Units
+
+All Massa values that are being used or returned by web3 (gas, fees, coins and rolls) are expressed via BigInt's. Massa-web3 has however a few convenience methods and converters that might come handy. Below is a summary and some examples of the latter:
+
+- Rolls: expressed in BigInt's. For Rolls there is no metric system as rolls are unit-less. 10 rolls is to be represented by a BigInt containing 10. Example:
+```ts
+const rolls = BigInt(10);
+// or. ...
+const rolls = 10n;
+```
+- Gas/MaxGas: expressed in BigInt's. For Rolls there is no metric system as rolls are unit-less. The gas represents the computational units required for a given operation to be executed by the network. Example:
+```ts
+const gas = BigInt(2000000);
+// or. ...
+const gas = 2000000n;
+```
+- coins/fees: expressed in BigInt's. Coins/fees do however have a metric system behind them. The smallest unit is nanoMassa (`nMassa`) which is 10**-9 `Massa`. Internally all coins/fees are converted to `nanoMassa` and this way consumed by the network json-rpc protocol. Since gas/fees are to be used as BigInt's web3 adds in a few convenience utils allowing smaller units (e.g. 0.5 `Massa`) to be expressed.
+
+The util function `fromMAS` and `toMAS` are used exactly for the latter purpose.
+`fromMAS` receives any amount of type `number | string | BigNumber | bigint` and returns a scaled `bigint` for ready use.
+`toMAS` on the contrary converts any amount from `nanoMassa` to `Massa` and returns a `BigNumber` representing the amount as a decimal.
+
+Examples:
+```ts
+const coinsToTransfer = fromMAS("0.5"); // half a massa
+// or. ...
+const coinsToTransfer = 500n * MassaUnits.mMassa; //half a massa
+```
+
+```ts
+const coinsToTransfer = fromMAS("1"); // one massa
+// or. ...
+const coinsToTransfer = 1n * MassaUnits.oneMassa; // one massa
+```
+
+Web3 exposes a collection `MassaUnits` which has three convenience `BigInt` constants that could be used for amount scaling:
+
+- MassaUnits.oneMassa = 10**9
+- MassaUnits.mMassa = 10**6
+- MassaUnits.uMassa = 10**3
 
 ## Contributing and testing
 

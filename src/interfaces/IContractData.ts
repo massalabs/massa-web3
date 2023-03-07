@@ -1,10 +1,8 @@
-import { MassaAmount } from '../web3/MassaAmount';
-
 export interface IContractData {
   /// storage fee for taking place in books
-  fee: MassaAmount;
+  fee: bigint;
   /// The maximum amount of gas that the execution of the contract is allowed to cost.
-  maxGas: MassaAmount;
+  maxGas: bigint;
   /// Smart contract data as text.
   contractDataText?: string;
   /// Smart contract data as bytecode

@@ -1,12 +1,10 @@
-import { MassaAmount } from '../web3/MassaAmount';
-
 export interface ICallData {
   /// storage fee for taking place in books
-  fee: MassaAmount;
+  fee: bigint;
   /// The maximum amount of gas that the execution of the contract is allowed to cost.
-  maxGas: MassaAmount;
+  maxGas: bigint;
   /// Extra coins that are spent from the caller's balance and transferred to the target
-  coins: MassaAmount;
+  coins: bigint;
   /// Target smart contract address
   targetAddress: string;
   /// Target function name. No function is called if empty.

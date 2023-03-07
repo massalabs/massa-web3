@@ -66,7 +66,6 @@ export { WsSubscriptionClient } from './web3/WsSubscriptionClient';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';
 export { WalletClient } from './web3/WalletClient';
-export { MassaUnit, MassaAmount } from './web3/MassaAmount';
 export {
   EventPoller,
   ON_MASSA_EVENT_DATA,
@@ -74,6 +73,7 @@ export {
 } from './web3/EventPoller';
 export { SmartContractsClient } from './web3/SmartContractsClient';
 export { Args } from './utils/arguments';
+export { fromMAS, toMAS, MassaUnits } from './utils/converters';
 export * from './utils/serializers';
 
 /** Exposed utils */

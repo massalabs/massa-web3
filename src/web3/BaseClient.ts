@@ -194,7 +194,7 @@ export class BaseClient {
     expirePeriod: number,
   ): Buffer {
     const feeEncoded = Buffer.from(
-      varintEncode(data.fee.toCoins().getValue().toNumber()),
+      varintEncode(data.fee),
     );
     const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
     const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
@@ -207,7 +207,7 @@ export class BaseClient {
         // max gas
         const maxGasEncoded = Buffer.from(
           varintEncode(
-            (data as IContractData).maxGas.toGas().getValue().toNumber(),
+            (data as IContractData).maxGas,
           ),
         );
 
@@ -269,14 +269,14 @@ export class BaseClient {
         // max gas
         const maxGasEncoded = Buffer.from(
           varintEncode(
-            (data as ICallData).maxGas.toGas().getValue().toNumber(),
+            (data as ICallData).maxGas,
           ),
         );
 
         // coins to send
         const coinsEncoded = Buffer.from(
           varintEncode(
-            (data as ICallData).coins.toCoins().getValue().toNumber(),
+            (data as ICallData).coins,
           ),
         );
 
@@ -317,7 +317,7 @@ export class BaseClient {
         // transfer amount
         const amount = (data as ITransactionData).amount;
         const transferAmountEncoded = Buffer.from(
-          varintEncode(amount.toCoins().getValue().toNumber()),
+          varintEncode(amount),
         );
         // recipient
         const recipientAddressEncoded = encodeAddressToBytes(
@@ -338,7 +338,7 @@ export class BaseClient {
         // rolls amount
         const rollsAmountEncoded = Buffer.from(
           varintEncode(
-            (data as IRollsData).amount.toRolls().getValue().toNumber(),
+            (data as IRollsData).amount,
           ),
         );
 
