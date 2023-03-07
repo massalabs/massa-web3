@@ -109,7 +109,7 @@ if (!receiverPrivateKey) {
     // send from base account to receiver
     const txId = await web3Client.wallet().sendTransaction({
       amount: fromMAS(1),
-      fee: fromMAS(0),
+      fee: 0n,
       recipientAddress: receiverAccount.address as string,
     } as ITransactionData);
     console.log('Money Transfer:: TxId ', txId[0]);

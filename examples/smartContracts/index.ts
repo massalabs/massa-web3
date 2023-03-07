@@ -211,7 +211,7 @@ const pollAsyncEvents = async (
     const args = new Args();
     const result = await web3Client.smartContracts().readSmartContract({
       fee: 0n,
-      maxGas: BigInt(700000),
+      maxGas: 700_000n,
       targetAddress: scAddress,
       targetFunction: 'event',
       parameter: args.serialize(),
