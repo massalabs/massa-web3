@@ -21,7 +21,7 @@ import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput'
 import { ICallData } from '../../src/interfaces/ICallData';
 import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
-import { fromMAS } from '../../src';
+import { fromMAS, toMAS } from '../../src';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
@@ -140,7 +140,9 @@ const pollAsyncEvents = async (
     console.log(
       `Deployer Wallet Address: ${
         deployerAccount.address
-      } with balance (candidate, final) = (${deployerAccountBalance?.candidate.toString()}, ${deployerAccountBalance?.final.toString()})`,
+      } with balance (candidate, final) = (${toMAS(
+        deployerAccountBalance?.candidate.toString() as string,
+      )}, ${toMAS(deployerAccountBalance?.final.toString() as string)})`,
     );
 
     // deploy smart contract
@@ -265,7 +267,9 @@ const pollAsyncEvents = async (
       .smartContracts()
       .getContractBalance(scAddress);
     spinner.succeed(
-      `Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.toString()},${contractBalance?.final.toString()})`,
+      `Deployed smart contract balance (candidate, final) = $(${toMAS(
+        contractBalance?.candidate.toString() as string,
+      )},${toMAS(contractBalance?.final.toString() as string)})`,
     );
     process.exit(0);
   } catch (ex) {
