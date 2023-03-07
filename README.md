@@ -781,7 +781,7 @@ const gas = BigInt(2000000);
 // or. ...
 const gas = 2000000n;
 ```
-- **Coins/Fees**: expressed in BigInt's. Coins/fees do however have a metric system behind them. The smallest unit is nanoMassa (`nanoMassa`) which is 10**-9 `Massa`. Internally all coins/fees are converted to `nanoMassa` and this way consumed by the network json-rpc protocol. Since gas/fees are to be used as BigInt's web3 adds in a few convenience utils allowing smaller units (e.g. 0.5 `Massa`) to be expressed.
+- **Coins/Fees**: expressed in BigInt's. Coins/fees do however have a metric system behind them. The smallest unit is 10**-9 `Massa`. All coins/fees are to be expressed as integers scaled by 10**9 and this way consumed by the network json-rpc protocol. Since gas/fees are to be used as BigInt's web3 adds in a few convenience utils allowing smaller units (e.g. 0.5 `Massa`) to be expressed.
 
 The util function `fromMAS` and `toMAS` are used exactly for the latter purpose.
 `fromMAS` receives any amount of type `number | string | BigNumber | bigint` and returns a scaled `bigint` for ready use.
