@@ -10,6 +10,7 @@ import { IRollsData } from '../../src/interfaces/IRollsData';
 import * as dotenv from 'dotenv';
 import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
+import { fromMAS } from '../../src';
 const path = require('path');
 const chalk = require('chalk');
 
@@ -66,7 +67,7 @@ if (!receiverPrivateKey) {
     console.log(
       `Deployer Wallet Address: ${
         deployerAccount.address
-      } with balance (candidate, final) = (${deployerAccountBalance?.candidate.rawValue()}, ${deployerAccountBalance?.final.rawValue()})`,
+      } with balance (candidate, final) = (${deployerAccountBalance?.candidate.toString()}, ${deployerAccountBalance?.final.toString()})`,
     );
 
     // get wallet accounts
@@ -96,7 +97,7 @@ if (!receiverPrivateKey) {
     console.log(
       `Receiver Wallet Balance (Before): ${
         receiverAccount.address
-      } with balance (candidate, final) = (${receiverAccountBalanceBefore?.candidate.rawValue()}, ${receiverAccountBalanceBefore?.final.rawValue()})`,
+      } with balance (candidate, final) = (${receiverAccountBalanceBefore?.candidate.toString()}, ${receiverAccountBalanceBefore?.final.toString()})`,
     );
 
     // sign a random wallet message using account2
@@ -107,8 +108,8 @@ if (!receiverPrivateKey) {
 
     // send from base account to receiver
     const txId = await web3Client.wallet().sendTransaction({
-      amount: '1',
-      fee: 0,
+      amount: fromMAS(1),
+      fee: 0n,
       recipientAddress: receiverAccount.address as string,
     } as ITransactionData);
     console.log('Money Transfer:: TxId ', txId[0]);
@@ -139,7 +140,7 @@ if (!receiverPrivateKey) {
     console.log(
       `Receiver Wallet Balance (After): ${
         receiverAccount.address
-      } with balance (candidate, final) = (${receiverAccountBalanceAfter?.candidate.rawValue()}, ${receiverAccountBalanceAfter?.final.rawValue()})`,
+      } with balance (candidate, final) = (${receiverAccountBalanceAfter?.candidate.toString()}, ${receiverAccountBalanceAfter?.final.toString()})`,
     );
 
     // get sender's wallet after
@@ -149,13 +150,13 @@ if (!receiverPrivateKey) {
     console.log(
       `Sender Wallet Balance (After): ${
         receiverAccount.address
-      } with balance (candidate, final) = (${senderAccountBalanceAfter?.candidate.rawValue()}, ${senderAccountBalanceAfter?.final.rawValue()})`,
+      } with balance (candidate, final) = (${senderAccountBalanceAfter?.candidate.toString()}, ${senderAccountBalanceAfter?.final.toString()})`,
     );
 
     // sender buys some rolls
     const buyRollsTxId = await web3Client.wallet().buyRolls({
-      amount: 2,
-      fee: 0,
+      amount: 2n,
+      fee: fromMAS(0),
     } as IRollsData);
     console.log('Buy Rolls Tx Id ', buyRollsTxId);
 

@@ -11,7 +11,6 @@ import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
-import { MassaCoin } from './MassaCoin';
 
 const encodeAddressToBytes = (
   address: string,
@@ -194,8 +193,7 @@ export class BaseClient {
     account: IAccount,
     expirePeriod: number,
   ): Buffer {
-    const fee = new MassaCoin(data.fee);
-    const feeEncoded = Buffer.from(varintEncode(fee.toNumber()));
+    const feeEncoded = Buffer.from(varintEncode(data.fee));
     const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
     const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
 
@@ -271,7 +269,7 @@ export class BaseClient {
 
         // coins to send
         const coinsEncoded = Buffer.from(
-          varintEncode((data as ICallData).coins.toNumber()),
+          varintEncode((data as ICallData).coins),
         );
 
         // target address
@@ -309,10 +307,8 @@ export class BaseClient {
       }
       case OperationTypeId.Transaction: {
         // transfer amount
-        const amount = new MassaCoin((data as ITransactionData).amount);
-        const transferAmountEncoded = Buffer.from(
-          varintEncode(amount.toNumber()),
-        );
+        const amount = (data as ITransactionData).amount;
+        const transferAmountEncoded = Buffer.from(varintEncode(amount));
         // recipient
         const recipientAddressEncoded = encodeAddressToBytes(
           (data as ITransactionData).recipientAddress,

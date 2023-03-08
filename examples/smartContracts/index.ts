@@ -8,7 +8,6 @@ import { WalletClient } from '../../src/web3/WalletClient';
 import { awaitTxConfirmation, deploySmartContracts } from './deployer';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
-import { MassaCoin } from '../../src/web3/MassaCoin';
 import { Client } from '../../src/web3/Client';
 import {
   EventPoller,
@@ -22,6 +21,7 @@ import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput'
 import { ICallData } from '../../src/interfaces/ICallData';
 import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
+import { fromMAS, toMAS } from '../../src';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
@@ -140,7 +140,9 @@ const pollAsyncEvents = async (
     console.log(
       `Deployer Wallet Address: ${
         deployerAccount.address
-      } with balance (candidate, final) = (${deployerAccountBalance?.candidate.rawValue()}, ${deployerAccountBalance?.final.rawValue()})`,
+      } with balance (candidate, final) = (${toMAS(
+        deployerAccountBalance?.candidate.toString() as string,
+      )}, ${toMAS(deployerAccountBalance?.final.toString() as string)})`,
     );
 
     // deploy smart contract
@@ -154,12 +156,12 @@ const pollAsyncEvents = async (
             path.join(__dirname, '.', 'contracts', '/sc.wasm'),
           ),
           args: undefined,
-          coins: new MassaCoin(0.1),
+          coins: fromMAS(0.1),
         },
       ],
       web3Client,
-      0,
-      1_000_000,
+      0n,
+      1_000_000n,
       deployerAccount,
     );
     spinner.succeed(
@@ -176,7 +178,7 @@ const pollAsyncEvents = async (
       );
 
     // stop polling
-    eventPoller.stopPolling;
+    eventPoller.stopPolling();
 
     // if errors, don't await finalization
     if (isError) {
@@ -208,8 +210,8 @@ const pollAsyncEvents = async (
     ).start();
     const args = new Args();
     const result = await web3Client.smartContracts().readSmartContract({
-      fee: 0,
-      maxGas: 700000,
+      fee: 0n,
+      maxGas: 700_000n,
       targetAddress: scAddress,
       targetFunction: 'event',
       parameter: args.serialize(),
@@ -227,14 +229,16 @@ const pollAsyncEvents = async (
     const callOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
-        fee: 0,
-        maxGas: 10_500_000,
-        coins: new MassaCoin(0),
+        fee: 0n,
+        maxGas: BigInt(10_500_000),
+        coins: 0n,
         targetAddress: scAddress,
         functionName: 'setValueToStorage',
         parameter: callArgs.serialize(),
       } as ICallData);
     spinner.succeed(`Call operation ID: ${callOperationId}`);
+
+    // await finalization
     await awaitTxConfirmation(web3Client, callOperationId);
 
     // =========================================
@@ -263,7 +267,9 @@ const pollAsyncEvents = async (
       .smartContracts()
       .getContractBalance(scAddress);
     spinner.succeed(
-      `Deployed smart contract balance (candidate, final) = $(${contractBalance?.candidate.rawValue()},${contractBalance?.final.rawValue()})`,
+      `Deployed smart contract balance (candidate, final) = $(${toMAS(
+        contractBalance?.candidate.toString() as string,
+      )},${toMAS(contractBalance?.final.toString() as string)})`,
     );
     process.exit(0);
   } catch (ex) {

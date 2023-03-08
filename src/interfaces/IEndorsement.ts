@@ -1,3 +1,5 @@
+import { ISlot } from './ISlot';
+
 export interface IEndorsement {
   id: string; // EndorsementId,
   in_pool: boolean;
@@ -6,10 +8,7 @@ export interface IEndorsement {
   endorsement: {
     content: {
       sender_public_key: string;
-      slot: {
-        period: number;
-        thread: number;
-      };
+      slot: ISlot;
       index: number;
       endorsed_block: string; // BlockId,
     };

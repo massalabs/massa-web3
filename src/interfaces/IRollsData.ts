@@ -1,4 +1,4 @@
 export interface IRollsData {
-  fee: number;
-  amount: number;
+  fee: bigint;
+  amount: bigint;
 }

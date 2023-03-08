@@ -1,8 +1,8 @@
 export interface IContractData {
   /// storage fee for taking place in books
-  fee: number;
+  fee: bigint;
   /// The maximum amount of gas that the execution of the contract is allowed to cost.
-  maxGas: number;
+  maxGas: bigint;
   /// Smart contract data as text.
   contractDataText?: string;
   /// Smart contract data as bytecode

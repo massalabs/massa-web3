@@ -1,8 +1,8 @@
 export interface IReadData {
   /// storage fee for taking place in books
-  fee: number;
+  fee: bigint;
   /// The maximum amount of gas that the execution of the contract is allowed to cost.
-  maxGas: number;
+  maxGas: bigint;
   /// Target smart contract address
   targetAddress: string;
   /// Target function name. No function is called if empty.

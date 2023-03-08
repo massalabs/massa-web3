@@ -18,10 +18,10 @@ import { ISignature } from '../interfaces/ISignature';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
+import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
-import { MassaCoin } from './MassaCoin';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 
@@ -184,7 +184,7 @@ export class SmartContractsClient
   ): Promise<IContractReadOperationResponse> {
     // request data
     const data = {
-      max_gas: readData.maxGas,
+      max_gas: Number(readData.maxGas),
       target_address: readData.targetAddress,
       target_function: readData.targetFunction,
       parameter: readData.parameter,
@@ -225,8 +225,8 @@ export class SmartContractsClient
     if (addresses.length === 0) return null;
     const addressInfo: IAddressInfo = addresses.at(0);
     return {
-      candidate: new MassaCoin(addressInfo.candidate_balance),
-      final: new MassaCoin(addressInfo.final_balance),
+      candidate: fromMAS(addressInfo.candidate_balance),
+      final: fromMAS(addressInfo.final_balance),
     } as IBalance;
   }
 
@@ -273,7 +273,7 @@ export class SmartContractsClient
     }
 
     const data = {
-      max_gas: contractData.maxGas,
+      max_gas: Number(contractData.maxGas),
       bytecode: Array.from(contractData.contractDataBinary),
       address: contractData.address,
     };
