@@ -30,7 +30,9 @@
         "fmt:check": "npm run prettier && npm run lint",
         "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json",
         "gen-js-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/ --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ./protos/orderbookservice.proto",
-        "gen-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=./src/ ./protos/orderbookservice.proto"
+        "gen-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=./src/ ./protos/orderbookservice.proto",
+        "gen-healthcheck-js-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/ --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ./protos/healthcheck.proto",
+        "gen-healthcheck-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=./src/ ./protos/healthcheck.proto"
     },
     "author": "Massa Labs <info@massa.net>",
     "contributors": [
@@ -63,6 +65,7 @@
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
         "@types/ws": "^8.5.4",
+        "async-lock": "^1.4.0",
         "axios": "^0.26.1",
         "base58check": "^2.0.0",
         "bignumber.js": "^9.1.1",
@@ -71,19 +74,21 @@
         "crypto-js": "^4.1.1",
         "dotenv": "^16.0.3",
         "esmify": "^2.1.1",
-        "js-base64": "^3.7.5",
-        "varint": "^6.0.0",
-        "ws": "^8.12.1",
         "google-protobuf": "^3.21.2",
         "grpc": "^1.24.11",
         "grpc-health-check": "^1.8.0",
-        "grpc-tools": "^1.12.4"
+        "grpc-tools": "^1.12.4",
+        "js-base64": "^3.7.5",
+        "uuid": "^9.0.0",
+        "varint": "^6.0.0",
+        "ws": "^8.12.1"
     },
     "devDependencies": {
         "@massalabs/eslint-config": "^0.0.9",
         "@massalabs/prettier-config-as": "^0.0.2",
         "@types/bn.js": "^5.1.1",
         "@types/chai": "^4.3.4",
+        "@types/google-protobuf": "^3.15.6",
         "@types/mocha": "^10.0.1",
         "@types/node": "^18.13.0",
         "@types/secp256k1": "^4.0.3",
@@ -99,6 +104,8 @@
         "eslint-plugin-jsdoc": "^40.0.0",
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-promise": "^6.1.1",
+        "grpc_tools_node_protoc_ts": "^5.3.3",
+        "grpc-tools": "^1.12.4",
         "husky": "^8.0.3",
         "lint-staged": "^13.1.2",
         "mocha": "^10.2.0",
@@ -113,10 +120,7 @@
         "typedoc": "^0.23.25",
         "typescript": "^4.9.5",
         "uglify-js": "^3.17.4",
-        "uglifyify": "^5.0.2",
-        "grpc_tools_node_protoc_ts": "^5.3.3",
-        "grpc-tools": "^1.12.4",
-        "@types/google-protobuf": "^3.15.6"
+        "uglifyify": "^5.0.2"
     },
     "optionalDependencies": {
         "bufferutil": "^4.0.7",

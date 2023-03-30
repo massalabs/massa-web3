@@ -32,6 +32,7 @@ export default abstract class GrpcHealthCheckService implements IHealthServer {
 
   // TODO: This method doesn't support in the current implementation
   // Now it's just a stub method
-  // @ts-ignore
-  watch(call: ServerWritableStream<HealthCheckRequest>): Promise<void> {}
+  watch(call: ServerWritableStream<HealthCheckRequest>): Promise<void> {
+    return null;
+  }
 }

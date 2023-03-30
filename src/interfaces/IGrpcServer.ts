@@ -1,7 +1,7 @@
 import * as grpc from 'grpc';
 import { IHealthServer } from '../protos/healthcheck_grpc_pb';
 
-export default interface IGrpcServer {
+export interface IGrpcServer {
   startServer(): Promise<void>;
   stopServer(): Promise<void>;
   isGrpcServerRunning(): boolean;
@@ -10,4 +10,4 @@ export default interface IGrpcServer {
     implementation: T,
   ): void;
   useHealthCheckHandler(healthCheckImplementation: IHealthServer): void;
-};;;;;;;;;;
+}

@@ -4,5 +4,6 @@ module.exports = {
     'tsdoc/syntax': 'warn',
     'max-len': ['error', 200],
     camelcase: 'off',
+    '@typescript-eslint/no-var-requires': 'off',
   },
 };

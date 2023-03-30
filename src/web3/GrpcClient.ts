@@ -1,22 +1,32 @@
 import * as grpc from 'grpc';
 import {
-  StartIndexRequest,
-  StartIndexResponse,
-  StopIndexRequest,
-  StopIndexResponse,
-  GetLatestProcessedBlockRequest,
-  GetLatestProcessedBlockResponse,
-} from '../../protos/nearindexer_pb';
-import { NearIndexerEngineServiceClient } from '../../protos/nearindexer_grpc_pb';
-import IGrpcClientConfig from '../utils/grpc/IGrpcClientConfig';
+  AddOrderRequest,
+  AddOrderResponse,
+  CancelOrderRequest,
+  CancelOrderResponse,
+  CreateOrderbookRequest,
+  CreateOrderbookResponse,
+  DeleteOderbookRequest,
+  DeleteOrderbookResponse,
+  GetOrderRequest,
+  GetOrderResponse,
+  GetStatsRequest,
+  GetStatsResponse,
+  Order,
+  OrderSide,
+  OrderStatus,
+  OrderType,
+} from '../protos/orderbookservice_pb';
+import { OrderbookClient } from '../protos/orderbookservice_grpc_pb';
 import GrpcClient from '../utils/grpc/GrpcClient';
 import GrpcClientPromisifier from '../utils/grpc/GrpcClientPromisifier';
+import { IGrpcClientConfig } from '../interfaces/IGrpcClientConfig';
 
 export default class NearIndexerClient extends GrpcClient {
   constructor(grpcConn: IGrpcClientConfig) {
     super();
     this.grpcConn = grpcConn;
-    this.client = new NearIndexerEngineServiceClient(
+    this.client = new OrderbookClient(
       this.grpcConn.host.concat(':').concat(this.grpcConn.port.toString()),
       grpc.credentials.createInsecure(),
     );
@@ -26,7 +36,7 @@ export default class NearIndexerClient extends GrpcClient {
   }
 
   private grpcConn: IGrpcClientConfig;
-  private client: NearIndexerEngineServiceClient;
+  private client: OrderbookClient;
   private promisifier: GrpcClientPromisifier;
 
   public async startIndexing(): Promise<StartIndexResponse.AsObject | void> {

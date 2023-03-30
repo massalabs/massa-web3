@@ -1,6 +1,6 @@
-import IGrpcStream from './IGrpcStream';
 import * as grpc from 'grpc';
 import { Message } from 'google-protobuf';
+import { IGrpcStream } from '../../interfaces/IGrpcStream';
 
 export default class GrpcClientPromisifier {
   constructor(private grpcClient: grpc.Client) {}

@@ -1,6 +1,6 @@
 import * as grpc from 'grpc';
-import IGrpcServer from './IGrpcServer';
-import IGrpcClientConfig from './IGrpcClientConfig';
+import { IGrpcClientConfig } from '../../interfaces/IGrpcClientConfig';
+import { IGrpcServer } from '../../interfaces/IGrpcServer';
 import { HealthService, IHealthServer } from '../../protos/healthcheck_grpc_pb';
 
 const MAX_MESSAGE_SIZE_BYTES: number = 64 * 1024 * 1024;

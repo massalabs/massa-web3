@@ -1,8 +1,8 @@
 import * as AsyncLock from 'async-lock';
 import { EventEmitter } from 'events';
-import { generateUUID } from '../../utils/UUID';
-import { wait } from '../../utils/Wait';
-import IGrpcStream from './IGrpcStream';
+import { wait } from '../time';
+import * as uuid from 'uuid';
+import { IGrpcStream } from '../../interfaces/IGrpcStream';
 
 const EVENTS = {
   DATA: 'onData',
@@ -27,7 +27,7 @@ export default abstract class GrpcStreamer<RespType> {
     this.resetInProgress = false;
     this.resetLock = new AsyncLock();
     // This is just a safety measure, considering the blackbox nature of the async lock, just to be future safe
-    this.uniqueId = generateUUID();
+    this.uniqueId = uuid();
     this.eventEmitter = new EventEmitter();
 
     this.start = this.start.bind(this);
