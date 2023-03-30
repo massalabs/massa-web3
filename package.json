@@ -28,7 +28,9 @@
         "prettier:fix": "prettier --write .",
         "fmt": "npm run prettier:fix && npm run lint:fix",
         "fmt:check": "npm run prettier && npm run lint",
-        "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json"
+        "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json",
+        "gen-js-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/ --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ./protos/orderbookservice.proto",
+        "gen-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=./src/ ./protos/orderbookservice.proto"
     },
     "author": "Massa Labs <info@massa.net>",
     "contributors": [
@@ -71,7 +73,11 @@
         "esmify": "^2.1.1",
         "js-base64": "^3.7.5",
         "varint": "^6.0.0",
-        "ws": "^8.12.1"
+        "ws": "^8.12.1",
+        "google-protobuf": "^3.21.2",
+        "grpc": "^1.24.11",
+        "grpc-health-check": "^1.8.0",
+        "grpc-tools": "^1.12.4"
     },
     "devDependencies": {
         "@massalabs/eslint-config": "^0.0.9",
@@ -107,7 +113,10 @@
         "typedoc": "^0.23.25",
         "typescript": "^4.9.5",
         "uglify-js": "^3.17.4",
-        "uglifyify": "^5.0.2"
+        "uglifyify": "^5.0.2",
+        "grpc_tools_node_protoc_ts": "^5.3.3",
+        "grpc-tools": "^1.12.4",
+        "@types/google-protobuf": "^3.15.6"
     },
     "optionalDependencies": {
         "bufferutil": "^4.0.7",
