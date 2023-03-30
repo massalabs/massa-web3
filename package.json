@@ -29,10 +29,8 @@
         "fmt": "npm run prettier:fix && npm run lint:fix",
         "fmt:check": "npm run prettier && npm run lint",
         "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json",
-        "gen-js-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/ --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ./protos/orderbookservice.proto",
-        "gen-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=./src/ ./protos/orderbookservice.proto",
-        "gen-healthcheck-js-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/ --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ./protos/healthcheck.proto",
-        "gen-healthcheck-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=./src/ ./protos/healthcheck.proto"
+        "gen-js-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/ --grpc_out=grpc_js:./src --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ./protos/*.proto",
+        "gen-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=grpc_js:./src/ ./protos/*.proto"
     },
     "author": "Massa Labs <info@massa.net>",
     "contributors": [
@@ -62,6 +60,7 @@
         "bundle.min.js"
     ],
     "dependencies": {
+        "@grpc/grpc-js": "^1.8.13",
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
         "@types/ws": "^8.5.4",
@@ -75,7 +74,6 @@
         "dotenv": "^16.0.3",
         "esmify": "^2.1.1",
         "google-protobuf": "^3.21.2",
-        "grpc": "^1.24.11",
         "grpc-health-check": "^1.8.0",
         "grpc-tools": "^1.12.4",
         "js-base64": "^3.7.5",

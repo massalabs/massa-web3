@@ -1,13 +1,9 @@
 // GENERATED CODE -- DO NOT EDIT!
 
 'use strict';
-var grpc = require('grpc');
+var grpc = require('@grpc/grpc-js');
 var protos_orderbookservice_pb = require('../protos/orderbookservice_pb.js');
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_AddOrderRequest(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.AddOrderRequest)) {
     throw new Error('Expected argument of type orderbook.AddOrderRequest');
@@ -15,20 +11,10 @@ function serialize_orderbook_AddOrderRequest(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_AddOrderRequest(buffer_arg) {
-  return protos_orderbookservice_pb.AddOrderRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.AddOrderRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_AddOrderResponse(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.AddOrderResponse)) {
     throw new Error('Expected argument of type orderbook.AddOrderResponse');
@@ -36,20 +22,10 @@ function serialize_orderbook_AddOrderResponse(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_AddOrderResponse(buffer_arg) {
-  return protos_orderbookservice_pb.AddOrderResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.AddOrderResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_CancelOrderRequest(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.CancelOrderRequest)) {
     throw new Error('Expected argument of type orderbook.CancelOrderRequest');
@@ -57,20 +33,10 @@ function serialize_orderbook_CancelOrderRequest(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_CancelOrderRequest(buffer_arg) {
-  return protos_orderbookservice_pb.CancelOrderRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.CancelOrderRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_CancelOrderResponse(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.CancelOrderResponse)) {
     throw new Error('Expected argument of type orderbook.CancelOrderResponse');
@@ -78,112 +44,54 @@ function serialize_orderbook_CancelOrderResponse(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_CancelOrderResponse(buffer_arg) {
-  return protos_orderbookservice_pb.CancelOrderResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.CancelOrderResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_CreateOrderbookRequest(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.CreateOrderbookRequest)) {
-    throw new Error(
-      'Expected argument of type orderbook.CreateOrderbookRequest',
-    );
+    throw new Error('Expected argument of type orderbook.CreateOrderbookRequest');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_CreateOrderbookRequest(buffer_arg) {
-  return protos_orderbookservice_pb.CreateOrderbookRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.CreateOrderbookRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_CreateOrderbookResponse(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.CreateOrderbookResponse)) {
-    throw new Error(
-      'Expected argument of type orderbook.CreateOrderbookResponse',
-    );
+    throw new Error('Expected argument of type orderbook.CreateOrderbookResponse');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_CreateOrderbookResponse(buffer_arg) {
-  return protos_orderbookservice_pb.CreateOrderbookResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.CreateOrderbookResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_DeleteOderbookRequest(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.DeleteOderbookRequest)) {
-    throw new Error(
-      'Expected argument of type orderbook.DeleteOderbookRequest',
-    );
+    throw new Error('Expected argument of type orderbook.DeleteOderbookRequest');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_DeleteOderbookRequest(buffer_arg) {
-  return protos_orderbookservice_pb.DeleteOderbookRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.DeleteOderbookRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_DeleteOrderbookResponse(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.DeleteOrderbookResponse)) {
-    throw new Error(
-      'Expected argument of type orderbook.DeleteOrderbookResponse',
-    );
+    throw new Error('Expected argument of type orderbook.DeleteOrderbookResponse');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_DeleteOrderbookResponse(buffer_arg) {
-  return protos_orderbookservice_pb.DeleteOrderbookResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.DeleteOrderbookResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_GetOrderRequest(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.GetOrderRequest)) {
     throw new Error('Expected argument of type orderbook.GetOrderRequest');
@@ -191,20 +99,10 @@ function serialize_orderbook_GetOrderRequest(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_GetOrderRequest(buffer_arg) {
-  return protos_orderbookservice_pb.GetOrderRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.GetOrderRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_GetOrderResponse(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.GetOrderResponse)) {
     throw new Error('Expected argument of type orderbook.GetOrderResponse');
@@ -212,20 +110,10 @@ function serialize_orderbook_GetOrderResponse(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_GetOrderResponse(buffer_arg) {
-  return protos_orderbookservice_pb.GetOrderResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.GetOrderResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_GetStatsRequest(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.GetStatsRequest)) {
     throw new Error('Expected argument of type orderbook.GetStatsRequest');
@@ -233,20 +121,10 @@ function serialize_orderbook_GetStatsRequest(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_GetStatsRequest(buffer_arg) {
-  return protos_orderbookservice_pb.GetStatsRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.GetStatsRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_orderbook_GetStatsResponse(arg) {
   if (!(arg instanceof protos_orderbookservice_pb.GetStatsResponse)) {
     throw new Error('Expected argument of type orderbook.GetStatsResponse');
@@ -254,20 +132,15 @@ function serialize_orderbook_GetStatsResponse(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_orderbook_GetStatsResponse(buffer_arg) {
-  return protos_orderbookservice_pb.GetStatsResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_orderbookservice_pb.GetStatsResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+
 // Service Definition
-var OrderbookService = (exports.OrderbookService = {
+var OrderbookService = exports.OrderbookService = {
   // / create and delete orderbooks
-  createOrderbook: {
+createOrderbook: {
     path: '/orderbook.Orderbook/createOrderbook',
     requestStream: false,
     responseStream: false,
@@ -290,7 +163,7 @@ var OrderbookService = (exports.OrderbookService = {
     responseDeserialize: deserialize_orderbook_DeleteOrderbookResponse,
   },
   // / add an order, returning immediately an event indicating the result.
-  addOrder: {
+addOrder: {
     path: '/orderbook.Orderbook/addOrder',
     requestStream: false,
     responseStream: false,
@@ -302,7 +175,7 @@ var OrderbookService = (exports.OrderbookService = {
     responseDeserialize: deserialize_orderbook_AddOrderResponse,
   },
   // / cancel order, which removes the order with the specified ID from the order book.
-  cancelOrder: {
+cancelOrder: {
     path: '/orderbook.Orderbook/cancelOrder',
     requestStream: false,
     responseStream: false,
@@ -314,7 +187,7 @@ var OrderbookService = (exports.OrderbookService = {
     responseDeserialize: deserialize_orderbook_CancelOrderResponse,
   },
   // / returns the order data and status
-  getOrder: {
+getOrder: {
     path: '/orderbook.Orderbook/getOrder',
     requestStream: false,
     responseStream: false,
@@ -326,7 +199,7 @@ var OrderbookService = (exports.OrderbookService = {
     responseDeserialize: deserialize_orderbook_GetOrderResponse,
   },
   // / returns the stats
-  getStats: {
+getStats: {
     path: '/orderbook.Orderbook/getStats',
     requestStream: false,
     responseStream: false,
@@ -337,6 +210,6 @@ var OrderbookService = (exports.OrderbookService = {
     responseSerialize: serialize_orderbook_GetStatsResponse,
     responseDeserialize: deserialize_orderbook_GetStatsResponse,
   },
-});
+};
 
 exports.OrderbookClient = grpc.makeGenericClientConstructor(OrderbookService);

@@ -1,3 +1,4 @@
+import { UntypedServiceImplementation } from '@grpc/grpc-js';
 import * as grpc from 'grpc';
 import { IHealthServer } from '../protos/healthcheck_grpc_pb';
 
@@ -7,7 +8,7 @@ export interface IGrpcServer {
   isGrpcServerRunning(): boolean;
   addService<T>(
     serviceDefinition: grpc.ServiceDefinition<T>,
-    implementation: T,
+    implementation: UntypedServiceImplementation,
   ): void;
   useHealthCheckHandler(healthCheckImplementation: IHealthServer): void;
 }

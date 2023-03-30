@@ -1,4 +1,4 @@
-import { sendUnaryData, ServerUnaryCall, ServerWritableStream } from 'grpc';
+import { sendUnaryData, ServerUnaryCall, ServerWritableStream } from '@grpc/grpc-js';
 import { IHealthServer } from '../../protos/healthcheck_grpc_pb';
 import {
   HealthCheckRequest,
@@ -7,7 +7,7 @@ import {
 
 export default abstract class GrpcHealthCheckService implements IHealthServer {
   public async check(
-    call: ServerUnaryCall<HealthCheckRequest>,
+    call: ServerUnaryCall<HealthCheckRequest, HealthCheckResponse>,
     callback: sendUnaryData<HealthCheckResponse>,
   ): Promise<void> {
     let error = null;
@@ -32,7 +32,7 @@ export default abstract class GrpcHealthCheckService implements IHealthServer {
 
   // TODO: This method doesn't support in the current implementation
   // Now it's just a stub method
-  watch(call: ServerWritableStream<HealthCheckRequest>): Promise<void> {
+  watch(call: ServerWritableStream<HealthCheckRequest, HealthCheckResponse>): Promise<void> {
     return null;
   }
 }

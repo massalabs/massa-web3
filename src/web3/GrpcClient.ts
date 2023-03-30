@@ -22,7 +22,7 @@ import GrpcClient from '../utils/grpc/GrpcClient';
 import GrpcClientPromisifier from '../utils/grpc/GrpcClientPromisifier';
 import { IGrpcClientConfig } from '../interfaces/IGrpcClientConfig';
 
-export default class NearIndexerClient extends GrpcClient {
+export default class MyOrderbookClient extends GrpcClient {
   constructor(grpcConn: IGrpcClientConfig) {
     super();
     this.grpcConn = grpcConn;
@@ -31,38 +31,20 @@ export default class NearIndexerClient extends GrpcClient {
       grpc.credentials.createInsecure(),
     );
     this.promisifier = new GrpcClientPromisifier(this.client);
-    this.startIndexing = this.startIndexing.bind(this);
-    this.stopIndexing = this.stopIndexing.bind(this);
+    this.addOrder = this.addOrder.bind(this);
   }
 
   private grpcConn: IGrpcClientConfig;
   private client: OrderbookClient;
   private promisifier: GrpcClientPromisifier;
 
-  public async startIndexing(): Promise<StartIndexResponse.AsObject | void> {
-    const request = new StartIndexRequest();
-    return await this.promisifier.promisifyCallWithMetadata<StartIndexResponse.AsObject | void>(
-      this.client.startIndexing,
+  public async addOrder(): Promise<AddOrderResponse.AsObject | void> {
+    const request = new AddOrderRequest();
+    return await this.promisifier.promisifyCallWithMetadata<AddOrderResponse.AsObject | void>(
+      this.client.addOrder,
       this.metadata,
       request,
     );
   }
 
-  public async stopIndexing(): Promise<StopIndexResponse.AsObject | void> {
-    const request = new StopIndexRequest();
-    return await this.promisifier.promisifyCallWithMetadata<StopIndexResponse.AsObject | void>(
-      this.client.stopIndexing,
-      this.metadata,
-      request,
-    );
-  }
-
-  public async getLatestProcessedBlock(): Promise<GetLatestProcessedBlockResponse.AsObject | void> {
-    const request = new GetLatestProcessedBlockRequest();
-    return await this.promisifier.promisifyCallWithMetadata<GetLatestProcessedBlockResponse.AsObject | void>(
-      this.client.getLatestProcessedBlock,
-      this.metadata,
-      request,
-    );
-  }
 }

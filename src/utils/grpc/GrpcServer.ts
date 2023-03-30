@@ -1,4 +1,4 @@
-import * as grpc from 'grpc';
+import * as grpc from '@grpc/grpc-js';
 import { IGrpcClientConfig } from '../../interfaces/IGrpcClientConfig';
 import { IGrpcServer } from '../../interfaces/IGrpcServer';
 import { HealthService, IHealthServer } from '../../protos/healthcheck_grpc_pb';
@@ -48,7 +48,7 @@ export default class GrpcServer<T> implements IGrpcServer {
    */
   public addService<T>(
     serviceDefinition: grpc.ServiceDefinition<T>,
-    implementation: T,
+    implementation: grpc.UntypedServiceImplementation,
   ): void {
     this.grpcServer.addService(serviceDefinition, implementation);
   }
