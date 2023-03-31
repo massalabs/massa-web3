@@ -290,7 +290,25 @@ export class Args {
     return new Uint8Array([...a, ...b]);
   }
 
+  // =================================================================================
 
+  /**
+   *
+   * @param {ISerializable} value
+   * @return {Args}
+   */
+  public addSerializable<T>(value: ISerializable<T>): Args {
+    const serializedValue = value.serialize();
+    this.serialized = this.concatArrays(this.serialized, serializedValue);
+    this.offset += serializedValue.length;
+    return this;
+  }
+
+  public nextSerializable<T extends ISerializable<T>>(Clazz: new() => T): T {
+    let deserializationResult = deserializeObj(this.serialized, this.offset, Clazz);
+    this.offset = deserializationResult.offset;
+    return deserializationResult.instance;
+  }
 
   // =================================================================================
   public addSerializableObjectArray<T extends ISerializable<T>>(arg: T[]): Args {

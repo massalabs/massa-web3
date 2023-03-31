@@ -156,8 +156,36 @@ describe('Args class', () => {
     expect(args2.nextString()).to.equal('world');
   });
 
+  it('a single serializable', () => {
+    const classObject = new Divinity(14, 'Poseidon');
+    const args = new Args(
+      new Args().addSerializable(classObject).serialize(),
+    );
+    const deserialized = args.nextSerializable<Divinity>(Divinity);
+    expect(deserialized.age).equals(14);
+    expect(deserialized.name).equals('Poseidon');
+  });
 
-  it('serializable', () => {
+  it('serializable and not serializables', () => {
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const age = 24;
+    const name = 'Me';
+    const classObject = new Divinity(14, 'Poseidon');
+
+    const args = new Args(
+      new Args().addUint8Array(array).addU32(age).addString(name).addSerializable(classObject).serialize(),
+    );
+
+    expect(args.nextUint8Array()).to.deep.equal(array);
+    expect(args.nextU32()).equals(age);
+    expect(args.nextString()).equals(name);
+    const deserialized = args.nextSerializable<Divinity>(Divinity);
+    expect(deserialized.age).equals(14);
+    expect(deserialized.name).equals('Poseidon');
+  });
+
+  it('an array of serializables', () => {
     const arrayOfSerializable = [
       new Divinity(14, 'Poseidon'),
       new Divinity(45, 'Superman'),
@@ -165,14 +193,38 @@ describe('Args class', () => {
     const args = new Args(
       new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
     );
-    console.log("SER ", args);
-    const deser = args.nextSerializableObjectArray<Divinity>(Divinity);
-    console.log("DESER ", deser);
 
-    expect(deser.length).to.be.equal(2);
-    expect(deser[0].age).equals(14);
-    expect(deser[0].name).equals('Poseidon');
-    expect(deser[1].age).equals(45);
-    expect(deser[1].name).equals('Superman');
+    const deserialized = args.nextSerializableObjectArray<Divinity>(Divinity);
+
+    expect(deserialized.length).to.be.equal(2);
+    expect(deserialized[0].age).equals(14);
+    expect(deserialized[0].name).equals('Poseidon');
+    expect(deserialized[1].age).equals(45);
+    expect(deserialized[1].name).equals('Superman');
+  });
+
+  it('a mixed array of serializables and others', () => {
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const age = 24;
+    const name = 'Me';
+
+    const arrayOfSerializable = [
+      new Divinity(14, 'Poseidon'),
+      new Divinity(45, 'Superman'),
+    ];
+    const args = new Args(
+      new Args().addUint8Array(array).addSerializableObjectArray(arrayOfSerializable).addU32(age).addString(name).serialize(),
+    );
+
+    expect(args.nextUint8Array()).to.deep.equal(array);
+    const deserialized = args.nextSerializableObjectArray<Divinity>(Divinity);
+    expect(deserialized.length).equals(2);
+    expect(deserialized[0].age).equals(14);
+    expect(deserialized[0].name).equals('Poseidon');
+    expect(deserialized[1].age).equals(45);
+    expect(deserialized[1].name).equals('Superman');
+    expect(args.nextU32()).equals(age);
+    expect(args.nextString()).equals(name);
   });
 });
