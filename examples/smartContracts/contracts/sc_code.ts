@@ -1,9 +1,6 @@
 import {
-  print,
   generateEvent,
-  call,
   Context,
-  Address,
   callerHasWriteAccess,
   Storage,
 } from '@massalabs/massa-as-sdk';
@@ -81,11 +78,11 @@ export function constructor(_args: StaticArray<u8>): StaticArray<u8> {
   generateEvent(
     `Constructor called on contract ${Context.callee().toString()}`,
   );
-  createInitialMusicShop(_args);
+  createInitialMusicShop();
   return [];
 }
 
-function createInitialMusicShop(_binaryArgs: StaticArray<u8>): void {
+function createInitialMusicShop(): void {
   const musicAlbum = new MusicAlbum('1', 'CD', 'Nirvana', 'Nevermind', 1991);
   Storage.set(
     stringToBytes(`${MUSIC_ALBUM_KEY}_${musicAlbum.id}`),
