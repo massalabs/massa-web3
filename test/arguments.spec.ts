@@ -1,6 +1,22 @@
 import 'mocha';
 import { expect } from 'chai';
-import { Args } from '../src';
+import { Args, ISerializable } from '../src';
+import { IDeserializedResult } from '../src/interfaces/ISerializable';
+
+export class Divinity implements ISerializable<Divinity> {
+  constructor(public age: number = 0, public name: string = '') {}
+
+  serialize(): Uint8Array {
+    return Uint8Array.from(new Args().addU32(this.age).addString(this.name).serialize());
+  }
+
+  deserialize(data: Uint8Array, offset: number): IDeserializedResult<Divinity> {
+    const args = new Args(data, offset);
+    this.age = args.nextU32();
+    this.name = args.nextString();
+    return { instance: this, offset: args.getOffset() };
+  }
+}
 
 describe('Args class', () => {
   it('demonstrative test case', () => {
@@ -138,5 +154,25 @@ describe('Args class', () => {
     expect(args2.nextI64()).to.equal(BigInt(-97));
     expect(args2.nextString()).to.equal('hello');
     expect(args2.nextString()).to.equal('world');
+  });
+
+
+  it('serializable', () => {
+    const arrayOfSerializable = [
+      new Divinity(14, 'Poseidon'),
+      new Divinity(45, 'Superman'),
+    ];
+    const args = new Args(
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+    );
+    console.log("SER ", args);
+    const deser = args.nextSerializableObjectArray<Divinity>(Divinity);
+    console.log("DESER ", deser);
+
+    expect(deser.length).to.be.equal(2);
+    expect(deser[0].age).equals(14);
+    expect(deser[0].name).equals('Poseidon');
+    expect(deser[1].age).equals(45);
+    expect(deser[1].name).equals('Superman');
   });
 });

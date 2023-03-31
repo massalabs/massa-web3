@@ -22,6 +22,7 @@ export { ISignedMessage } from './interfaces/ISignedMessage';
 export { IStakingAddresses } from './interfaces/IStakingAddresses';
 export { ITransactionData } from './interfaces/ITransactionData';
 export { IBalance } from './interfaces/IBalance';
+export { ISerializable } from './interfaces/ISerializable';
 export { IDatastoreEntry } from './interfaces/IDatastoreEntry';
 export { IContractReadOperationData } from './interfaces/IContractReadOperationData';
 export { IContractReadOperationResponse } from './interfaces/IContractReadOperationResponse';
