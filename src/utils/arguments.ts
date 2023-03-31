@@ -17,7 +17,7 @@ import {
   u64ToBytes,
   u8toByte,
   serializableObjectsArrayToBytes,
-  deserializeObj
+  deserializeObj,
 } from './serializers';
 
 /**
@@ -42,7 +42,7 @@ export class Args {
 
   /**
    * Returns the current offset
-   * 
+   *
    * @returns {number} the current offset
    */
   public getOffset(): number {
@@ -162,12 +162,16 @@ export class Args {
 
   /**
    * This function deserialize an object implementing ISerializable
-   * 
+   *
    * @param Clazz - the class constructor prototype T.prototype
    * @returns the deserialized object T
    */
-  public nextSerializable<T extends ISerializable<T>>(Clazz: new() => T): T {
-    let deserializationResult = deserializeObj(this.serialized, this.offset, Clazz);
+  public nextSerializable<T extends ISerializable<T>>(Clazz: new () => T): T {
+    let deserializationResult = deserializeObj(
+      this.serialized,
+      this.offset,
+      Clazz,
+    );
     this.offset = deserializationResult.offset;
     return deserializationResult.instance;
   }
@@ -175,20 +179,22 @@ export class Args {
   /**
    * @returns the deserialized array of object that implement ISerializable
    */
-  public nextSerializableObjectArray<T extends ISerializable<T>>(Clazz: new() => T): T[] {
+  public nextSerializableObjectArray<T extends ISerializable<T>>(
+    Clazz: new () => T,
+  ): T[] {
     const length = this.nextU32();
     if (this.offset + length > this.serialized.length) {
       throw new Error("can't deserialize length of array from given argument");
     }
-  
+
     const bufferSize = length;
-  
+
     if (bufferSize === 0) {
       return [];
     }
-  
+
     const buffer = this.getNextData(bufferSize);
-  
+
     const value = this.bytesToSerializableObjectArray<T>(buffer, Clazz);
     this.offset += bufferSize;
     return value;
@@ -314,7 +320,7 @@ export class Args {
 
   /**
    * Adds a serializable object that implements the ISerializable interface
-   * 
+   *
    * @param {ISerializable} the argument to add
    * @return {Args} the modified Arg instance
    */
@@ -335,8 +341,10 @@ export class Args {
    *
    * @param arg - the argument to add
    * @returns the modified Arg instance
-   */  
-  public addSerializableObjectArray<T extends ISerializable<T>>(arg: T[]): Args {
+   */
+  public addSerializableObjectArray<T extends ISerializable<T>>(
+    arg: T[],
+  ): Args {
     const content: Uint8Array = serializableObjectsArrayToBytes(arg);
     this.addU32(content.length);
     this.serialized = this.concatArrays(this.serialized, content);
@@ -368,26 +376,26 @@ export class Args {
   }
 
   /**
- * Converts a Uint8Array into a Array of deserialized type parameters T.
- *
- * @param source - the Uint8Array to convert
- * @param Clazz - the class constructor prototype T.prototype
- * 
- * @return {T[]} an array of deserialized T's
- */
+   * Converts a Uint8Array into a Array of deserialized type parameters T.
+   *
+   * @param source - the Uint8Array to convert
+   * @param Clazz - the class constructor prototype T.prototype
+   *
+   * @return {T[]} an array of deserialized T's
+   */
   private bytesToSerializableObjectArray<T extends ISerializable<T>>(
     source: Uint8Array,
-    Clazz: new() => T
+    Clazz: new () => T,
   ): T[] {
     const array: T[] = [];
     let offset = 0;
-    
+
     while (offset < source.length) {
       let deserializationResult = deserializeObj(source, offset, Clazz);
       offset = deserializationResult.offset;
       array.push(deserializationResult.instance);
     }
-    
+
     return array;
   }
 }

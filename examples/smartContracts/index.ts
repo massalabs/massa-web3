@@ -16,15 +16,66 @@ import {
 } from '../../src/web3/EventPoller';
 import { INodeStatus } from '../../src/interfaces/INodeStatus';
 import { withTimeoutRejection } from '../../src/utils/time';
-import { bytesToStr, strToBytes } from '../../src/utils/serializers';
+import { strToBytes } from '../../src/utils/serializers';
 import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput';
 import { ICallData } from '../../src/interfaces/ICallData';
 import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { fromMAS, toMAS } from '../../src';
+import {
+  IDeserializedResult,
+  ISerializable,
+} from '../../src/interfaces/ISerializable';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
+
+class MusicAlbum implements ISerializable<MusicAlbum> {
+  constructor(
+    public id: string = '',
+    public title: string = '',
+    public artist: string = '',
+    public album: string = '',
+    public year = 0,
+  ) {}
+
+  public serialize(): Uint8Array {
+    const args = new Args();
+    args.addString(this.id);
+    args.addString(this.title);
+    args.addString(this.artist);
+    args.addString(this.album);
+    args.addU64(BigInt(this.year));
+    return Uint8Array.from(args.serialize());
+  }
+
+  public deserialize(
+    data: Uint8Array,
+    offset: number,
+  ): IDeserializedResult<MusicAlbum> {
+    const args = new Args(data, offset);
+
+    const id = args.nextString();
+    this.id = id;
+
+    const title = args.nextString();
+    this.title = title;
+
+    const artist = args.nextString();
+    this.artist = artist;
+
+    const album = args.nextString();
+    this.album = album;
+
+    const year = args.nextU64();
+    this.year = Number(year);
+
+    return {
+      instance: this,
+      offset: args.getOffset(),
+    } as IDeserializedResult<MusicAlbum>;
+  }
+}
 
 dotenv.config({
   path: path.resolve(__dirname, '..', '.env'),
@@ -204,59 +255,96 @@ const pollAsyncEvents = async (
     spinner.succeed(`Smart Contract Address: ${chalk.yellow(scAddress)}`);
 
     // =========================================
-    // get function return value
+    // get function return value: get the music album
     spinner = ora(
       `Getting a function return value from the deployed smart contract...`,
     ).start();
-    const args = new Args();
+    const args = new Args().addString('1');
     const result = await web3Client.smartContracts().readSmartContract({
       fee: 0n,
       maxGas: 700_000n,
       targetAddress: scAddress,
-      targetFunction: 'event',
+      targetFunction: 'getMusicAlbum',
       parameter: args.serialize(),
     } as IReadData);
-    spinner.succeed(`Function Return Value: ${bytesToStr(result.returnValue)}`);
+
+    const res = new Args(result.returnValue, 0);
+    const musicAlbum = res.nextSerializable(MusicAlbum);
+    spinner.succeed(
+      `Function Return Value: ${JSON.stringify(musicAlbum, null, 4)}`,
+    );
 
     // =========================================
-    // make a smart contract call
+    // make a smart contract call: delete the music album
     spinner = ora(
       `Calling a set function on the deployed smart contract...`,
     ).start();
-    const callArgs = new Args();
-    callArgs.addString('MY_KEY');
-    callArgs.addString('MY_VALUE');
-    const callOperationId = await web3Client
+    const deleteMusicAlbumArgs = new Args().addString('1');
+    const deleteMusicAlbumCallOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
         fee: 0n,
         maxGas: BigInt(10_500_000),
         coins: 0n,
         targetAddress: scAddress,
-        functionName: 'setValueToStorage',
-        parameter: callArgs.serialize(),
+        functionName: 'deleteMusicAlbum',
+        parameter: deleteMusicAlbumArgs.serialize(),
       } as ICallData);
-    spinner.succeed(`Call operation ID: ${callOperationId}`);
+    spinner.succeed(
+      `Delete Music Album operation ID: ${deleteMusicAlbumCallOperationId}`,
+    );
 
     // await finalization
-    await awaitTxConfirmation(web3Client, callOperationId);
+    await awaitTxConfirmation(web3Client, deleteMusicAlbumCallOperationId);
 
     // =========================================
-    // read value from store
+    // make a smart contract call: create a new music album
     spinner = ora(
-      `Reading from the deployed smart contract storage...`,
+      `Calling a set function on the deployed smart contract...`,
+    ).start();
+    const newMusicAlbum = new MusicAlbum(
+      '1',
+      'CD',
+      'The Beatles',
+      'Let It Be',
+      1970,
+    );
+    const createMusicAlbumCallArgs = new Args(newMusicAlbum.serialize());
+    const createMusicAlbumCallOperationId = await web3Client
+      .smartContracts()
+      .callSmartContract({
+        fee: 0n,
+        maxGas: BigInt(10_500_000),
+        coins: 0n,
+        targetAddress: scAddress,
+        functionName: 'addMusicAlbum',
+        parameter: createMusicAlbumCallArgs.serialize(),
+      } as ICallData);
+    spinner.succeed(
+      `Create Music Album Operation ID: ${createMusicAlbumCallOperationId}`,
+    );
+
+    // await finalization
+    await awaitTxConfirmation(web3Client, createMusicAlbumCallOperationId);
+
+    // =========================================
+    // read value from store: read music album content
+    spinner = ora(
+      `Reading Music Album from the deployed smart contract storage...`,
     ).start();
     const scStorage = await web3Client.publicApi().getDatastoreEntries([
       {
         address: scAddress,
-        key: strToBytes('MY_KEY'),
+        key: strToBytes(`MUSIC_ALBUM_KEY_1`),
       } as IDatastoreEntryInput,
     ]);
     if (!scStorage[0].final_value) {
       spinner.fail(`Storage contains null for that key. Something is wrong`);
     } else {
+      const res = new Args(scStorage[0].final_value, 0);
+      const musicAlbum = res.nextSerializable(MusicAlbum);
       spinner.succeed(
-        `Deployed SC Storage entry: ${bytesToStr(scStorage[0].final_value)}`,
+        `Music Album from Storage: ${JSON.stringify(musicAlbum, null, 4)}`,
       );
     }
 
