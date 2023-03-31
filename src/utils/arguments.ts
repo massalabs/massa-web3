@@ -1,4 +1,4 @@
-import { IDeserializedResult, ISerializable } from '../interfaces/ISerializable';
+import { ISerializable } from '../interfaces/ISerializable';
 import {
   bytesToF32,
   bytesToF64,
@@ -16,6 +16,8 @@ import {
   u32ToBytes,
   u64ToBytes,
   u8toByte,
+  serializableObjectsArrayToBytes,
+  deserializeObj
 } from './serializers';
 
 /**
@@ -290,6 +292,40 @@ export class Args {
     return new Uint8Array([...a, ...b]);
   }
 
+  /**
+   * Returns the data of requested size for current offset
+   *
+   * @param size - The data size
+   * @return {Uint8Array} the slice of the serialized internal buffer
+   */
+  private getNextData(size: number): Uint8Array {
+    return this.serialized.slice(this.offset, this.offset + size);
+  }
+
+  /**
+ * Converts a Uint8Array into a Array of deserialized type parameters T.
+ *
+ * @param source - the Uint8Array to convert
+ * @param Clazz - the class constructor prototype T.prototype
+ * 
+ * @return {T[]} an array of deserialized T's
+ */
+  private bytesToSerializableObjectArray<T extends ISerializable<T>>(
+    source: Uint8Array,
+    Clazz: new() => T
+  ): T[] {
+    const array: T[] = [];
+    let offset = 0;
+    
+    while (offset < source.length) {
+      let deserializationResult = deserializeObj(source, offset, Clazz);
+      offset = deserializationResult.offset;
+      array.push(deserializationResult.instance);
+    }
+    
+    return array;
+  }
+
   // =================================================================================
 
   /**
@@ -336,57 +372,5 @@ export class Args {
     this.offset += bufferSize;
     return value;
   }
-
-  private getNextData(size: number): Uint8Array {
-    return this.serialized.slice(this.offset, this.offset + size);
-  }
-
-  private bytesToSerializableObjectArray<T extends ISerializable<T>>(
-    source: Uint8Array,
-    Clazz: new() => T
-  ): T[] {
-    const array: T[] = [];
-    let offset = 0;
-  
-    while (offset < source.length) {
-      let deserializationResult = deserializeObj(source, offset, Clazz);
-      offset = deserializationResult.offset;
-      array.push(deserializationResult.instance);
-    }
-  
-    return array;
-  }
-}
-
-export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
-  source: T[],
-): Uint8Array {
-  const nbElements = source.length;
-  const pointers = new Array<Uint8Array>(nbElements);
-  const sizes = new Array<number>(nbElements);
-  let totalLength = 0;
-
-  for (let i = 0; i < nbElements; i++) {
-    const bytes: Uint8Array = source[i].serialize();
-    pointers[i] = bytes;
-    sizes[i] = bytes.length;
-    totalLength += bytes.length;
-  }
-
-  // allocates a new Array in the memory
-  const target = new Uint8Array(totalLength);
-
-  let offset = 0;
-  for (let i = 0; i < nbElements; i++) {
-    // copies the content of the source buffer to the newly allocated array.
-    target.set(pointers[i], offset);
-    offset += sizes[i];
-  }
-
-  return target;
-}
-
-function deserializeObj<T extends ISerializable<T>>(data: Uint8Array, offset: number, Clazz: new() => T): IDeserializedResult<T> {
-  const deserialized = new Clazz().deserialize(data, offset);
-  return deserialized;
+  // =================================================================================
 }

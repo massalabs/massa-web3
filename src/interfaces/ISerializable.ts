@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 export interface ISerializable<T> {
     serialize(): Uint8Array;
     deserialize(data: Uint8Array, offset: number): IDeserializedResult<T>;
