@@ -376,7 +376,7 @@ export class Args {
   }
 
   /**
-   * Converts a Uint8Array into a Array of deserialized type parameters T.
+   * Converts a Uint8Array into an Array of deserialized type parameters T.
    *
    * @param source - the Uint8Array to convert
    * @param Clazz - the class constructor prototype T.prototype

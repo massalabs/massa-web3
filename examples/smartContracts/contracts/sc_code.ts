@@ -86,7 +86,6 @@ export function constructor(_args: StaticArray<u8>): StaticArray<u8> {
 }
 
 function createInitialMusicShop(_binaryArgs: StaticArray<u8>): void {
-  assert(callerHasWriteAccess(), 'Caller is not allowed');
   const musicAlbum = new MusicAlbum('1', 'CD', 'Nirvana', 'Nevermind', 1991);
   Storage.set(
     stringToBytes(`${MUSIC_ALBUM_KEY}_${musicAlbum.id}`),
