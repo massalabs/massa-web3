@@ -160,6 +160,40 @@ export class Args {
     return byteArray;
   }
 
+  /**
+   * This function deserialize an object implementing ISerializable
+   * 
+   * @param Clazz - the class constructor prototype T.prototype
+   * @returns the deserialized object T
+   */
+  public nextSerializable<T extends ISerializable<T>>(Clazz: new() => T): T {
+    let deserializationResult = deserializeObj(this.serialized, this.offset, Clazz);
+    this.offset = deserializationResult.offset;
+    return deserializationResult.instance;
+  }
+
+  /**
+   * @returns the deserialized array of object that implement ISerializable
+   */
+  public nextSerializableObjectArray<T extends ISerializable<T>>(Clazz: new() => T): T[] {
+    const length = this.nextU32();
+    if (this.offset + length > this.serialized.length) {
+      throw new Error("can't deserialize length of array from given argument");
+    }
+  
+    const bufferSize = length;
+  
+    if (bufferSize === 0) {
+      return [];
+    }
+  
+    const buffer = this.getNextData(bufferSize);
+  
+    const value = this.bytesToSerializableObjectArray<T>(buffer, Clazz);
+    this.offset += bufferSize;
+    return value;
+  }
+
   // Setter
 
   /**
@@ -278,6 +312,37 @@ export class Args {
     return this;
   }
 
+  /**
+   * Adds a serializable object that implements the ISerializable interface
+   * 
+   * @param {ISerializable} the argument to add
+   * @return {Args} the modified Arg instance
+   */
+  public addSerializable<T>(value: ISerializable<T>): Args {
+    const serializedValue = value.serialize();
+    this.serialized = this.concatArrays(this.serialized, serializedValue);
+    this.offset += serializedValue.length;
+    return this;
+  }
+
+  /**
+   * Adds an array of element that implement `ISerializable`.
+   *
+   * @remarks
+   * This will perform a deep copy of your objects thanks to the `serialize` method you define in your class.
+   *
+   * @see {@link ISerializable}
+   *
+   * @param arg - the argument to add
+   * @returns the modified Arg instance
+   */  
+  public addSerializableObjectArray<T extends ISerializable<T>>(arg: T[]): Args {
+    const content: Uint8Array = serializableObjectsArrayToBytes(arg);
+    this.addU32(content.length);
+    this.serialized = this.concatArrays(this.serialized, content);
+    return this;
+  }
+
   // Utils
 
   /**
@@ -325,52 +390,4 @@ export class Args {
     
     return array;
   }
-
-  // =================================================================================
-
-  /**
-   *
-   * @param {ISerializable} value
-   * @return {Args}
-   */
-  public addSerializable<T>(value: ISerializable<T>): Args {
-    const serializedValue = value.serialize();
-    this.serialized = this.concatArrays(this.serialized, serializedValue);
-    this.offset += serializedValue.length;
-    return this;
-  }
-
-  public nextSerializable<T extends ISerializable<T>>(Clazz: new() => T): T {
-    let deserializationResult = deserializeObj(this.serialized, this.offset, Clazz);
-    this.offset = deserializationResult.offset;
-    return deserializationResult.instance;
-  }
-
-  // =================================================================================
-  public addSerializableObjectArray<T extends ISerializable<T>>(arg: T[]): Args {
-    const content: Uint8Array = serializableObjectsArrayToBytes(arg);
-    this.addU32(content.length);
-    this.serialized = this.concatArrays(this.serialized, content);
-    return this;
-  }
-
-  public nextSerializableObjectArray<T extends ISerializable<T>>(Clazz: new() => T): T[] {
-    const length = this.nextU32();
-    if (this.offset + length > this.serialized.length) {
-      throw new Error("can't deserialize length of array from given argument");
-    }
-  
-    const bufferSize = length;
-  
-    if (bufferSize === 0) {
-      return [];
-    }
-  
-    const buffer = this.getNextData(bufferSize);
-  
-    const value = this.bytesToSerializableObjectArray<T>(buffer, Clazz);
-    this.offset += bufferSize;
-    return value;
-  }
-  // =================================================================================
 }
