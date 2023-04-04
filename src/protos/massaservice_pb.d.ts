@@ -1,5 +1,5 @@
-// package: orderbook
-// file: protos/orderbookservice.proto
+// package: massa
+// file: protos/massaservice.proto
 
 /* tslint:disable */
 /* eslint-disable */

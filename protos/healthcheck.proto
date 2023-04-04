@@ -17,7 +17,7 @@
 
 syntax = "proto3";
 
-package orderbook;
+package massa;
 
 option csharp_namespace = "Grpc.Health.V1";
 option go_package = "google.golang.org/grpc/health/grpc_health_v1";

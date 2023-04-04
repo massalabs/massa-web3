@@ -22,25 +22,25 @@
 var grpc = require('@grpc/grpc-js');
 var protos_healthcheck_pb = require('../protos/healthcheck_pb.js');
 
-function serialize_orderbook_HealthCheckRequest(arg) {
+function serialize_massa_HealthCheckRequest(arg) {
   if (!(arg instanceof protos_healthcheck_pb.HealthCheckRequest)) {
-    throw new Error('Expected argument of type orderbook.HealthCheckRequest');
+    throw new Error('Expected argument of type massa.HealthCheckRequest');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_orderbook_HealthCheckRequest(buffer_arg) {
+function deserialize_massa_HealthCheckRequest(buffer_arg) {
   return protos_healthcheck_pb.HealthCheckRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_orderbook_HealthCheckResponse(arg) {
+function serialize_massa_HealthCheckResponse(arg) {
   if (!(arg instanceof protos_healthcheck_pb.HealthCheckResponse)) {
-    throw new Error('Expected argument of type orderbook.HealthCheckResponse');
+    throw new Error('Expected argument of type massa.HealthCheckResponse');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_orderbook_HealthCheckResponse(buffer_arg) {
+function deserialize_massa_HealthCheckResponse(buffer_arg) {
   return protos_healthcheck_pb.HealthCheckResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
@@ -49,15 +49,15 @@ var HealthService = exports.HealthService = {
   // If the requested service is unknown, the call will fail with status
 // NOT_FOUND.
 check: {
-    path: '/orderbook.Health/Check',
+    path: '/massa.Health/Check',
     requestStream: false,
     responseStream: false,
     requestType: protos_healthcheck_pb.HealthCheckRequest,
     responseType: protos_healthcheck_pb.HealthCheckResponse,
-    requestSerialize: serialize_orderbook_HealthCheckRequest,
-    requestDeserialize: deserialize_orderbook_HealthCheckRequest,
-    responseSerialize: serialize_orderbook_HealthCheckResponse,
-    responseDeserialize: deserialize_orderbook_HealthCheckResponse,
+    requestSerialize: serialize_massa_HealthCheckRequest,
+    requestDeserialize: deserialize_massa_HealthCheckRequest,
+    responseSerialize: serialize_massa_HealthCheckResponse,
+    responseDeserialize: deserialize_massa_HealthCheckResponse,
   },
   // Performs a watch for the serving status of the requested service.
 // The server will immediately send back a message indicating the current
@@ -75,15 +75,15 @@ check: {
 // call.  If the call terminates with any other status (including OK),
 // clients should retry the call with appropriate exponential backoff.
 watch: {
-    path: '/orderbook.Health/Watch',
+    path: '/massa.Health/Watch',
     requestStream: false,
     responseStream: true,
     requestType: protos_healthcheck_pb.HealthCheckRequest,
     responseType: protos_healthcheck_pb.HealthCheckResponse,
-    requestSerialize: serialize_orderbook_HealthCheckRequest,
-    requestDeserialize: deserialize_orderbook_HealthCheckRequest,
-    responseSerialize: serialize_orderbook_HealthCheckResponse,
-    responseDeserialize: deserialize_orderbook_HealthCheckResponse,
+    requestSerialize: serialize_massa_HealthCheckRequest,
+    requestDeserialize: deserialize_massa_HealthCheckRequest,
+    responseSerialize: serialize_massa_HealthCheckResponse,
+    responseDeserialize: deserialize_massa_HealthCheckResponse,
   },
 };
 

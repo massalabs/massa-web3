@@ -1,4 +1,4 @@
-// package: orderbook
+// package: massa
 // file: protos/healthcheck.proto
 
 /* tslint:disable */
@@ -13,7 +13,7 @@ interface IHealthService extends grpc.ServiceDefinition<grpc.UntypedServiceImple
 }
 
 interface IHealthService_ICheck extends grpc.MethodDefinition<protos_healthcheck_pb.HealthCheckRequest, protos_healthcheck_pb.HealthCheckResponse> {
-    path: "/orderbook.Health/Check";
+    path: "/massa.Health/Check";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<protos_healthcheck_pb.HealthCheckRequest>;
@@ -22,7 +22,7 @@ interface IHealthService_ICheck extends grpc.MethodDefinition<protos_healthcheck
     responseDeserialize: grpc.deserialize<protos_healthcheck_pb.HealthCheckResponse>;
 }
 interface IHealthService_IWatch extends grpc.MethodDefinition<protos_healthcheck_pb.HealthCheckRequest, protos_healthcheck_pb.HealthCheckResponse> {
-    path: "/orderbook.Health/Watch";
+    path: "/massa.Health/Watch";
     requestStream: false;
     responseStream: true;
     requestSerialize: grpc.serialize<protos_healthcheck_pb.HealthCheckRequest>;

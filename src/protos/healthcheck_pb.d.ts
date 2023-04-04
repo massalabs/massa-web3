@@ -1,4 +1,4 @@
-// package: orderbook
+// package: massa
 // file: protos/healthcheck.proto
 
 /* tslint:disable */
