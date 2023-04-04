@@ -1,6 +1,6 @@
 import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { IAccount } from '../interfaces/IAccount';
-import { Client, getWsProvider } from './Client';
+import { Client, getGrpcProvider, getWsProvider } from './Client';
 import { IClientConfig } from '../interfaces/IClientConfig';
 
 /** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
@@ -16,6 +16,13 @@ export enum DefaultWsProviderUrls {
   TESTNET = 'wss://test.massa.net/api/websocket',
   LABNET = 'wss://labnet.massa.net/api/websocket',
   LOCALNET = 'ws://localhost',
+}
+
+export enum DefaultGrpcProviderUrls {
+  MAINNET = '0.0.0.0:33037',
+  TESTNET = '0.0.0.0:33037',
+  LABNET = '0.0.0.0:33037',
+  LOCALNET ='0.0.0.0:33037',
 }
 
 /** Massa Web3 Client Factory for easy initialization */
@@ -53,6 +60,10 @@ export class ClientFactory {
       {
         url: getWsProvider(provider),
         type: ProviderType.WS,
+      } as IProvider,
+      {
+        url: getGrpcProvider(provider),
+        type: ProviderType.GRPC,
       } as IProvider,
     ];
 

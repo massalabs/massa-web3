@@ -5,9 +5,10 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
+import { DefaultGrpcProviderUrls, DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
 import { WsSubscriptionClient } from './WsSubscriptionClient';
+import { MassaGrpcClient } from './GrpcClient';
 
 export const getWsProvider = (
   provider: DefaultProviderUrls,
@@ -37,12 +38,41 @@ export const getWsProvider = (
   return wsProvider;
 };
 
+export const getGrpcProvider = (
+  provider: DefaultProviderUrls,
+): DefaultGrpcProviderUrls => {
+  let grpcProvider: DefaultGrpcProviderUrls;
+  switch (provider) {
+    case DefaultProviderUrls.LABNET: {
+      grpcProvider = DefaultGrpcProviderUrls.LABNET;
+      break;
+    }
+    case DefaultProviderUrls.MAINNET: {
+      grpcProvider = DefaultGrpcProviderUrls.MAINNET;
+      break;
+    }
+    case DefaultProviderUrls.LOCALNET: {
+      grpcProvider = DefaultGrpcProviderUrls.LOCALNET;
+      break;
+    }
+    case DefaultProviderUrls.TESTNET: {
+      grpcProvider = DefaultGrpcProviderUrls.TESTNET;
+      break;
+    }
+    default: {
+      grpcProvider = DefaultGrpcProviderUrls.LOCALNET;
+    }
+  }
+  return grpcProvider;
+};
+
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 export class Client implements IClient {
   private publicApiClient: PublicApiClient;
   private privateApiClient: PrivateApiClient;
   private walletClient: WalletClient;
   private smartContractsClient: SmartContractsClient;
+  private grpcClient: MassaGrpcClient;
   private wsSubscriptionClient: WsSubscriptionClient | null;
 
   public constructor(
@@ -69,12 +99,21 @@ export class Client implements IClient {
       this.wsSubscriptionClient = new WsSubscriptionClient(clientConfig);
     }
 
+    if (
+      clientConfig.providers.find(
+        (provider) => provider.type === ProviderType.GRPC,
+      )
+    ) {
+      this.grpcClient = new MassaGrpcClient(clientConfig);
+    }
+
     // subclients
     this.privateApi = this.privateApi.bind(this);
     this.publicApi = this.publicApi.bind(this);
     this.wallet = this.wallet.bind(this);
     this.smartContracts = this.smartContracts.bind(this);
     this.ws = this.ws.bind(this);
+    this.grpc = this.grpc.bind(this);
     // setters
     this.setCustomProviders = this.setCustomProviders.bind(this);
     this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
@@ -82,6 +121,7 @@ export class Client implements IClient {
     this.getProviders = this.getProviders.bind(this);
     this.getPrivateProviders = this.getPrivateProviders.bind(this);
     this.getPublicProviders = this.getPublicProviders.bind(this);
+    this.getGrpcProviders = this.getGrpcProviders.bind(this);
   }
 
   /** Private Api related RPC methods */
@@ -107,6 +147,11 @@ export class Client implements IClient {
   /** Websocket RPC methods */
   public ws(): WsSubscriptionClient | null {
     return this.wsSubscriptionClient;
+  }
+
+  /** Websocket RPC methods */
+  public grpc(): MassaGrpcClient {
+    return this.grpcClient;
   }
 
   /** set new providers */
@@ -137,6 +182,13 @@ export class Client implements IClient {
     );
   }
 
+  /** return all grpc providers */
+  public getGrpcProviders(): Array<IProvider> {
+    return this.clientConfig.providers.filter(
+      (provider) => provider.type === ProviderType.GRPC,
+    );
+  }
+
   /** sets a new default json rpc provider */
   public setNewDefaultProvider(provider: DefaultProviderUrls): void {
     const providers = [
@@ -151,6 +203,10 @@ export class Client implements IClient {
       {
         url: getWsProvider(provider),
         type: ProviderType.WS,
+      } as IProvider,
+      {
+        url: getGrpcProvider(provider),
+        type: ProviderType.GRPC,
       } as IProvider,
     ];
     this.publicApiClient.setProviders(providers);

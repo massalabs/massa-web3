@@ -21,20 +21,27 @@ import { OrderbookClient } from '../protos/orderbookservice_grpc_pb';
 import GrpcClient from '../utils/grpc/GrpcClient';
 import GrpcClientPromisifier from '../utils/grpc/GrpcClientPromisifier';
 import { IGrpcClientConfig } from '../interfaces/IGrpcClientConfig';
+import { IProvider, ProviderType } from '../interfaces/IProvider';
 
-export default class MyOrderbookClient extends GrpcClient {
-  constructor(grpcConn: IGrpcClientConfig) {
+// grpcConn: IGrpcClientConfig 
+
+export class MassaGrpcClient extends GrpcClient {
+  constructor(clientConfig: IGrpcClientConfig) {
     super();
-    this.grpcConn = grpcConn;
+    this.clientConfig = clientConfig;
+    const grpcProvider: IProvider = this.clientConfig.providers.find((provider) => provider.type === ProviderType.GRPC);
+    if (!grpcProvider) {
+      throw new Error('No grpc provider provided');
+    }
     this.client = new OrderbookClient(
-      this.grpcConn.host.concat(':').concat(this.grpcConn.port.toString()),
+      grpcProvider.url,
       grpc.credentials.createInsecure()
     );
     this.promisifier = new GrpcClientPromisifier(this.client);
     this.addOrder = this.addOrder.bind(this);
   }
 
-  private grpcConn: IGrpcClientConfig;
+  private clientConfig: IGrpcClientConfig;
   private client: OrderbookClient;
   private promisifier: GrpcClientPromisifier;
 

@@ -7,4 +7,5 @@ export enum ProviderType {
   PRIVATE,
   PUBLIC,
   WS,
+  GRPC,
 }
