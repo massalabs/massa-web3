@@ -1,4 +1,4 @@
-import * as grpc from 'grpc';
+import * as grpc from '@grpc/grpc-js';
 import {
   AddOrderRequest,
   AddOrderResponse,
@@ -28,7 +28,7 @@ export default class MyOrderbookClient extends GrpcClient {
     this.grpcConn = grpcConn;
     this.client = new OrderbookClient(
       this.grpcConn.host.concat(':').concat(this.grpcConn.port.toString()),
-      grpc.credentials.createInsecure(),
+      grpc.credentials.createInsecure()
     );
     this.promisifier = new GrpcClientPromisifier(this.client);
     this.addOrder = this.addOrder.bind(this);
