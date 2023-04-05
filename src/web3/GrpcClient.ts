@@ -11,19 +11,21 @@ import GrpcClientPromisifier from '../utils/grpc/GrpcClientPromisifier';
 import { IGrpcClientConfig } from '../interfaces/IGrpcClientConfig';
 import { IProvider, ProviderType } from '../interfaces/IProvider';
 
-// grpcConn: IGrpcClientConfig 
+// grpcConn: IGrpcClientConfig
 
 export class MassaGrpcClient extends GrpcClient {
   constructor(clientConfig: IGrpcClientConfig) {
     super();
     this.clientConfig = clientConfig;
-    const grpcProvider: IProvider = this.clientConfig.providers.find((provider) => provider.type === ProviderType.GRPC);
+    const grpcProvider: IProvider = this.clientConfig.providers.find(
+      (provider) => provider.type === ProviderType.GRPC,
+    );
     if (!grpcProvider) {
       throw new Error('No grpc provider provided');
     }
     this.client = new MassaClient(
       grpcProvider.url,
-      grpc.credentials.createInsecure()
+      grpc.credentials.createInsecure(),
     );
     this.promisifier = new GrpcClientPromisifier(this.client);
     this.createOrderbook = this.createOrderbook.bind(this);

@@ -22,6 +22,10 @@
 var grpc = require('@grpc/grpc-js');
 var protos_healthcheck_pb = require('../protos/healthcheck_pb.js');
 
+/**
+ *
+ * @param arg
+ */
 function serialize_massa_HealthCheckRequest(arg) {
   if (!(arg instanceof protos_healthcheck_pb.HealthCheckRequest)) {
     throw new Error('Expected argument of type massa.HealthCheckRequest');
@@ -29,10 +33,20 @@ function serialize_massa_HealthCheckRequest(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
+/**
+ *
+ * @param buffer_arg
+ */
 function deserialize_massa_HealthCheckRequest(buffer_arg) {
-  return protos_healthcheck_pb.HealthCheckRequest.deserializeBinary(new Uint8Array(buffer_arg));
+  return protos_healthcheck_pb.HealthCheckRequest.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
+/**
+ *
+ * @param arg
+ */
 function serialize_massa_HealthCheckResponse(arg) {
   if (!(arg instanceof protos_healthcheck_pb.HealthCheckResponse)) {
     throw new Error('Expected argument of type massa.HealthCheckResponse');
@@ -40,15 +54,20 @@ function serialize_massa_HealthCheckResponse(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
+/**
+ *
+ * @param buffer_arg
+ */
 function deserialize_massa_HealthCheckResponse(buffer_arg) {
-  return protos_healthcheck_pb.HealthCheckResponse.deserializeBinary(new Uint8Array(buffer_arg));
+  return protos_healthcheck_pb.HealthCheckResponse.deserializeBinary(
+    new Uint8Array(buffer_arg),
+  );
 }
 
-
-var HealthService = exports.HealthService = {
+var HealthService = (exports.HealthService = {
   // If the requested service is unknown, the call will fail with status
-// NOT_FOUND.
-check: {
+  // NOT_FOUND.
+  check: {
     path: '/massa.Health/Check',
     requestStream: false,
     responseStream: false,
@@ -60,21 +79,21 @@ check: {
     responseDeserialize: deserialize_massa_HealthCheckResponse,
   },
   // Performs a watch for the serving status of the requested service.
-// The server will immediately send back a message indicating the current
-// serving status.  It will then subsequently send a new message whenever
-// the service's serving status changes.
-//
-// If the requested service is unknown when the call is received, the
-// server will send a message setting the serving status to
-// SERVICE_UNKNOWN but will *not* terminate the call.  If at some
-// future point, the serving status of the service becomes known, the
-// server will send a new message with the service's serving status.
-//
-// If the call terminates with status UNIMPLEMENTED, then clients
-// should assume this method is not supported and should not retry the
-// call.  If the call terminates with any other status (including OK),
-// clients should retry the call with appropriate exponential backoff.
-watch: {
+  // The server will immediately send back a message indicating the current
+  // serving status.  It will then subsequently send a new message whenever
+  // the service's serving status changes.
+  //
+  // If the requested service is unknown when the call is received, the
+  // server will send a message setting the serving status to
+  // SERVICE_UNKNOWN but will *not* terminate the call.  If at some
+  // future point, the serving status of the service becomes known, the
+  // server will send a new message with the service's serving status.
+  //
+  // If the call terminates with status UNIMPLEMENTED, then clients
+  // should assume this method is not supported and should not retry the
+  // call.  If the call terminates with any other status (including OK),
+  // clients should retry the call with appropriate exponential backoff.
+  watch: {
     path: '/massa.Health/Watch',
     requestStream: false,
     responseStream: true,
@@ -85,6 +104,6 @@ watch: {
     responseSerialize: serialize_massa_HealthCheckResponse,
     responseDeserialize: deserialize_massa_HealthCheckResponse,
   },
-};
+});
 
 exports.HealthClient = grpc.makeGenericClientConstructor(HealthService);

@@ -22,7 +22,7 @@ export enum DefaultGrpcProviderUrls {
   MAINNET = '0.0.0.0:33037',
   TESTNET = '0.0.0.0:33037',
   LABNET = '0.0.0.0:33037',
-  LOCALNET ='0.0.0.0:33037',
+  LOCALNET = '0.0.0.0:33037',
 }
 
 /** Massa Web3 Client Factory for easy initialization */

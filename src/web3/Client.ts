@@ -5,7 +5,11 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { DefaultGrpcProviderUrls, DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
+import {
+  DefaultGrpcProviderUrls,
+  DefaultProviderUrls,
+  DefaultWsProviderUrls,
+} from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
 import { WsSubscriptionClient } from './WsSubscriptionClient';
 import { MassaGrpcClient } from './GrpcClient';
