@@ -1,23 +1,11 @@
 import * as grpc from '@grpc/grpc-js';
 import {
-  AddOrderRequest,
-  AddOrderResponse,
-  CancelOrderRequest,
-  CancelOrderResponse,
   CreateOrderbookRequest,
   CreateOrderbookResponse,
   DeleteOderbookRequest,
   DeleteOrderbookResponse,
-  GetOrderRequest,
-  GetOrderResponse,
-  GetStatsRequest,
-  GetStatsResponse,
-  Order,
-  OrderSide,
-  OrderStatus,
-  OrderType,
-} from '../protos/orderbookservice_pb';
-import { OrderbookClient } from '../protos/orderbookservice_grpc_pb';
+} from '../protos/massaservice_pb';
+import { MassaClient } from '../protos/massaservice_grpc_pb';
 import GrpcClient from '../utils/grpc/GrpcClient';
 import GrpcClientPromisifier from '../utils/grpc/GrpcClientPromisifier';
 import { IGrpcClientConfig } from '../interfaces/IGrpcClientConfig';
@@ -33,25 +21,34 @@ export class MassaGrpcClient extends GrpcClient {
     if (!grpcProvider) {
       throw new Error('No grpc provider provided');
     }
-    this.client = new OrderbookClient(
+    this.client = new MassaClient(
       grpcProvider.url,
       grpc.credentials.createInsecure()
     );
     this.promisifier = new GrpcClientPromisifier(this.client);
-    this.addOrder = this.addOrder.bind(this);
+    this.createOrderbook = this.createOrderbook.bind(this);
+    this.deleteOrderbook = this.deleteOrderbook.bind(this);
   }
 
   private clientConfig: IGrpcClientConfig;
-  private client: OrderbookClient;
+  private client: MassaClient;
   private promisifier: GrpcClientPromisifier;
 
-  public async addOrder(): Promise<AddOrderResponse.AsObject | void> {
-    const request = new AddOrderRequest();
-    return await this.promisifier.promisifyCallWithMetadata<AddOrderResponse.AsObject | void>(
-      this.client.addOrder,
+  public async createOrderbook(): Promise<CreateOrderbookResponse.AsObject | void> {
+    const request = new CreateOrderbookRequest();
+    return await this.promisifier.promisifyCallWithMetadata<CreateOrderbookResponse.AsObject | void>(
+      this.client.createOrderbook,
       this.metadata,
       request,
     );
   }
 
+  public async deleteOrderbook(): Promise<DeleteOrderbookResponse.AsObject | void> {
+    const request = new DeleteOderbookRequest();
+    return await this.promisifier.promisifyCallWithMetadata<DeleteOrderbookResponse.AsObject | void>(
+      this.client.deleteOrderbook,
+      this.metadata,
+      request,
+    );
+  }
 }
