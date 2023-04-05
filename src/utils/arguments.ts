@@ -18,7 +18,27 @@ import {
   u8toByte,
   serializableObjectsArrayToBytes,
   deserializeObj,
+  bytesToSerializableObjectArray,
+  nativeTypeArrayToBytes,
 } from './serializers';
+
+/**
+ * Typed Arguments facilitating the differentiation
+ * between different argument types due to Javascript's
+ * single number type.
+ *
+ * @remark In Assemblyscript the latter are all native types
+ */
+export enum TypedArrayUnit {
+  U8,
+  U16,
+  U32,
+  U64,
+  I32,
+  I64,
+  F32,
+  F64,
+}
 
 /**
  * Args for remote function call.
@@ -195,7 +215,7 @@ export class Args {
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = this.bytesToSerializableObjectArray<T>(buffer, Clazz);
+    const value = bytesToSerializableObjectArray<T>(buffer, Clazz);
     this.offset += bufferSize;
     return value;
   }
@@ -351,6 +371,27 @@ export class Args {
     return this;
   }
 
+  /**
+   * Adds an array.
+   *
+   * @remarks
+   * If the type of the values of the array is not native type, this will serialize the pointers, which is certainly not
+   * what you want. You can only serialize properly array of native types or array of `Serializable` object.
+   *
+   * @see {@link addSerializableObjectArray}
+   *
+   * @param arg - the argument to add
+   * @returns the modified Arg instance
+   */
+  addNativeTypeArray<
+    T extends ArrayLike<TypedArrayUnit | Uint8Array | string | boolean>,
+  >(arg: T): Args {
+    const content = nativeTypeArrayToBytes([]);
+    this.addU32(content.length);
+    this.serialized = this.concatArrays(this.serialized, content);
+    return this;
+  }
+
   // Utils
 
   /**
@@ -373,29 +414,5 @@ export class Args {
    */
   private getNextData(size: number): Uint8Array {
     return this.serialized.slice(this.offset, this.offset + size);
-  }
-
-  /**
-   * Converts a Uint8Array into an Array of deserialized type parameters T.
-   *
-   * @param source - the Uint8Array to convert
-   * @param Clazz - the class constructor prototype T.prototype
-   *
-   * @return {T[]} an array of deserialized T's
-   */
-  private bytesToSerializableObjectArray<T extends ISerializable<T>>(
-    source: Uint8Array,
-    Clazz: new () => T,
-  ): T[] {
-    const array: T[] = [];
-    let offset = 0;
-
-    while (offset < source.length) {
-      let deserializationResult = deserializeObj(source, offset, Clazz);
-      offset = deserializationResult.offset;
-      array.push(deserializationResult.instance);
-    }
-
-    return array;
   }
 }
