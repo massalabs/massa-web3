@@ -4,10 +4,6 @@
 var grpc = require('@grpc/grpc-js');
 var protos_massaservice_pb = require('../protos/massaservice_pb.js');
 
-/**
- *
- * @param arg
- */
 function serialize_massa_CreateOrderbookRequest(arg) {
   if (!(arg instanceof protos_massaservice_pb.CreateOrderbookRequest)) {
     throw new Error('Expected argument of type massa.CreateOrderbookRequest');
@@ -15,20 +11,10 @@ function serialize_massa_CreateOrderbookRequest(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_massa_CreateOrderbookRequest(buffer_arg) {
-  return protos_massaservice_pb.CreateOrderbookRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_massaservice_pb.CreateOrderbookRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_massa_CreateOrderbookResponse(arg) {
   if (!(arg instanceof protos_massaservice_pb.CreateOrderbookResponse)) {
     throw new Error('Expected argument of type massa.CreateOrderbookResponse');
@@ -36,20 +22,10 @@ function serialize_massa_CreateOrderbookResponse(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_massa_CreateOrderbookResponse(buffer_arg) {
-  return protos_massaservice_pb.CreateOrderbookResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_massaservice_pb.CreateOrderbookResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_massa_DeleteOderbookRequest(arg) {
   if (!(arg instanceof protos_massaservice_pb.DeleteOderbookRequest)) {
     throw new Error('Expected argument of type massa.DeleteOderbookRequest');
@@ -57,20 +33,10 @@ function serialize_massa_DeleteOderbookRequest(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_massa_DeleteOderbookRequest(buffer_arg) {
-  return protos_massaservice_pb.DeleteOderbookRequest.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_massaservice_pb.DeleteOderbookRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-/**
- *
- * @param arg
- */
 function serialize_massa_DeleteOrderbookResponse(arg) {
   if (!(arg instanceof protos_massaservice_pb.DeleteOrderbookResponse)) {
     throw new Error('Expected argument of type massa.DeleteOrderbookResponse');
@@ -78,20 +44,15 @@ function serialize_massa_DeleteOrderbookResponse(arg) {
   return Buffer.from(arg.serializeBinary());
 }
 
-/**
- *
- * @param buffer_arg
- */
 function deserialize_massa_DeleteOrderbookResponse(buffer_arg) {
-  return protos_massaservice_pb.DeleteOrderbookResponse.deserializeBinary(
-    new Uint8Array(buffer_arg),
-  );
+  return protos_massaservice_pb.DeleteOrderbookResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+
 // Service Definition
-var MassaService = (exports.MassaService = {
+var MassaService = exports.MassaService = {
   // / create and delete orderbooks
-  createOrderbook: {
+createOrderbook: {
     path: '/massa.Massa/createOrderbook',
     requestStream: false,
     responseStream: false,
@@ -113,6 +74,6 @@ var MassaService = (exports.MassaService = {
     responseSerialize: serialize_massa_DeleteOrderbookResponse,
     responseDeserialize: deserialize_massa_DeleteOrderbookResponse,
   },
-});
+};
 
 exports.MassaClient = grpc.makeGenericClientConstructor(MassaService);
