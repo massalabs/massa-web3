@@ -20,6 +20,7 @@ import {
   deserializeObj,
   bytesToSerializableObjectArray,
   nativeTypeArrayToBytes,
+  bytesToNativeTypeArray,
 } from './serializers';
 
 /**
@@ -30,8 +31,8 @@ import {
  * @remark In Assemblyscript the latter are all native types
  */
 export enum TypedArrayUnit {
+  BOOL,
   U8,
-  U16,
   U32,
   U64,
   I32,
@@ -124,6 +125,13 @@ export class Args {
     const value = bytesToU64(this.serialized, this.offset);
     this.offset += 8;
     return value;
+  }
+
+  /**
+   * Returns the deserialized boolean
+   */
+  nextBool(): boolean {
+    return !!this.serialized[this.offset++];
   }
 
   /**
@@ -220,6 +228,27 @@ export class Args {
     return value;
   }
 
+  /**
+   * @returns the next array of object that are native type
+   */
+  nextNativeTypeArray<T extends TypedArrayUnit>(typedArrayType: T): T[] {
+    const length = this.nextU32();
+    if (this.offset + length > this.serialized.length) {
+      throw new Error("can't deserialize length of array from given argument");
+    }
+
+    const bufferSize = length;
+
+    if (bufferSize === 0) {
+      return [];
+    }
+
+    const buffer = this.getNextData(bufferSize);
+    const value = bytesToNativeTypeArray<T>(buffer, typedArrayType);
+    this.offset += bufferSize;
+    return value;
+  }
+
   // Setter
 
   /**
@@ -229,6 +258,20 @@ export class Args {
    */
   public addU8(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, u8toByte(value));
+    this.offset++;
+    return this;
+  }
+
+  /**
+   *
+   * @param {boolean} value
+   * @return {Args}
+   */
+  public addBool(value: boolean): Args {
+    this.serialized = this.concatArrays(
+      this.serialized,
+      u8toByte(value ? 1 : 0),
+    );
     this.offset++;
     return this;
   }
@@ -383,10 +426,8 @@ export class Args {
    * @param arg - the argument to add
    * @returns the modified Arg instance
    */
-  addNativeTypeArray<
-    T extends ArrayLike<TypedArrayUnit | Uint8Array | string | boolean>,
-  >(arg: T): Args {
-    const content = nativeTypeArrayToBytes([]);
+  addNativeTypeArray<T extends TypedArrayUnit>(arg: any[], type: T): Args {
+    const content = nativeTypeArrayToBytes(arg, type);
     this.addU32(content.length);
     this.serialized = this.concatArrays(this.serialized, content);
     return this;

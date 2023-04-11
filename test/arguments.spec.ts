@@ -2,6 +2,7 @@ import 'mocha';
 import { expect } from 'chai';
 import { Args, ISerializable } from '../src';
 import { IDeserializedResult } from '../src/interfaces/ISerializable';
+import { TypedArrayUnit } from '../src/utils/arguments';
 
 export class Divinity implements ISerializable<Divinity> {
   constructor(public age: number = 0, public name: string = '') {}
@@ -236,5 +237,91 @@ describe('Args class', () => {
     expect(deserialized[1].name).equals('Superman');
     expect(args.nextU32()).equals(age);
     expect(args.nextString()).equals(name);
+  });
+
+  it('With array of booleans', () => {
+    const arrayBooleans = [false, false, true, true, false];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayBooleans, TypedArrayUnit.BOOL)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.BOOL);
+    expect(deserialized).to.deep.equal(arrayBooleans);
+  });
+
+  it('With array of U8s', () => {
+    const arrayU8s = [10, 20, 30];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayU8s, TypedArrayUnit.U8)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.U8);
+    expect(deserialized).to.deep.equal(arrayU8s);
+  });
+
+  it('With array of U32s', () => {
+    const arrayU32s = [100000, 200000, 300000];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayU32s, TypedArrayUnit.U32)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.U32);
+    expect(deserialized).to.deep.equal(arrayU32s);
+  });
+
+  it('With array of U64s', () => {
+    const arrayU64s = [
+      BigInt(10000000000),
+      BigInt(2000000000),
+      BigInt(3000000000),
+    ];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayU64s, TypedArrayUnit.U64)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.U64);
+    expect(deserialized).to.deep.equal(arrayU64s);
+  });
+
+  it('With array of F32s', () => {
+    const arrayF32s = [8.4, -9.6];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayF32s, TypedArrayUnit.F32)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.F32);
+    expect(deserialized[0]).to.be.closeTo(arrayF32s[0], 0.00001);
+    expect(deserialized[1]).to.be.closeTo(arrayF32s[1], 0.00001);
+  });
+
+  it('With array of F64s', () => {
+    const arrayF64s = [17800.47444, -97234.65711];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayF64s, TypedArrayUnit.F64)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.F64);
+    expect(deserialized[0]).to.be.closeTo(arrayF64s[0], 0.00001);
+    expect(deserialized[1]).to.be.closeTo(arrayF64s[1], 0.00001);
+  });
+
+  it('With array of I32s', () => {
+    const arrayI32s = [-2300, 9760];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayI32s, TypedArrayUnit.I32)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.I32);
+    expect(deserialized).to.deep.equal(arrayI32s);
+  });
+
+  it('With array of I64s', () => {
+    const arrayI64s = [BigInt(-2300345435), BigInt(97607665667)];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayI64s, TypedArrayUnit.I64)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.I64);
+    expect(deserialized).to.deep.equal(arrayI64s);
   });
 });
