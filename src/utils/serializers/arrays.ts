@@ -1,8 +1,12 @@
 /* eslint-disable no-case-declarations */
 
+const MAX_STRING_CHARS = 100;
+
 // Lookup table for native types
 const getDatatypeSize = (typedArrayType: TypedArrayUnit): number => {
   switch (typedArrayType) {
+    case TypedArrayUnit.STRING:
+      return MAX_STRING_CHARS;
     case TypedArrayUnit.BOOL:
       return 1;
     case TypedArrayUnit.F32:
@@ -27,6 +31,7 @@ import {
   ISerializable,
 } from '../../interfaces/ISerializable';
 import { TypedArrayUnit } from '../arguments';
+import { bytesToStr, strToBytes } from './strings';
 
 export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
   source: T[],
@@ -108,7 +113,6 @@ export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
 
   // Calculate the target length based on the type size and source length
   const targetLength = sourceLength * getDatatypeSize(type);
-  console.log('TARGET LEN ', targetLength);
 
   // allocates a new Uint8Array in the memory
   let target = new Uint8Array(targetLength);
@@ -121,6 +125,17 @@ export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
       target.byteOffset + i * getDatatypeSize(type),
     );
     switch (type) {
+      case TypedArrayUnit.STRING:
+        if ((value as string).length > MAX_STRING_CHARS) {
+          throw new Error(
+            `String has more than ${MAX_STRING_CHARS} (max.). Please limit your strings to ${MAX_STRING_CHARS} chars`,
+          );
+        }
+        const b: Uint8Array = strToBytes(value as string);
+        for (let j = 0; j < b.length; j++) {
+          view.setUint8(j, b[j]);
+        }
+        break;
       case TypedArrayUnit.BOOL:
         view.setUint8(0, value ? 1 : 0);
         break;
@@ -149,7 +164,6 @@ export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
         throw new Error(`Unsupported type ${type}`);
     }
   }
-  console.log('FINAL BUFFER ', target);
   return target;
 }
 
@@ -165,10 +179,12 @@ export function bytesToNativeTypeArray<T extends TypedArrayUnit>(
   source: Uint8Array,
   typedArrayType: T,
 ): T[] {
-  console.log('DESERIALIZATION LEN ', source);
   const sourceLength = source.length;
   // Calculate the total length of the array
   let targetLength = sourceLength / getDatatypeSize(typedArrayType);
+  if (!(targetLength % 1 === 0)) {
+    throw new Error(`None-integer array length computation`);
+  }
   const dataView = new DataView(source.buffer);
 
   // Create a new typed array of type T and fill it with the converted values
@@ -177,6 +193,16 @@ export function bytesToNativeTypeArray<T extends TypedArrayUnit>(
   for (let i = 0; i < targetLength; i++) {
     const size = getDatatypeSize(typedArrayType);
     switch (typedArrayType) {
+      case TypedArrayUnit.STRING:
+        let dataArr = [];
+        for (let j = 0; j < size; j++) {
+          const letter = dataView.getUint8(byteOffset + j);
+          if (letter <= 0) continue;
+          dataArr.push(letter);
+        }
+        result.push(bytesToStr(Uint8Array.from(dataArr)) as unknown as T);
+        byteOffset += size;
+        break;
       case TypedArrayUnit.BOOL:
         const boolVal = source[i] === 1 ? true : false;
         result.push(boolVal as unknown as T);

@@ -324,4 +324,67 @@ describe('Args class', () => {
     const deserialized = args.nextNativeTypeArray(TypedArrayUnit.I64);
     expect(deserialized).to.deep.equal(arrayI64s);
   });
+
+  it('byteArray, i64, string, native array', () => {
+    const args1 = new Args();
+    const byteArray = new Uint8Array(4);
+    byteArray[0] = 1;
+    byteArray[1] = 2;
+    byteArray[2] = 3;
+    byteArray[3] = 4;
+    args1.addUint8Array(byteArray);
+    args1.addI64(BigInt(-97));
+    args1.addString('hello');
+    args1.addString('world');
+    const i32Array = [100, 200, 300];
+    args1.addNativeTypeArray(i32Array, TypedArrayUnit.I32);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextUint8Array()).to.deep.equal(byteArray);
+    expect(args2.nextI64()).to.equal(BigInt(-97));
+    expect(args2.nextString()).to.equal('hello');
+    expect(args2.nextString()).to.equal('world');
+    expect(args2.nextNativeTypeArray(TypedArrayUnit.I32)).to.deep.equal(
+      i32Array,
+    );
+  });
+
+  it('native serializable and not serializables', () => {
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const age = 24;
+    const name = 'Me';
+    const classObject = new Divinity(14, 'Poseidon');
+    const i32Array = [100, 200, 300];
+
+    const args = new Args(
+      new Args()
+        .addUint8Array(array)
+        .addU32(age)
+        .addString(name)
+        .addNativeTypeArray(i32Array, TypedArrayUnit.I32)
+        .addSerializable(classObject)
+        .serialize(),
+    );
+
+    expect(args.nextUint8Array()).to.deep.equal(array);
+    expect(args.nextU32()).equals(age);
+    expect(args.nextString()).equals(name);
+    expect(args.nextNativeTypeArray(TypedArrayUnit.I32)).to.deep.equal(
+      i32Array,
+    );
+    const deserialized = args.nextSerializable(Divinity);
+    expect(deserialized.age).equals(14);
+    expect(deserialized.name).equals('Poseidon');
+  });
+
+  it('With array of Strings', () => {
+    const arrayStrings = ['hello there', 'evgeni'];
+    const serialized = new Args()
+      .addNativeTypeArray(arrayStrings, TypedArrayUnit.STRING)
+      .serialize();
+    const args = new Args(serialized);
+    const deserialized = args.nextNativeTypeArray(TypedArrayUnit.STRING);
+    expect(deserialized).to.deep.equal(arrayStrings);
+  });
 });

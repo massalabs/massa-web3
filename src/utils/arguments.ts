@@ -31,6 +31,7 @@ import {
  * @remark In Assemblyscript the latter are all native types
  */
 export enum TypedArrayUnit {
+  STRING,
   BOOL,
   U8,
   U32,
