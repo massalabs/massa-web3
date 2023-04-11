@@ -29,8 +29,7 @@
         "fmt": "npm run prettier:fix && npm run lint:fix",
         "fmt:check": "npm run prettier && npm run lint",
         "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json",
-        "gen-js-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/ --grpc_out=grpc_js:./src --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ./protos/**/*.proto",
-        "gen-ts-grpc": "grpc_tools_node_protoc --plugin=protoc-gen-ts=`which protoc-gen-ts` --ts_out=grpc_js:./src/ -I=./protos  ./protos/*.proto ./protos/massa/api/v1/*.proto ./protos/third-party/google/api/*.proto ./protos/third-party/google/rpc/*.proto"
+        "buf-generate": "buf generate"
     },
     "author": "Massa Labs <info@massa.net>",
     "contributors": [
@@ -60,6 +59,7 @@
         "bundle.min.js"
     ],
     "dependencies": {
+        "@bufbuild/buf": "^1.15.0-1",
         "@grpc/grpc-js": "^1.8.13",
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
