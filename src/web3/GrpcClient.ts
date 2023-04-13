@@ -1,5 +1,5 @@
 import * as grpc from '@grpc/grpc-js';
-import { MassaServiceClient } from '../protos/api_grpc_pb';
+import {  } from '../protos/api_pb';
 import GrpcClient from '../utils/grpc/GrpcClient';
 import GrpcClientPromisifier from '../utils/grpc/GrpcClientPromisifier';
 import { IGrpcClientConfig } from '../interfaces/IGrpcClientConfig';

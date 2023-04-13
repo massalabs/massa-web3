@@ -59,7 +59,7 @@
         "bundle.min.js"
     ],
     "dependencies": {
-        "@bufbuild/buf": "^1.15.0-1",
+        "@bufbuild/protobuf": "^1.2.0",
         "@grpc/grpc-js": "^1.8.13",
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
@@ -82,6 +82,8 @@
         "ws": "^8.12.1"
     },
     "devDependencies": {
+        "@bufbuild/buf": "^1.15.0-1",
+        "@bufbuild/protoc-gen-es": "^1.2.0",
         "@massalabs/eslint-config": "^0.0.9",
         "@massalabs/prettier-config-as": "^0.0.2",
         "@types/bn.js": "^5.1.1",
