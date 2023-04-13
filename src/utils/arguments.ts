@@ -18,7 +18,29 @@ import {
   u8toByte,
   serializableObjectsArrayToBytes,
   deserializeObj,
+  bytesToSerializableObjectArray,
+  nativeTypeArrayToBytes,
+  bytesToNativeTypeArray,
 } from './serializers';
+
+/**
+ * Typed Arguments facilitating the differentiation
+ * between different argument types due to Javascript's
+ * single number type.
+ *
+ * @remark In Assemblyscript the latter are all native types
+ */
+export enum TypedArrayUnit {
+  STRING,
+  BOOL,
+  U8,
+  U32,
+  U64,
+  I32,
+  I64,
+  F32,
+  F64,
+}
 
 /**
  * Args for remote function call.
@@ -104,6 +126,13 @@ export class Args {
     const value = bytesToU64(this.serialized, this.offset);
     this.offset += 8;
     return value;
+  }
+
+  /**
+   * Returns the deserialized boolean
+   */
+  nextBool(): boolean {
+    return !!this.serialized[this.offset++];
   }
 
   /**
@@ -195,7 +224,28 @@ export class Args {
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = this.bytesToSerializableObjectArray<T>(buffer, Clazz);
+    const value = bytesToSerializableObjectArray<T>(buffer, Clazz);
+    this.offset += bufferSize;
+    return value;
+  }
+
+  /**
+   * @returns the next array of object that are native type
+   */
+  nextNativeTypeArray<T extends TypedArrayUnit>(typedArrayType: T): T[] {
+    const length = this.nextU32();
+    if (this.offset + length > this.serialized.length) {
+      throw new Error("can't deserialize length of array from given argument");
+    }
+
+    const bufferSize = length;
+
+    if (bufferSize === 0) {
+      return [];
+    }
+
+    const buffer = this.getNextData(bufferSize);
+    const value = bytesToNativeTypeArray<T>(buffer, typedArrayType);
     this.offset += bufferSize;
     return value;
   }
@@ -209,6 +259,20 @@ export class Args {
    */
   public addU8(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, u8toByte(value));
+    this.offset++;
+    return this;
+  }
+
+  /**
+   *
+   * @param {boolean} value
+   * @return {Args}
+   */
+  public addBool(value: boolean): Args {
+    this.serialized = this.concatArrays(
+      this.serialized,
+      u8toByte(value ? 1 : 0),
+    );
     this.offset++;
     return this;
   }
@@ -351,6 +415,25 @@ export class Args {
     return this;
   }
 
+  /**
+   * Adds an array.
+   *
+   * @remarks
+   * If the type of the values of the array is not native type, this will serialize the pointers, which is certainly not
+   * what you want. You can only serialize properly array of native types or array of `Serializable` object.
+   *
+   * @see {@link addSerializableObjectArray}
+   *
+   * @param arg - the argument to add
+   * @returns the modified Arg instance
+   */
+  addNativeTypeArray<T extends TypedArrayUnit>(arg: any[], type: T): Args {
+    const content = nativeTypeArrayToBytes(arg, type);
+    this.addU32(content.length);
+    this.serialized = this.concatArrays(this.serialized, content);
+    return this;
+  }
+
   // Utils
 
   /**
@@ -373,29 +456,5 @@ export class Args {
    */
   private getNextData(size: number): Uint8Array {
     return this.serialized.slice(this.offset, this.offset + size);
-  }
-
-  /**
-   * Converts a Uint8Array into an Array of deserialized type parameters T.
-   *
-   * @param source - the Uint8Array to convert
-   * @param Clazz - the class constructor prototype T.prototype
-   *
-   * @return {T[]} an array of deserialized T's
-   */
-  private bytesToSerializableObjectArray<T extends ISerializable<T>>(
-    source: Uint8Array,
-    Clazz: new () => T,
-  ): T[] {
-    const array: T[] = [];
-    let offset = 0;
-
-    while (offset < source.length) {
-      let deserializationResult = deserializeObj(source, offset, Clazz);
-      offset = deserializationResult.offset;
-      array.push(deserializationResult.instance);
-    }
-
-    return array;
   }
 }
