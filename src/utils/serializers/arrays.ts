@@ -201,42 +201,34 @@ export function bytesToNativeTypeArray<T extends TypedArrayUnit>(
           dataArr.push(letter);
         }
         result.push(bytesToStr(Uint8Array.from(dataArr)) as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.BOOL:
         const boolVal = source[i] === 1 ? true : false;
         result.push(boolVal as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.U8:
         result.push(source[i] as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.F32:
         result.push(dataView.getFloat32(byteOffset, true) as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.F64:
         result.push(dataView.getFloat64(byteOffset, true) as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.I32:
         result.push(dataView.getInt32(byteOffset, true) as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.I64:
         result.push(dataView.getBigInt64(byteOffset, true) as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.U32:
         result.push(dataView.getUint32(byteOffset, true) as unknown as T);
-        byteOffset += size;
         break;
       case TypedArrayUnit.U64:
         result.push(dataView.getBigUint64(byteOffset, true) as unknown as T);
-        byteOffset += size;
         break;
     }
+    byteOffset += size;
   }
   return result;
 }
