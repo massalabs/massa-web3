@@ -25,6 +25,7 @@ import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 
+const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
@@ -182,6 +183,13 @@ export class SmartContractsClient
   public async readSmartContract(
     readData: IReadData,
   ): Promise<IContractReadOperationResponse> {
+    // check the max. allowed gas
+    if (readData.maxGas > MAX_READ_BLOCK_GAS) {
+      throw new Error(
+        `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+      );
+    }
+
     // request data
     const data = {
       max_gas: Number(readData.maxGas),
