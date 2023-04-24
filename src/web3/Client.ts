@@ -106,7 +106,7 @@ export class Client implements IClient {
   }
 
   /**
-   * A callback method that triggers a ping of the Thyra's server
+   * A callback method that retrieves the external wallet providers and updates the class state
    *
    * @returns void
    */
@@ -119,7 +119,7 @@ export class Client implements IClient {
     }
     if (externalWalletProviders) {
       // add only newly discovered providers
-      // NOTE: we dont remove providers which we have been disconnected from
+      // NOTE: we don't remove providers which we have been disconnected from
       const alreadyDiscoveredProviders = new Set(
         this.externalWalletProviders.map((p) => p.name()),
       );
@@ -139,7 +139,7 @@ export class Client implements IClient {
   }
 
   /**
-   * A method to stop listening for a connection to Thyra's server
+   * A method to stop the external wallet discovery mechanism
    *
    * @returns void
    */
@@ -149,7 +149,7 @@ export class Client implements IClient {
   }
 
   /**
-   * A method to start listening for a connection to Thyra's server.
+   * A method to start the external wallet discovery mechanism
    *
    * @returns void
    */
