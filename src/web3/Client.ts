@@ -8,6 +8,13 @@ import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
 import { WsSubscriptionClient } from './WsSubscriptionClient';
+import {
+  providers as getExternalWalletProviders,
+  IProvider as IExternalWalletProvider,
+} from '@massalabs/wallet-provider';
+import { Timeout } from '../utils/time';
+
+const EXTERNAL_WALLET_PROVIDERS_DISCOVERY_TIMEOUT_MS = 1000;
 
 export const getWsProvider = (
   provider: DefaultProviderUrls,
@@ -44,10 +51,15 @@ export class Client implements IClient {
   private walletClient: WalletClient;
   private smartContractsClient: SmartContractsClient;
   private wsSubscriptionClient: WsSubscriptionClient | null;
+  private externalWalletProvidersDiscoveryTimeoutId: Timeout | null = null;
+  private externalWalletProvidersDiscoveryInterval =
+    EXTERNAL_WALLET_PROVIDERS_DISCOVERY_TIMEOUT_MS;
+  private externalWalletProviders: IExternalWalletProvider[] = [];
 
   public constructor(
     private clientConfig: IClientConfig,
     baseAccount?: IAccount,
+    withExternalProviderDiscovery?: boolean,
   ) {
     this.publicApiClient = new PublicApiClient(clientConfig);
     this.privateApiClient = new PrivateApiClient(clientConfig);
@@ -82,6 +94,74 @@ export class Client implements IClient {
     this.getProviders = this.getProviders.bind(this);
     this.getPrivateProviders = this.getPrivateProviders.bind(this);
     this.getPublicProviders = this.getPublicProviders.bind(this);
+    // client discovery
+    this.clientDiscoveryCallback = this.clientDiscoveryCallback.bind(this);
+    this.stopClientDiscovery = this.stopClientDiscovery.bind(this);
+    this.startClientDiscovery = this.startClientDiscovery.bind(this);
+
+    // start client discovery
+    if (withExternalProviderDiscovery) {
+      this.startClientDiscovery();
+    }
+  }
+
+  /**
+   * A callback method that triggers a ping of the Thyra's server
+   *
+   * @returns void
+   */
+  private async clientDiscoveryCallback(): Promise<void> {
+    let externalWalletProviders: IExternalWalletProvider[] | null = null;
+    try {
+      externalWalletProviders = await getExternalWalletProviders();
+    } catch (ex) {
+      console.error(`Error getting external wallet providers`);
+    }
+    if (externalWalletProviders) {
+      // add only newly discovered providers
+      // NOTE: we dont remove providers which we have been disconnected from
+      const alreadyDiscoveredProviders = new Set(
+        this.externalWalletProviders.map((p) => p.name()),
+      );
+      for (const item of externalWalletProviders) {
+        if (!alreadyDiscoveredProviders.has(item.name())) {
+          this.externalWalletProviders.push(item);
+        }
+      }
+      this.externalWalletProviders = externalWalletProviders;
+    }
+
+    // reset the interval
+    this.externalWalletProvidersDiscoveryTimeoutId = new Timeout(
+      this.externalWalletProvidersDiscoveryInterval,
+      () => this.clientDiscoveryCallback(),
+    );
+  }
+
+  /**
+   * A method to stop listening for a connection to Thyra's server
+   *
+   * @returns void
+   */
+  public stopClientDiscovery(): void {
+    if (this.externalWalletProvidersDiscoveryTimeoutId)
+      this.externalWalletProvidersDiscoveryTimeoutId.clear();
+  }
+
+  /**
+   * A method to start listening for a connection to Thyra's server.
+   *
+   * @returns void
+   */
+  public startClientDiscovery(): void {
+    const that = this;
+    if (this.externalWalletProvidersDiscoveryTimeoutId) {
+      return;
+    }
+    this.externalWalletProvidersDiscoveryTimeoutId = new Timeout(
+      this.externalWalletProvidersDiscoveryInterval,
+      () => that.clientDiscoveryCallback(),
+    );
   }
 
   /** Private Api related RPC methods */
@@ -107,6 +187,11 @@ export class Client implements IClient {
   /** Websocket RPC methods */
   public ws(): WsSubscriptionClient | null {
     return this.wsSubscriptionClient;
+  }
+
+  /** External Wallet Providers */
+  public externalWallets(): IExternalWalletProvider[] {
+    return this.externalWalletProviders;
   }
 
   /** set new providers */
