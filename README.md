@@ -132,11 +132,12 @@ const addressesResp: Array<IAddressInfo> = await web3Client
 The client exposes several APIs which could be used on its own (also initialized as stand-alone) if one needs to:
 
 ```ts
-web3Client.publicApi()      -> sub-client for public api                    (interface: PublicApiClient)
-web3Client.privateApi()     -> sub-client for private api                   (interface: PrivateApiClient)
-web3Client.wallet()         -> sub-client for wallet-related operations     (interface: WalletClient)
-web3Client.smartContracts() -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
-web3Client.ws()             -> sub-client for websockets                    (interface: WsSubscriptionClient)
+web3Client.publicApi()          -> sub-client for public api                    (interface: PublicApiClient)
+web3Client.privateApi()         -> sub-client for private api                   (interface: PrivateApiClient)
+web3Client.wallet()             -> sub-client for wallet-related operations     (interface: WalletClient)
+web3Client.smartContracts()     -> sub-client for smart contracts interaction   (interface: SmartContractsClient)
+web3Client.ws()                 -> sub-client for websockets                    (interface: WsSubscriptionClient)
+web3Client.externalWallets()    -> A special API that returns a list of externally discovered wallet providers
 
 ```
 
@@ -297,6 +298,10 @@ Available methods are:
     ```ts
     await web3Client.privateApi().nodeRemoveFromWhitelist("90.110.239.231");
     ```
+
+### External Wallets API
+
+Externally discovered wallets are accessible under the  `externalWallets()` method which returns a list of external wallet providers whose all methods are defined in [here](https://github.com/massalabs/wallet-provider/blob/main/src/provider/IProvider.ts). For more detailed description and documentation of each wallet provider's methods and underlying accounts please refer to the `wallet-provider`'s npm package and documentation [here](https://github.com/massalabs/wallet-provider).
 
 ### Websockets API
 
