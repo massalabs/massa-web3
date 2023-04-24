@@ -154,13 +154,12 @@ export class Client implements IClient {
    * @returns void
    */
   public startClientDiscovery(): void {
-    const that = this;
     if (this.externalWalletProvidersDiscoveryTimeoutId) {
       return;
     }
     this.externalWalletProvidersDiscoveryTimeoutId = new Timeout(
       this.externalWalletProvidersDiscoveryInterval,
-      () => that.clientDiscoveryCallback(),
+      () => this.clientDiscoveryCallback(),
     );
   }
 
