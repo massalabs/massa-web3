@@ -191,13 +191,16 @@ export class SmartContractsClient
     }
 
     // request data
+    let baseAccountSignerAddress: string | null = null;
+    if (this.walletClient.getBaseAccount()) {
+      baseAccountSignerAddress = this.walletClient.getBaseAccount().address;
+    }
     const data = {
       max_gas: Number(readData.maxGas),
       target_address: readData.targetAddress,
       target_function: readData.targetFunction,
       parameter: readData.parameter,
-      caller_address:
-        readData.callerAddress || this.walletClient.getBaseAccount().address,
+      caller_address: readData.callerAddress || baseAccountSignerAddress,
     };
     // returns operation ids
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
