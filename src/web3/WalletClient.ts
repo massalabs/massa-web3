@@ -37,7 +37,7 @@ const getThreadNumber = (address: string): number => {
 /** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
 export class WalletClient extends BaseClient implements IWalletClient {
   private wallet: Array<IAccount> = [];
-  private baseAccount: IAccount;
+  private baseAccount?: IAccount;
 
   public constructor(
     clientConfig: IClientConfig,
@@ -45,6 +45,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
     baseAccount?: IAccount,
   ) {
     super(clientConfig);
+    if (baseAccount) {
+      this.baseAccount = baseAccount;
+    }
 
     // ========== bind wallet methods ========= //
 
@@ -83,7 +86,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /** get the default (base) account */
-  public getBaseAccount(): IAccount {
+  public getBaseAccount(): IAccount | null {
     return this.baseAccount;
   }
 

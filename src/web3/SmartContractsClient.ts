@@ -197,7 +197,10 @@ export class SmartContractsClient
       target_function: readData.targetFunction,
       parameter: readData.parameter,
       caller_address:
-        readData.callerAddress || this.walletClient.getBaseAccount().address,
+        readData.callerAddress ||
+        (this.walletClient.getBaseAccount()
+          ? this.walletClient.getBaseAccount().address
+          : null),
     };
     // returns operation ids
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;

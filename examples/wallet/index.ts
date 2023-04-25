@@ -76,7 +76,7 @@ if (!receiverPrivateKey) {
 
     // get wallet info
     const walletInfo = await web3Client.wallet().walletInfo();
-    // console.log("WALLET INFO ", walletInfo);
+    console.log('Wallet Info ', walletInfo);
 
     // add a new wallet
     console.log('Adding a new Account ...');
@@ -162,6 +162,7 @@ if (!receiverPrivateKey) {
 
     process.exit(0);
   } catch (ex) {
+    console.error(ex);
     const msg = chalk.red(`Error = ${ex}`);
     console.error(msg);
     process.exit(-1);

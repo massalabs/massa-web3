@@ -361,6 +361,7 @@ const pollAsyncEvents = async (
     );
     process.exit(0);
   } catch (ex) {
+    console.error(ex);
     const msg = chalk.red(`Error = ${ex}`);
     if (spinner) spinner.fail(msg);
     process.exit(-1);
