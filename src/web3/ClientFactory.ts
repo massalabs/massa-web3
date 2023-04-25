@@ -25,7 +25,6 @@ export class ClientFactory {
     provider: DefaultProviderUrls,
     retryStrategyOn = true,
     baseAccount?: IAccount,
-    withExternalProviderDiscovery = true,
   ): Promise<Client> {
     let publicProviderUrl = provider.toString();
     let privateProviderUrl = provider.toString();
@@ -63,7 +62,6 @@ export class ClientFactory {
         providers,
       } as IClientConfig,
       baseAccount,
-      withExternalProviderDiscovery,
     );
 
     if (baseAccount) await client.wallet().setBaseAccount(baseAccount);
@@ -76,7 +74,6 @@ export class ClientFactory {
     providers: Array<IProvider>,
     retryStrategyOn = true,
     baseAccount?: IAccount,
-    withExternalProviderDiscovery = true,
   ): Promise<Client> {
     const client: Client = new Client(
       {
@@ -84,7 +81,6 @@ export class ClientFactory {
         providers,
       } as IClientConfig,
       baseAccount,
-      withExternalProviderDiscovery,
     );
 
     if (baseAccount) await client.wallet().setBaseAccount(baseAccount);
