@@ -28,7 +28,7 @@
         "fmt": "npm run prettier:fix && npm run lint:fix",
         "fmt:check": "npm run prettier && npm run lint",
         "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json",
-        "test:web3-browser": "http-server ./ --cors --port 9011"
+        "test:web3-browser": "http-server ./ --cors --port 9014"
     },
     "author": "Massa Labs <info@massa.net>",
     "contributors": [
@@ -60,6 +60,8 @@
     "dependencies": {
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
+        "@rollup/plugin-commonjs": "^24.1.0",
+        "rollup-plugin-json": "4.0.0",
         "@types/ws": "^8.5.4",
         "axios": "^0.26.1",
         "base58check": "^2.0.0",
@@ -73,7 +75,6 @@
         "jest-environment-jsdom": "^29.5.0",
         "js-base64": "^3.7.5",
         "rollup-plugin-node-polyfills": "^0.2.1",
-        "varint": "^6.0.0",
         "ws": "^8.12.1"
     },
     "devDependencies": {

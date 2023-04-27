@@ -5,8 +5,8 @@
     "compilerOptions": {
         "declaration": false,
         "esModuleInterop": true,
-        "target": "es2022",
-        "module": "es2020",
+        "target": "ES2020",
+        "module": "commonjs",
         "moduleResolution": "node16",
         "allowSyntheticDefaultImports": true,
         "jsx": "preserve",

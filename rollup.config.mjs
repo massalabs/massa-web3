@@ -1,5 +1,7 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
+import commonjs from '@rollup/plugin-commonjs';
+import rollupJson from 'rollup-plugin-json';
 
 function getConfig(opts) {
   if (opts == null) {
@@ -22,10 +24,6 @@ function getConfig(opts) {
       name: opts.name || undefined,
       format: opts.format || 'esm',
       sourcemap: true,
-      globals: {
-        varint: 'varint',
-        axios: 'axios',
-      },
     },
     context: '__$G',
     treeshake: true,
@@ -35,10 +33,18 @@ function getConfig(opts) {
         exportConditions,
         mainFields,
         modulesOnly: true,
-        preferBuiltins: false,
+        preferBuiltins: true,
+        extensions: ['.mjs', '.ts', '.js', '.json', '.node'],
+        browser: true,
+      }),
+      commonjs({
+        browser: true,
+        include: 'node_modules/**',
+      }),
+      rollupJson({
+        compact: true,
       }),
     ],
-    external: ['varint', 'axios'],
   };
 }
 
