@@ -22,8 +22,8 @@ export { ISignedMessage } from './interfaces/ISignedMessage';
 export { IStakingAddresses } from './interfaces/IStakingAddresses';
 export { ITransactionData } from './interfaces/ITransactionData';
 export { IBalance } from './interfaces/IBalance';
-export { ISerializable } from './interfaces/ISerializable';
-export { IDeserializedResult } from './interfaces/ISerializable';
+export { ISerializable } from './utils/serializers/ISerializable';
+export { IDeserializedResult } from './utils/serializers/ISerializable';
 export { IDatastoreEntry } from './interfaces/IDatastoreEntry';
 export { IContractReadOperationData } from './interfaces/IContractReadOperationData';
 export { IContractReadOperationResponse } from './interfaces/IContractReadOperationResponse';
@@ -58,12 +58,12 @@ export { ISubscribeNewBlocksMessage } from './interfaces/ISubscribeNewBlocksMess
 export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocksMessage';
 
 /** Exposed clients and factories */
+export { ClientFactory } from './web3/ClientFactory';
 export {
-  ClientFactory,
+  Client,
   DefaultProviderUrls,
   DefaultWsProviderUrls,
-} from './web3/ClientFactory';
-export { Client } from './web3/Client';
+} from './web3/Client';
 export { WsSubscriptionClient } from './web3/WsSubscriptionClient';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';

@@ -1,4 +1,4 @@
-import { DefaultProviderUrls } from '../web3/ClientFactory';
+import { DefaultProviderUrls } from '../web3/Client';
 import { IPrivateApiClient } from './IPrivateApiClient';
 import { IProvider } from './IProvider';
 import { IPublicApiClient } from './IPublicApiClient';

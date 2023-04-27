@@ -1,33 +1,32 @@
 "use strict";
-/* eslint-disable no-case-declarations */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bytesToNativeTypeArray = exports.nativeTypeArrayToBytes = exports.bytesToSerializableObjectArray = exports.deserializeObj = exports.serializableObjectsArrayToBytes = void 0;
+const units_1 = require("./units");
+const strings_1 = require("./strings");
 const MAX_STRING_CHARS = 100;
 // Lookup table for native types
 const getDatatypeSize = (typedArrayType) => {
     switch (typedArrayType) {
-        case arguments_1.TypedArrayUnit.STRING:
+        case units_1.TypedArrayUnit.STRING:
             return MAX_STRING_CHARS;
-        case arguments_1.TypedArrayUnit.BOOL:
+        case units_1.TypedArrayUnit.BOOL:
             return 1;
-        case arguments_1.TypedArrayUnit.F32:
+        case units_1.TypedArrayUnit.F32:
             return 4;
-        case arguments_1.TypedArrayUnit.F64:
+        case units_1.TypedArrayUnit.F64:
             return 8;
-        case arguments_1.TypedArrayUnit.I32:
+        case units_1.TypedArrayUnit.I32:
             return 4;
-        case arguments_1.TypedArrayUnit.I64:
+        case units_1.TypedArrayUnit.I64:
             return 8;
-        case arguments_1.TypedArrayUnit.U8:
+        case units_1.TypedArrayUnit.U8:
             return 1;
-        case arguments_1.TypedArrayUnit.U32:
+        case units_1.TypedArrayUnit.U32:
             return 4;
-        case arguments_1.TypedArrayUnit.U64:
+        case units_1.TypedArrayUnit.U64:
             return 8;
     }
 };
-const arguments_1 = require("../arguments");
-const strings_1 = require("./strings");
 function serializableObjectsArrayToBytes(source) {
     const nbElements = source.length;
     const pointers = new Array(nbElements);
@@ -96,7 +95,7 @@ function nativeTypeArrayToBytes(source, type) {
         // For boolean and number values, we can just write them to the target buffer directly
         const view = new DataView(target.buffer, target.byteOffset + i * getDatatypeSize(type));
         switch (type) {
-            case arguments_1.TypedArrayUnit.STRING:
+            case units_1.TypedArrayUnit.STRING:
                 if (value.length > MAX_STRING_CHARS) {
                     throw new Error(`String has more than ${MAX_STRING_CHARS} (max.). Please limit your strings to ${MAX_STRING_CHARS} chars`);
                 }
@@ -105,28 +104,28 @@ function nativeTypeArrayToBytes(source, type) {
                     view.setUint8(j, b[j]);
                 }
                 break;
-            case arguments_1.TypedArrayUnit.BOOL:
+            case units_1.TypedArrayUnit.BOOL:
                 view.setUint8(0, value ? 1 : 0);
                 break;
-            case arguments_1.TypedArrayUnit.U8:
+            case units_1.TypedArrayUnit.U8:
                 view.setUint8(0, value);
                 break;
-            case arguments_1.TypedArrayUnit.F64:
+            case units_1.TypedArrayUnit.F64:
                 view.setFloat64(0, value, true);
                 break;
-            case arguments_1.TypedArrayUnit.F32:
+            case units_1.TypedArrayUnit.F32:
                 view.setFloat32(0, value, true);
                 break;
-            case arguments_1.TypedArrayUnit.I32:
+            case units_1.TypedArrayUnit.I32:
                 view.setInt32(0, value, true);
                 break;
-            case arguments_1.TypedArrayUnit.I64:
+            case units_1.TypedArrayUnit.I64:
                 view.setBigInt64(0, BigInt(value), true);
                 break;
-            case arguments_1.TypedArrayUnit.U32:
+            case units_1.TypedArrayUnit.U32:
                 view.setUint32(0, value, true);
                 break;
-            case arguments_1.TypedArrayUnit.U64:
+            case units_1.TypedArrayUnit.U64:
                 view.setBigUint64(0, BigInt(value), true);
                 break;
             default:
@@ -158,7 +157,7 @@ function bytesToNativeTypeArray(source, typedArrayType) {
     for (let i = 0; i < targetLength; i++) {
         const size = getDatatypeSize(typedArrayType);
         switch (typedArrayType) {
-            case arguments_1.TypedArrayUnit.STRING:
+            case units_1.TypedArrayUnit.STRING:
                 let dataArr = [];
                 for (let j = 0; j < size; j++) {
                     const letter = dataView.getUint8(byteOffset + j);
@@ -168,29 +167,29 @@ function bytesToNativeTypeArray(source, typedArrayType) {
                 }
                 result.push((0, strings_1.bytesToStr)(Uint8Array.from(dataArr)));
                 break;
-            case arguments_1.TypedArrayUnit.BOOL:
+            case units_1.TypedArrayUnit.BOOL:
                 const boolVal = source[i] === 1 ? true : false;
                 result.push(boolVal);
                 break;
-            case arguments_1.TypedArrayUnit.U8:
+            case units_1.TypedArrayUnit.U8:
                 result.push(source[i]);
                 break;
-            case arguments_1.TypedArrayUnit.F32:
+            case units_1.TypedArrayUnit.F32:
                 result.push(dataView.getFloat32(byteOffset, true));
                 break;
-            case arguments_1.TypedArrayUnit.F64:
+            case units_1.TypedArrayUnit.F64:
                 result.push(dataView.getFloat64(byteOffset, true));
                 break;
-            case arguments_1.TypedArrayUnit.I32:
+            case units_1.TypedArrayUnit.I32:
                 result.push(dataView.getInt32(byteOffset, true));
                 break;
-            case arguments_1.TypedArrayUnit.I64:
+            case units_1.TypedArrayUnit.I64:
                 result.push(dataView.getBigInt64(byteOffset, true));
                 break;
-            case arguments_1.TypedArrayUnit.U32:
+            case units_1.TypedArrayUnit.U32:
                 result.push(dataView.getUint32(byteOffset, true));
                 break;
-            case arguments_1.TypedArrayUnit.U64:
+            case units_1.TypedArrayUnit.U64:
                 result.push(dataView.getBigUint64(byteOffset, true));
                 break;
         }

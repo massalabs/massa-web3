@@ -1,22 +1,7 @@
 import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { IAccount } from '../interfaces/IAccount';
-import { Client, getWsProvider } from './Client';
+import { Client, DefaultProviderUrls, getWsProvider } from './Client';
 import { IClientConfig } from '../interfaces/IClientConfig';
-
-/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
-export enum DefaultProviderUrls {
-  MAINNET = 'https://massa.net/api/v2',
-  TESTNET = 'https://test.massa.net/api/v2',
-  LABNET = 'https://labnet.massa.net/api/v2',
-  LOCALNET = 'http://127.0.0.1',
-}
-
-export enum DefaultWsProviderUrls {
-  MAINNET = 'wss://massa.net/api/websocket',
-  TESTNET = 'wss://test.massa.net/api/websocket',
-  LABNET = 'wss://labnet.massa.net/api/websocket',
-  LOCALNET = 'ws://localhost',
-}
 
 /** Massa Web3 Client Factory for easy initialization */
 export class ClientFactory {

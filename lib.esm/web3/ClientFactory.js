@@ -1,20 +1,5 @@
 import { ProviderType } from '../interfaces/IProvider';
-import { Client, getWsProvider } from './Client';
-/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
-export var DefaultProviderUrls;
-(function (DefaultProviderUrls) {
-    DefaultProviderUrls["MAINNET"] = "https://massa.net/api/v2";
-    DefaultProviderUrls["TESTNET"] = "https://test.massa.net/api/v2";
-    DefaultProviderUrls["LABNET"] = "https://labnet.massa.net/api/v2";
-    DefaultProviderUrls["LOCALNET"] = "http://127.0.0.1";
-})(DefaultProviderUrls || (DefaultProviderUrls = {}));
-export var DefaultWsProviderUrls;
-(function (DefaultWsProviderUrls) {
-    DefaultWsProviderUrls["MAINNET"] = "wss://massa.net/api/websocket";
-    DefaultWsProviderUrls["TESTNET"] = "wss://test.massa.net/api/websocket";
-    DefaultWsProviderUrls["LABNET"] = "wss://labnet.massa.net/api/websocket";
-    DefaultWsProviderUrls["LOCALNET"] = "ws://localhost";
-})(DefaultWsProviderUrls || (DefaultWsProviderUrls = {}));
+import { Client, DefaultProviderUrls, getWsProvider } from './Client';
 /** Massa Web3 Client Factory for easy initialization */
 export class ClientFactory {
     /** Factory Method for easy initializing a client using a default provider */

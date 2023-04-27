@@ -1,34 +1,48 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Client = exports.getWsProvider = void 0;
+exports.Client = exports.getWsProvider = exports.DefaultWsProviderUrls = exports.DefaultProviderUrls = void 0;
 const PrivateApiClient_1 = require("./PrivateApiClient");
 const PublicApiClient_1 = require("./PublicApiClient");
 const WalletClient_1 = require("./WalletClient");
 const SmartContractsClient_1 = require("./SmartContractsClient");
 const IProvider_1 = require("../interfaces/IProvider");
-const ClientFactory_1 = require("./ClientFactory");
 const WsSubscriptionClient_1 = require("./WsSubscriptionClient");
+/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
+var DefaultProviderUrls;
+(function (DefaultProviderUrls) {
+    DefaultProviderUrls["MAINNET"] = "https://massa.net/api/v2";
+    DefaultProviderUrls["TESTNET"] = "https://test.massa.net/api/v2";
+    DefaultProviderUrls["LABNET"] = "https://labnet.massa.net/api/v2";
+    DefaultProviderUrls["LOCALNET"] = "http://127.0.0.1";
+})(DefaultProviderUrls = exports.DefaultProviderUrls || (exports.DefaultProviderUrls = {}));
+var DefaultWsProviderUrls;
+(function (DefaultWsProviderUrls) {
+    DefaultWsProviderUrls["MAINNET"] = "wss://massa.net/api/websocket";
+    DefaultWsProviderUrls["TESTNET"] = "wss://test.massa.net/api/websocket";
+    DefaultWsProviderUrls["LABNET"] = "wss://labnet.massa.net/api/websocket";
+    DefaultWsProviderUrls["LOCALNET"] = "ws://localhost";
+})(DefaultWsProviderUrls = exports.DefaultWsProviderUrls || (exports.DefaultWsProviderUrls = {}));
 const getWsProvider = (provider) => {
     let wsProvider;
     switch (provider) {
-        case ClientFactory_1.DefaultProviderUrls.LABNET: {
-            wsProvider = ClientFactory_1.DefaultWsProviderUrls.LABNET;
+        case DefaultProviderUrls.LABNET: {
+            wsProvider = DefaultWsProviderUrls.LABNET;
             break;
         }
-        case ClientFactory_1.DefaultProviderUrls.MAINNET: {
-            wsProvider = ClientFactory_1.DefaultWsProviderUrls.MAINNET;
+        case DefaultProviderUrls.MAINNET: {
+            wsProvider = DefaultWsProviderUrls.MAINNET;
             break;
         }
-        case ClientFactory_1.DefaultProviderUrls.LOCALNET: {
-            wsProvider = ClientFactory_1.DefaultWsProviderUrls.LOCALNET;
+        case DefaultProviderUrls.LOCALNET: {
+            wsProvider = DefaultWsProviderUrls.LOCALNET;
             break;
         }
-        case ClientFactory_1.DefaultProviderUrls.TESTNET: {
-            wsProvider = ClientFactory_1.DefaultWsProviderUrls.TESTNET;
+        case DefaultProviderUrls.TESTNET: {
+            wsProvider = DefaultWsProviderUrls.TESTNET;
             break;
         }
         default: {
-            wsProvider = ClientFactory_1.DefaultWsProviderUrls.LOCALNET;
+            wsProvider = DefaultWsProviderUrls.LOCALNET;
         }
     }
     return wsProvider;

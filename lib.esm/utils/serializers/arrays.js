@@ -1,4 +1,5 @@
-/* eslint-disable no-case-declarations */
+import { TypedArrayUnit } from './units';
+import { bytesToStr, strToBytes } from './strings';
 const MAX_STRING_CHARS = 100;
 // Lookup table for native types
 const getDatatypeSize = (typedArrayType) => {
@@ -23,8 +24,6 @@ const getDatatypeSize = (typedArrayType) => {
             return 8;
     }
 };
-import { TypedArrayUnit } from '../arguments';
-import { bytesToStr, strToBytes } from './strings';
 export function serializableObjectsArrayToBytes(source) {
     const nbElements = source.length;
     const pointers = new Array(nbElements);

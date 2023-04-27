@@ -5,9 +5,21 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider } from '../interfaces/IProvider';
-import { DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
 import { WsSubscriptionClient } from './WsSubscriptionClient';
+/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
+export declare enum DefaultProviderUrls {
+    MAINNET = "https://massa.net/api/v2",
+    TESTNET = "https://test.massa.net/api/v2",
+    LABNET = "https://labnet.massa.net/api/v2",
+    LOCALNET = "http://127.0.0.1"
+}
+export declare enum DefaultWsProviderUrls {
+    MAINNET = "wss://massa.net/api/websocket",
+    TESTNET = "wss://test.massa.net/api/websocket",
+    LABNET = "wss://labnet.massa.net/api/websocket",
+    LOCALNET = "ws://localhost"
+}
 export declare const getWsProvider: (provider: DefaultProviderUrls) => DefaultWsProviderUrls;
 /** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
 export declare class Client implements IClient {

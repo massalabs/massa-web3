@@ -22,11 +22,15 @@ function getConfig(opts) {
       name: opts.name || undefined,
       format: opts.format || 'esm',
       sourcemap: true,
+      globals: {
+        varint: 'varint',
+        axios: 'axios',
+      },
     },
     context: '__$G',
     treeshake: true,
     plugins: [
-      nodePolyfills(),
+      nodePolyfills({ sourceMap: true, fs: true }),
       nodeResolve({
         exportConditions,
         mainFields,
@@ -34,6 +38,7 @@ function getConfig(opts) {
         preferBuiltins: false,
       }),
     ],
+    external: ['varint', 'axios'],
   };
 }
 

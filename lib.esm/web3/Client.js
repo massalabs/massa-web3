@@ -3,8 +3,22 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { ProviderType } from '../interfaces/IProvider';
-import { DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
 import { WsSubscriptionClient } from './WsSubscriptionClient';
+/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
+export var DefaultProviderUrls;
+(function (DefaultProviderUrls) {
+    DefaultProviderUrls["MAINNET"] = "https://massa.net/api/v2";
+    DefaultProviderUrls["TESTNET"] = "https://test.massa.net/api/v2";
+    DefaultProviderUrls["LABNET"] = "https://labnet.massa.net/api/v2";
+    DefaultProviderUrls["LOCALNET"] = "http://127.0.0.1";
+})(DefaultProviderUrls || (DefaultProviderUrls = {}));
+export var DefaultWsProviderUrls;
+(function (DefaultWsProviderUrls) {
+    DefaultWsProviderUrls["MAINNET"] = "wss://massa.net/api/websocket";
+    DefaultWsProviderUrls["TESTNET"] = "wss://test.massa.net/api/websocket";
+    DefaultWsProviderUrls["LABNET"] = "wss://labnet.massa.net/api/websocket";
+    DefaultWsProviderUrls["LOCALNET"] = "ws://localhost";
+})(DefaultWsProviderUrls || (DefaultWsProviderUrls = {}));
 export const getWsProvider = (provider) => {
     let wsProvider;
     switch (provider) {

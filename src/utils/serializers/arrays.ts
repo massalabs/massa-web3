@@ -1,4 +1,7 @@
 /* eslint-disable no-case-declarations */
+import { IDeserializedResult, ISerializable } from './ISerializable';
+import { TypedArrayUnit } from './units';
+import { bytesToStr, strToBytes } from './strings';
 
 const MAX_STRING_CHARS = 100;
 
@@ -25,13 +28,6 @@ const getDatatypeSize = (typedArrayType: TypedArrayUnit): number => {
       return 8;
   }
 };
-
-import {
-  IDeserializedResult,
-  ISerializable,
-} from '../../interfaces/ISerializable';
-import { TypedArrayUnit } from '../arguments';
-import { bytesToStr, strToBytes } from './strings';
 
 export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
   source: T[],

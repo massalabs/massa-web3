@@ -11,7 +11,7 @@
         "build-commonjs": "tsc --project tsconfig.commonjs.json",
         "build-esm": "tsc --project tsconfig.esm.json",
         "build-rollup": "rollup -c",
-        "build": "npm run build-commonjs && npm run build-esm && npm run build-rollup",
+        "build": "rimraf dist/* && npm run build-commonjs && npm run build-esm && npm run build-rollup",
         "update-version-major": "npm version major",
         "update-version-minor": "npm version minor",
         "update-version-patch": "npm version patch",

@@ -3,8 +3,8 @@ export { EOperationStatus } from './interfaces/EOperationStatus';
 export { OperationTypeId, } from './interfaces/OperationTypes';
 export { WebsocketEvent } from './interfaces/WebsocketEvent';
 /** Exposed clients and factories */
-export { ClientFactory, DefaultProviderUrls, DefaultWsProviderUrls, } from './web3/ClientFactory';
-export { Client } from './web3/Client';
+export { ClientFactory } from './web3/ClientFactory';
+export { Client, DefaultProviderUrls, DefaultWsProviderUrls, } from './web3/Client';
 export { WsSubscriptionClient } from './web3/WsSubscriptionClient';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';

@@ -1,23 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ClientFactory = exports.DefaultWsProviderUrls = exports.DefaultProviderUrls = void 0;
+exports.ClientFactory = void 0;
 const IProvider_1 = require("../interfaces/IProvider");
 const Client_1 = require("./Client");
-/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
-var DefaultProviderUrls;
-(function (DefaultProviderUrls) {
-    DefaultProviderUrls["MAINNET"] = "https://massa.net/api/v2";
-    DefaultProviderUrls["TESTNET"] = "https://test.massa.net/api/v2";
-    DefaultProviderUrls["LABNET"] = "https://labnet.massa.net/api/v2";
-    DefaultProviderUrls["LOCALNET"] = "http://127.0.0.1";
-})(DefaultProviderUrls = exports.DefaultProviderUrls || (exports.DefaultProviderUrls = {}));
-var DefaultWsProviderUrls;
-(function (DefaultWsProviderUrls) {
-    DefaultWsProviderUrls["MAINNET"] = "wss://massa.net/api/websocket";
-    DefaultWsProviderUrls["TESTNET"] = "wss://test.massa.net/api/websocket";
-    DefaultWsProviderUrls["LABNET"] = "wss://labnet.massa.net/api/websocket";
-    DefaultWsProviderUrls["LOCALNET"] = "ws://localhost";
-})(DefaultWsProviderUrls = exports.DefaultWsProviderUrls || (exports.DefaultWsProviderUrls = {}));
 /** Massa Web3 Client Factory for easy initialization */
 class ClientFactory {
     /** Factory Method for easy initializing a client using a default provider */
@@ -26,7 +11,7 @@ class ClientFactory {
         let privateProviderUrl = provider.toString();
         switch (provider) {
             // in the case of localnet append specific default ports to url
-            case DefaultProviderUrls.LOCALNET: {
+            case Client_1.DefaultProviderUrls.LOCALNET: {
                 privateProviderUrl = `${privateProviderUrl}:33034`;
                 publicProviderUrl = `${publicProviderUrl}:33035`;
                 break;

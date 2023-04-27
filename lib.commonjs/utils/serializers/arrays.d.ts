@@ -1,5 +1,5 @@
-import { IDeserializedResult, ISerializable } from '../../interfaces/ISerializable';
-import { TypedArrayUnit } from '../arguments';
+import { IDeserializedResult, ISerializable } from './ISerializable';
+import { TypedArrayUnit } from './units';
 export declare function serializableObjectsArrayToBytes<T extends ISerializable<T>>(source: T[]): Uint8Array;
 export declare function deserializeObj<T extends ISerializable<T>>(data: Uint8Array, offset: number, Clazz: new () => T): IDeserializedResult<T>;
 /**
