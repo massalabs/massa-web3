@@ -3,15 +3,18 @@
         "experimentalResolver": true
     },
     "compilerOptions": {
-        "target": "ES2020",
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "declaration": false,
+        "esModuleInterop": true,
+        "target": "es2022",
+        "module": "es2020",
+        "moduleResolution": "node16",
         "allowSyntheticDefaultImports": true,
         "jsx": "preserve",
         "allowJs": true,
         "importHelpers": true,
         "alwaysStrict": true,
         "sourceMap": true,
+        "noEmitOnError": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
@@ -22,10 +25,12 @@
         "skipLibCheck": true,
         "strictNullChecks": false,
         "downlevelIteration": true,
+        "rootDir": "./src",
         "outDir": "dist",
         "types": ["node"],
         "typeRoots": ["node_modules/@types"],
         "lib": [
+            "es5",
             "es7",
             "es6",
             "dom",
@@ -40,6 +45,7 @@
         ]
     },
     "lib": [
+        "es5",
         "es7",
         "es6",
         "dom",
