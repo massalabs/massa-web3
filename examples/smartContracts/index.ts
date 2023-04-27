@@ -25,7 +25,7 @@ import { fromMAS, toMAS } from '../../src';
 import {
   IDeserializedResult,
   ISerializable,
-} from '../../src/interfaces/ISerializable';
+} from '../../src/utils/serializers/ISerializable';
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
