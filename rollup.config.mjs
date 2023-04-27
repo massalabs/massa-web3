@@ -14,7 +14,7 @@ function getConfig(opts) {
   }
 
   return {
-    input: "./lib.esm/index.js",
+    input: './lib.esm/index.js',
     output: {
       file,
       banner:

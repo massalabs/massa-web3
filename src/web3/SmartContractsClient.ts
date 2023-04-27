@@ -309,7 +309,9 @@ export class SmartContractsClient
       );
     }
     if (jsonRpcCallResult[0].result.Error) {
-      throw new Error(`Execute read-only smart contract error ${jsonRpcCallResult[0].result.Error}`);
+      throw new Error(
+        `Execute read-only smart contract error ${jsonRpcCallResult[0].result.Error}`,
+      );
     }
     return {
       returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,

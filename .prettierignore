@@ -8,3 +8,4 @@ dist
 .lintstagedrc
 README.md
 *.html
+lib.*
