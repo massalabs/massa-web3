@@ -1,0 +1,59 @@
+name: Web sockets example
+
+on:
+  [push]
+
+
+jobs:
+  run-wallet-example:
+    defaults:
+      run:
+        working-directory: ./
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: ./package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: test-ws-blocks
+        run: |
+          if npm run test-ws-blocks ; then
+            echo "Successful execution! (test-ws-blocks)"
+          else
+            echo "Failed to execute contracts ..."
+            exit 1
+          fi
+
+      - name: test-ws-block-headers
+        run: |
+          if npm run test-ws-block-headers ; then
+            echo "Successful execution! (test-ws-block-headers)"
+          else
+            echo "Failed to execute contracts ..."
+            exit 1
+          fi
+
+      - name: test-ws-blocks
+        run: |
+          if npm run test-ws-blocks ; then
+            echo "Successful execution! (test-ws-blocks)"
+          else
+            echo "Failed to execute contracts ..."
+            exit 1
+          fi
+        env:
+          JSON_RPC_URL_PUBLIC: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+          RECEIVER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
