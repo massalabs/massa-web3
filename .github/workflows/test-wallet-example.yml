@@ -8,7 +8,7 @@ jobs:
   run-wallet-example:
     defaults:
       run:
-        working-directory: ./examples/wallet/
+        working-directory: ./
 
     runs-on: ubuntu-latest
 
@@ -25,6 +25,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+
 
       - name: Deploy
         run: |
