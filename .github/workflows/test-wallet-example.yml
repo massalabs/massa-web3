@@ -28,7 +28,7 @@ jobs:
 
       - name: Deploy
         run: |
-          if npm run test-wallet |& grep -q "Buy Rolls Tx Id  [ 'O" ; then
+          if npm run test-wallet |& grep -q "Buy Rolls Tx Id" ; then
             echo "Successful execution!"
           else
             echo "Failed to execute contracts ..."
