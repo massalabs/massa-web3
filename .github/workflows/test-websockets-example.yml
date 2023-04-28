@@ -31,7 +31,7 @@ jobs:
           if npm run test-ws-blocks ; then
             echo "Successful execution! (test-ws-blocks)"
           else
-            echo "Failed to execute contracts ..."
+            echo "Failed to execute test-ws-blocks"
             exit 1
           fi
         env:
@@ -45,7 +45,7 @@ jobs:
           if npm run test-ws-block-headers ; then
             echo "Successful execution! (test-ws-block-headers)"
           else
-            echo "Failed to execute contracts ..."
+            echo "Failed to execute test-ws-block-headers"
             exit 1
           fi
         env:
@@ -59,7 +59,7 @@ jobs:
           if npm run test-ws-blocks ; then
             echo "Successful execution! (test-ws-blocks)"
           else
-            echo "Failed to execute contracts ..."
+            echo "Failed to execute contracts test-ws-blocks"
             exit 1
           fi
         env:
