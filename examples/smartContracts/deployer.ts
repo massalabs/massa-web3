@@ -79,23 +79,17 @@ export const deploySmartContracts = async (
 ): Promise<string> => {
   let deploymentOperationId: string;
   try {
+    // do checks
+    if (!deployerAccount) {
+      deployerAccount = web3Client.wallet().getBaseAccount();
+    }
+
     // check deployer account balance
     const coinsRequired = contractsToDeploy.reduce(
       (acc, contract) => acc + contract.coins,
       0n,
     );
-
-    // do checks
-    if (!deployerAccount) {
-      let baseAccount = web3Client.wallet().getBaseAccount();
-      if (baseAccount) {
-        await checkBalance(web3Client, baseAccount, coinsRequired);
-      } else {
-        throw new Error('No account provided');
-      }
-    } else {
-      await checkBalance(web3Client, deployerAccount, coinsRequired);
-    }
+    await checkBalance(web3Client, deployerAccount, coinsRequired);
 
     // construct a new datastore
     const datastore = new Map<Uint8Array, Uint8Array>();
