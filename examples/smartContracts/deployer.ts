@@ -87,15 +87,13 @@ export const deploySmartContracts = async (
 
     // do checks
     if (!deployerAccount) {
-      let baseAccount = web3Client.wallet().getBaseAccount()
+      let baseAccount = web3Client.wallet().getBaseAccount();
       if (baseAccount) {
         await checkBalance(web3Client, baseAccount, coinsRequired);
-      }
-      else{
+      } else {
         throw new Error('No account provided');
       }
-    }
-    else{
+    } else {
       await checkBalance(web3Client, deployerAccount, coinsRequired);
     }
 

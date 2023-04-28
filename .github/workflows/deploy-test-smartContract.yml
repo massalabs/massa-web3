@@ -1,9 +1,8 @@
 name: Smart contract example Deploy
 
 on:
-  push:
-    paths:
-      - examples/**
+  [push]
+
 
 jobs:
   deploy-SC-example:
