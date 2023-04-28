@@ -34,6 +34,11 @@ jobs:
             echo "Failed to execute contracts ..."
             exit 1
           fi
+        env:
+          JSON_RPC_URL_PUBLIC: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+          RECEIVER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: test-ws-block-headers
         run: |
@@ -43,6 +48,11 @@ jobs:
             echo "Failed to execute contracts ..."
             exit 1
           fi
+        env:
+          JSON_RPC_URL_PUBLIC: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+          RECEIVER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: test-ws-blocks
         run: |
