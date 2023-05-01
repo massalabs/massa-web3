@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { IClientConfig } from '../interfaces/IClientConfig';
 import { Buffer } from 'buffer';
@@ -5,12 +6,12 @@ import { base58Decode, varintEncode } from '../utils/Xbqcrypto';
 import { IAccount } from '../interfaces/IAccount';
 import { IContractData } from '../interfaces/IContractData';
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
-import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
+const superagent = require('superagent');
 
 const encodeAddressToBytes = (
   address: string,
@@ -31,12 +32,11 @@ export type DataType =
   | ICallData;
 
 const requestHeaders = {
-  Accept:
-    'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
   'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-} as AxiosRequestHeaders;
+};
 
 export const PERIOD_OFFSET = 5;
 
@@ -130,21 +130,19 @@ export class BaseClient {
     resource: JSON_RPC_REQUEST_METHOD,
     params: object,
   ): Promise<JsonRpcResponseData<T>> {
-    let resp: AxiosResponse = null;
-
+    let resp: any = null;
     const body = {
       jsonrpc: '2.0',
       method: resource,
       params: params,
       id: 0,
     };
-
+    let client = superagent.post(this.getProviderForRpcMethod(resource).url);
     try {
-      resp = await axios.post(
-        this.getProviderForRpcMethod(resource).url,
-        body,
-        requestHeaders,
-      );
+      for (const key of Object.keys(requestHeaders)) {
+        client.set(key, requestHeaders[key]);
+      }
+      resp = await client.send(body);
     } catch (ex) {
       return {
         isError: true,
@@ -153,7 +151,7 @@ export class BaseClient {
       } as JsonRpcResponseData<T>;
     }
 
-    const responseData: any = resp.data;
+    const responseData: any = resp.body;
 
     if (responseData.error) {
       return {
@@ -165,7 +163,7 @@ export class BaseClient {
 
     return {
       isError: false,
-      result: responseData.result as T,
+      result: responseData.json as T,
       error: null,
     } as JsonRpcResponseData<T>;
   }

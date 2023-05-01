@@ -26,7 +26,7 @@
         "strictNullChecks": false,
         "downlevelIteration": true,
         "rootDir": "./src",
-        "outDir": "dist",
+        "outDir": "./lib.node",
         "types": ["node"],
         "typeRoots": ["node_modules/@types"],
         "lib": [

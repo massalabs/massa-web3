@@ -20,7 +20,7 @@ import { INodeStatus } from '../interfaces/INodeStatus';
 import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
-import { fromMAS, toMAS } from '../utils/converters';
+import { fromMAS } from '../utils/converters';
 
 const VERSION_NUMBER = 0;
 const ADDRESS_PREFIX = 'AU';

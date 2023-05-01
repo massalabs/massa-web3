@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { ProviderType } from '../interfaces/IProvider';
 import { Buffer } from 'buffer';
 import { base58Decode, varintEncode } from '../utils/Xbqcrypto';
-import axios from 'axios';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
+const superagent = require('superagent');
 const encodeAddressToBytes = (address, isSmartContract = false) => {
     let targetAddressEncoded = base58Decode(address.slice(2)).slice(1);
     targetAddressEncoded = Buffer.concat([
@@ -13,7 +14,7 @@ const encodeAddressToBytes = (address, isSmartContract = false) => {
     return targetAddressEncoded;
 };
 const requestHeaders = {
-    Accept: 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
@@ -96,8 +97,12 @@ export class BaseClient {
             params: params,
             id: 0,
         };
+        let client = superagent.post(this.getProviderForRpcMethod(resource).url);
         try {
-            resp = await axios.post(this.getProviderForRpcMethod(resource).url, body, requestHeaders);
+            for (const key of Object.keys(requestHeaders)) {
+                client.set(key, requestHeaders[key]);
+            }
+            resp = await client.send(body);
         }
         catch (ex) {
             return {
@@ -106,7 +111,7 @@ export class BaseClient {
                 error: new Error('JSON.parse error: ' + String(ex)),
             };
         }
-        const responseData = resp.data;
+        const responseData = resp.body;
         if (responseData.error) {
             return {
                 isError: true,
@@ -116,7 +121,7 @@ export class BaseClient {
         }
         return {
             isError: false,
-            result: responseData.result,
+            result: responseData.json,
             error: null,
         };
     }

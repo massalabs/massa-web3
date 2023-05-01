@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseClient = exports.PERIOD_OFFSET = void 0;
-const tslib_1 = require("tslib");
+/* eslint-disable @typescript-eslint/no-var-requires */
 const IProvider_1 = require("../interfaces/IProvider");
 const buffer_1 = require("buffer");
 const Xbqcrypto_1 = require("../utils/Xbqcrypto");
-const axios_1 = tslib_1.__importDefault(require("axios"));
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
+const superagent = require('superagent');
 const encodeAddressToBytes = (address, isSmartContract = false) => {
     let targetAddressEncoded = (0, Xbqcrypto_1.base58Decode)(address.slice(2)).slice(1);
     targetAddressEncoded = buffer_1.Buffer.concat([
@@ -17,7 +17,7 @@ const encodeAddressToBytes = (address, isSmartContract = false) => {
     return targetAddressEncoded;
 };
 const requestHeaders = {
-    Accept: 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
@@ -100,8 +100,12 @@ class BaseClient {
             params: params,
             id: 0,
         };
+        let client = superagent.post(this.getProviderForRpcMethod(resource).url);
         try {
-            resp = await axios_1.default.post(this.getProviderForRpcMethod(resource).url, body, requestHeaders);
+            for (const key of Object.keys(requestHeaders)) {
+                client.set(key, requestHeaders[key]);
+            }
+            resp = await client.send(body);
         }
         catch (ex) {
             return {
@@ -110,7 +114,7 @@ class BaseClient {
                 error: new Error('JSON.parse error: ' + String(ex)),
             };
         }
-        const responseData = resp.data;
+        const responseData = resp.body;
         if (responseData.error) {
             return {
                 isError: true,
@@ -120,7 +124,7 @@ class BaseClient {
         }
         return {
             isError: false,
-            result: responseData.result,
+            result: responseData.json,
             error: null,
         };
     }

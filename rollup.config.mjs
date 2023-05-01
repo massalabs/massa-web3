@@ -38,6 +38,7 @@ function getConfig(opts) {
         browser: true,
       }),
       commonjs({
+        transformMixedEsModules: true,
         browser: true,
         include: 'node_modules/**',
       }),
