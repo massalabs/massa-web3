@@ -32,7 +32,10 @@ const MAX_WALLET_ACCOUNTS = 256;
  * Get the thread number from an address
  *
  * @param address address to get the thread number from
+<<<<<<< main
  *
+=======
+>>>>>>> Update WalletClient.ts
  * @return thread number
  */
 const getThreadNumber = (address: string): number => {
@@ -85,7 +88,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Set the default (base) account
    *
    * @param baseAccount - The account to set as default
+<<<<<<< main
    * @return a promise that resolves to an {@link IAccount} when the base account is set
+=======
+   * @return a promise that resolves when the base account is set
+>>>>>>> Update WalletClient.ts
    */
   public async setBaseAccount(baseAccount: IAccount): Promise<void> {
     // in case of not set thread number, compute the value
@@ -128,10 +135,16 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /**
+<<<<<<< main
    * Fetches a wallet account using its address.
    *
    * @param address - An address to get the account for
    *
+=======
+   * Get wallet account by an address
+   *
+   * @param address - An address to get the account for
+>>>>>>> Update WalletClient.ts
    * @return account or undefined if not found
    */
   public getWalletAccountByAddress(address: string): IAccount | undefined {
@@ -144,7 +157,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Add a list of private keys to the wallet
    *
    * @param secretKeys - An array of private keys (string) to add to the wallet
+<<<<<<< main
    *
+=======
+>>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an array of accounts as {@link IAccount}
    */
   public async addSecretKeysToWallet(
@@ -190,7 +206,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @privateRemarks
    * Each account must have a base58 encoded random entropy or private key
    *
+<<<<<<< main
    * @param accounts - An array of accounts to add to the wallet.
+=======
+   * @param accounts - An array of accounts to add to the wallet
+>>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an array of accounts as {@link IAccount}
    */
   public async addAccountsToWallet(
@@ -520,7 +540,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @throws if the secret key is not valid
    *
    * @param secretKey - The secret key to get the bytes from
+<<<<<<< main
    *
+=======
+>>>>>>> Update WalletClient.ts
    * @return a Uint8Array containing the bytes of the secret key
    */
   public static getBytesSecretKey(secretKey: string): Uint8Array {
@@ -542,7 +565,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Returns the account balance
    *
    * @param address - The address to get the balance from
+<<<<<<< main
    *
+=======
+>>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an {@link IBalance} or null if the address is not found
    */
   public async getAccountBalance(address: string): Promise<IBalance | null> {
@@ -561,7 +587,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @param txData - The transaction data
    * @param executor - The account that will execute the transaction (optional)
+<<<<<<< main
    *
+=======
+>>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an array of operations ids (string)
    */
   public async sendTransaction(
@@ -615,7 +644,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @param txData - The transaction data
    * @param executor - The account that will execute the transaction (optional)
+<<<<<<< main
    *
+=======
+>>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an array of operations ids (string)
    */
   public async buyRolls(
@@ -670,7 +702,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @param txData - The transaction data
    * @param executor - The account that will execute the transaction (optional)
+<<<<<<< main
    *
+=======
+>>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an array of operations ids (string)
    */
   public async sellRolls(
