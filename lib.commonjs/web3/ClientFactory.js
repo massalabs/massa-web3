@@ -30,10 +30,6 @@ class ClientFactory {
                 url: privateProviderUrl,
                 type: IProvider_1.ProviderType.PRIVATE,
             },
-            {
-                url: (0, Client_1.getWsProvider)(provider),
-                type: IProvider_1.ProviderType.WS,
-            },
         ];
         const client = new Client_1.Client({
             retryStrategyOn,

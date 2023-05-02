@@ -72,7 +72,7 @@ export const deploySmartContracts = async (
   web3Client: Client,
   fee = 0n,
   maxGas = 1_000_000n,
-  deployerAccount: IAccount|null,
+  deployerAccount: IAccount | null,
 ): Promise<string> => {
   let deploymentOperationId: string;
   try {

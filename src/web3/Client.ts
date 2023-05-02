@@ -6,7 +6,6 @@ import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { IClient } from '../interfaces/IClient';
-import { WsSubscriptionClient } from './WsSubscriptionClient';
 
 /** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
 export enum DefaultProviderUrls {
@@ -57,7 +56,6 @@ export class Client implements IClient {
   private privateApiClient: PrivateApiClient;
   private walletClient: WalletClient;
   private smartContractsClient: SmartContractsClient;
-  private wsSubscriptionClient: WsSubscriptionClient | null;
 
   public constructor(
     private clientConfig: IClientConfig,
@@ -75,20 +73,12 @@ export class Client implements IClient {
       this.publicApiClient,
       this.walletClient,
     );
-    if (
-      clientConfig.providers.find(
-        (provider) => provider.type === ProviderType.WS,
-      )
-    ) {
-      this.wsSubscriptionClient = new WsSubscriptionClient(clientConfig);
-    }
 
     // subclients
     this.privateApi = this.privateApi.bind(this);
     this.publicApi = this.publicApi.bind(this);
     this.wallet = this.wallet.bind(this);
     this.smartContracts = this.smartContracts.bind(this);
-    this.ws = this.ws.bind(this);
     // setters
     this.setCustomProviders = this.setCustomProviders.bind(this);
     this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
@@ -118,18 +108,12 @@ export class Client implements IClient {
     return this.smartContractsClient;
   }
 
-  /** Websocket RPC methods */
-  public ws(): WsSubscriptionClient | null {
-    return this.wsSubscriptionClient;
-  }
-
   /** set new providers */
   public setCustomProviders(providers: Array<IProvider>): void {
     this.publicApiClient.setProviders(providers);
     this.privateApiClient.setProviders(providers);
     this.walletClient.setProviders(providers);
     this.smartContractsClient.setProviders(providers);
-    this.wsSubscriptionClient.setProviders(providers);
   }
 
   /** get currently set providers */
@@ -162,15 +146,10 @@ export class Client implements IClient {
         url: provider,
         type: ProviderType.PRIVATE,
       } as IProvider,
-      {
-        url: getWsProvider(provider),
-        type: ProviderType.WS,
-      } as IProvider,
     ];
     this.publicApiClient.setProviders(providers);
     this.privateApiClient.setProviders(providers);
     this.walletClient.setProviders(providers);
     this.smartContractsClient.setProviders(providers);
-    this.wsSubscriptionClient.setProviders(providers);
   }
 }

@@ -48,7 +48,6 @@ export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocks
 /** Exposed clients and factories */
 export { ClientFactory } from './web3/ClientFactory';
 export { Client, DefaultProviderUrls, DefaultWsProviderUrls, } from './web3/Client';
-export { WsSubscriptionClient } from './web3/WsSubscriptionClient';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';
 export { WalletClient } from './web3/WalletClient';

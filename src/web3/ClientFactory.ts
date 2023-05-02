@@ -35,10 +35,6 @@ export class ClientFactory {
         url: privateProviderUrl,
         type: ProviderType.PRIVATE,
       } as IProvider,
-      {
-        url: getWsProvider(provider),
-        type: ProviderType.WS,
-      } as IProvider,
     ];
 
     const client: Client = new Client(

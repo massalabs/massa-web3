@@ -64,7 +64,6 @@ export {
   DefaultProviderUrls,
   DefaultWsProviderUrls,
 } from './web3/Client';
-export { WsSubscriptionClient } from './web3/WsSubscriptionClient';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';
 export { WalletClient } from './web3/WalletClient';

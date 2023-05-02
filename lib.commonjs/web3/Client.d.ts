@@ -6,7 +6,6 @@ import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider } from '../interfaces/IProvider';
 import { IClient } from '../interfaces/IClient';
-import { WsSubscriptionClient } from './WsSubscriptionClient';
 /** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
 export declare enum DefaultProviderUrls {
     MAINNET = "https://massa.net/api/v2",
@@ -28,7 +27,6 @@ export declare class Client implements IClient {
     private privateApiClient;
     private walletClient;
     private smartContractsClient;
-    private wsSubscriptionClient;
     constructor(clientConfig: IClientConfig, baseAccount?: IAccount);
     /** Private Api related RPC methods */
     privateApi(): PrivateApiClient;
@@ -38,8 +36,6 @@ export declare class Client implements IClient {
     wallet(): WalletClient;
     /** Smart Contracts related methods */
     smartContracts(): SmartContractsClient;
-    /** Websocket RPC methods */
-    ws(): WsSubscriptionClient | null;
     /** set new providers */
     setCustomProviders(providers: Array<IProvider>): void;
     /** get currently set providers */

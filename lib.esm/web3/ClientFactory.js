@@ -1,5 +1,5 @@
 import { ProviderType } from '../interfaces/IProvider';
-import { Client, DefaultProviderUrls, getWsProvider } from './Client';
+import { Client, DefaultProviderUrls } from './Client';
 /** Massa Web3 Client Factory for easy initialization */
 export class ClientFactory {
     /** Factory Method for easy initializing a client using a default provider */
@@ -26,10 +26,6 @@ export class ClientFactory {
             {
                 url: privateProviderUrl,
                 type: ProviderType.PRIVATE,
-            },
-            {
-                url: getWsProvider(provider),
-                type: ProviderType.WS,
             },
         ];
         const client = new Client({

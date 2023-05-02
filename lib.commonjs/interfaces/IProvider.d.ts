@@ -4,6 +4,5 @@ export interface IProvider {
 }
 export declare enum ProviderType {
     PRIVATE = 0,
-    PUBLIC = 1,
-    WS = 2
+    PUBLIC = 1
 }

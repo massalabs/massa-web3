@@ -14,7 +14,7 @@ const encodeAddressToBytes = (address, isSmartContract = false) => {
     return targetAddressEncoded;
 };
 const requestHeaders = {
-    'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    Accept: 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
