@@ -17,8 +17,15 @@ import { IGetGraphInterval } from '../interfaces/IGetGraphInterval';
 import { IGraphInterval } from '../interfaces/IGraphInterval';
 import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot';
 
-/** Public Api Client for interacting with the massa network */
+/**
+ * Public Api Client for interacting with a massa node
+ */
 export class PublicApiClient extends BaseClient implements IPublicApiClient {
+  /**
+   * Constructor for the {@link PublicApiClient} object
+   *
+   * @param clientConfig - The client configuration
+   */
   public constructor(clientConfig: IClientConfig) {
     super(clientConfig);
 
@@ -36,7 +43,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     this.getGraphInterval = this.getGraphInterval.bind(this);
   }
 
-  /** Get graph interval */
+  /**
+   * Get graph interval
+   *
+   * @param graphInterval - The graph interval values in ms as an IGetGraphInterval
+   * @ A promise which resolves in the graph interval
+   */
   public async getGraphInterval(
     graphInterval: IGetGraphInterval,
   ): Promise<Array<IGraphInterval>> {
@@ -54,7 +66,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Get blockclique details by period and thread */
+  /**
+   * Get blockclique details by period and thread
+   *
+   * @param slot - The slot as an ISlot
+   * @return A promise which resolves in the blockclique details
+   */
   public async getBlockcliqueBlockBySlot(
     slot: ISlot,
   ): Promise<IBlockcliqueBlockBySlot> {
@@ -73,7 +90,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Show the status of the node (reachable? number of peers connected, consensus, version, config parameter summary...) */
+  /**
+   * Show the status of the node
+   * (reachable? number of peers connected, consensus, version, config parameter summary...)
+   *
+   * @return A promise which resolves in the node status
+   */
   public async getNodeStatus(): Promise<INodeStatus> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS;
     if (this.clientConfig.retryStrategyOn) {
@@ -89,7 +111,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Get info about a list of addresses (balances, block creation, ...) */
+  /**
+   * Get data about a list of addresses (balances, block creation, ...)
+   *
+   * @param addresses - The addresses as an array of strings
+   * @return A promise which resolves in the addresses data
+   */
   public async getAddresses(
     addresses: Array<string>,
   ): Promise<Array<IAddressInfo>> {
@@ -107,7 +134,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Show info about a block (content, finality ...) */
+  /**
+   * Show data about a block (content, finality ...)
+   *
+   * @param blockIds - The block ids as an array of strings
+   * @return A promise which resolves in the block data
+   */
   public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
     if (this.clientConfig.retryStrategyOn) {
@@ -123,7 +155,11 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Show info about a list of endorsements (content, finality ...) */
+  /** Show info about a list of endorsements (content, finality ...)
+   *
+   * @param endorsementIds - The endorsement ids as an array of strings
+   * @return A promise which resolves in the endorsement data
+   */
   public async getEndorsements(
     endorsementIds: Array<string>,
   ): Promise<Array<IEndorsement>> {
@@ -141,7 +177,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Show info about a list of operations = (content, finality ...) */
+  /**
+   * Show data about a list of operations (content, finality ...)
+   *
+   * @param operationIds - The operation ids as an array of strings
+   * @return A promise which resolves in the operation data
+   */
   public async getOperations(
     operationIds: Array<string>,
   ): Promise<Array<IOperationData>> {
@@ -159,7 +200,11 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Get cliques */
+  /**
+   * Get cliques
+   *
+   * @return A promise which resolves to the cliques
+   */
   public async getCliques(): Promise<Array<IClique>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQUES;
     if (this.clientConfig.retryStrategyOn) {
@@ -175,7 +220,11 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Returns the active stakers and their roll counts for the current cycle */
+  /**
+   * Returns the active stakers and their roll counts for the current cycle
+   *
+   * @return A promise which resolves to the stakers addresses and their roll counts
+   */
   public async getStakers(): Promise<Array<IStakingAddresses>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKERS;
     if (this.clientConfig.retryStrategyOn) {
@@ -191,7 +240,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Returns the data entry both at the latest final and active executed slots. */
+  /**
+   * Returns the data entry both at the latest final and active executed slots.
+   *
+   * @param addressesKeys - The addresses and keys as an array of IDatastoreEntryInput objects
+   * @return A promise which resolves to the datastore entries
+   */
   public async getDatastoreEntries(
     addressesKeys: Array<IDatastoreEntryInput>,
   ): Promise<Array<IDatastoreEntry>> {
