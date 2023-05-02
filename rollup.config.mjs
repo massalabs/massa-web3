@@ -32,7 +32,7 @@ function getConfig(opts) {
       nodeResolve({
         exportConditions,
         mainFields,
-        modulesOnly: true,
+        modulesOnly: false,
         preferBuiltins: true,
         extensions: ['.mjs', '.ts', '.js', '.json', '.node'],
         browser: true,
