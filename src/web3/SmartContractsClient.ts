@@ -29,11 +29,16 @@ const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
-/** Smart Contracts Client which enables compilation, deployment and streaming of events */
+/**
+ * Smart Contracts Client object enables compilation, deployment and streaming of events
+ */
 export class SmartContractsClient
   extends BaseClient
   implements ISmartContractsClient
 {
+  /**
+   * Constructor for {@link SmartContractsClient} objects
+   */
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
@@ -54,7 +59,18 @@ export class SmartContractsClient
     this.getContractBalance = this.getContractBalance.bind(this);
   }
 
-  /** create and send an operation containing byte code */
+  /**
+   * Deploy a smart contract on th massa blockchain by creating and sending
+   * an operation containing byte code.
+   *
+   * @remarks
+   * If no executor is provided, the default wallet account will be used.
+   *
+   * @param contractData - A IContractData object containing the deployment data
+   * @param executor - An optional IAccount object containing the account to use for the deployment
+   *
+   * @return A promise that resolves to a string containing the operation id of the deployment operation
+   */
   public async deploySmartContract(
     contractData: IContractData,
     executor?: IAccount,
@@ -121,7 +137,16 @@ export class SmartContractsClient
     return opIds[0];
   }
 
-  /** call smart contract method */
+  /**
+   * Calls a smart contract method
+   *
+   * @remarks
+   * If no executor is provided, the default wallet account will be used.
+   *
+   * @param callData - A ICallData object containing the call data
+   * @param executor - An optional IAccount object containing the account to use for the call
+   * @return A promise that resolves to a string containing the operation id of the call operation
+   */
   public async callSmartContract(
     callData: ICallData,
     executor?: IAccount,
@@ -179,7 +204,13 @@ export class SmartContractsClient
     return opIds[0];
   }
 
-  /** read smart contract method */
+  /**
+   * Read a smart contract method
+   *
+   * @param readData - A IReadData object containing useful data for the operation
+   * @return A promise that resolves to a IContractReadOperationResponse object
+   * containing the result of the read operation
+   */
   public async readSmartContract(
     readData: IReadData,
   ): Promise<IContractReadOperationResponse> {
@@ -229,7 +260,12 @@ export class SmartContractsClient
     } as IContractReadOperationResponse;
   }
 
-  /** Returns the balance of the smart contract  */
+  /**
+   * Returns the balance of the smart contract
+   *
+   * @param address - The address of the smart contract
+   * @return A promise that resolves to a IAddressInfo object containing the balance of the smart contract
+   */
   public async getContractBalance(address: string): Promise<IBalance | null> {
     const addresses: Array<IAddressInfo> =
       await this.publicApiClient.getAddresses([address]);
@@ -241,7 +277,12 @@ export class SmartContractsClient
     } as IBalance;
   }
 
-  /** get filtered smart contract events */
+  /**
+   * Get filtered smart contract events
+   *
+   * @param eventFilterData - A IEventFilter object containing the filter
+   * @return A promise that resolves to an array of IEvent objects containing the filtered events
+   */
   public async getFilteredScOutputEvents(
     eventFilterData: IEventFilter,
   ): Promise<Array<IEvent>> {
@@ -271,7 +312,13 @@ export class SmartContractsClient
     }
   }
 
-  /** Read-only smart contracts */
+  /**
+   * Execute a read-only smart contracts
+   *
+   * @param contractData - A IContractData object containing the contract data
+   * @return A promise which resolves to a IExecuteReadOnlyResponse object containing the result
+   * of the read-only operation
+   */
   public async executeReadOnlySmartContract(
     contractData: IContractData,
   ): Promise<IExecuteReadOnlyResponse> {
@@ -319,6 +366,12 @@ export class SmartContractsClient
     } as IExecuteReadOnlyResponse;
   }
 
+  /**
+   * Get the status of a specific operation
+   *
+   * @param opId - The operation id
+   * @return A promise that resolves to a EOperationStatus enum value
+   */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
     const operationData: Array<IOperationData> =
       await this.publicApiClient.getOperations([opId]);
@@ -338,6 +391,13 @@ export class SmartContractsClient
     return EOperationStatus.INCONSISTENT;
   }
 
+  /**
+   * Get the status of a specific operation and wait until it reaches the required status
+   *
+   * @param opId - The required operation id
+   * @param requiredStatus - The required status
+   * @return A promise that resolves to a EOperationStatus enum value
+   */
   public async awaitRequiredOperationStatus(
     opId: string,
     requiredStatus: EOperationStatus,
