@@ -1,14 +1,15 @@
+/**
+ * Represents the information for a smart contract call.
+ * @remarks
+ * This interface is used to track the call data information, including the
+ * storage fee, maximum gas, transferred coins, target smart contract address,
+ * target function name, and parameters for the function call.
+ */
 export interface ICallData {
-  /// storage fee for taking place in books
   fee: bigint;
-  /// The maximum amount of gas that the execution of the contract is allowed to cost.
   maxGas: bigint;
-  /// Extra coins that are spent from the caller's balance and transferred to the target
   coins: bigint;
-  /// Target smart contract address
   targetAddress: string;
-  /// Target function name. No function is called if empty.
   functionName: string;
-  /// Parameter to pass to the target function
   parameter: Array<number>;
 }

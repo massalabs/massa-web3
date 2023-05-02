@@ -5,6 +5,13 @@ import { IPublicApiClient } from './IPublicApiClient';
 import { ISmartContractsClient } from './ISmartContractsClient';
 import { IWalletClient } from './IWalletClient';
 
+/**
+ * Represents the main client interface for interacting with the blockchain.
+ * @remarks
+ * This interface is used to access various APIs, including private and public
+ * APIs, wallet, and smart contracts. It also provides methods for setting
+ * custom and default providers.
+ */
 export interface IClient {
   privateApi(): IPrivateApiClient;
   publicApi(): IPublicApiClient;
