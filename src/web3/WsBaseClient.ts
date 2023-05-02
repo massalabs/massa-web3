@@ -9,6 +9,12 @@ let IINodeWebSocket: typeof INodeWebSocket;
 
 export const WS_PING_TIMEOUT_MS = 30000;
 
+/**
+ * Convert an array buffer to a base64 string
+ *
+ * @param array  - The array buffer to convert
+ * @return a base64 string
+ */
 export const arrayBufferToBase64 = (
   array: Buffer | ArrayBuffer | Buffer[],
 ): string => {
@@ -16,12 +22,18 @@ export const arrayBufferToBase64 = (
 };
 
 declare global {
+  /**
+   * The window WebSocket interface provides the API for creating and managing a WebSocket connection to a node
+   */
   interface Window {
     WebSocket: typeof WebSocket;
     MozWebSocket: typeof MozWebSocket;
   }
 }
 
+/**
+ * The Mozilla WebSocket interface provides the API for creating and managing a WebSocket connection to a node
+ */
 declare var MozWebSocket: {
   prototype: WebSocket;
   new (url: string): WebSocket;
@@ -81,6 +93,10 @@ declare var MozWebSocket: {
   ): void;
 };
 
+/**
+ * Check if the current environment is a browser and if so, pick the right WebSocket interface
+ * @return - A boolean indicating if the current environment is a browser
+ */
 export const checkForBrowserWs = (): {
   isBrowser: boolean;
   Ws: typeof WebSocket | typeof MozWebSocket;
@@ -103,7 +119,9 @@ export const checkForBrowserWs = (): {
   };
 };
 
-/** Base Ws Client for interacting with the massa network */
+/**
+ * Base Ws Client for interacting with the massa network
+ */
 export abstract class WsBaseClient extends EventEmitter {
   protected clientConfig: IClientConfig;
   protected wss:
@@ -117,6 +135,11 @@ export abstract class WsBaseClient extends EventEmitter {
   protected isBrowserWs = false;
   private pingTimeout: NodeJS.Timer;
 
+  /**
+   * Constructor for the {@link WsBaseClient} class
+   *
+   * @param clientConfig - The client configuration object
+   */
   public constructor(clientConfig: IClientConfig) {
     super();
     this.clientConfig = clientConfig;
@@ -145,22 +168,38 @@ export abstract class WsBaseClient extends EventEmitter {
     this.getWsProviders = this.getWsProviders.bind(this);
   }
 
-  /** set new providers */
+  /**
+   * Set new providers
+   *
+   * @param providers - The new providers
+   */
   public setProviders(providers: Array<IProvider>): void {
     this.clientConfig.providers = providers;
   }
 
-  /** return all ws providers */
+  /**
+   * Get all ws providers
+   *
+   * @return - The ws providers as an {@link IProvider} array
+   */
   protected getWsProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.WS,
     );
   }
 
+  /**
+   * Parses a message received from the websocket connection
+   */
   protected abstract parseWsMessage(
     message: string | Buffer | ArrayBuffer | Buffer[],
   ): void;
 
+  /**
+   * Opens a websocket connection
+   *
+   * @return A promise that resolves when the connection is opened
+   */
   public async connect(): Promise<void> {
     if (this.wss || this.isConnected) {
       return;
@@ -178,6 +217,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return browserWs.isBrowser ? this.connectBrowserWs() : this.connectNodeWs();
   }
 
+  /**
+   * Get the ready state of the websocket connection
+   *
+   * @return - The ready state of the websocket (number) or null if not connected
+   */
   public getReadyState(): number | null {
     if (this.wss && this.isConnected) {
       return this.wss.readyState;
@@ -185,6 +229,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return null;
   }
 
+  /**
+   * Get the binary type of the websocket connection
+   *
+   * @return The binary type of the websocket (string) or null if not connected
+   */
   public getBinaryType(): string | null {
     if (this.wss && this.isConnected) {
       return this.wss.binaryType;
@@ -192,6 +241,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return null;
   }
 
+  /**
+   * Get the url of the websocket connection
+   *
+   * @return The url of the websocket (string) or null if not connected
+   */
   public getUrl(): string | null {
     if (this.wss && this.isConnected) {
       return this.wss.url;
@@ -199,6 +253,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return null;
   }
 
+  /**
+   * Get the protocol of the websocket connection
+   *
+   * @return The protocol of the websocket (string) or null if not connected
+   */
   public getProtocol(): string | null {
     if (this.wss && this.isConnected) {
       return this.wss.protocol;
@@ -206,6 +265,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return null;
   }
 
+  /**
+   * Get the extensions of the websocket connection
+   *
+   * @return The extensions of the websocket (object) or null if not connected
+   */
   public getExtensions(): object | null {
     if (this.wss && this.isConnected) {
       return this.wss.extensions;
@@ -213,6 +277,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return null;
   }
 
+  /**
+   * Get the buffered amount of the websocket connection
+   *
+   * @return The buffered amount of the websocket (number) or null if not connected
+   */
   public getBufferedAmount(): number | null {
     if (this.wss && this.isConnected) {
       return this.wss.bufferedAmount;
@@ -220,6 +289,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return null;
   }
 
+  /**
+   * Closes the websocket connection
+   *
+   * @return True if the connection was closed, false if not
+   */
   public closeConnection(): boolean {
     // check for undrained connection
     if (this.wss && this.isConnected && this.wss.bufferedAmount === 0) {
@@ -229,6 +303,11 @@ export abstract class WsBaseClient extends EventEmitter {
     return false;
   }
 
+  /**
+   * Opens a websocket connection
+   *
+   * @return A promise that resolves when the connection is opened
+   */
   private connectNodeWs(): Promise<void> {
     this.wss.on(WebsocketEvent.ON_CLOSED, () => {
       this.isConnected = false;
@@ -261,6 +340,11 @@ export abstract class WsBaseClient extends EventEmitter {
     });
   }
 
+  /**
+   * Opens a websocket connection in the browser
+   *
+   * @returns A promise that resolves when the connection is opened
+   */
   private connectBrowserWs(): Promise<void> {
     const wss = this.wss as WebSocket | typeof MozWebSocket;
     wss.onclose = () => {
@@ -286,6 +370,9 @@ export abstract class WsBaseClient extends EventEmitter {
     });
   }
 
+  /**
+   * Checks the next heartbeat
+   */
   private checkNextHeartbeat() {
     clearTimeout(this.pingTimeout);
 
