@@ -249,7 +249,7 @@ export class BaseClient {
    *
    * @param data - The operation data
    * @param opTypeId - The operation type id
-   * @param account - The account used 
+   * @param account - The account used
    * @param expirePeriod - The expire period
    * @return The compacted bytes payload
    */
