@@ -36,11 +36,13 @@ function getConfig(opts) {
         preferBuiltins: true,
         extensions: ['.mjs', '.ts', '.js', '.json', '.node'],
         browser: true,
+        sourceMap: true,
       }),
       commonjs({
         transformMixedEsModules: true,
         browser: true,
         include: 'node_modules/**',
+        sourceMap: true,
       }),
       rollupJson({
         compact: true,

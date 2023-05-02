@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { blake3 } from '@noble/hashes/blake3';
 import { unsignedBigIntUtils } from './encode_decode_int';
-const base58check = require('base58check');
+import {bs58EncodeCheck, bs58DecodeCheck} from "./bs58";
+import { Buffer } from 'buffer';
 
 var MSB = 0x80;
 var REST = 0x7f;
@@ -14,7 +15,6 @@ const encode = (num: number, out?, offset?: number): Uint8Array => {
   }
   out = out || [];
   offset = offset || 0;
-  let oldOffset = offset;
 
   while (num >= INT) {
     out[offset++] = (num & 0xff) | MSB;
@@ -35,14 +35,14 @@ export function hashBlake3(data: Uint8Array | string): Uint8Array {
 
 export function base58Encode(data: Buffer | Uint8Array): string {
   const bufData = Buffer.from(data);
-  return base58check.encode(
+  return bs58EncodeCheck(
     bufData.slice(1),
     bufData[0].toString(16).padStart(2, '0'),
   );
 }
 
 export function base58Decode(data: string): Buffer {
-  const decoded = base58check.decode(data);
+  const decoded: {prefix: Buffer, data: Buffer} = bs58DecodeCheck(data);
   return Buffer.concat([decoded.prefix, decoded.data]);
 }
 

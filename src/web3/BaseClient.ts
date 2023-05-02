@@ -11,7 +11,9 @@ import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
-import {post} from "superagent";
+import fetch from 'cross-fetch';
+import {Headers} from 'cross-fetch';
+import 'cross-fetch/polyfill';
 
 const encodeAddressToBytes = (
   address: string,
@@ -38,6 +40,8 @@ const requestHeaders = {
   'Access-Control-Allow-Credentials': true,
   'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
 };
+
+const headers = new Headers();
 
 export const PERIOD_OFFSET = 5;
 
@@ -131,19 +135,21 @@ export class BaseClient {
     resource: JSON_RPC_REQUEST_METHOD,
     params: object,
   ): Promise<JsonRpcResponseData<T>> {
-    let resp: any = null;
+    let resp: Response = null;
     const body = {
       jsonrpc: '2.0',
       method: resource,
       params: params,
       id: 0,
     };
-    let client = post(this.getProviderForRpcMethod(resource).url);
+
     try {
-      for (const key of Object.keys(requestHeaders)) {
-        client.set(key, requestHeaders[key]);
-      }
-      resp = await client.send(body);
+      resp = await fetch(this.getProviderForRpcMethod(resource).url, {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers
+      });
+      const d = await resp.json();
     } catch (ex) {
       return {
         isError: true,
@@ -152,19 +158,17 @@ export class BaseClient {
       } as JsonRpcResponseData<T>;
     }
 
-    const responseData: any = resp.body;
-
-    if (responseData.error) {
+    if (!resp.ok) {
       return {
         isError: true,
         result: null,
-        error: new Error(responseData.error.message),
+        error: new Error(resp.statusText),
       } as JsonRpcResponseData<T>;
     }
 
     return {
       isError: false,
-      result: responseData.json as T,
+      result: await resp.json() as T,
       error: null,
     } as JsonRpcResponseData<T>;
   }
