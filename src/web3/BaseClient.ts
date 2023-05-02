@@ -11,7 +11,7 @@ import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
-const superagent = require('superagent');
+import {post} from "superagent";
 
 const encodeAddressToBytes = (
   address: string,
@@ -138,7 +138,7 @@ export class BaseClient {
       params: params,
       id: 0,
     };
-    let client = superagent.post(this.getProviderForRpcMethod(resource).url);
+    let client = post(this.getProviderForRpcMethod(resource).url);
     try {
       for (const key of Object.keys(requestHeaders)) {
         client.set(key, requestHeaders[key]);
