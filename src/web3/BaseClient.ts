@@ -12,6 +12,7 @@ import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
 
+// encode a string address to bytes
 const encodeAddressToBytes = (
   address: string,
   isSmartContract = false,
@@ -40,10 +41,18 @@ const requestHeaders = {
 
 export const PERIOD_OFFSET = 5;
 
-/**  Base Client which is to be extended by other clients as it provides core methods */
+/**
+ * The Base Client object is the main entry point for interacting with the massa blockchain.
+ * It is to be extended by other clients as it provides core methods
+ */
 export class BaseClient {
   protected clientConfig: IClientConfig;
 
+  /**
+   * Constructor of the BaseClient class
+   *
+   * @param clientConfig - The client configuration object as defined in IClientConfig
+   */
   public constructor(clientConfig: IClientConfig) {
     this.clientConfig = clientConfig;
     this.clientConfig.periodOffset =
@@ -69,26 +78,54 @@ export class BaseClient {
     this.promisifyJsonRpcCall = this.promisifyJsonRpcCall.bind(this);
   }
 
-  /** set new providers */
+  /**
+   * Set new providers
+   *
+   * @privateRemarks
+   * This methods add the providers to the existing ones in the clientConfig object
+   *
+   * @param providers - The new providers to set as an array of IProvider
+   */
   public setProviders(providers: Array<IProvider>): void {
     this.clientConfig.providers = providers;
   }
 
-  /** return all private providers */
+  /**
+   * Returns all the private providers
+   *
+   * @returns An array of IProvider containing all the private providers
+   */
   protected getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PRIVATE,
     );
   }
 
-  /** return all public providers */
+  /**
+   * Returns all the public providers
+   *
+   * @returns An array of IProvider containing all the public providers
+   */
   protected getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PUBLIC,
     );
   }
 
-  /** find provider for a concrete rpc method */
+  /**
+   * Find provider for a concrete rpc method
+   *
+   * @remarks
+   * This method chooses the provider to use for a given rpc method.
+   *  - If the rpc method is about getting or sending data to the blockchain,
+   *    it will choose a public provider.
+   *  - If the rpc method is meant to be used by the node itself, it will choose a private provider.
+   *  - An error is thrown if no provider is found for the rpc method
+   *
+   * @param requestMethod - The rpc method to find the provider for
+   *
+   *  @returns The provider for the rpc method
+   */
   private getProviderForRpcMethod(
     requestMethod: JSON_RPC_REQUEST_METHOD,
   ): IProvider {
@@ -126,6 +163,18 @@ export class BaseClient {
     }
   }
 
+  /**
+   * Converts a json rpc call to a promise that resolves as a JsonRpcResponseData
+   *
+   * @privateRemarks
+   * If there is an error while sending the request, the function catches the error, the isError
+   * property is set to true, the result property set to null, and the error property set to a
+   * new Error object with a message indicating that there was an error.
+   *
+   * @param resource - The rpc method to call
+   * @param params - The parameters to pass to the rpc method
+   * @returns A promise that resolves as a JsonRpcResponseData
+   */
   private async promisifyJsonRpcCall<T>(
     resource: JSON_RPC_REQUEST_METHOD,
     params: object,
@@ -170,7 +219,16 @@ export class BaseClient {
     } as JsonRpcResponseData<T>;
   }
 
-  /** send a post JSON rpc request to the node */
+  /**
+   * Sends a post JSON rpc request to the node
+   *
+   * @throws An error if the rpc method returns an error
+   *
+   * @param resource - The rpc method to call
+   * @param params - The parameters to pass to the rpc method
+   *
+   * @return A promise that resolves as the result of the rpc method
+   */
   protected async sendJsonRPCRequest<T>(
     resource: JSON_RPC_REQUEST_METHOD,
     params: object,
@@ -186,7 +244,15 @@ export class BaseClient {
     return resp.result;
   }
 
-  /** compact bytes payload per operation */
+  /**
+   * Compacts bytes payload per operation
+   *
+   * @param data - The operation data
+   * @param opTypeId - The operation type id
+   * @param account - The account
+   * @param expirePeriod - The expire period
+   * @return The compacted bytes payload
+   */
   protected compactBytesForOperation(
     data: DataType,
     opTypeId: OperationTypeId,
