@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as varint from 'varint';
 import { blake3 } from '@noble/hashes/blake3';
+/**
+ * A collection of utility functions for working with various data encoding and hashing formats.
+ * 
+ * This module provides several functions for encoding and decoding data in various formats, including
+ * `base58`, `varint`, and `blake3 hashes`.
+ * 
+ * @module Xbqcrypto.ts
+ */
+
 import { signedBigIntUtils, unsignedBigIntUtils } from './encode_decode_int';
 const base58check = require('base58check');
 
