@@ -1,4 +1,13 @@
+/**
+ * A class representing a timeout that triggers a callback function after a specified time interval
+ */
 export class Timeout {
+  /**
+   * Constructs a new Timeout instance with the given timeout duration and callback function.
+   *
+   * @param timeoutMil - The timeout duration in milliseconds.
+   * @param callback - The function to be called when the timeout is triggered.
+   */
   constructor(timeoutMil: number, callback: () => void) {
     this.clear = this.clear.bind(this);
 
@@ -24,6 +33,9 @@ export class Timeout {
   }
 }
 
+/**
+ * A class representing an interval
+ */
 export class Interval {
   constructor(timeoutMil: number, callback: () => void) {
     this.clear = this.clear.bind(this);
@@ -50,6 +62,12 @@ export class Interval {
   }
 }
 
+/**
+ * This function returns a promise that resolves after the specified time interval.
+ *
+ * @param timeMilli - The time interval in milliseconds.
+ * @return A promise that resolves after the specified time interval.
+ */
 export const wait = async (timeMilli: number): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     const timeout = new Timeout(timeMilli, () => {
@@ -59,6 +77,16 @@ export const wait = async (timeMilli: number): Promise<void> => {
   });
 };
 
+/**
+ * This function returns a promise that resolves after the specified time interval and throws
+ * if the promise passed as an argument does not resolve before the specified time interval.
+ *
+ * @throws An error if the promise passed as an argument does not resolve before the specified time interval.
+ *
+ * @param promise - The promise to be resolved.
+ * @param timeoutMs - The time interval in milliseconds.
+ * @return A promise that resolves after the specified time interval.
+ */
 export async function withTimeoutRejection<T>(
   promise: Promise<T>,
   timeoutMs: number,
