@@ -11,7 +11,9 @@ import {
 import { WsBaseClient, arrayBufferToBase64 } from './WsBaseClient';
 import { ISubscribedFullBlocksMessage } from '../interfaces/ISubscribedFullBlocksMessage';
 
-/** Public Ws Client for interacting with the massa network */
+/**
+ * Public Ws Client for interacting with the massa network
+ */
 export class WsSubscriptionClient extends WsBaseClient {
   // subscription ids
   private subIds: Map<number, WS_RPC_REQUEST_METHOD_NAME> = new Map();
@@ -22,6 +24,11 @@ export class WsSubscriptionClient extends WsBaseClient {
   private onNewBlockHeaderHandler?: (data: IBlockHeaderInfo) => void;
   private onFilledBlockHandler?: (data: ISubscribedFullBlocksMessage) => void;
 
+  /**
+   * Constructor for the {@link WsSubscriptionClient} class
+   *
+   * @param clientConfig - The client configuration object
+   */
   public constructor(clientConfig: IClientConfig) {
     super(clientConfig);
 
@@ -43,6 +50,14 @@ export class WsSubscriptionClient extends WsBaseClient {
 
   // =========================================================================== //
 
+  /**
+   * Subscribes to new block headers
+   *
+   * @throws Error if the client is not connected
+   * @throws Error if there is an already existing subscription with the same id
+   *
+   * @param onNewBlockHeaderHandler - The handler for new block headers (optional)
+   */
   public subscribeNewBlockHeaders(
     onNewBlockHeaderHandler?: (data: IBlockHeaderInfo) => void,
   ): void {
@@ -72,6 +87,12 @@ export class WsSubscriptionClient extends WsBaseClient {
     );
   }
 
+  /**
+   * Unsubscribes from new block headers
+   *
+   * @throws Error if the client is not connected
+   * @throws Error if there is no existing subscription
+   */
   public unsubscribeNewBlockHeaders(): void {
     if (!(this.wss && this.isConnected)) {
       throw new Error('Websocket Client is not connected');
@@ -98,6 +119,13 @@ export class WsSubscriptionClient extends WsBaseClient {
 
   // =========================================================================== //
 
+  /**
+   * Subscribes to new blocks
+   *
+   * @throws Error if the client is not connected
+   * @throws Error if there is an already existing subscription with the same id
+   * @param onNewBlockHandler - The handler for new blocks (optional)
+   */
   public subscribeNewBlocks(
     onNewBlockHandler?: (data: ISubscribeNewBlocksMessage) => void,
   ): void {
@@ -127,6 +155,12 @@ export class WsSubscriptionClient extends WsBaseClient {
     );
   }
 
+  /**
+   * Unsubscribes from new blocks
+   *
+   * @throws Error if the client is not connected
+   * @throws Error if there is no existing subscription
+   */
   public unsubscribeNewBlocks(): void {
     if (!(this.wss && this.isConnected)) {
       throw new Error('Websocket Client is not connected');
@@ -148,8 +182,16 @@ export class WsSubscriptionClient extends WsBaseClient {
       }),
     );
   }
+
   // =========================================================================== //
 
+  /**
+   * Subscribes to new filled blocks
+   *
+   * @throws Error if the client is not connected
+   * @throws Error if there is an already existing subscription with the same id
+   * @param onFilledBlockHandler - The handler for new filled blocks (optional)
+   */
   public subscribeFilledBlocks(
     onFilledBlockHandler?: (data: ISubscribedFullBlocksMessage) => void,
   ): void {
@@ -179,6 +221,12 @@ export class WsSubscriptionClient extends WsBaseClient {
     );
   }
 
+  /**
+   * Unsubscribes from new filled blocks
+   *
+   * @throws Error if the client is not connected
+   * @throws Error if there is no existing subscription
+   */
   public unsubscribeFilledBlocks(): void {
     if (!(this.wss && this.isConnected)) {
       throw new Error('Websocket Client is not connected');
@@ -205,6 +253,11 @@ export class WsSubscriptionClient extends WsBaseClient {
 
   // =========================================================================== //
 
+  /**
+   * Parses the incoming message from the websocket
+   *
+   * @param data - The incoming message
+   */
   protected parseWsMessage(
     data: string | Buffer | ArrayBuffer | Buffer[],
   ): void {
