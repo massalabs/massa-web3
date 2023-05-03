@@ -3,15 +3,16 @@ import * as unsigned from './unsigned.js';
 const oneBI = BigInt(1);
 const twoBI = BigInt(2);
 
+ 
 /**
- * Encodes the length of the given value in bytes
- *
- * @remarks
+ * Returns the number of bytes required to store the number.
+ * 
+ * @privateRemarks
  * If the v value is positive, it will be encoded as a positive value by multiplying it by 2.
  * If the v value is negative, it will be encoded as a negative value by multiplying it by -2 and subtracting 1.
  *
- * @param v - The value to encode
- * @returns The length of the encoded value in bytes
+ * @param value - The number to encode
+ * @returns The number of bytes required to store the number
  */
 export function encodingLength(v: bigint) {
   return unsigned.encodingLength(v >= 0 ? v * twoBI : v * -twoBI - oneBI);
