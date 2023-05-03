@@ -2,7 +2,12 @@
 
 const MAX_STRING_CHARS = 100;
 
-// Lookup table for native types
+/**
+ * Lookup table for native types
+ *
+ * @param typedArrayType - the type to get the size of
+ * @returns the size of the type
+ */
 const getDatatypeSize = (typedArrayType: TypedArrayUnit): number => {
   switch (typedArrayType) {
     case TypedArrayUnit.STRING:
@@ -33,6 +38,12 @@ import {
 import { TypedArrayUnit } from '../arguments';
 import { bytesToStr, strToBytes } from './strings';
 
+/**
+ * Serializes an array
+ *
+ * @param source - the array to serialize
+ * @returns the serialized array
+ */
 export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
   source: T[],
 ): Uint8Array {
@@ -61,6 +72,14 @@ export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
   return target;
 }
 
+/**
+ * Deserializes an array
+ *
+ * @param data - the array to deserialize
+ * @param offset - the offset to start deserializing from
+ * @param Clazz - The output class
+ * @returns
+ */
 export function deserializeObj<T extends ISerializable<T>>(
   data: Uint8Array,
   offset: number,
