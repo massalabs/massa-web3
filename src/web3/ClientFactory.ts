@@ -18,21 +18,21 @@ export enum DefaultWsProviderUrls {
   LOCALNET = 'ws://localhost',
 }
 
-/** 
+/**
  * Massa Web3 ClientFactory class allows you to easily initialize a client.
- * The client can be initialized using a default provider (MAINNET, TESTNET, LABNET, LOCALNET) 
+ * The client can be initialized using a default provider (MAINNET, TESTNET, LABNET, LOCALNET)
  * or a custom set of providers.
  */
 export class ClientFactory {
-  /** 
+  /**
    * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET).
-   * 
+   *
    * @param provider - Default provider to use for the client
    * @param retryStrategyOn - Whether to retry failed requests
    * @param baseAccount - Base account to use for the client (optional)
-   * 
+   *
    * @return A promise that resolves to Client object
-   * 
+   *
    */
   public static async createDefaultClient(
     provider: DefaultProviderUrls,
@@ -82,10 +82,10 @@ export class ClientFactory {
     return client;
   }
 
-  /** 
-   * Initializes anew client using a custom set of private and public providers. 
-   * Suitable for local node interaction 
-   * 
+  /**
+   * Initializes anew client using a custom set of private and public providers.
+   * Suitable for local node interaction
+   *
    * @param providers - Array of providers to use for the client
    * @param retryStrategyOn - Whether to retry failed requests
    * @param baseAccount - Base account to use for the client (optional)
