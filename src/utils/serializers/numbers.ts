@@ -1,3 +1,7 @@
+/**
+ * This module aim's to provide number variable types serialization and conversion helper functions.
+ *
+ */
 const U8_MAX = 0xff;
 const U32_MAX = 0xffffffff;
 const U64_MAX = BigInt('0xffffffffffffffff');
