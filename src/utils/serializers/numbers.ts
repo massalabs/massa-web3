@@ -9,9 +9,14 @@ const I64_MIN = BigInt('-9223372036854775808');
 const I64_MAX = BigInt('0x7fffffffffffffff');
 
 /**
- * Converts a u8 in a Uint8Array.
+ * Converts an unsigned 8-bit integer (u8) into a Uint8Array.
  *
- * @param val - the number to convert
+ * @param val - The number to convert
+ *
+ * @returns A Uint8Array containing the serialized u8 value
+ *
+ * @throws Will throw an error if the input value is not within the valid u8 range (0 to 255)
+ *
  */
 export function u8toByte(val: number): Uint8Array {
   if (val < 0 || val > U8_MAX) {
@@ -21,18 +26,28 @@ export function u8toByte(val: number): Uint8Array {
 }
 
 /**
- * Converts a Uint8Array into a u8.
+ * Converts a Uint8Array into an unsigned 8-bit integer (u8).
  *
- * @param arr - the array to convert
+ * @param arr - The array to convert
+ *
+ * @param offset - The optional offset in the Uint8Array at which to start reading the u8 value (default: 0)
+ *
+ * @returns The deserialized u8 value
+ *
  */
 export function byteToU8(arr: Uint8Array, offset = 0): number {
   return arr[offset];
 }
 
 /**
- * Converts a u32 in a Uint8Array.
+ * Converts an unsigned 32-bit integer (u32) into a Uint8Array.
  *
- * @param val - the number to convert
+ * @param val - The number to convert
+ *
+ * @returns A Uint8Array containing the serialized u32 value
+ *
+ * @throws Will throw an error if the input value is not within the valid u32 range (0 to 4,294,967,295)
+ *
  */
 export function u32ToBytes(val: number): Uint8Array {
   if (val < 0 || val > U32_MAX) {
@@ -45,9 +60,14 @@ export function u32ToBytes(val: number): Uint8Array {
 }
 
 /**
- * Converts a Uint8Array into a u32.
+ * Converts a Uint8Array into an unsigned 32-bit integer (u32).
  *
- * @param arr - the array to convert
+ * @param arr - The array to convert
+ *
+ * @param offset - The optional offset in the Uint8Array at which to start reading the u32 value (default: 0)
+ *
+ * @returns The deserialized u32 value
+ *
  */
 export function bytesToU32(arr: Uint8Array, offset = 0): number {
   const view = new DataView(arr.buffer);
@@ -55,9 +75,14 @@ export function bytesToU32(arr: Uint8Array, offset = 0): number {
 }
 
 /**
- * Converts a u64 BigInt in a Uint8Array.
+ * Converts an unsigned 64-bit integer (u64) BigInt into a Uint8Array.
  *
- * @param val - the BigInt to convert
+ * @param val - The BigInt to convert
+ *
+ * @returns A Uint8Array containing the serialized u64 BigInt value
+ *
+ * @throws Will throw an error if the input value is not within the valid u64 range (0 to 18,446,744,073,709,551,615)
+ *
  */
 export function u64ToBytes(val: bigint): Uint8Array {
   if (val < 0 || val > U64_MAX) {
@@ -70,9 +95,14 @@ export function u64ToBytes(val: bigint): Uint8Array {
 }
 
 /**
- * Converts a Uint8Array into a u64 BigInt.
+ * Converts a Uint8Array into an unsigned 64-bit integer (u64) BigInt.
  *
- * @param arr - the array to convert
+ * @param arr - The array to convert
+ *
+ * @param offset - The optional offset in the Uint8Array at which to start reading the u64 value (default: 0)
+ *
+ * @returns The deserialized u64 BigInt value
+ *
  */
 export function bytesToU64(arr: Uint8Array, offset = 0): bigint {
   const view = new DataView(arr.buffer);
@@ -80,9 +110,14 @@ export function bytesToU64(arr: Uint8Array, offset = 0): bigint {
 }
 
 /**
- * Converts a i32 in a Uint8Array.
+ * Converts a signed 32-bit integer (i32) into a Uint8Array.
  *
- * @param val - the number to convert
+ * @param val - The number to convert
+ *
+ * @returns A Uint8Array containing the serialized i32 value
+ *
+ * @throws Will throw an error if the input value is not within the valid i32 range (-2,147,483,648 to 2,147,483,647)
+ *
  */
 export function i32ToBytes(val: number): Uint8Array {
   if (val < I32_MIN || val > I32_MAX) {
@@ -95,9 +130,14 @@ export function i32ToBytes(val: number): Uint8Array {
 }
 
 /**
- * Converts a Uint8Array into a i32.
+ * Converts a Uint8Array into a signed 32-bit integer (i32).
  *
- * @param arr - the array to convert
+ * @param arr - The array to convert
+ *
+ * @param offset - The optional offset in the Uint8Array at which to start reading the i32 value (default: 0)
+ *
+ * @returns The deserialized i32 value
+ *
  */
 export function bytesToI32(arr: Uint8Array, offset = 0): number {
   const view = new DataView(arr.buffer);
@@ -108,6 +148,11 @@ export function bytesToI32(arr: Uint8Array, offset = 0): number {
  * Converts a i64 BigInt in a Uint8Array.
  *
  * @param val - the BigInt to convert
+ *
+ * @returns A Uint8Array containing the serialized i64 BigInt value
+ *
+ * @throws Will throw an error if the input value is not within the valid i64 range (-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807)
+ *
  */
 export function i64ToBytes(val: bigint): Uint8Array {
   if (val < I64_MIN || val > I64_MAX) {
@@ -125,6 +170,11 @@ export function i64ToBytes(val: bigint): Uint8Array {
  * Converts a Uint8Array into a i64 BigInt.
  *
  * @param arr - the array to convert
+ *
+ * @param offset - The optional offset in the Uint8Array at which to start reading the i64 value (default: 0)
+ *
+ * @returns The deserialized i64 BigInt value
+ *
  */
 export function bytesToI64(arr: Uint8Array, offset = 0): bigint {
   const view = new DataView(arr.buffer);
@@ -132,9 +182,12 @@ export function bytesToI64(arr: Uint8Array, offset = 0): bigint {
 }
 
 /**
- * Converts a f32 in a Uint8Array.
+ * Converts a 32-bit floating-point number (f32) into a Uint8Array.
  *
  * @param val - the number to convert
+ *
+ * @returns A Uint8Array containing the serialized f32 value
+ *
  */
 export function f32ToBytes(val: number): Uint8Array {
   const buffer = new ArrayBuffer(4);
@@ -144,9 +197,13 @@ export function f32ToBytes(val: number): Uint8Array {
 }
 
 /**
- * Converts a Uint8Array into a f32.
+ * Converts a Uint8Array into a 32-bit floating-point number (f32).
  *
  * @param arr - the array to convert
+ * @param offset - The optional offset in the Uint8Array at which to start reading the f32 value (default: 0)
+ *
+ * @returns The deserialized f32 value
+ *
  */
 export function bytesToF32(arr: Uint8Array, offset = 0): number {
   const view = new DataView(arr.buffer);
@@ -154,9 +211,12 @@ export function bytesToF32(arr: Uint8Array, offset = 0): number {
 }
 
 /**
- * Converts a f64 BigInt in a Uint8Array.
+ * Converts a 64-bit floating-point number (f64) into a Uint8Array.
  *
  * @param val - the BigInt to convert
+ *
+ * @returns A Uint8Array containing the serialized f64 value
+ *
  */
 export function f64ToBytes(val: number): Uint8Array {
   const buffer = new ArrayBuffer(8);
@@ -169,6 +229,10 @@ export function f64ToBytes(val: number): Uint8Array {
  * Converts a Uint8Array into a f64 BigInt.
  *
  * @param arr - the array to convert
+ * @param offset - The optional offset in the Uint8Array at which to start reading the f64 value (default: 0)
+ *
+ * @returns The deserialized f64 value
+ *
  */
 export function bytesToF64(arr: Uint8Array, offset = 0): number {
   const view = new DataView(arr.buffer);
