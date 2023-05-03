@@ -25,7 +25,7 @@ const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   return periodOrder;
 };
 
-/** 
+/**
  * The EventPoller object allows you to easily poll for events from the Massa network.
  */
 export class EventPoller extends EventEmitter {
@@ -34,7 +34,7 @@ export class EventPoller extends EventEmitter {
 
   /**
    * Constructor of the EventPoller object
-   * 
+   *
    * @param eventsFilter - The filter to use for the events
    * @param pollIntervalMillis - The interval in milliseconds to poll for events
    * @param web3Client - The web3 client to use for polling
@@ -53,11 +53,11 @@ export class EventPoller extends EventEmitter {
   }
 
   /**
-   * Polls for new events that match a specified filter and emits them. 
-   * 
+   * Polls for new events that match a specified filter and emits them.
+   *
    * @remarks
-   * It uses the Web3 client to retrieve events from a smart contract and filters them further 
-   * based on regular expression and last scanned slot. 
+   * It uses the Web3 client to retrieve events from a smart contract and filters them further
+   * based on regular expression and last scanned slot.
    * If any matching events are found, it sorts them based on the highest period and thread and emits them.
    */
   private async callback() {
@@ -134,7 +134,7 @@ export class EventPoller extends EventEmitter {
 
   /**
    * Starts polling for events and returns the EventPoller object
-   * 
+   *
    * @param eventsFilter - The filter to use for the events
    * @param pollIntervalMillis - The interval in milliseconds to poll for events
    * @param web3Client - The web3 client to use for polling
@@ -170,7 +170,7 @@ export class EventPoller extends EventEmitter {
 
   /**
    * Get only the events that match the filter once
-   * 
+   *
    * @param eventsFilter - The filter to use for the events
    * @param web3Client - The web3 client to use for polling
    * @return The events that match the filter as a promise
