@@ -26,7 +26,7 @@
         "fmt": "npm run prettier:fix && npm run lint:fix",
         "fmt:check": "npm run prettier && npm run lint",
         "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json",
-        "test:web3-browser": "python3 -m http.server 9000"
+        "test:web3-browser": "python3 -m http.server 9007"
     },
     "author": "Massa Labs <info@massa.net>",
     "contributors": [

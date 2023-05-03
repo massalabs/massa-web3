@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { IClientConfig } from '../interfaces/IClientConfig';
 import { INodeStatus } from '../interfaces/INodeStatus';
 import { IAddressInfo } from '../interfaces/IAddressInfo';

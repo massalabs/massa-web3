@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import { Buffer } from 'buffer';
 import { IClientConfig } from '../interfaces/IClientConfig';
 import { IAccount } from '../interfaces/IAccount';
 import { BaseClient } from './BaseClient';

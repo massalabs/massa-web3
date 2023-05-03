@@ -17,8 +17,11 @@
   </head>
   <body>
     <script type='module'>
-      import {Client} from "./dist/massa.js";
+      import {Client, WalletClient, ClientFactory, DefaultProviderUrls} from "./dist/massa.js";
       console.log("Client ", Client);
+      const DEPLOYER_PRIVATE_KEY="S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1";
+      const deployerAccount = await WalletClient.getAccountFromSecretKey(DEPLOYER_PRIVATE_KEY);
+      const web3Client = await ClientFactory.createDefaultClient(DefaultProviderUrls.LABNET, true, deployerAccount)
     </script>
   </body>
 </html>

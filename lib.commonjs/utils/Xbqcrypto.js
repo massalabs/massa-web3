@@ -1,11 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.varintEncode = exports.base58Decode = exports.base58Encode = exports.hashBlake3 = void 0;
-/* eslint-disable @typescript-eslint/no-var-requires */
+const buffer_1 = require("buffer");
 const blake3_1 = require("@noble/hashes/blake3");
 const encode_decode_int_1 = require("./encode_decode_int");
 const bs58_1 = require("./bs58");
-const buffer_1 = require("buffer");
 var MSB = 0x80;
 var REST = 0x7f;
 var MSBALL = ~REST;

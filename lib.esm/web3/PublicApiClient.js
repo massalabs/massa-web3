@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { BaseClient } from './BaseClient';

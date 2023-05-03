@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmartContractsClient = void 0;
+const buffer_1 = require("buffer");
 const EOperationStatus_1 = require("../interfaces/EOperationStatus");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const OperationTypes_1 = require("../interfaces/OperationTypes");
@@ -50,7 +51,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         // bytes compaction
         const bytesCompact = this.compactBytesForOperation(contractData, OperationTypes_1.OperationTypeId.ExecuteSC, sender, expiryPeriod);
         // sign payload
-        const signature = await WalletClient_1.WalletClient.walletSignMessage(Buffer.concat([
+        const signature = await WalletClient_1.WalletClient.walletSignMessage(buffer_1.Buffer.concat([
             WalletClient_1.WalletClient.getBytesPublicKey(sender.publicKey),
             bytesCompact,
         ]), sender);
@@ -83,7 +84,7 @@ class SmartContractsClient extends BaseClient_1.BaseClient {
         // bytes compaction
         const bytesCompact = this.compactBytesForOperation(callData, OperationTypes_1.OperationTypeId.CallSC, sender, expiryPeriod);
         // sign payload
-        const signature = await WalletClient_1.WalletClient.walletSignMessage(Buffer.concat([
+        const signature = await WalletClient_1.WalletClient.walletSignMessage(buffer_1.Buffer.concat([
             WalletClient_1.WalletClient.getBytesPublicKey(sender.publicKey),
             bytesCompact,
         ]), sender);

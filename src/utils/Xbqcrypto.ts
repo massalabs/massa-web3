@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import { Buffer } from 'buffer';
 import { blake3 } from '@noble/hashes/blake3';
 import { unsignedBigIntUtils } from './encode_decode_int';
 import {bs58EncodeCheck, bs58DecodeCheck} from "./bs58";
-import { Buffer } from 'buffer';
 
 var MSB = 0x80;
 var REST = 0x7f;

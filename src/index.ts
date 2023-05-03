@@ -1,3 +1,7 @@
+import { Buffer } from 'buffer';
+window.global = window;
+window.Buffer = Buffer;
+
 /** Exposed interfaces */
 export { IAccount } from './interfaces/IAccount';
 export { IEvent } from './interfaces/IEvent';

@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.time = exports.utils = exports.MassaUnits = exports.toMAS = exports.fromMAS = exports.Args = exports.SmartContractsClient = exports.ON_MASSA_EVENT_ERROR = exports.ON_MASSA_EVENT_DATA = exports.EventPoller = exports.WalletClient = exports.PrivateApiClient = exports.PublicApiClient = exports.DefaultWsProviderUrls = exports.DefaultProviderUrls = exports.Client = exports.ClientFactory = exports.WebsocketEvent = exports.OperationTypeId = exports.EOperationStatus = exports.ProviderType = void 0;
 const tslib_1 = require("tslib");
+const buffer_1 = require("buffer");
+window.global = window;
+window.Buffer = buffer_1.Buffer;
 var IProvider_1 = require("./interfaces/IProvider");
 Object.defineProperty(exports, "ProviderType", { enumerable: true, get: function () { return IProvider_1.ProviderType; } });
 var EOperationStatus_1 = require("./interfaces/EOperationStatus");

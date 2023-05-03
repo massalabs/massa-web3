@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WalletClient = void 0;
 const tslib_1 = require("tslib");
+const buffer_1 = require("buffer");
 const BaseClient_1 = require("./BaseClient");
 const Xbqcrypto_1 = require("../utils/Xbqcrypto");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
@@ -89,10 +90,10 @@ class WalletClient extends BaseClient_1.BaseClient {
         for (const secretKey of secretKeys) {
             const secretKeyBase58Decoded = WalletClient.getBytesSecretKey(secretKey);
             const publicKey = await ed.getPublicKey(secretKeyBase58Decoded);
-            const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-            const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, publicKey]));
+            const version = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+            const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, publicKey]));
             const addressBase58Encoded = ADDRESS_PREFIX +
-                (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+                (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
             if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
                 accountsToCreate.push({
                     secretKey: secretKey,
@@ -119,14 +120,14 @@ class WalletClient extends BaseClient_1.BaseClient {
             const secretKeyBase58Decoded = WalletClient.getBytesSecretKey(secretKeyBase58Encoded);
             // get public key
             const publicKey = await ed.getPublicKey(secretKeyBase58Decoded);
-            const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-            const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, publicKey]));
+            const version = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+            const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, publicKey]));
             if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
                 throw new Error('Public key does not correspond the the private key submitted');
             }
             // get wallet account address
             const addressBase58Encoded = ADDRESS_PREFIX +
-                (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+                (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
             if (account.address && account.address !== addressBase58Encoded) {
                 throw new Error('Account address not correspond the the address submitted');
             }
@@ -173,14 +174,14 @@ class WalletClient extends BaseClient_1.BaseClient {
     static async walletGenerateNewAccount() {
         // generate private key
         const secretKey = ed.utils.randomPrivateKey();
-        const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
-        const secretKeyBase58Encoded = SECRET_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, secretKey]));
+        const version = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+        const secretKeyBase58Encoded = SECRET_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, secretKey]));
         // get public key
         const publicKey = await ed.getPublicKey(secretKey);
-        const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, publicKey]));
+        const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, publicKey]));
         // get wallet account address
         const addressBase58Encoded = ADDRESS_PREFIX +
-            (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+            (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             secretKey: secretKeyBase58Encoded,
@@ -190,15 +191,15 @@ class WalletClient extends BaseClient_1.BaseClient {
     }
     /** returns an account from private key */
     static async getAccountFromSecretKey(secretKeyBase58) {
-        const version = Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
+        const version = buffer_1.Buffer.from((0, Xbqcrypto_1.varintEncode)(VERSION_NUMBER));
         // get private key
         const secretKeyBase58Decoded = this.getBytesSecretKey(secretKeyBase58);
         // get public key
         const publicKey = await ed.getPublicKey(secretKeyBase58Decoded);
-        const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, publicKey]));
+        const publicKeyBase58Encoded = PUBLIC_KEY_PREFIX + (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, publicKey]));
         // get wallet account address
         const addressBase58Encoded = ADDRESS_PREFIX +
-            (0, Xbqcrypto_1.base58Encode)(Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
+            (0, Xbqcrypto_1.base58Encode)(buffer_1.Buffer.concat([version, (0, Xbqcrypto_1.hashBlake3)(publicKey)]));
         return {
             address: addressBase58Encoded,
             secretKey: secretKeyBase58,
@@ -237,7 +238,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         // get private key
         const secretKeyBase58Decoded = this.getBytesSecretKey(signer.secretKey);
         // bytes compaction
-        const bytesCompact = Buffer.from(data);
+        const bytesCompact = buffer_1.Buffer.from(data);
         // Hash byte compact
         const messageHashDigest = (0, Xbqcrypto_1.hashBlake3)(bytesCompact);
         // sign the digest
@@ -305,7 +306,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         // bytes compaction
         const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.Transaction, sender, expiryPeriod);
         // sign payload
-        const signature = await WalletClient.walletSignMessage(Buffer.concat([
+        const signature = await WalletClient.walletSignMessage(buffer_1.Buffer.concat([
             WalletClient.getBytesPublicKey(sender.publicKey),
             bytesCompact,
         ]), sender);
@@ -332,7 +333,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         // bytes compaction
         const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollBuy, sender, expiryPeriod);
         // sign payload
-        const signature = await WalletClient.walletSignMessage(Buffer.concat([
+        const signature = await WalletClient.walletSignMessage(buffer_1.Buffer.concat([
             WalletClient.getBytesPublicKey(sender.publicKey),
             bytesCompact,
         ]), sender);
@@ -358,7 +359,7 @@ class WalletClient extends BaseClient_1.BaseClient {
         // bytes compaction
         const bytesCompact = this.compactBytesForOperation(txData, OperationTypes_1.OperationTypeId.RollSell, sender, expiryPeriod);
         // sign payload
-        const signature = await WalletClient.walletSignMessage(Buffer.concat([
+        const signature = await WalletClient.walletSignMessage(buffer_1.Buffer.concat([
             WalletClient.getBytesPublicKey(sender.publicKey),
             bytesCompact,
         ]), sender);

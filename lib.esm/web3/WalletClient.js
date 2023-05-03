@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { BaseClient } from './BaseClient';
 import { base58Decode, base58Encode, varintEncode, hashBlake3, } from '../utils/Xbqcrypto';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';

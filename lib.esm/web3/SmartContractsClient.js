@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { EOperationStatus } from '../interfaces/EOperationStatus';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';

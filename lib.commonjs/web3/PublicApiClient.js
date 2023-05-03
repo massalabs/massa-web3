@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PublicApiClient = void 0;
+const buffer_1 = require("buffer");
 const retryExecuteFunction_1 = require("../utils/retryExecuteFunction");
 const JsonRpcMethods_1 = require("../interfaces/JsonRpcMethods");
 const BaseClient_1 = require("./BaseClient");
@@ -125,7 +126,7 @@ class PublicApiClient extends BaseClient_1.BaseClient {
         for (const input of addressesKeys) {
             data.push({
                 address: input.address,
-                key: Array.prototype.slice.call(Buffer.from(input.key)),
+                key: Array.prototype.slice.call(buffer_1.Buffer.from(input.key)),
             });
         }
         const jsonRpcRequestMethod = JsonRpcMethods_1.JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES;

@@ -1,3 +1,6 @@
+import { Buffer } from 'buffer';
+window.global = window;
+window.Buffer = Buffer;
 export { ProviderType } from './interfaces/IProvider';
 export { EOperationStatus } from './interfaces/EOperationStatus';
 export { OperationTypeId, } from './interfaces/OperationTypes';

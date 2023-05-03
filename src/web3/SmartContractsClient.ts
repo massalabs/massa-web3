@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { EOperationStatus } from '../interfaces/EOperationStatus';
 import { IAccount } from '../interfaces/IAccount';
 import { IAddressInfo } from '../interfaces/IAddressInfo';
