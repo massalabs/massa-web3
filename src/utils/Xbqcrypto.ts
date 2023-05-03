@@ -49,7 +49,7 @@ export function base58Decode(data: string): Buffer {
 }
 
 /**
- * The varint encoding is a variable length encoding of integers.
+ * Encodes a number or bigint to a varint encoded Uint8Array.
  *
  * @param data - The data to encode
  * @returns The varint encoded data as a Uint8Array
