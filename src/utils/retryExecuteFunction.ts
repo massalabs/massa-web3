@@ -3,6 +3,16 @@ import { wait } from './time';
 const MAX_NUMBER_RETRIALS = 5;
 type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;
 
+/**
+ * Tries to execute a function and retries if it fails.
+ *
+ * @throws If the function fails after the number of retries or if the function is not defined
+ *
+ * @param func - The function to execute
+ * @param args - The arguments to pass to the function
+ * @param retryTimes - The number of times to retry
+ * @return The result of the function when it succeeds
+ */
 export const trySafeExecute = async <T>(
   func: CallbackFunctionVariadicAnyReturn,
   args?: any[],
