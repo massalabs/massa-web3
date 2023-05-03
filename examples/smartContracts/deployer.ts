@@ -72,6 +72,7 @@ export async function awaitTxConfirmation(
 export const deploySmartContracts = async (
   contractsToDeploy: ISCData[],
   web3Client: Client,
+  maxCoins,
   fee = 0n,
   maxGas = 1_000_000n,
   deployerAccount?: IAccount,
@@ -146,6 +147,7 @@ export const deploySmartContracts = async (
             ),
             datastore,
             fee,
+            maxCoins,
             maxGas,
           } as IContractData,
           deployerAccount,
