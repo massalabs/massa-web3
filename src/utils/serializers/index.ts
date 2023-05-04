@@ -1,6 +1,5 @@
 /**
- * This module exports functions for working with strings, including encoding and decoding
- * between string and binary representations, such as Uint8Array.
+ * This module exports encoding and decoding functions for strings.
  */
 export * from './strings';
 
