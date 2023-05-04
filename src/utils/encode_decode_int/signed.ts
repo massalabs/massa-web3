@@ -2,17 +2,16 @@ import * as unsigned from './unsigned.js';
 
 /**
  * @module Signed
- * 
+ *
  * This module provides functions to encode and decode signed
  * integers using Varint, which is a compact binary representation of integers.
  */
 const oneBI = BigInt(1);
 const twoBI = BigInt(2);
 
- 
 /**
  * Returns the number of bytes required to store the number.
- * 
+ *
  * @privateRemarks
  * If the v value is positive, it will be encoded as a positive value by multiplying it by 2.
  * If the v value is negative, it will be encoded as a negative value by multiplying it by -2 and subtracting 1.
