@@ -12,9 +12,11 @@ export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR';
 
 /**
  * Sorts slots by thread and period
+ *
  * @param a - first slot
  * @param b - second slot
- * @return The difference between the two slots periods or threads if periods are equal
+ *
+ * @returns The difference between the two slots periods or threads if periods are equal
  */
 const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   const periodOrder = a.period - b.period;
@@ -26,8 +28,8 @@ const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
 };
 
 /**
- * The EventPoller object allows you to easily poll for events from the Massa network.
- */
+* The EventPoller class provides a convenient way to poll events from the Massa network.
+*/
 export class EventPoller extends EventEmitter {
   private timeoutId: Timeout | null = null;
   private lastSlot: ISlot;
@@ -140,7 +142,8 @@ export class EventPoller extends EventEmitter {
    * @param web3Client - The web3 client to use for polling
    * @param onData - The callback function to call when new events are found
    * @param onError - The callback function to call when an error occurs
-   * @return The EventPoller object created
+   *
+   * @returns The EventPoller object created
    */
   public static startEventsPolling(
     eventsFilter: IEventFilter | IEventRegexFilter,
@@ -173,7 +176,8 @@ export class EventPoller extends EventEmitter {
    *
    * @param eventsFilter - The filter to use for the events
    * @param web3Client - The web3 client to use for polling
-   * @return The events that match the filter as a promise
+   *
+   * @returns The events that match the filter as a promise
    */
   public static async getEventsOnce(
     eventsFilter: IEventFilter | IEventRegexFilter,
