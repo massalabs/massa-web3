@@ -440,7 +440,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const bytesCompact: Buffer = this.compactBytesForOperation(
       txData,
       OperationTypeId.Transaction,
-      sender,
       expiryPeriod,
     );
 
@@ -488,7 +487,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const bytesCompact: Buffer = this.compactBytesForOperation(
       txData,
       OperationTypeId.RollBuy,
-      sender,
       expiryPeriod,
     );
 
@@ -535,7 +533,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const bytesCompact: Buffer = this.compactBytesForOperation(
       txData,
       OperationTypeId.RollSell,
-      sender,
       expiryPeriod,
     );
 
