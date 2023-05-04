@@ -11,6 +11,7 @@ import * as dotenv from 'dotenv';
 import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { fromMAS } from '../../src';
+import { ISignature } from '../../src/interfaces/ISignature';
 const path = require('path');
 const chalk = require('chalk');
 
@@ -105,6 +106,23 @@ if (!receiverPrivateKey) {
       .wallet()
       .signMessage('hello there', receiverAccount.address as string);
     console.log('Wallet sender signing a message... ', signedMessage);
+
+    // verify a signature
+    const signature: ISignature = {
+      base58Encoded:
+        'B1Gy7pAstdqzjghn8fdLDtn1qLUhsxWu4x1j8N4W9wxa3hTPNsFyPeFkSkfEjVCRnCAE9jrBjernGyoDL1yt2Wgafb8uu',
+    };
+
+    const message = 'hello world';
+
+    const isVerified = await web3Client
+      .wallet()
+      .verifySignature(
+        message,
+        signature,
+        'P1c6udwDMs6CY2YDUm7phdrv6S5ACjTV5jW4Kriio44yDpRWK8t',
+      );
+    console.log('Signature verification: ', isVerified);
 
     // send from base account to receiver
     const txId = await web3Client.wallet().sendTransaction({
