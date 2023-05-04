@@ -15,7 +15,7 @@
  * - {@link encode}.
  * - {@link decode}.
  *
- * In the file **signed.ts** you can find functions to serialize and deserialize unsigned numbers such as:
+ * In the file **unsigned.ts** you can find functions to serialize and deserialize unsigned numbers such as:
  * - {@link encodingLength}.
  * - {@link encode}.
  * - {@link decode}.
