@@ -1,10 +1,7 @@
 import { IProvider } from './IProvider';
 
 /**
- * Represents the configuration for the main client interface.
- * @remarks
- * This interface is used to configure the client with an array of providers,
- * retry strategy, period offset, and ping timeout settings.
+ * This interface is used to configure the client.
  *
  * @see providers of type `Array<IProvider>` is an array of providers used for API requests.
  * @see retryStrategyOn of type `boolean` (optional) is a flag to enable or disable the retry strategy.

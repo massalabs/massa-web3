@@ -2,7 +2,8 @@ import { ISlot } from './ISlot';
 import { OpType } from './OperationTypes';
 
 /**
- * Represents the information for a block.
+ * This interface represents information about a block
+ *
  * @remarks
  * This interface is used to track the block information, including the block
  * ID, content, signature, operations, and status flags (final, stale, and in blockclique).

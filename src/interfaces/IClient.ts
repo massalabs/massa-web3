@@ -6,11 +6,11 @@ import { ISmartContractsClient } from './ISmartContractsClient';
 import { IWalletClient } from './IWalletClient';
 
 /**
- * Represents the main client interface for interacting with the blockchain.
+ * Represents the client object.
  * @remarks
- * This interface is used to access various APIs, including private and public
- * APIs, wallet, and smart contracts. It also provides methods for setting
- * custom and default providers.
+ * This interface is used to set private and public APIs. It also provides methods for setting
+ * custom and default providers. The default providers are the global connection urls,
+ * for Massa's MAINNET, TESTNET and LABNET.
  */
 export interface IClient {
   privateApi(): IPrivateApiClient;
