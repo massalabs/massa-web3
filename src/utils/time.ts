@@ -82,11 +82,11 @@ export const wait = async (timeMilli: number): Promise<void> => {
  * This function returns a promise that resolves after the specified time interval and throws
  * if the promise passed as an argument does not resolve before the specified time interval.
  *
- * @throws An error if the promise passed as an argument does not resolve before the specified time interval.
- *
  * @param promise - The promise to be resolved.
  * @param timeoutMs - The time interval in milliseconds.
- 
+ *
+ * @throws An error if the promise passed as an argument does not resolve before the specified time interval.
+ *
  * @return A promise that resolves after the specified time interval.
  */
 export async function withTimeoutRejection<T>(
