@@ -6,10 +6,6 @@ const sevenBI = BigInt(7);
 /**
  * Returns the number of bytes required to store the number in a varint.
  *
- * @privateRemarks
- * If the v value is positive, it will be encoded as a positive value by multiplying it by 2.
- * If the v value is negative, it will be encoded as a negative value by multiplying it by -2 and subtracting 1.
- *
  * @param value - The number to encode
  * @returns The number of bytes required to store the number
  */
