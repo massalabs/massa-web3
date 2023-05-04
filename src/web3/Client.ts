@@ -8,6 +8,7 @@ import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
 import { WsSubscriptionClient } from './WsSubscriptionClient';
+import { IWalletClient } from '../interfaces/IWalletClient';
 
 export const getWsProvider = (
   provider: DefaultProviderUrls,
@@ -95,7 +96,7 @@ export class Client implements IClient {
   }
 
   /** Wallet related methods */
-  public wallet(): WalletClient {
+  public wallet(): IWalletClient {
     return this.walletClient;
   }
 
