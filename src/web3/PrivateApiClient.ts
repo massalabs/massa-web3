@@ -35,7 +35,7 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   }
 
   /**
-   * add a given Node IP address from the whitelist
+   * Add a given Node IP address from the whitelist
    *
    * @param ipAddress - The IP address to add to the whitelist
    * @return A promise that resolves when the request is complete
