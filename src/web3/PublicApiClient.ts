@@ -19,11 +19,11 @@ import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot';
 
 /**
  * Public API client for interacting with a Massa node.
- * 
+ *
  * This module provides a client for interacting with the public API of a Massa node. The client provides
  * methods for querying various data structures used in the Massa blockchain, including blocks, endorsements,
  * operations, and stakers.
- * 
+ *
  * @module PublicApiClient
  */
 export class PublicApiClient extends BaseClient implements IPublicApiClient {
@@ -167,7 +167,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** 
+  /**
    * Show info about a list of endorsements
    *
    * @param endorsementIds - The endorsement ids as an array of strings
