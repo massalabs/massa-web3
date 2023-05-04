@@ -1,5 +1,11 @@
 import * as unsigned from './unsigned.js';
 
+/**
+ * @module Signed
+ * 
+ * This module provides functions to encode and decode signed
+ * integers using Varint, which is a compact binary representation of integers.
+ */
 const oneBI = BigInt(1);
 const twoBI = BigInt(2);
 
