@@ -19,7 +19,10 @@ export enum DefaultWsProviderUrls {
 }
 
 /**
- * Massa Web3 ClientFactory class allows you to easily initialize a client.
+ * Massa Web3 ClientFactory class allows you to easily initialize a client to
+ * connect to the massa blockchain.
+ *
+ * @remarks
  * The client can be initialized using a default provider (MAINNET, TESTNET, LABNET, LOCALNET)
  * or a custom set of providers.
  */
@@ -29,9 +32,9 @@ export class ClientFactory {
    *
    * @param provider - Default provider to use for the client
    * @param retryStrategyOn - Whether to retry failed requests
-   * @param baseAccount - Base account to use for the client (optional)
+   * @param baseAccount - Base account to use with the client (optional)
    *
-   * @return A promise that resolves to Client object
+   * @returns A promise that resolves to a Client object
    *
    */
   public static async createDefaultClient(
@@ -83,13 +86,16 @@ export class ClientFactory {
   }
 
   /**
-   * Initializes anew client using a custom set of private and public providers.
+   * Initializes a new client using a custom set of private and public providers.
+   *
+   * @remarks
    * Suitable for local node interaction
    *
    * @param providers - Array of providers to use for the client
    * @param retryStrategyOn - Whether to retry failed requests
-   * @param baseAccount - Base account to use for the client (optional)
-   * @return A promise that resolves to Client object
+   * @param baseAccount - Base account to use with the client (optional)
+   *
+   * @returns A promise that resolves to a Client object
    */
   public static async createCustomClient(
     providers: Array<IProvider>,
