@@ -2,7 +2,12 @@ const LIMIT = BigInt(0x7f);
 
 const zeroBI = BigInt(0);
 const sevenBI = BigInt(7);
-
+/**
+ * @module unsigned.ts
+ * 
+ * This module provides functions to encode and decode unsigned integers,
+ * using Varint which is a more compact binary representation of them.
+ */
 /**
  * Returns the number of bytes required to store the number in a varint.
  *
