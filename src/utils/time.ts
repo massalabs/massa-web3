@@ -66,6 +66,7 @@ export class Interval {
  * This function returns a promise that resolves after the specified time interval.
  *
  * @param timeMilli - The time interval in milliseconds.
+ *
  * @return A promise that resolves after the specified time interval.
  */
 export const wait = async (timeMilli: number): Promise<void> => {
