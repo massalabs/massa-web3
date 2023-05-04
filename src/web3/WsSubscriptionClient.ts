@@ -54,6 +54,7 @@ export class WsSubscriptionClient extends WsBaseClient {
    * Subscribes to new block headers
    *
    * @param onNewBlockHeaderHandler - The handler for new block headers (optional)
+   *
    * @throws Error if the client is not connected
    * @throws Error if there is an already existing subscription with the same id
    */
@@ -122,6 +123,7 @@ export class WsSubscriptionClient extends WsBaseClient {
    * Subscribes to new blocks
    *
    * @param onNewBlockHandler - The handler for new blocks (optional)
+   *
    * @throws Error if the client is not connected
    * @throws Error if there is an already existing subscription with the same id
    */
@@ -188,6 +190,7 @@ export class WsSubscriptionClient extends WsBaseClient {
    * Subscribes to new filled blocks
    *
    * @param onFilledBlockHandler - The handler for new filled blocks (optional)
+   *
    * @throws Error if the client is not connected
    * @throws Error if there is an already existing subscription with the same id
    */
