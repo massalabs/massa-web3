@@ -67,6 +67,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     this.sellRolls = this.sellRolls.bind(this);
     this.buyRolls = this.buyRolls.bind(this);
     this.getAccountBalance = this.getAccountBalance.bind(this);
+    this.verifySignature = this.verifySignature.bind(this);
   }
 
   /** set the default (base) account */
@@ -375,6 +376,39 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return {
       base58Encoded,
     } as ISignature;
+  }
+
+  /**
+   * Verify a signature.
+   *
+   * @param data The signed data to verify
+   * @param signature The signature to verify
+   * @param signerPubKey The public key of the signer
+   * @returns true if the signature is valid, false otherwise
+   */
+  public async verifySignature(
+    data: string | Buffer,
+    signature: ISignature,
+    signerPubKey: string,
+  ): Promise<boolean> {
+    // setup the public key
+    const publicKeyBase58Decoded = WalletClient.getBytesPublicKey(signerPubKey);
+
+    // setup the message digest
+    const bytesCompact: Buffer = Buffer.from(data);
+    const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
+
+    // setup the signature
+    const hexSignature = base58Decode(signature.base58Encoded);
+
+    // verify signature
+    const isVerified = await ed.verify(
+      hexSignature,
+      messageHashDigest,
+      publicKeyBase58Decoded,
+    );
+
+    return isVerified;
   }
 
   public static getBytesPublicKey(publicKey: string): Uint8Array {
