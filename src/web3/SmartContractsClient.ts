@@ -85,7 +85,6 @@ export class SmartContractsClient
     const bytesCompact: Buffer = this.compactBytesForOperation(
       contractData,
       OperationTypeId.ExecuteSC,
-      sender,
       expiryPeriod,
     );
 
@@ -142,7 +141,6 @@ export class SmartContractsClient
     const bytesCompact: Buffer = this.compactBytesForOperation(
       callData,
       OperationTypeId.CallSC,
-      sender,
       expiryPeriod,
     );
 

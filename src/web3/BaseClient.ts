@@ -190,7 +190,6 @@ export class BaseClient {
   protected compactBytesForOperation(
     data: DataType,
     opTypeId: OperationTypeId,
-    account: IAccount,
     expirePeriod: number,
   ): Buffer {
     const feeEncoded = Buffer.from(varintEncode(data.fee));
