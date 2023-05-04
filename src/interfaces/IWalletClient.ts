@@ -7,7 +7,7 @@ import { ITransactionData } from './ITransactionData';
 
 export interface IWalletClient {
   setBaseAccount(baseAccount: IAccount): void;
-  getBaseAccount(): IAccount;
+  getBaseAccount(): IAccount | null;
   getWalletAccounts(): Array<IAccount>;
   cleanWallet(): void;
   getWalletAccountByAddress(address: string): IAccount | undefined;
