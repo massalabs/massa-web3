@@ -11,8 +11,7 @@ export * from './strings';
 export * from './numbers';
 
 /**
- * This module exports functions for working with boolean values, including functions for
- * converting between boolean values and their binary representation in Uint8Array.
+ * This module exports encoding and decoding functions for booleans.
  */
 export * from './bool';
 
