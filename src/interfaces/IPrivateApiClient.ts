@@ -2,10 +2,6 @@ import { ISignedMessage } from './ISignedMessage';
 
 /**
  * Private API client interface for creating an API to interact with a Massa Node.
- *
- * @interface IPrivateApiClient
- * @export
- *
  */
 export interface IPrivateApiClient {
   /**
