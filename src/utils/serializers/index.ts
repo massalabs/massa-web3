@@ -18,8 +18,6 @@ export * from './numbers';
 export * from './bool';
 
 /**
- * This module exports functions for working with arrays, including functions for manipulating
- * and transforming arrays of various data types, such as integers, floating-point numbers,
- * and other nested arrays.
+ * This module exports serialization and deserialization functions for arrays containing native types.
  */
 export * from './arrays';
