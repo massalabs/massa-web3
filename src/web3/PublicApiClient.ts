@@ -53,7 +53,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Get graph interval
    *
    * @param graphInterval - The graph interval values in ms as an IGetGraphInterval
-   * @ A promise which resolves in the graph interval
+   * @return A promise which resolves in the graph interval
    */
   public async getGraphInterval(
     graphInterval: IGetGraphInterval,
@@ -98,7 +98,13 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 
   /**
    * Show the status of the node
-   * (reachable? number of peers connected, consensus, version, config parameter summary...)
+   *
+   * @remarks
+   * The informations returned are :
+   * - wether the node is reachable
+   * - the number of connected peers
+   * - its version
+   * - its configuration parameters
    *
    * @return A promise which resolves in the node status
    */
@@ -161,7 +167,8 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
   }
 
-  /** Show info about a list of endorsements (content, finality ...)
+  /** 
+   * Show info about a list of endorsements
    *
    * @param endorsementIds - The endorsement ids as an array of strings
    * @return A promise which resolves in the endorsement data
@@ -184,7 +191,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   }
 
   /**
-   * Show data about a list of operations (content, finality ...)
+   * Show data about a list of operations
    *
    * @param operationIds - The operation ids as an array of strings
    * @return A promise which resolves in the operation data
