@@ -28,8 +28,8 @@ const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
 };
 
 /**
-* The EventPoller class provides a convenient way to poll events from the Massa network.
-*/
+ * The EventPoller class provides a convenient way to poll events from the Massa network.
+ */
 export class EventPoller extends EventEmitter {
   private timeoutId: Timeout | null = null;
   private lastSlot: ISlot;
