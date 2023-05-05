@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 const MASSA_SCALING_FACTOR = 9;
 
 /**
- * Convert any value expressed in Massa back to nanoMassa.
+ * Convert any value expressed in Massa back to nanoMassa (the smallest unit of Massa).
  * This function takes an input value in Massa and returns the equivalent value in nanoMassa.
  *
  * @remarks
