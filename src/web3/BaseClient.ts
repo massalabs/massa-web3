@@ -79,7 +79,7 @@ export class BaseClient {
   }
 
   /**
-   * Set new providers
+   * Set new providers as {@link IProvider}
    *
    * @privateRemarks
    * This methods add the providers to the existing ones in the clientConfig object
@@ -124,7 +124,7 @@ export class BaseClient {
    *
    * @param requestMethod - The rpc method to find the provider for
    *
-   *  @returns The provider for the rpc method
+   * @returns The provider for the rpc method
    */
   private getProviderForRpcMethod(
     requestMethod: JSON_RPC_REQUEST_METHOD,
@@ -173,6 +173,7 @@ export class BaseClient {
    *
    * @param resource - The rpc method to call
    * @param params - The parameters to pass to the rpc method
+   *
    * @returns A promise that resolves as a JsonRpcResponseData
    */
   private async promisifyJsonRpcCall<T>(
@@ -227,7 +228,7 @@ export class BaseClient {
    * @param resource - The rpc method to call
    * @param params - The parameters to pass to the rpc method
    *
-   * @return A promise that resolves as the result of the rpc method
+   * @returns A promise that resolves as the result of the rpc method
    */
   protected async sendJsonRPCRequest<T>(
     resource: JSON_RPC_REQUEST_METHOD,
@@ -251,7 +252,8 @@ export class BaseClient {
    * @param opTypeId - The operation type id
    * @param account - The account used
    * @param expirePeriod - The expire period
-   * @return The compacted bytes payload
+   *
+   * @returns The compacted bytes payload
    */
   protected compactBytesForOperation(
     data: DataType,
