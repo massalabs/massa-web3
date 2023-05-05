@@ -317,6 +317,7 @@ export class SmartContractsClient
    * Execute a read-only smart contracts
    *
    * @param contractData - A IContractData object containing the contract data
+   *
    * @return A promise which resolves to a IExecuteReadOnlyResponse object containing the result
    * of the read-only operation
    */
