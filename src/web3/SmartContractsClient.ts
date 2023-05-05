@@ -375,6 +375,7 @@ export class SmartContractsClient
    * Get the status of a specific operation
    *
    * @param opId - The operation id
+   *
    * @return A promise that resolves to a EOperationStatus enum value
    */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
