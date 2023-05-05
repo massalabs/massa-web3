@@ -28,7 +28,7 @@ import {
  * between different argument types due to Javascript's
  * single number type.
  *
- * @remark In Assemblyscript the latter are all native types
+ * @remarks In AssemblyScript the latter are all native types
  */
 export enum TypedArrayUnit {
   STRING,
@@ -43,10 +43,12 @@ export enum TypedArrayUnit {
 }
 
 /**
- * Args for remote function call.
+ * Storage and serialization class for remote function call arguments.
  *
- * This class can serialize javascript native types into bytes, in order to
+ * @remarks
+ * This class can serialize typescript native types into bytes, in order to
  * make smart-contract function call easier.
+ * It also can deserialize bytes.
  *
  */
 export class Args {
@@ -54,8 +56,10 @@ export class Args {
   private serialized: Uint8Array;
 
   /**
+   * Constructor to either serialize or deserialize data passed from/to DApps and remote Smart contracts.
    *
-   * @param {string} serialized
+   * @param serialized - The optional serialized arguments to deserialize.
+   * @param offset - The optional offset to start deserializing from.
    */
   constructor(serialized: Array<number> | Uint8Array = [], offset = 0) {
     this.serialized = Uint8Array.from(serialized);
@@ -63,18 +67,18 @@ export class Args {
   }
 
   /**
-   * Returns the current offset
+   * Returns the current deserialization offset of the serialized byte array.
    *
-   * @returns {number} the current offset
+   * @returns the current offset
    */
   public getOffset(): number {
     return this.offset;
   }
 
   /**
-   * Returns the serialized array to pass to CallSC.
+   * Returns the serialized byte array.
    *
-   * @returns the serialized array
+   * @returns A byte array.
    */
   public serialize(): Array<number> {
     return Array.from(this.serialized);
@@ -83,7 +87,10 @@ export class Args {
   // Getters
 
   /**
-   * Returns the deserialized string.
+   * Returns the next string in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
    *
    * @returns the deserialized string
    */
@@ -91,125 +98,176 @@ export class Args {
     const length = this.nextU32();
     const end = this.offset + length;
     const result = bytesToStr(this.serialized.slice(this.offset, end));
+
     this.offset = end;
     return result;
   }
 
   /**
-   * Returns the deserialized number.
+   * Returns the next unsigned byte in the serialized byte array.
    *
-   * @returns
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
    */
   public nextU8(): bigint {
     const value = byteToU8(this.serialized, this.offset);
+
     this.offset++;
     return BigInt(value);
   }
 
   /**
-   * Returns the deserialized number.
+   * Returns the next unsigned integer in the serialized byte array.
    *
-   * @return {number}
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number
    */
   public nextU32(): number {
     const value = bytesToU32(this.serialized, this.offset);
+
     this.offset += 4;
     return value;
   }
 
   /**
-   * Returns the deserialized number.
+   * Returns the next long integer in the serialized byte array.
    *
-   * @return {BigInt}
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
    */
   public nextU64(): bigint {
     const value = bytesToU64(this.serialized, this.offset);
+
     this.offset += 8;
     return value;
   }
 
   /**
-   * Returns the deserialized boolean
+   * Returns the next boolean in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized boolean.
    */
   nextBool(): boolean {
     return !!this.serialized[this.offset++];
   }
 
   /**
-   * Returns the deserialized number.
+   * Returns the next signed integer in the serialized byte array.
    *
-   * @return {number}
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
    */
   public nextI32(): number {
     const value = bytesToI32(this.serialized, this.offset);
+
     this.offset += 4;
     return value;
   }
 
   /**
-   * Returns the deserialized number.
+   * Returns the next signed long integer in the serialized byte array.
    *
-   * @return {BigInt}
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
    */
   public nextI64(): bigint {
     const value = bytesToI64(this.serialized, this.offset);
+
     this.offset += 8;
     return BigInt(value);
   }
 
   /**
-   * Returns the deserialized number.
+   * Returns the next floating number in the serialized byte array.
    *
-   * @return {number}
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
    */
   public nextF32(): number {
     const value = bytesToF32(this.serialized, this.offset);
+
     this.offset += 4;
     return value;
   }
 
   /**
-   * Returns the deserialized number.
+   * Returns the next long floating number in the serialized byte array.
    *
-   * @return {number}
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
    */
   public nextF64(): number {
     const value = bytesToF64(this.serialized, this.offset);
+
     this.offset += 8;
     return value;
   }
 
   /**
-   * @return {Uint8Array} bytearray
+   * Returns the next sub byte array in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized byte array.
    */
   public nextUint8Array(): Uint8Array {
     const length = this.nextU32();
     const byteArray = this.serialized.slice(this.offset, this.offset + length);
+
     this.offset += length;
     return byteArray;
   }
 
   /**
-   * This function deserialize an object implementing ISerializable
+   * Returns the next {@link ISerializable} object in the serialized byte array
    *
-   * @param Clazz - the class constructor prototype T.prototype
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @param ctor - the class constructor prototype T.prototype
+   *
    * @returns the deserialized object T
    */
-  public nextSerializable<T extends ISerializable<T>>(Clazz: new () => T): T {
+  public nextSerializable<T extends ISerializable<T>>(ctor: new () => T): T {
     let deserializationResult = deserializeObj(
       this.serialized,
       this.offset,
-      Clazz,
+      ctor,
     );
     this.offset = deserializationResult.offset;
     return deserializationResult.instance;
   }
 
   /**
+   * Returns the next array of {@link ISerializable} objects in the serialized byte array
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @param ctor - the class constructor prototype T.prototype
+   *
    * @returns the deserialized array of object that implement ISerializable
    */
   public nextSerializableObjectArray<T extends ISerializable<T>>(
-    Clazz: new () => T,
+    ctor: new () => T,
   ): T[] {
     const length = this.nextU32();
     if (this.offset + length > this.serialized.length) {
@@ -224,12 +282,19 @@ export class Args {
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = bytesToSerializableObjectArray<T>(buffer, Clazz);
+    const value = bytesToSerializableObjectArray<T>(buffer, ctor);
     this.offset += bufferSize;
     return value;
   }
 
   /**
+   * Returns the next array of {@link TypedArrayUnit} objects in the serialized byte array
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @param typedArrayType - the type of the elements in the array.
+   *
    * @returns the next array of object that are native type
    */
   nextNativeTypeArray<T extends TypedArrayUnit>(typedArrayType: T): T[] {
@@ -253,9 +318,11 @@ export class Args {
   // Setter
 
   /**
+   * Adds a unsigned byte to the serialized arguments.
    *
-   * @param {number} value
-   * @return {Args}
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addU8(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, u8toByte(value));
@@ -264,9 +331,11 @@ export class Args {
   }
 
   /**
+   * Adds a boolean to the serialized arguments.
    *
-   * @param {boolean} value
-   * @return {Args}
+   * @param value - the boolean to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addBool(value: boolean): Args {
     this.serialized = this.concatArrays(
@@ -278,9 +347,11 @@ export class Args {
   }
 
   /**
+   * Adds an unsigned integer to the serialized arguments.
    *
-   * @param {number} value
-   * @return {Args}
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addU32(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, u32ToBytes(value));
@@ -289,9 +360,11 @@ export class Args {
   }
 
   /**
+   * Adds an unsigned long integer to the serialized arguments.
    *
-   * @param {BigInt} bigInt
-   * @return {Args}
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addU64(bigInt: bigint): Args {
     this.serialized = this.concatArrays(this.serialized, u64ToBytes(bigInt));
@@ -302,9 +375,11 @@ export class Args {
   }
 
   /**
+   * Adds a signed integer to the serialized arguments.
    *
-   * @param {number} value
-   * @return {Args}
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addI32(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, i32ToBytes(value));
@@ -313,9 +388,11 @@ export class Args {
   }
 
   /**
+   * Adds a signed long integer to the serialized arguments.
    *
-   * @param {BigInt} bigInt
-   * @return {Args}
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addI64(bigInt: bigint): Args {
     this.serialized = this.concatArrays(this.serialized, i64ToBytes(bigInt));
@@ -324,9 +401,11 @@ export class Args {
   }
 
   /**
+   * Adds a floating number to the serialized arguments.
    *
-   * @param {number} value
-   * @return {Args}
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addF32(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, f32ToBytes(value));
@@ -335,9 +414,11 @@ export class Args {
   }
 
   /**
+   * Adds a long floating number to the serialized arguments.
    *
-   * @param {number} value
-   * @return {Args}
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addF64(value: number): Args {
     this.serialized = this.concatArrays(this.serialized, f64ToBytes(value));
@@ -346,9 +427,11 @@ export class Args {
   }
 
   /**
+   * Adds a byte array integer to the serialized arguments.
    *
-   * @param {Uint8Array} array
-   * @return {Args}
+   * @param array - the array to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addUint8Array(array: Uint8Array): Args {
     this.addU32(array.length);
@@ -358,12 +441,14 @@ export class Args {
   }
 
   /**
-   * Adds an argument to the serialized byte string if the argument is an
-   * instance of a handled type (String of 4294967295 characters maximum)
+   * Adds a string to the serialized arguments.
    *
-   * @param {string} arg the argument to add
+   * @remarks
+   * Works only if the argument is an instance of a handled type (String of 4294967295 characters maximum)
    *
-   * @return {Args} the modified Arg instance
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addString(arg: string): Args {
     const maxSize = 4294967295;
@@ -383,10 +468,16 @@ export class Args {
   }
 
   /**
-   * Adds a serializable object that implements the ISerializable interface
+   * Adds a serializable object to the serialized arguments.
    *
-   * @param {ISerializable} the argument to add
-   * @return {Args} the modified Arg instance
+   * @remarks
+   * The object must implement the {@link ISerializable} interface
+   *
+   * @see {@link ISerializable}
+   *
+   * @param value - the object to add
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addSerializable<T>(value: ISerializable<T>): Args {
     const serializedValue = value.serialize();
@@ -396,15 +487,18 @@ export class Args {
   }
 
   /**
-   * Adds an array of element that implement `ISerializable`.
+   * Adds an array of serializable objects to the serialized arguments.
    *
    * @remarks
-   * This will perform a deep copy of your objects thanks to the `serialize` method you define in your class.
+   * Each object must implement the {@link ISerializable} interface.
+   * This will perform a deep copy of your objects thanks to the {@link ISerializable.serialize}
+   * method you define in your class.
    *
    * @see {@link ISerializable}
    *
    * @param arg - the argument to add
-   * @returns the modified Arg instance
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addSerializableObjectArray<T extends ISerializable<T>>(
     arg: T[],
@@ -416,17 +510,19 @@ export class Args {
   }
 
   /**
-   * Adds an array.
+   * Adds an array of objects to the serialized arguments.
    *
    * @remarks
-   * If the type of the values of the array is not native type, this will serialize the pointers, which is certainly not
-   * what you want. You can only serialize properly array of native types or array of `Serializable` object.
+   * If the type of the values of the array is not native type, this will serialize the pointers, which is certainly
+   * not what you want! You can only serialize properly array of native types or array of `Serializable` object.
    *
    * @see {@link addSerializableObjectArray}
    *
    * @param arg - the argument to add
-   * @returns the modified Arg instance
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   addNativeTypeArray<T extends TypedArrayUnit>(arg: any[], type: T): Args {
     const content = nativeTypeArrayToBytes(arg, type);
     this.addU32(content.length);
@@ -439,10 +535,10 @@ export class Args {
   /**
    * Internal function to concat to Uint8Array.
    *
-   * @param {Uint8Array} a first array to concat
-   * @param {Uint8Array | ArrayBuffer} b second array to concat
+   * @param a - first array to concat
+   * @param b - second array to concat
    *
-   * @return {Uint8Array} the concatenated array
+   * @returns the concatenated array
    */
   private concatArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
     return new Uint8Array([...a, ...b]);
@@ -452,7 +548,7 @@ export class Args {
    * Returns the data of requested size for current offset
    *
    * @param size - The data size
-   * @return {Uint8Array} the slice of the serialized internal buffer
+   * @returns the slice of the serialized internal buffer
    */
   private getNextData(size: number): Uint8Array {
     return this.serialized.slice(this.offset, this.offset + size);
