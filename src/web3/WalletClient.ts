@@ -528,10 +528,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @throws if the secret key is not valid
    *
    * @param secretKey - The secret key to get the bytes from
-<<<<<<< main
    *
-=======
->>>>>>> Update WalletClient.ts
    * @return a Uint8Array containing the bytes of the secret key
    */
   public static getBytesSecretKey(secretKey: string): Uint8Array {
