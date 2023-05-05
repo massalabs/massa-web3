@@ -284,6 +284,7 @@ export class SmartContractsClient
    * Get filtered smart contract events
    *
    * @param eventFilterData - A IEventFilter object containing the filter
+   *
    * @return A promise that resolves to an array of IEvent objects containing the filtered events
    */
   public async getFilteredScOutputEvents(
