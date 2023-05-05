@@ -67,7 +67,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
     this.sellRolls = this.sellRolls.bind(this);
     this.buyRolls = this.buyRolls.bind(this);
     this.getAccountBalance = this.getAccountBalance.bind(this);
-    this.verifySignature = this.verifySignature.bind(this);
   }
 
   /** set the default (base) account */
