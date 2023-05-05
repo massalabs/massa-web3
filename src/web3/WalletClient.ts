@@ -190,7 +190,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @privateRemarks
    * Each account must have a base58 encoded random entropy or private key
    *
-   * @param accounts - An array of accounts to add to the wallet
+   * @param accounts - An array of accounts to add to the wallet.
    * @return a promise that resolves to an array of accounts as {@link IAccount}
    */
   public async addAccountsToWallet(
