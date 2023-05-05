@@ -32,6 +32,7 @@ const MAX_WALLET_ACCOUNTS = 256;
  * Get the thread number from an address
  *
  * @param address address to get the thread number from
+ *
  * @return thread number
  */
 const getThreadNumber = (address: string): number => {
