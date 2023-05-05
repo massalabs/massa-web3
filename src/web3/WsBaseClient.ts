@@ -95,6 +95,7 @@ declare var MozWebSocket: {
 
 /**
  * Check if the current environment is a browser and if so, pick the right WebSocket interface
+ *
  * @return - A boolean indicating if the current environment is a browser
  */
 export const checkForBrowserWs = (): {
