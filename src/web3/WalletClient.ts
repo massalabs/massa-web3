@@ -684,10 +684,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @param txData - The transaction data
    * @param executor - The account that will execute the transaction (optional)
-<<<<<<< main
    *
-=======
->>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an array of operations ids (string)
    */
   public async sellRolls(
