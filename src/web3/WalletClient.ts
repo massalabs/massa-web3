@@ -128,7 +128,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /**
-   * Get wallet account by an address
+   * Fetches a wallet account using its address.
    *
    * @param address - An address to get the account for
    *
