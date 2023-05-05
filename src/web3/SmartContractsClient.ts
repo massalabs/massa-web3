@@ -402,6 +402,7 @@ export class SmartContractsClient
    *
    * @param opId - The required operation id
    * @param requiredStatus - The required status
+   *
    * @return A promise that resolves to a EOperationStatus enum value
    */
   public async awaitRequiredOperationStatus(
