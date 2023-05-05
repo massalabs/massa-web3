@@ -131,6 +131,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Get wallet account by an address
    *
    * @param address - An address to get the account for
+   *
    * @return account or undefined if not found
    */
   public getWalletAccountByAddress(address: string): IAccount | undefined {
