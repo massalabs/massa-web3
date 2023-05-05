@@ -266,6 +266,7 @@ export class SmartContractsClient
    * Returns the balance of the smart contract
    *
    * @param address - The address of the smart contract
+   *
    * @return A promise that resolves to a IAddressInfo object containing the balance of the smart contract
    */
   public async getContractBalance(address: string): Promise<IBalance | null> {
