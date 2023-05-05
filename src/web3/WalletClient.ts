@@ -377,6 +377,38 @@ export class WalletClient extends BaseClient implements IWalletClient {
     } as ISignature;
   }
 
+  /**
+   * Verify a signature.
+   *
+   * @param data The signed data to verify
+   * @param signature The signature to verify
+   * @param signerPubKey The public key of the signer
+   * @returns true if the signature is valid, false otherwise
+   */
+  public async verifySignature(
+    data: string | Buffer,
+    signature: ISignature,
+    signerPubKey: string,
+  ): Promise<boolean> {
+    // setup the public key
+    const publicKeyBase58Decoded: Uint8Array =
+      WalletClient.getBytesPublicKey(signerPubKey);
+
+    // setup the message digest
+    const bytesCompact: Buffer = Buffer.from(data);
+    const messageDigest: Uint8Array = hashBlake3(bytesCompact);
+
+    // setup the signature
+    const signatureBytes: Buffer = base58Decode(signature.base58Encoded);
+
+    // verify signature
+    return (await ed.verify(
+      signatureBytes,
+      messageDigest,
+      publicKeyBase58Decoded,
+    )) as boolean;
+  }
+
   public static getBytesPublicKey(publicKey: string): Uint8Array {
     if (!(publicKey[0] == PUBLIC_KEY_PREFIX)) {
       throw new Error(
