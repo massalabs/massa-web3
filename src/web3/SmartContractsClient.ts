@@ -209,6 +209,7 @@ export class SmartContractsClient
    * Read a smart contract method
    *
    * @param readData - A IReadData object containing useful data for the operation
+   *
    * @return A promise that resolves to a IContractReadOperationResponse object
    * containing the result of the read operation
    */
