@@ -3,8 +3,11 @@
         "experimentalResolver": true
     },
     "compilerOptions": {
-        "target": "ES2020",
-        "module": "commonjs",
+        "declaration": true,
+        "declarationDir": "./dist/types",
+        "esModuleInterop": true,
+        "target": "es6",
+        "module": "es6",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "jsx": "preserve",
