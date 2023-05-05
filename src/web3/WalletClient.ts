@@ -148,10 +148,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Add a list of private keys to the wallet
    *
    * @param secretKeys - An array of private keys (string) to add to the wallet
-<<<<<<< main
    *
-=======
->>>>>>> Update WalletClient.ts
    * @return a promise that resolves to an array of accounts as {@link IAccount}
    */
   public async addSecretKeysToWallet(
