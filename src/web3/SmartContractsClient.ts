@@ -69,7 +69,7 @@ export class SmartContractsClient
    * @param contractData - A IContractData object containing the deployment data
    * @param executor - An optional IAccount object containing the account to use for the deployment
    *
-   * @return A promise that resolves to a string containing the operation id of the deployment operation
+   * @returns A promise that resolves to a string containing the operation id of the deployment operation
    */
   public async deploySmartContract(
     contractData: IContractData,
@@ -146,7 +146,7 @@ export class SmartContractsClient
    * @param callData - A ICallData object containing the call data
    * @param executor - An optional IAccount object containing the account to use for the call
    *
-   * @return A promise that resolves to a string containing the operation id of the call operation
+   * @returns A promise that resolves to a string containing the operation id of the call operation
    */
   public async callSmartContract(
     callData: ICallData,
@@ -210,7 +210,7 @@ export class SmartContractsClient
    *
    * @param readData - A IReadData object containing useful data for the operation
    *
-   * @return A promise that resolves to a IContractReadOperationResponse object
+   * @returns A promise that resolves to a IContractReadOperationResponse object
    * containing the result of the read operation
    */
   public async readSmartContract(
@@ -267,7 +267,7 @@ export class SmartContractsClient
    *
    * @param address - The address of the smart contract
    *
-   * @return A promise that resolves to a IAddressInfo object containing the balance of the smart contract
+   * @returns A promise that resolves to a IAddressInfo object containing the balance of the smart contract
    */
   public async getContractBalance(address: string): Promise<IBalance | null> {
     const addresses: Array<IAddressInfo> =
@@ -285,7 +285,7 @@ export class SmartContractsClient
    *
    * @param eventFilterData - A IEventFilter object containing the filter
    *
-   * @return A promise that resolves to an array of IEvent objects containing the filtered events
+   * @returns A promise that resolves to an array of IEvent objects containing the filtered events
    */
   public async getFilteredScOutputEvents(
     eventFilterData: IEventFilter,
@@ -321,7 +321,7 @@ export class SmartContractsClient
    *
    * @param contractData - A IContractData object containing the contract data
    *
-   * @return A promise which resolves to a IExecuteReadOnlyResponse object containing the result
+   * @returns A promise which resolves to a IExecuteReadOnlyResponse object containing the result
    * of the read-only operation
    */
   public async executeReadOnlySmartContract(
@@ -376,7 +376,7 @@ export class SmartContractsClient
    *
    * @param opId - The operation id
    *
-   * @return A promise that resolves to a EOperationStatus enum value
+   * @returns A promise that resolves to a EOperationStatus enum value
    */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
     const operationData: Array<IOperationData> =
@@ -403,7 +403,7 @@ export class SmartContractsClient
    * @param opId - The required operation id
    * @param requiredStatus - The required status
    *
-   * @return A promise that resolves to a EOperationStatus enum value
+   * @returns A promise that resolves to a EOperationStatus enum value
    */
   public async awaitRequiredOperationStatus(
     opId: string,
