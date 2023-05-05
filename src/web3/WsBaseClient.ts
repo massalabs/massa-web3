@@ -13,6 +13,7 @@ export const WS_PING_TIMEOUT_MS = 30000;
  * Convert an array buffer to a base64 string
  *
  * @param array  - The array buffer to convert
+ *
  * @return a base64 string
  */
 export const arrayBufferToBase64 = (
