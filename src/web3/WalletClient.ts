@@ -541,6 +541,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Returns the account balance
    *
    * @param address - The address to get the balance from
+   *
    * @return a promise that resolves to an {@link IBalance} or null if the address is not found
    */
   public async getAccountBalance(address: string): Promise<IBalance | null> {
