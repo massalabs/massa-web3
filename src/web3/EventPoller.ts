@@ -10,6 +10,14 @@ import { Client } from './Client';
 export const ON_MASSA_EVENT_DATA = 'ON_MASSA_EVENT';
 export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR';
 
+/**
+ * Sorts slots by thread and period
+ *
+ * @param a - first slot
+ * @param b - second slot
+ *
+ * @returns The difference between the two slots periods or threads if periods are equal
+ */
 const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   const periodOrder = a.period - b.period;
   if (periodOrder === 0) {
@@ -19,11 +27,20 @@ const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   return periodOrder;
 };
 
-/** Smart Contracts Event Poller */
+/**
+ * The EventPoller class provides a convenient way to poll events from the Massa network.
+ */
 export class EventPoller extends EventEmitter {
   private timeoutId: Timeout | null = null;
   private lastSlot: ISlot;
 
+  /**
+   * Constructor of the EventPoller object
+   *
+   * @param eventsFilter - The filter to use for the events
+   * @param pollIntervalMillis - The interval in milliseconds to poll for events
+   * @param web3Client - The web3 client to use for polling
+   */
   public constructor(
     private readonly eventsFilter: IEventFilter | IEventRegexFilter,
     private readonly pollIntervalMillis: number,
@@ -37,6 +54,14 @@ export class EventPoller extends EventEmitter {
     this.startPolling = this.startPolling.bind(this);
   }
 
+  /**
+   * Polls for new events that match a specified filter and emits them.
+   *
+   * @remarks
+   * It uses the Web3 client to retrieve events from a smart contract and filters them further
+   * based on regular expression and last scanned slot.
+   * If any matching events are found, it sorts them based on the highest period and thread and emits them.
+   */
   private async callback() {
     try {
       // get all events using the filter
@@ -89,10 +114,16 @@ export class EventPoller extends EventEmitter {
     );
   }
 
+  /**
+   * Stops polling for events
+   */
   public stopPolling(): void {
     if (this.timeoutId) this.timeoutId.clear();
   }
 
+  /**
+   * Starts polling for events
+   */
   public startPolling(): void {
     const that = this;
     if (this.timeoutId) {
@@ -103,6 +134,17 @@ export class EventPoller extends EventEmitter {
     );
   }
 
+  /**
+   * Starts polling for events and returns the EventPoller object
+   *
+   * @param eventsFilter - The filter to use for the events
+   * @param pollIntervalMillis - The interval in milliseconds to poll for events
+   * @param web3Client - The web3 client to use for polling
+   * @param onData - The callback function to call when new events are found
+   * @param onError - The callback function to call when an error occurs
+   *
+   * @returns The EventPoller object created
+   */
   public static startEventsPolling(
     eventsFilter: IEventFilter | IEventRegexFilter,
     pollIntervalMillis: number,
@@ -129,6 +171,14 @@ export class EventPoller extends EventEmitter {
     return eventPoller;
   }
 
+  /**
+   * Get only the events that match the filter once
+   *
+   * @param eventsFilter - The filter to use for the events
+   * @param web3Client - The web3 client to use for polling
+   *
+   * @returns The events that match the filter as a promise
+   */
   public static async getEventsOnce(
     eventsFilter: IEventFilter | IEventRegexFilter,
     web3Client: Client,
