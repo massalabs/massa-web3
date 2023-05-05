@@ -396,7 +396,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
     // setup the message digest
     const bytesCompact: Buffer = Buffer.from(data);
-    const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
+    const messageDigest: Uint8Array = hashBlake3(bytesCompact);
 
     // setup the signature
     const hexSignature = base58Decode(signature.base58Encoded);
