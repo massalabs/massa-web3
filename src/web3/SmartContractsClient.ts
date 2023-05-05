@@ -145,6 +145,7 @@ export class SmartContractsClient
    *
    * @param callData - A ICallData object containing the call data
    * @param executor - An optional IAccount object containing the account to use for the call
+   *
    * @return A promise that resolves to a string containing the operation id of the call operation
    */
   public async callSmartContract(
