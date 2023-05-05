@@ -136,12 +136,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<ISignedMessage>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
-        [],
+        [message],
       ]);
     } else {
       return await this.sendJsonRPCRequest<ISignedMessage>(
         jsonRpcRequestMethod,
-        [],
+        [message],
       );
     }
   }
