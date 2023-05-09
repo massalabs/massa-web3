@@ -377,6 +377,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Get wallet addresses data
    *
    * @param addresses - An array of addresses to get data from (string array)
+   *
    * @return a promise that resolves to an array of {@link IAddressInfo}
    */
   private async getWalletAddressesInfo(
