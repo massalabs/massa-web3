@@ -329,6 +329,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Returns an account from a private key
    *
    * @param secretKeyBase58 - A base58 encoded private key
+   *
    * @return a promise that resolves to an {@link IAccount}
    */
   public static async getAccountFromSecretKey(
