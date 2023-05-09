@@ -10,6 +10,13 @@ import { IClient } from '../interfaces/IClient';
 import { WsSubscriptionClient } from './WsSubscriptionClient';
 import { IWalletClient } from '../interfaces/IWalletClient';
 
+/**
+ * Get websocket provider from json rpc provider
+ *
+ * @param provider - json rpc provider
+ * @returns the default websocket provider url
+ *
+ */
 export const getWsProvider = (
   provider: DefaultProviderUrls,
 ): DefaultWsProviderUrls => {
@@ -38,7 +45,9 @@ export const getWsProvider = (
   return wsProvider;
 };
 
-/** Massa Web3 Client wrapping all public, private, wallet and smart-contracts-related functionalities */
+/**
+ * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities
+ */
 export class Client implements IClient {
   private publicApiClient: PublicApiClient;
   private privateApiClient: PrivateApiClient;
@@ -46,6 +55,12 @@ export class Client implements IClient {
   private smartContractsClient: SmartContractsClient;
   private wsSubscriptionClient: WsSubscriptionClient | null;
 
+  /**
+   * Constructor of the Client class
+   *
+   * @param clientConfig - client configuration object
+   * @param baseAccount - base account to use for signing transactions (optional)
+   */
   public constructor(
     private clientConfig: IClientConfig,
     baseAccount?: IAccount,
@@ -85,32 +100,56 @@ export class Client implements IClient {
     this.getPublicProviders = this.getPublicProviders.bind(this);
   }
 
-  /** Private Api related RPC methods */
+  /**
+   * Get the private api related RPC methods
+   *
+   * @return PrivateApiClient object
+   */
   public privateApi(): PrivateApiClient {
     return this.privateApiClient;
   }
 
-  /** Public Api related RPC methods */
+  /**
+   * Get the public api related RPC methods
+   *
+   * @return PublicApiClient object
+   */
   public publicApi(): PublicApiClient {
     return this.publicApiClient;
   }
 
-  /** Wallet related methods */
+  /**
+   * Get the Wallet related methods
+   *
+   * @return WalletClient object
+   */
   public wallet(): IWalletClient {
     return this.walletClient;
   }
 
-  /** Smart Contracts related methods */
+  /**
+   * Get the smart Contracts related methods
+   *
+   * @return SmartContractsClient object
+   */
   public smartContracts(): SmartContractsClient {
     return this.smartContractsClient;
   }
 
-  /** Websocket RPC methods */
+  /**
+   * Get the websocket RPC methods
+   *
+   * @return WsSubscriptionClient object or null if no ws provider is set
+   */
   public ws(): WsSubscriptionClient | null {
     return this.wsSubscriptionClient;
   }
 
-  /** set new providers */
+  /**
+   * Set new providers
+   *
+   * @param providers - array of providers to set
+   */
   public setCustomProviders(providers: Array<IProvider>): void {
     this.publicApiClient.setProviders(providers);
     this.privateApiClient.setProviders(providers);
@@ -119,26 +158,42 @@ export class Client implements IClient {
     this.wsSubscriptionClient.setProviders(providers);
   }
 
-  /** get currently set providers */
+  /**
+   * Get the currently set providers
+   *
+   * @return array of the known providers
+   */
   public getProviders(): Array<IProvider> {
     return this.clientConfig.providers;
   }
 
-  /** return all private providers */
+  /**
+   * Get all private providers
+   *
+   * @return all private providers
+   */
   public getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PRIVATE,
     );
   }
 
-  /** return all public providers */
+  /**
+   * Get all public providers
+   *
+   * @return all public providers
+   */
   public getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PUBLIC,
     );
   }
 
-  /** sets a new default json rpc provider */
+  /**
+   * Set a new default json rpc provider
+   *
+   * @param provider - The new default provider to set
+   */
   public setNewDefaultProvider(provider: DefaultProviderUrls): void {
     const providers = [
       {
