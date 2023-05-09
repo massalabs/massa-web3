@@ -30,7 +30,7 @@ export class ClientFactory {
   /**
    * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET).
    *
-   * @param provider - Default provider to use for the client
+   * @param provider - Default provider to be used by the client.
    * @param retryStrategyOn - Whether to retry failed requests
    * @param baseAccount - Base account to use with the client (optional)
    *
@@ -45,13 +45,13 @@ export class ClientFactory {
     let publicProviderUrl = provider.toString();
     let privateProviderUrl = provider.toString();
     switch (provider) {
-      // in the case of localnet append specific default ports to url
+      // in the case of LocalNet append specific default ports to url
       case DefaultProviderUrls.LOCALNET: {
         privateProviderUrl = `${privateProviderUrl}:33034`;
         publicProviderUrl = `${publicProviderUrl}:33035`;
         break;
       }
-      // all other networks should be public only access
+      // all other networks should have public access only.
       default: {
         break;
       }
@@ -89,11 +89,11 @@ export class ClientFactory {
    * Initializes a new client using a custom set of private and public providers.
    *
    * @remarks
-   * Suitable for local node interaction
+   * Suitable for local node interactions.
    *
-   * @param providers - Array of providers to use for the client
+   * @param providers - Array of providers to be used by the client
    * @param retryStrategyOn - Whether to retry failed requests
-   * @param baseAccount - Base account to use with the client (optional)
+   * @param baseAccount - Base account to be used by the client (optional)
    *
    * @returns A promise that resolves to a Client object
    */
