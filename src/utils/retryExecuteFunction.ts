@@ -6,14 +6,12 @@ type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;
 /**
  * Tries to execute a function and retries if it fails.
  *
-
- *
  * @param func - The function to execute
  * @param args - The arguments to pass to the function (optional)
  * @param retryTimes - The number of times to retry (default: 5)
- * 
+ *
  * @throws If the function is not defined or if it fails after the number of retries
- * 
+ *
  * @return The result of the function upon successful execution
  */
 export const trySafeExecute = async <T>(
