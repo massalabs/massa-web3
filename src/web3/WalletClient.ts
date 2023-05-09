@@ -85,7 +85,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Set the default (base) account
    *
    * @param baseAccount - The account to set as default
-   * @return a promise that resolves when the base account is set
+   * @return a promise that resolves to an {@link IAccount} when the base account is set
    */
   public async setBaseAccount(baseAccount: IAccount): Promise<void> {
     // in case of not set thread number, compute the value
