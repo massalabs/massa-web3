@@ -5,8 +5,15 @@ import { ISignedMessage } from '../interfaces/ISignedMessage';
 import { BaseClient } from './BaseClient';
 import { IPrivateApiClient } from '../interfaces/IPrivateApiClient';
 
-/** Private Api Client for interacting with a massa node */
+/**
+ * Private Api Client for interacting with a massa node
+ */
 export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
+  /**
+   * Constructor for the {@link PrivateApiClient} object
+   *
+   * @param clientConfig - The client configuration
+   */
   public constructor(clientConfig: IClientConfig) {
     super(clientConfig);
 
@@ -27,7 +34,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     this.nodeAddToPeersWhitelist = this.nodeAddToPeersWhitelist.bind(this);
   }
 
-  /** Remove a given Node IP address from the whitelist */
+  /**
+   * Add a given Node IP address from the whitelist
+   *
+   * @param ipAddress - The IP address to add to the whitelist
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeAddToPeersWhitelist(ipAddress: string): Promise<void> {
     const jsonRpcRequestMethod =
       JSON_RPC_REQUEST_METHOD.NODE_ADD_TO_PEERS_WHITELIST;
@@ -43,7 +55,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Remove a given Node IP address from the whitelist */
+  /**
+   * Remove a given Node IP address from the whitelist
+   *
+   * @param ipAddress - The IP address to remove from the whitelist
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeRemoveFromWhitelist(ipAddress: string): Promise<void> {
     const jsonRpcRequestMethod =
       JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST;
@@ -59,7 +76,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Unban a given IP address */
+  /**
+   * Unban a given IP address
+   *
+   * @param ipAddress - The IP address to unban
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeUnbanByIpAddress(ipAddress: string): Promise<void> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_IP;
     if (this.clientConfig.retryStrategyOn) {
@@ -74,7 +96,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Unban a given node id */
+  /**
+   * Unban a given node id
+   *
+   * @param nodeId - The node id to unban
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeUnbanById(nodeId: string): Promise<void> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_ID;
     if (this.clientConfig.retryStrategyOn) {
@@ -89,7 +116,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Ban a given node IP address */
+  /**
+   * Ban a given node IP address
+   *
+   * @param ipAddress - The IP address to ban
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeBanByIpAddress(ipAddress: string): Promise<void> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_IP;
     if (this.clientConfig.retryStrategyOn) {
@@ -104,7 +136,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Ban a given node Id */
+  /**
+   * Ban a given node Id
+   *
+   * @param id - The node id to ban
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeBanById(id: string): Promise<void> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_ID;
     if (this.clientConfig.retryStrategyOn) {
@@ -117,7 +154,11 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Stops the node */
+  /**
+   * Stops the node
+   *
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeStop(): Promise<void> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.STOP_NODE;
     if (this.clientConfig.retryStrategyOn) {
@@ -130,7 +171,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Node signs a message */
+  /**
+   * Node signs a message
+   *
+   * @param message - The message to sign
+   * @return A promise that resolves to an ISignedMessage object
+   */
   public async nodeSignMessage(message: Uint8Array): Promise<ISignedMessage> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE;
     if (this.clientConfig.retryStrategyOn) {
@@ -146,7 +192,11 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Show staking addresses */
+  /**
+   * Get staking addresses
+   *
+   * @return A promise that resolves to an array of addresses (strings)
+   */
   public async nodeGetStakingAddresses(): Promise<Array<string>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES;
     if (this.clientConfig.retryStrategyOn) {
@@ -162,7 +212,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Remove staking addresses */
+  /**
+   * Remove staking addresses
+   *
+   * @param addresses - The addresses to remove
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeRemoveStakingAddresses(
     addresses: Array<string>,
   ): Promise<void> {
@@ -180,7 +235,12 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
     }
   }
 
-  /** Add staking private keys */
+  /**
+   * Add staking private keys
+   *
+   * @param secretKeys - The secret keys to add
+   * @return A promise that resolves when the request is complete
+   */
   public async nodeAddStakingSecretKeys(
     secretKeys: Array<string>,
   ): Promise<void> {
