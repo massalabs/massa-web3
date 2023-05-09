@@ -43,7 +43,11 @@ export const PERIOD_OFFSET = 5;
 
 /**
  * The Base Client object is the main entry point for interacting with the massa blockchain.
- * It is to be extended by other clients as it provides core methods
+ *
+ * @remarks
+ * The `BaseClient` class should not be instantiated directly; instead, it should
+ * be extended by other client classes to provide additional functionality on top of the core
+ * methods provided by this class.
  */
 export class BaseClient {
   protected clientConfig: IClientConfig;
@@ -51,7 +55,7 @@ export class BaseClient {
   /**
    * Constructor of the BaseClient class
    *
-   * @param clientConfig - The client configuration object as defined in IClientConfig
+   * @param clientConfig - The client configuration object as defined in {@link IClientConfig}
    */
   public constructor(clientConfig: IClientConfig) {
     this.clientConfig = clientConfig;
