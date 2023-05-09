@@ -10,15 +10,15 @@
  *
  * Here is the catalog of all functions organized by file:
  *
- * In the file **signed.ts** you can find functions to serialize and deserialize signed numbers such as:
- * - {@link encodingLength}.
- * - {@link encode}.
- * - {@link decode}.
+ * In the file **signed.ts}** you can find functions to serialize and deserialize signed numbers such as:
+ * - encodingLength
+ * - encode
+ * - decode
  *
  * In the file **unsigned.ts** you can find functions to serialize and deserialize unsigned numbers such as:
- * - {@link encodingLength}.
- * - {@link encode}.
- * - {@link decode}.
+ * - encodingLength
+ * - encode
+ * - decode
  *
  *
  * @module
