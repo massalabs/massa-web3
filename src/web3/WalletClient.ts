@@ -405,6 +405,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @param data - The data to sign (string or Buffer)
    * @param signer - The account that will sign the data
+   *
    * @return a promise that resolves to an {@link ISignature}
    */
   public static async walletSignMessage(
