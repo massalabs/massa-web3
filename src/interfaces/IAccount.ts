@@ -1,10 +1,10 @@
 /**
- * This file exports an interface called `IAccount`, which represents the
- * structure of an account object.
+ * Represents the structure of an account object.
  *
  * @remarks
- * An account object consists of an address, a public key, a secret key,
- * and an optional field for the thread in which the account was created.
+ * An account object consists of an address, a public key, a secret key.
+ * An optional field is also included to indicate the thread in which the 
+ * account was created.
  *
  */
 

@@ -1,10 +1,5 @@
 /**
- * This enum represents the status of an operation.
- *
- * @example
- *
- * const operationStatus = EOperationStatus.INCLUDED_PENDING;
- *
+ * Represents the status of an operation on the Massa blockchain.
  */
 export enum EOperationStatus {
   INCLUDED_PENDING = 0,

@@ -2,6 +2,7 @@ import { ISlot } from './ISlot';
 
 /**
  * Represents the production statistics for a specific cycle.
+ * 
  * @remarks
  * This interface is used to track the production statistics of a cycle,
  * including the number of successful and unsuccessful production attempts.
@@ -53,7 +54,7 @@ export interface IDeferredCredits {
  */
 export interface IAddressInfo {
   address: string;
-  candidate_balance: string; // represent an Amount in coins
+  candidate_balance: string; // Represents an amount in coins.
   candidate_datastore_keys: Array<Array<number>>;
   candidate_roll_count: number;
   created_blocks: Array<string>;
@@ -61,7 +62,7 @@ export interface IAddressInfo {
   created_operations: Array<string>;
   cycle_infos: Array<ICycleInfos>;
   deferred_credits: Array<IDeferredCredits>;
-  final_balance: string; // represent an Amount in coins
+  final_balance: string; // Represents an amount in coins.
   final_datastore_keys: Array<Array<number>>;
   final_roll_count: number;
   next_block_draws: ISlot[];

@@ -1,5 +1,6 @@
 /**
  * Represents the information for a smart contract call.
+ * 
  * @remarks
  * This interface is used to track the calldata information, including the
  * storage fee, maximum gas, transferred coins, target smart contract address,
