@@ -76,6 +76,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Get blockclique details by period and thread
    *
    * @param slot - The slot as an ISlot
+   *
    * @return A promise which resolves in the blockclique details
    */
   public async getBlockcliqueBlockBySlot(
