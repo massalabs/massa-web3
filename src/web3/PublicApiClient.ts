@@ -151,6 +151,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Show data about a block (content, finality ...)
    *
    * @param blockIds - The block ids as an array of strings
+   *
    * @return A promise which resolves in the block data
    */
   public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
