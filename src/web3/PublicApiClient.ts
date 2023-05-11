@@ -195,6 +195,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Show data about a list of operations
    *
    * @param operationIds - The operation ids as an array of strings
+   *
    * @return A promise which resolves in the operation data
    */
   public async getOperations(
