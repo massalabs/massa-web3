@@ -1,5 +1,5 @@
 /**
- * A class representing a timeout that triggers a callback function after a specified time interval
+ * A class representing a timeout that triggers a callback function after a specified time interval.
  */
 export class Timeout {
   /**
@@ -25,6 +25,9 @@ export class Timeout {
   private isCalled: boolean;
   private timeoutHook: NodeJS.Timer;
 
+  /**
+   * Clears the timeout so that the callback function is not called.
+   */
   public clear(): void {
     if (!this.isCleared) {
       clearTimeout(this.timeoutHook);
@@ -34,9 +37,16 @@ export class Timeout {
 }
 
 /**
- * A class representing an interval
+ * A class representing an interval that triggers a callback function repeatedly
+ * at a specified time interval.
  */
 export class Interval {
+  /**
+   * Constructs a new Interval instance with the given interval duration and callback function.
+   *
+   * @param timeoutMil - The interval duration in milliseconds.
+   * @param callback - The function to be called when the interval is triggered.
+   */
   constructor(timeoutMil: number, callback: () => void) {
     this.clear = this.clear.bind(this);
 
@@ -54,6 +64,9 @@ export class Interval {
   private isCalled: boolean;
   private intervalHook: NodeJS.Timer;
 
+  /**
+   * Clears the interval so that the callback function is not called anymore.
+   */
   public clear(): void {
     if (!this.isCleared) {
       clearInterval(this.intervalHook);
@@ -63,7 +76,7 @@ export class Interval {
 }
 
 /**
- * This function returns a promise that resolves after the specified time interval.
+ * Returns a promise that resolves after the specified time interval.
  *
  * @param timeMilli - The time interval in milliseconds.
  *
@@ -79,13 +92,13 @@ export const wait = async (timeMilli: number): Promise<void> => {
 };
 
 /**
- * This function returns a promise that resolves after the specified time interval and throws
- * if the promise passed as an argument does not resolve before the specified time interval.
+ * Returns a promise that resolves after the specified time interval and throws an error if the
+ * specified promise does not resolve before the timeout interval.
  *
  * @param promise - The promise to be resolved.
  * @param timeoutMs - The time interval in milliseconds.
  *
- * @throws An error if the promise passed as an argument does not resolve before the specified time interval.
+ * @throws if the specified promise does not resolve before the timeout interval.
  *
  * @return A promise that resolves after the specified time interval.
  */
