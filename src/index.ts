@@ -53,7 +53,7 @@ export {
   IBlockHeaderInfo,
   IEndorsementInfo,
 } from './interfaces/IBlockcliqueBlockBySlot';
-export { WebsocketEvent } from './interfaces/WebsocketEvent';
+
 export { ISubscribeNewBlocksMessage } from './interfaces/ISubscribeNewBlocksMessage';
 export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocksMessage';
 
@@ -64,7 +64,6 @@ export {
   DefaultWsProviderUrls,
 } from './web3/ClientFactory';
 export { Client } from './web3/Client';
-export { WsSubscriptionClient } from './web3/WsSubscriptionClient';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';
 export { WalletClient } from './web3/WalletClient';

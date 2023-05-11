@@ -1,0 +1,52 @@
+{
+    "ts-node": {
+        "experimentalResolver": true
+    },
+    "compilerOptions": {
+      "declaration": false,
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "importHelpers": true,
+      "lib": [
+        "es5",
+        "es6",
+        "es7",
+        "dom",
+        "es2015",
+        "es2017",
+        "es2018",
+        "es2019",
+        "es2020",
+        "es2021",
+        "esnext",
+        "esnext.asynciterable"
+      ],
+      "moduleResolution": "node16",
+      "allowSyntheticDefaultImports": true,
+      "jsx": "preserve",
+      "allowJs": true,
+      "alwaysStrict": true,
+      "noEmitOnError": true,
+      "noFallthroughCasesInSwitch": true,
+      "noImplicitReturns": true,
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "noImplicitAny": false,
+      "noImplicitThis": false,
+      "skipLibCheck": true,
+      "strictNullChecks": false,
+      "downlevelIteration": true,
+      "typeRoots": ["node_modules/@types"],
+      "preserveSymlinks": true,
+      "preserveWatchOutput": true,
+      "pretty": false,
+      "rootDir": "./src",
+      "strict": true,
+      "sourceMap": true,
+      "target": "es2022"
+    },
+    "exclude": [ ],
+    "include": [
+      "./src/**/*.ts"
+    ],
+  }
