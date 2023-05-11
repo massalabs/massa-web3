@@ -30,7 +30,7 @@ const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
 /**
- * Smart Contracts Client object enables compilation, deployment and streaming of events
+ * Smart Contracts Client object enables smart contract deployment, calls and streaming of events
  */
 export class SmartContractsClient
   extends BaseClient
