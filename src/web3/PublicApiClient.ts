@@ -260,6 +260,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Returns the data entry both at the latest final and active executed slots.
    *
    * @param addressesKeys - The addresses and keys as an array of IDatastoreEntryInput objects
+   *
    * @return A promise which resolves to the datastore entries
    */
   public async getDatastoreEntries(
