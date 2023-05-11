@@ -1,5 +1,5 @@
 /**
- * Enum for representing operation state transitions
+ * Represents the status of an operation on the Massa blockchain.
  */
 export enum EOperationStatus {
   INCLUDED_PENDING = 0,
