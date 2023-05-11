@@ -3,7 +3,7 @@
  *
  * @remarks
  * An account object consists of an address, a public key, a secret key.
- * An optional field is also included to indicate the thread in which the 
+ * An optional field is also included to indicate the thread in which the
  * account was created.
  *
  */

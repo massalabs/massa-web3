@@ -7,7 +7,7 @@ import { IWalletClient } from './IWalletClient';
 
 /**
  * Represents the client object.
- * 
+ *
  * @remarks
  * This interface is used to set private and public APIs. It also provides methods for setting
  * custom and default providers. The default providers are the global connection URLs

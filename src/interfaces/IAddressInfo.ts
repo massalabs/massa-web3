@@ -2,7 +2,7 @@ import { ISlot } from './ISlot';
 
 /**
  * Represents the production statistics for a specific cycle.
- * 
+ *
  * @remarks
  * This interface is used to track the production statistics of a cycle,
  * including the number of successful and unsuccessful production attempts.

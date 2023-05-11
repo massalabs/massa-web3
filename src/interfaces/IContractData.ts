@@ -1,6 +1,6 @@
 /**
  * Represents the information related to a smart contract.
- * 
+ *
  * @remarks
  * This interface is used to track the smart contract information, including the
  * storage fee, maximum gas (that the execution of the contract is allowed to cost),
