@@ -52,7 +52,7 @@ export function encode(
  *
  * @returns The decoded value.
  */
-export function decode(data: Uint8Array, offset: number = 0): bigint {
+export function decode(data: Uint8Array, offset = 0): bigint {
   const value = unsigned.decode(data, offset);
   return value & oneBI ? (value + oneBI) / -twoBI : value / twoBI;
 }
