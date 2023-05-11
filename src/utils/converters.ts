@@ -11,6 +11,7 @@ const MASSA_SCALING_FACTOR = 9;
  * This function uses the BigNumber library to perform calculations with arbitrary precision.
  *
  * @param amountInMassa - The amount to convert, expressed in Massa. Can be a number, string, BigNumber, or bigint.
+ *
  * @returns The amount expressed in nanoMassa, as a bigint.
  *
  * @example
@@ -38,6 +39,7 @@ export const fromMAS = (
  * This function uses the BigNumber library to perform calculations with arbitrary precision.
  *
  * @param amountInNanoMassa - The amount to convert, expressed in nanoMassa. Can be a number, string, BigNumber, or bigint.
+ *
  * @returns The amount expressed in Massa, as a BigNumber.
  *
  * @example
