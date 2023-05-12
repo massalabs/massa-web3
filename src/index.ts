@@ -61,7 +61,6 @@ export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocks
 export {
   ClientFactory,
   DefaultProviderUrls,
-  DefaultWsProviderUrls,
 } from './web3/ClientFactory';
 export { Client } from './web3/Client';
 export { PublicApiClient } from './web3/PublicApiClient';

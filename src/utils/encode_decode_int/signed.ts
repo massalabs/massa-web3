@@ -1,4 +1,4 @@
-import * as unsigned from './unsigned.js';
+import * as unsigned from './unsigned';
 
 const oneBI = BigInt(1);
 const twoBI = BigInt(2);

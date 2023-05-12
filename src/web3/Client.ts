@@ -5,44 +5,9 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { DefaultProviderUrls, DefaultWsProviderUrls } from './ClientFactory';
+import { DefaultProviderUrls } from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
 import { IWalletClient } from '../interfaces/IWalletClient';
-
-/**
- * Get websocket provider from json rpc provider
- *
- * @param provider - json rpc provider
- * @returns the default websocket provider url
- *
- */
-export const getWsProvider = (
-  provider: DefaultProviderUrls,
-): DefaultWsProviderUrls => {
-  let wsProvider: DefaultWsProviderUrls;
-  switch (provider) {
-    case DefaultProviderUrls.LABNET: {
-      wsProvider = DefaultWsProviderUrls.LABNET;
-      break;
-    }
-    case DefaultProviderUrls.MAINNET: {
-      wsProvider = DefaultWsProviderUrls.MAINNET;
-      break;
-    }
-    case DefaultProviderUrls.LOCALNET: {
-      wsProvider = DefaultWsProviderUrls.LOCALNET;
-      break;
-    }
-    case DefaultProviderUrls.TESTNET: {
-      wsProvider = DefaultWsProviderUrls.TESTNET;
-      break;
-    }
-    default: {
-      wsProvider = DefaultWsProviderUrls.LOCALNET;
-    }
-  }
-  return wsProvider;
-};
 
 /**
  * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities
@@ -183,10 +148,6 @@ export class Client implements IClient {
       {
         url: provider,
         type: ProviderType.PRIVATE,
-      } as IProvider,
-      {
-        url: getWsProvider(provider),
-        type: ProviderType.WS,
       } as IProvider,
     ];
     this.publicApiClient.setProviders(providers);

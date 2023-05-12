@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as varint from 'varint';
 import { blake3 } from '@noble/hashes/blake3';
+
 /**
  * A collection of utility functions for working with various data encoding and hashing formats.
  *
@@ -31,10 +32,7 @@ export function hashBlake3(data: Uint8Array | string): Uint8Array {
  */
 export function base58Encode(data: Buffer | Uint8Array): string {
   const bufData = Buffer.from(data);
-  console.log(typeof bufData);
-  return encode(
-    bufData
-  );
+  return encode(bufData);
 }
 
 /**
@@ -45,7 +43,7 @@ export function base58Encode(data: Buffer | Uint8Array): string {
  */
 export function base58Decode(data: string): Buffer {
   const decoded = decode(data);
-  return decoded
+  return decoded;
 }
 
 /**
