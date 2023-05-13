@@ -4,7 +4,7 @@
     "description": "massa's web3 sdk client",
     "main": "dist/cmd/index.js",
     "module": "dist/esm/index.js",
-    "types": "dist/index.d.ts",
+    "types": "dist/esm/index.d.ts",
     "scripts": {
         "up": "npm update",
         "check": "npm outdated",
