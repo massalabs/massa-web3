@@ -60,10 +60,7 @@ export { ISubscribeNewBlocksMessage } from './interfaces/ISubscribeNewBlocksMess
 export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocksMessage';
 
 /** Exposed clients and factories */
-export {
-  ClientFactory,
-  DefaultProviderUrls,
-} from './web3/ClientFactory';
+export { ClientFactory, DefaultProviderUrls } from './web3/ClientFactory';
 export { Client } from './web3/Client';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';
@@ -81,4 +78,3 @@ export * from './utils/serializers';
 /** Exposed utils */
 export * as utils from './utils/Xbqcrypto';
 export * as time from './utils/time';
-
