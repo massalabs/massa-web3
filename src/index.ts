@@ -1,5 +1,3 @@
-import setPolyfills from './polyfills';
-setPolyfills();
 /** Exposed interfaces */
 export { IAccount } from './interfaces/IAccount';
 export { IEvent } from './interfaces/IEvent';

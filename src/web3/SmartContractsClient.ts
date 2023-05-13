@@ -24,6 +24,7 @@ import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
+import { Buffer } from 'buffer';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -32,8 +33,7 @@ const TX_STATUS_CHECK_RETRY_COUNT = 100;
 /** Smart Contracts Client which enables compilation, deployment and streaming of events */
 export class SmartContractsClient
   extends BaseClient
-  implements ISmartContractsClient
-{
+  implements ISmartContractsClient {
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
@@ -361,9 +361,8 @@ export class SmartContractsClient
       }
 
       if (++pendingCounter > 1000) {
-        const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${
-          TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT
-        }ms.`;
+        const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT
+          }ms.`;
         console.warn(msg);
         throw new Error(msg);
       }

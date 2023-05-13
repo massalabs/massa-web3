@@ -10,6 +10,7 @@ import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
+import { Buffer } from 'buffer';
 
 // encode a string address to bytes
 const encodeAddressToBytes = (

@@ -1,4 +1,5 @@
 import { StringDecoder } from 'string_decoder';
+import { Buffer } from 'buffer';
 
 /**
  * Converts utf-16 string to a Uint8Array.

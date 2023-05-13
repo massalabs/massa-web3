@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as varint from 'varint';
 import { blake3 } from '@noble/hashes/blake3';
+import { Buffer } from 'buffer';
 
 /**
  * A collection of utility functions for working with various data encoding and hashing formats.

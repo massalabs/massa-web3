@@ -16,6 +16,7 @@ import { ISlot } from '../interfaces/ISlot';
 import { IGetGraphInterval } from '../interfaces/IGetGraphInterval';
 import { IGraphInterval } from '../interfaces/IGraphInterval';
 import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot';
+import { Buffer } from 'buffer';
 
 /** Public Api Client for interacting with the massa network */
 export class PublicApiClient extends BaseClient implements IPublicApiClient {

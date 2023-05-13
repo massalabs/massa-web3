@@ -4,6 +4,7 @@ import { IBalance } from './IBalance';
 import { IRollsData } from './IRollsData';
 import { ISignature } from './ISignature';
 import { ITransactionData } from './ITransactionData';
+import { Buffer } from 'buffer';
 
 export interface IWalletClient {
   setBaseAccount(baseAccount: IAccount): void;
