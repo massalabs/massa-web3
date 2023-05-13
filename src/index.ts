@@ -1,3 +1,5 @@
+import setPolyfills from './polyfills';
+setPolyfills();
 /** Exposed interfaces */
 export { IAccount } from './interfaces/IAccount';
 export { IEvent } from './interfaces/IEvent';
@@ -79,3 +81,4 @@ export * from './utils/serializers';
 /** Exposed utils */
 export * as utils from './utils/Xbqcrypto';
 export * as time from './utils/time';
+
