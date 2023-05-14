@@ -1,3 +1,11 @@
+/**
+ * This file includes the implementation for the {@link SmartContractsClient} class. This class provides methods for interacting with smart contracts
+ * in the Massa blockchain. Such methods include {@link SmartContractsClient#deploySmartContract|deploying}, {@link SmartContractsClient#callSmartContract|calling},
+ * and {@link SmartContractsClient#readSmartContract|reading} smart contracts, as well as retrieving smart contract {@link SmartContractsClient#getFilteredScOutputEvents|events}
+ * and {@link SmartContractsClient#getContractBalance|balances}.
+ *
+ * @module SmartContractsClient
+ */
 import { EOperationStatus } from '../interfaces/EOperationStatus';
 import { IAccount } from '../interfaces/IAccount';
 import { IAddressInfo } from '../interfaces/IAddressInfo';
@@ -30,14 +38,14 @@ const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
 /**
- * Smart Contracts Client object enables smart contract deployment, calls and streaming of events
+ * Smart Contracts Client object enables smart contract deployment, calls and streaming of events.
  */
 export class SmartContractsClient
   extends BaseClient
   implements ISmartContractsClient
 {
   /**
-   * Constructor for {@link SmartContractsClient} objects
+   * Constructor for {@link SmartContractsClient} objects.
    */
   public constructor(
     clientConfig: IClientConfig,
@@ -61,15 +69,16 @@ export class SmartContractsClient
 
   /**
    * Deploy a smart contract on th massa blockchain by creating and sending
-   * an operation containing byte code.
+   * an operation containing byte code
    *
    * @remarks
-   * If no executor is provided, the default wallet account will be used.
+   * If no executor is provided, the default wallet account from the provided {@link WalletClient}
+   * will be used.
    *
-   * @param contractData - A IContractData object containing the deployment data
-   * @param executor - An optional IAccount object containing the account to use for the deployment
+   * @param contractData - The deployment contract data.
+   * @param executor - The account to use for the deployment.
    *
-   * @returns A promise that resolves to a string containing the operation id of the deployment operation
+   * @returns A promise that resolves to the operation ID of the deployment operation.
    */
   public async deploySmartContract(
     contractData: IContractData,
@@ -143,10 +152,11 @@ export class SmartContractsClient
    * @remarks
    * If no executor is provided, the default wallet account will be used.
    *
-   * @param callData - A ICallData object containing the call data
-   * @param executor - An optional IAccount object containing the account to use for the call
+   * @param callData -  The data required for the smart contract call.
+   * @param executor - The account that will execute the call (default: the default
+   * wallet account from {@link WalletClient}).
    *
-   * @returns A promise that resolves to a string containing the operation id of the call operation
+   * @returns A promise that resolves to the operation ID of the call operation as a string.
    */
   public async callSmartContract(
     callData: ICallData,
@@ -206,12 +216,11 @@ export class SmartContractsClient
   }
 
   /**
-   * Read a smart contract method
+   * Executes a read operation on a smart contract
    *
-   * @param readData - A IReadData object containing useful data for the operation
+   * @param readData - The data required for the a read operation of a smart contract.
    *
-   * @returns A promise that resolves to a IContractReadOperationResponse object
-   * containing the result of the read operation
+   * @returns A promise that resolves to object the result of the read operation.
    */
   public async readSmartContract(
     readData: IReadData,
@@ -265,9 +274,9 @@ export class SmartContractsClient
   /**
    * Returns the balance of the smart contract
    *
-   * @param address - The address of the smart contract
+   * @param address - The address of the smart contract.
    *
-   * @returns A promise that resolves to a IAddressInfo object containing the balance of the smart contract
+   * @returns A promise that resolves to the balance of the smart contract.
    */
   public async getContractBalance(address: string): Promise<IBalance | null> {
     const addresses: Array<IAddressInfo> =
@@ -283,7 +292,7 @@ export class SmartContractsClient
   /**
    * Get filtered smart contract events
    *
-   * @param eventFilterData - A IEventFilter object containing the filter
+   * @param eventFilterData - The filter data for the events.
    *
    * @returns A promise that resolves to an array of IEvent objects containing the filtered events
    */
@@ -317,12 +326,18 @@ export class SmartContractsClient
   }
 
   /**
-   * Execute a read-only smart contracts
+   * Execute a read-only smart contract.
    *
-   * @param contractData - A IContractData object containing the contract data
+   * @param contractData - The data required for the read-only smart contract.
    *
-   * @returns A promise which resolves to a IExecuteReadOnlyResponse object containing the result
-   * of the read-only operation
+   * @returns A promise which resolves to an object containing the result
+   * of the operation.
+   *
+   * @throws
+   * - If the contract binary data is missing.
+   * - If the contract contract address is missing.
+   * - If the result is empty.
+   * - If the result contains an error.
    */
   public async executeReadOnlySmartContract(
     contractData: IContractData,
@@ -374,9 +389,9 @@ export class SmartContractsClient
   /**
    * Get the status of a specific operation
    *
-   * @param opId - The operation id
+   * @param opId - The operation id.
    *
-   * @returns A promise that resolves to a EOperationStatus enum value
+   * @returns A promise that resolves to the status of the operation.
    */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
     const operationData: Array<IOperationData> =
@@ -400,10 +415,10 @@ export class SmartContractsClient
   /**
    * Get the status of a specific operation and wait until it reaches the required status
    *
-   * @param opId - The required operation id
-   * @param requiredStatus - The required status
+   * @param opId - The required operation id.
+   * @param requiredStatus - The required status.
    *
-   * @returns A promise that resolves to a EOperationStatus enum value
+   * @returns A promise that resolves to the status of the operation.
    */
   public async awaitRequiredOperationStatus(
     opId: string,
