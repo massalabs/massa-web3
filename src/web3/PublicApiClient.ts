@@ -21,7 +21,7 @@ import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot';
  * Public API client for interacting with a Massa node.
  *
  * This class provides an interface for interacting with the public API of a Massa node.
- * It offers methods for querying various data structures used in the Massa blockchain, 
+ * It offers methods for querying various data structures used in the Massa blockchain,
  * such as blocks, endorsements, operations, and stakers.
  *
  * @module PublicApiClient
@@ -55,7 +55,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Get graph interval
    *
    * @param graphInterval - The graph interval values in ms as an IGetGraphInterval
-   * 
+   *
    * @return A promise which resolves in the graph interval
    */
   public async getGraphInterval(
@@ -131,7 +131,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Retrieves data about a list of addresses, such as their balances and block creation details.
    *
    * @param addresses - An array of addresses to query.
-   * 
+   *
    * @return A promise that resolves to an array of address information.
    */
   public async getAddresses(
@@ -177,7 +177,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * Show info about a list of endorsements
    *
    * @param endorsementIds - The endorsement ids as an array of strings
-   * 
+   *
    * @return A promise which resolves in the endorsement data
    */
   public async getEndorsements(
