@@ -290,7 +290,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Get filtered smart contract events
+   * Get filtered smart contract output events
    *
    * @param eventFilterData - The filter data for the events.
    *
