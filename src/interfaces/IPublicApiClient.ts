@@ -27,17 +27,90 @@ import { IGraphInterval } from './IGraphInterval';
  * @see getGraphInterval - Get graph interval.
  */
 export interface IPublicApiClient {
+  /**
+   * Get the node status.
+   *
+   * @returns The node status.
+   */
   getNodeStatus(): Promise<INodeStatus>;
+
+  /**
+   * Get addresses.
+   *
+   * @param addresses - The addresses.
+   *
+   * @returns The addresses as IAddressInfo.
+   */
   getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>>;
+
+  /**
+   * Get blocks.
+   *
+   * @param blockIds - The block ids.
+   *
+   * @returns The blocks as IBlockInfo.
+   */
   getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>>;
+
+  /**
+   * Get endorsements.
+   *
+   * @param endorsementIds - The endorsement ids.
+   *
+   * @returns The endorsements as IEndorsement.
+   */
   getEndorsements(endorsementIds: Array<string>): Promise<Array<IEndorsement>>;
+
+  /**
+   * Get operations.
+   *
+   * @param operationIds - The operation ids.
+   *
+   * @returns The operations as IOperationData.
+   */
   getOperations(operationIds: Array<string>): Promise<Array<IOperationData>>;
+
+  /**
+   * Get cliques.
+   *
+   * @returns The cliques as IClique.
+   */
   getCliques(): Promise<Array<IClique>>;
+
+  /**
+   * Get stakers.
+   *
+   * @returns The stakers as IStakingAddresses.
+   */
   getStakers(): Promise<Array<IStakingAddresses>>;
+
+  /**
+   * Get datastore entries.
+   *
+   * @param getDatastoreEntries - The datastore entries.
+   *
+   * @returns The datastore entries as IDatastoreEntry. (null if not found)
+   */
   getDatastoreEntries(
     getDatastoreEntries: Array<IDatastoreEntryInput>,
   ): Promise<Array<IDatastoreEntry | null>>;
+
+  /**
+   * Get blockclique block by slot.
+   *
+   * @param slot - The slot
+   *
+   * @returns The blockclique block by slot as IBlockcliqueBlockBySlot.
+   */
   getBlockcliqueBlockBySlot(slot: ISlot): Promise<IBlockcliqueBlockBySlot>;
+
+  /**
+   * Get graph interval.
+   *
+   * @param graphInterval - The graph interval.
+   *
+   * @returns The graph interval as IGraphInterval.
+   */
   getGraphInterval(
     graphInterval: IGetGraphInterval,
   ): Promise<Array<IGraphInterval>>;
