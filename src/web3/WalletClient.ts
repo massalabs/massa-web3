@@ -404,10 +404,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
   /**
    * Sign provided string with given address (address must be in the wallet)
    *
-   * @throws if the generated signature is not valid
    *
    * @param data - The data to sign (string or Buffer)
    * @param signer - The account that will sign the data
+   *
+   * @throws if the generated signature is not valid
    *
    * @returns a promise that resolves to an {@link ISignature}
    */
@@ -503,9 +504,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
   /**
    * Get the byte representation of a given public key
    *
-   * @throws if the public key is not valid
    *
    * @param publicKey - The public key to get the bytes from
+   *
+   * @throws if the public key is not valid
    *
    * @returns a Uint8Array containing the bytes of the public key
    */
@@ -676,10 +678,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
   /**
    * Sell rolls with wallet address
    *
-   * @throws if no account is available
    *
    * @param txData - The transaction data
    * @param executor - The account that will execute the transaction (optional)
+   *
+   * @throws if no account is available
    *
    * @returns a promise that resolves to an array of operations ids (string)
    */
