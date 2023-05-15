@@ -14,14 +14,14 @@ export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR';
  * Compares two ISlot instances based on their `period` and `thread` properties.
  *
  * @remarks
- * The comparison is primarily based on the 'period' property.  If the 'period' values are the same, 
+ * The comparison is primarily based on the 'period' property.  If the 'period' values are the same,
  * the comparison is then based on the 'thread' property.
- * 
+ *
  * @param a - The first ISlot instance to be compared.
  * @param b - The second ISlot instance to be compared.
  *
  * @returns A positive number if 'a' should come after 'b', a negative number if 'a' should come before 'b',
- * or 0 if 'a' and 'b' are considered equal. 
+ * or 0 if 'a' and 'b' are considered equal.
  */
 const compareByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   const periodOrder = a.period - b.period;
