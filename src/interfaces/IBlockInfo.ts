@@ -13,7 +13,6 @@ export interface IBlockInfo {
   content: null | {
     is_final: boolean;
     is_stale: boolean;
-    is_in_blockclique: boolean;
     block: {
       header: {
         content: {
