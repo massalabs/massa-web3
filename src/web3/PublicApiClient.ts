@@ -56,7 +56,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    *
    * @param graphInterval - The graph interval values in ms as an IGetGraphInterval
    *
-   * @return A promise which resolves in the graph interval
+   * @returns A promise which resolves in the graph interval
    */
   public async getGraphInterval(
     graphInterval: IGetGraphInterval,
@@ -80,7 +80,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    *
    * @param slot - The slot as an ISlot
    *
-   * @return A promise which resolves in the blockclique details
+   * @returns A promise which resolves in the blockclique details
    */
   public async getBlockcliqueBlockBySlot(
     slot: ISlot,
@@ -110,7 +110,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * - The node's version
    * - The node's configuration parameters
    *
-   * @return A promise that resolves to the node's status information.
+   * @returns A promise that resolves to the node's status information.
    */
   public async getNodeStatus(): Promise<INodeStatus> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS;
@@ -132,7 +132,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    *
    * @param addresses - An array of addresses to query.
    *
-   * @return A promise that resolves to an array of address information.
+   * @returns A promise that resolves to an array of address information.
    */
   public async getAddresses(
     addresses: Array<string>,
@@ -156,7 +156,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    *
    * @param blockIds - The block ids as an array of strings
    *
-   * @return A promise which resolves in the block data
+   * @returns A promise which resolves in the block data
    */
   public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
@@ -178,7 +178,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    *
    * @param endorsementIds - The endorsement ids as an array of strings
    *
-   * @return A promise which resolves in the endorsement data
+   * @returns A promise which resolves in the endorsement data
    */
   public async getEndorsements(
     endorsementIds: Array<string>,
@@ -202,7 +202,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    *
    * @param operationIds - An array of operation IDs to query.
    *
-   * @return A promise that resolves to an array of operation data.
+   * @returns A promise that resolves to an array of operation data.
    */
   public async getOperations(
     operationIds: Array<string>,
@@ -224,7 +224,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   /**
    * Get cliques
    *
-   * @return A promise which resolves to the cliques
+   * @returns A promise which resolves to the cliques
    */
   public async getCliques(): Promise<Array<IClique>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQUES;
@@ -244,7 +244,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   /**
    * Retrieves a list of active stakers and their roll counts for the current cycle.
    *
-   * @return A promise that resolves to an array of staking addresses and their roll counts.
+   * @returns A promise that resolves to an array of staking addresses and their roll counts.
    */
   public async getStakers(): Promise<Array<IStakingAddresses>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STAKERS;
@@ -266,7 +266,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    *
    * @param addressesKeys - An array of objects containing address and key data.
    *
-   * @return A promise that resolves to an array of datastore entries.
+   * @returns A promise that resolves to an array of datastore entries.
    */
   public async getDatastoreEntries(
     addressesKeys: Array<IDatastoreEntryInput>,
