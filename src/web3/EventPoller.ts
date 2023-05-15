@@ -83,7 +83,7 @@ export class EventPoller extends EventEmitter {
         let isAfterLastSlot = true;
         if (this.lastSlot) {
           isAfterLastSlot =
-            compareThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
+            compareByThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
         }
 
         return meetsRegex && isAfterLastSlot;
