@@ -404,7 +404,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
   /**
    * Sign provided string with given address (address must be in the wallet)
    *
-   *
    * @param data - The data to sign (string or Buffer)
    * @param signer - The account that will sign the data
    *
@@ -503,7 +502,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
   /**
    * Get the byte representation of a given public key
-   *
    *
    * @param publicKey - The public key to get the bytes from
    *
@@ -677,7 +675,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
   /**
    * Sell rolls with wallet address
-   *
    *
    * @param txData - The transaction data
    * @param executor - The account that will execute the transaction (optional)
