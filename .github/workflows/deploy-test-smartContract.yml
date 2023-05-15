@@ -31,7 +31,7 @@ jobs:
 
       - name: Deploy
         run: |
-          if npm run test-smart-contract-example |& grep -q "The Beatles" ; then
+          if npm run test-smart-contract-example |& grep -q "Contract deployed" ; then
             echo "Contracts successfully deployed!"
           else
             echo "Failed to deploy contracts ..."
