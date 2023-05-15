@@ -9,6 +9,18 @@ import { IEventFilter } from './IEventFilter';
 import { IExecuteReadOnlyResponse } from './IExecuteReadOnlyResponse';
 import { IReadData } from './IReadData';
 
+/**
+ * Represents a SmartContractClient object.
+ *
+ * @see deploySmartContract - deploy smart contract
+ * @see callSmartContract - call smart contract
+ * @see readSmartContract - read smart contract
+ * @see getContractBalance - get contract balance
+ * @see getFilteredScOutputEvents - get filtered smart contract output events
+ * @see executeReadOnlySmartContract - execute read only smart contract
+ * @see getOperationStatus - get operation status
+ * @see awaitRequiredOperationStatus - await required operation status
+ */
 export interface ISmartContractsClient {
   deploySmartContract(
     contractData: IContractData,

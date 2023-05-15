@@ -5,6 +5,24 @@ import { IRollsData } from './IRollsData';
 import { ISignature } from './ISignature';
 import { ITransactionData } from './ITransactionData';
 
+/**
+ * Interface for WalletClient objects
+ *
+ * @see setBaseAccount - set base account for wallet
+ * @see getBaseAccount - get base account for wallet
+ * @see getWalletAccounts - get all accounts in wallet
+ * @see cleanWallet - delete all accounts from wallet
+ * @see getWalletAccountByAddress - get account by address
+ * @see addSecretKeysToWallet - add accounts to wallet by secret keys
+ * @see addAccountsToWallet - add accounts to wallet
+ * @see removeAddressesFromWallet - remove accounts from wallet
+ * @see walletInfo - get all accounts info
+ * @see signMessage - sign message by account
+ * @see getAccountBalance - get account balance
+ * @see sendTransaction - send transaction
+ * @see buyRolls - buy rolls
+ * @see sellRolls - sell rolls
+ */
 export interface IWalletClient {
   setBaseAccount(baseAccount: IAccount): void;
   getBaseAccount(): IAccount | null;
