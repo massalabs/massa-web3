@@ -11,14 +11,19 @@ export const ON_MASSA_EVENT_DATA = 'ON_MASSA_EVENT';
 export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR';
 
 /**
- * Sorts slots by thread and period
+ * Compares two ISlot instances based on their `period` and `thread` properties.
  *
- * @param a - first slot
- * @param b - second slot
+ * @remarks
+ * The comparison is primarily based on the 'period' property.  If the 'period' values are the same,
+ * the comparison is then based on the 'thread' property.
  *
- * @returns The difference between the two slots periods or threads if periods are equal
+ * @param a - The first ISlot instance to be compared.
+ * @param b - The second ISlot instance to be compared.
+ *
+ * @returns A positive number if 'a' should come after 'b', a negative number if 'a' should come before 'b',
+ * or 0 if 'a' and 'b' are considered equal.
  */
-const sortByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
+const compareByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   const periodOrder = a.period - b.period;
   if (periodOrder === 0) {
     const threadOrder = a.thread - b.thread;
@@ -83,7 +88,7 @@ export class EventPoller extends EventEmitter {
         let isAfterLastSlot = true;
         if (this.lastSlot) {
           isAfterLastSlot =
-            sortByThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
+            compareByThreadAndPeriod(event.context.slot, this.lastSlot) > 0;
         }
 
         return meetsRegex && isAfterLastSlot;
@@ -91,7 +96,7 @@ export class EventPoller extends EventEmitter {
 
       // sort after highest period and thread
       const sortedByHighestThreadAndPeriod = filteredEvents.sort((a, b) => {
-        return sortByThreadAndPeriod(a.context.slot, b.context.slot);
+        return compareByThreadAndPeriod(a.context.slot, b.context.slot);
       });
 
       if (sortedByHighestThreadAndPeriod.length > 0) {
