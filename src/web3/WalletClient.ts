@@ -570,7 +570,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Sends native MAS from a wallet address to another
    *
    * @param txData - The transaction data
-   * @param executor - The account that will execute the transaction (optional)
+   * @param executor - The account that will execute the transaction (optional, default is the base account)
    *
    * @returns a promise that resolves to an array of operations ids (string)
    */
@@ -624,7 +624,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Buy rolls with wallet address
    *
    * @param txData - The transaction data
-   * @param executor - The account that will execute the transaction (optional)
+   * @param executor - The account that will execute the transaction (optional, default is the base account)
    *
    * @returns a promise that resolves to an array of operations ids (string)
    */
@@ -677,7 +677,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * Sell rolls with wallet address
    *
    * @param txData - The transaction data
-   * @param executor - The account that will execute the transaction (optional)
+   * @param executor - The account that will execute the transaction (optional, default is the base account)
    *
    * @throws if no account is available
    *
