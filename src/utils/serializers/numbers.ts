@@ -1,15 +1,40 @@
 /**
  * This module aim's to provide number variable types serialization and conversion helper functions.
- *
+ */
+
+/**
+ * The maximum value for an unsigned 8-bit integer (u8).
  */
 const U8_MAX = 0xff;
+
+/**
+ * The maximum value for an unsigned 32-bit integer (u32).
+ */
 const U32_MAX = 0xffffffff;
+
+/**
+ * The maximum value for an unsigned 64-bit integer (u64) represented as a BigInt.
+ */
 const U64_MAX = BigInt('0xffffffffffffffff');
 
+/**
+ * The minimum value for a signed 32-bit integer (i32).
+ */
 const I32_MIN = -0x80000000;
+
+/**
+ * The maximum value for a signed 32-bit integer (i32).
+ */
 const I32_MAX = 0x7fffffff;
 
+/**
+ * The minimum value for a signed 64-bit integer (i64) represented as a BigInt.
+ */
 const I64_MIN = BigInt('-9223372036854775808');
+
+/**
+ * The maximum value for a signed 64-bit integer (i64) represented as a BigInt.
+ */
 const I64_MAX = BigInt('0x7fffffffffffffff');
 
 /**
