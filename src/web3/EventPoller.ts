@@ -18,7 +18,7 @@ export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR';
  *
  * @returns The difference between the two slots periods or threads if periods are equal
  */
-const compareThreadAndPeriod = (a: ISlot, b: ISlot): number => {
+const compareByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
   const periodOrder = a.period - b.period;
   if (periodOrder === 0) {
     const threadOrder = a.thread - b.thread;
