@@ -31,16 +31,16 @@ jobs:
 
       - name: Deploy
         run: |
-          if npm run test-smart-contract-example |& grep -q "Contract deployed" ; then
+          if npm run test-smart-contract-example ; then
             echo "Contracts successfully deployed!"
           else
             echo "Failed to deploy contracts ..."
             exit 1
           fi
         env:
-          JSON_RPC_URL_PUBLIC: https://test.massa.net/api/v2
+          JSON_RPC_URL_PUBLIC: ${{ secrets.JSON_RPC_URL_PUBLIC }}
 
-          JSON_RPC_URL_PRIVATE: https://test.massa.net/api/v2
+          JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PUBLIC }}
 
           DEPLOYER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
           RECEIVER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
