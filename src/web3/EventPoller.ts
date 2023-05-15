@@ -91,7 +91,7 @@ export class EventPoller extends EventEmitter {
 
       // sort after highest period and thread
       const sortedByHighestThreadAndPeriod = filteredEvents.sort((a, b) => {
-        return compareThreadAndPeriod(a.context.slot, b.context.slot);
+        return compareByThreadAndPeriod(a.context.slot, b.context.slot);
       });
 
       if (sortedByHighestThreadAndPeriod.length > 0) {
