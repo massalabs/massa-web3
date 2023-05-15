@@ -13,9 +13,7 @@ In your issue, please include a clear and concise description of the bug, any re
 To start developing with massa-web3, you must install all the necessary dev dependencies. You can do so by running the following command:
 
 ```sh
-
 npm install
-
 ```
 
 This will install all the required packages listed in the package.json file, allowing you to update, fix, or improve massa-web3 in any way you see fit.
@@ -27,13 +25,9 @@ We welcome contributions in the form of bug fixes, enhancements, and new feature
 To contribute code, please follow these steps:
 
 1. Fork the massa-web3 repository to your own account.
-
 2. Create a new branch from the `main` branch for your changes.
-
 3. Make your changes and commit them to your branch.
-
 4. Push your branch to your fork.
-
 5. Create a pull request from your branch to the develop branch of the massa-web3 repository.
 
 >  **NOTE:** When creating a pull request, please include a clear and concise title and description of your changes, as well as any relevant context or background information.
@@ -61,9 +55,7 @@ We use the [MassaLabs Prettier configuration](https://github.com/massalabs/prett
 You can run the following command to format your code before committing:
 
 ```sh
-
 npm run fmt
-
 ```
 
 ## Tests
@@ -75,17 +67,13 @@ We use [jest library](https://jestjs.io/fr/) for unit testing.
 You can run the following command to run the tests:
 
 ```sh
-
 npm run build
-
 ```
 
 and then
 
 ```sh
-
 npm run test
-
 ```
 
 ## License
@@ -99,8 +87,6 @@ massa-web3 provides complete documentation of all available functions and object
 To generate the documentation for a specific branch, run the following command:
 
 ```sh
-
 npm run doc
-
 ```
 The documentation will be generated inside each of the packages in the `./docs/documentation/html` directory.
