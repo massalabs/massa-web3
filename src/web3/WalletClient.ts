@@ -499,9 +499,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
   /**
    * Verify a signature.
    *
-   * @param data The signed data to verify
-   * @param signature The signature to verify
-   * @param signerPubKey The public key of the signer
+   * @param data - The signed data to verify
+   * @param signature - The signature to verify
+   * @param signerPubKey - The public key of the signer
    *
    * @returns A Promise that resolves to `true` if the signature is valid, `false` otherwise.
    */
