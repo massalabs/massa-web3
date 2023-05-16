@@ -18,7 +18,7 @@ const CONSTRUCTOR = 'constructor';
  *
  * @param _ - not used
  */
-export function main(_: StaticArray<u8>): StaticArray<u8> {
+export function main(): StaticArray<u8> {
   const masterKey = new StaticArray<u8>(1);
   masterKey[0] = 0x00;
   if (!hasOpKey(masterKey)) {

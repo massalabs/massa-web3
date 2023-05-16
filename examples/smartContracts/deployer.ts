@@ -5,9 +5,7 @@ import { Client } from '../../src/web3/Client';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
-import BigNumber from 'bignumber.js';
 import { u64ToBytes, u8toByte } from '../../src/utils/serializers';
-import { fromMAS } from '../../src';
 const path = require('path');
 const chalk = require('chalk');
 
