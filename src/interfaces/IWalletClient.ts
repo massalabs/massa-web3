@@ -123,7 +123,7 @@ export interface IWalletClient {
    */
   sendTransaction(
     txData: ITransactionData,
-    executor: IAccount,
+    executor?: IAccount,
   ): Promise<Array<string>>;
 
   /**
@@ -134,7 +134,7 @@ export interface IWalletClient {
    *
    * @returns array of operation ids
    */
-  buyRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
+  buyRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>>;
 
   /**
    * Sell rolls.

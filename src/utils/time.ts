@@ -80,7 +80,7 @@ export class Interval {
  *
  * @param timeMilli - The time interval in milliseconds.
  *
- * @return A promise that resolves after the specified time interval.
+ * @returns A promise that resolves after the specified time interval.
  */
 export const wait = async (timeMilli: number): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
@@ -100,7 +100,7 @@ export const wait = async (timeMilli: number): Promise<void> => {
  *
  * @throws if the specified promise does not resolve before the timeout interval.
  *
- * @return A promise that resolves after the specified time interval.
+ * @returns A promise that resolves after the specified time interval.
  */
 export async function withTimeoutRejection<T>(
   promise: Promise<T>,

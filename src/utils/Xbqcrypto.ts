@@ -10,7 +10,7 @@ import { blake3 } from '@noble/hashes/blake3';
  * @module Xbqcrypto.ts
  */
 
-import { signedBigIntUtils, unsignedBigIntUtils } from './encode_decode_int';
+import { unsignedBigIntUtils } from './encode_decode_int';
 const base58check = require('base58check');
 
 /**
@@ -41,6 +41,7 @@ export function base58Encode(data: Buffer | Uint8Array): string {
  * Decode a base58 encoded string to a buffer
  *
  * @param data - The base58 encoded string
+ *
  * @returns The decoded buffer
  */
 export function base58Decode(data: string): Buffer {
@@ -52,6 +53,7 @@ export function base58Decode(data: string): Buffer {
  * Encodes a number or bigint to a varint encoded Uint8Array.
  *
  * @param data - The data to encode
+ *
  * @returns The varint encoded data as a Uint8Array
  */
 export function varintEncode(data: number | bigint): Uint8Array {
@@ -64,7 +66,8 @@ export function varintEncode(data: number | bigint): Uint8Array {
 /**
  * Decodes a varint encoded Uint8Array to a number
  *
- * @param data
+ * @param data - The varint encoded Uint8Array
+ *
  * @returns The decoded number
  */
 export function varintDecode(data: Uint8Array): number {

@@ -14,7 +14,6 @@ export interface IProvider {
  *
  * @see PRIVATE - private provider
  * @see PUBLIC - public provider
- * @see WS - websocket provider
  */
 export enum ProviderType {
   PRIVATE,

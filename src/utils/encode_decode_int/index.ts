@@ -10,7 +10,7 @@
  *
  * Here is the catalog of all functions organized by file:
  *
- * In the file **signed.ts}** you can find functions to serialize and deserialize signed numbers such as:
+ * In the file **signed.ts** you can find functions to serialize and deserialize signed numbers such as:
  * - encodingLength
  * - encode
  * - decode

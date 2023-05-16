@@ -98,7 +98,7 @@ export function deserializeObj<T extends ISerializable<T>>(
  * @param source - the Uint8Array to convert
  * @param Clazz - the class constructor prototype T.prototype
  *
- * @return {T[]} an array of deserialized T's
+ * @returns an array of deserialized T's
  */
 export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
   source: Uint8Array,
