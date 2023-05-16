@@ -9,3 +9,4 @@ dist
 README.md
 *.html
 *.md
+coverage
