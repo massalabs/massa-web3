@@ -158,7 +158,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @throws if the number of private keys exceeds the maximum limit.
    *
-   * @returns A Promise that resolves to an array of {@link IAccount} objects, each representing an account created from a private key. If a provided private key corresponds to an account already present in the wallet, this account will not be duplicated.
+   * @returns A Promise that resolves to an array of {@link IAccount} objects.
    */
   public async addSecretKeysToWallet(
     secretKeys: Array<string>,
