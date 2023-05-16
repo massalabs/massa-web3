@@ -19,9 +19,6 @@
         "test": "jest",
         "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
         "test-wallet": "ts-node ./examples/wallet/index.ts",
-        "test-ws-blocks": "ts-node ./examples/websockets/ws-blocks.ts",
-        "test-ws-block-headers": "ts-node ./examples/websockets/ws-block-headers.ts",
-        "test-ws-filled-blocks": "ts-node ./examples/websockets/ws-filled-blocks.ts",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "prettier": "prettier --check .",
@@ -60,7 +57,6 @@
     "dependencies": {
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
-        "@types/ws": "^8.5.4",
         "axios": "^0.26.1",
         "base58check": "^2.0.0",
         "bignumber.js": "^9.1.1",
@@ -71,8 +67,7 @@
         "esmify": "^2.1.1",
         "jest-environment-jsdom": "^29.5.0",
         "js-base64": "^3.7.5",
-        "varint": "^6.0.0",
-        "ws": "^8.12.1"
+        "varint": "^6.0.0"
     },
     "devDependencies": {
         "@massalabs/eslint-config": "^0.0.9",
