@@ -6,5 +6,4 @@ export interface IProvider {
 export enum ProviderType {
   PRIVATE,
   PUBLIC,
-  WS,
 }
