@@ -20,7 +20,7 @@ import { INodeStatus } from '../interfaces/INodeStatus';
 import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
-import { fromMAS, toMAS } from '../utils/converters';
+import { fromMAS } from '../utils/converters';
 
 const VERSION_NUMBER = 0;
 const ADDRESS_PREFIX = 'AU';
@@ -548,7 +548,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
       publicKey.slice(1),
     );
     // Version is little for now
-    const _version = publicKeyVersionBase58Decoded.readUInt8(0);
     const publicKeyBase58Decoded = publicKeyVersionBase58Decoded.slice(1);
     return publicKeyBase58Decoded;
   }
@@ -572,7 +571,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
       secretKey.slice(1),
     );
     // Version is little for now
-    const _version = secretKeyVersionBase58Decoded.readUInt8(0);
     const secretKeyBase58Decoded = secretKeyVersionBase58Decoded.slice(1);
     return secretKeyBase58Decoded;
   }

@@ -83,7 +83,7 @@ export class Interval {
  * @returns A promise that resolves after the specified time interval.
  */
 export const wait = async (timeMilli: number): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     const timeout = new Timeout(timeMilli, () => {
       timeout.clear();
       return resolve();
