@@ -58,7 +58,7 @@ export class Client implements IClient {
   /**
    * Get the private api related RPC methods
    *
-   * @return PrivateApiClient object
+   * @returns PrivateApiClient object
    */
   public privateApi(): PrivateApiClient {
     return this.privateApiClient;
@@ -67,7 +67,7 @@ export class Client implements IClient {
   /**
    * Get the public api related RPC methods
    *
-   * @return PublicApiClient object
+   * @returns PublicApiClient object
    */
   public publicApi(): PublicApiClient {
     return this.publicApiClient;
@@ -76,7 +76,7 @@ export class Client implements IClient {
   /**
    * Get the Wallet related methods
    *
-   * @return WalletClient object
+   * @returns WalletClient object
    */
   public wallet(): IWalletClient {
     return this.walletClient;
@@ -85,7 +85,7 @@ export class Client implements IClient {
   /**
    * Get the smart Contracts related methods
    *
-   * @return SmartContractsClient object
+   * @returns SmartContractsClient object
    */
   public smartContracts(): SmartContractsClient {
     return this.smartContractsClient;
@@ -106,7 +106,7 @@ export class Client implements IClient {
   /**
    * Get the currently set providers
    *
-   * @return array of the known providers
+   * @returns array of the known providers
    */
   public getProviders(): Array<IProvider> {
     return this.clientConfig.providers;
@@ -115,7 +115,7 @@ export class Client implements IClient {
   /**
    * Get all private providers
    *
-   * @return all private providers
+   * @returns all private providers
    */
   public getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
@@ -126,7 +126,7 @@ export class Client implements IClient {
   /**
    * Get all public providers
    *
-   * @return all public providers
+   * @returns all public providers
    */
   public getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
