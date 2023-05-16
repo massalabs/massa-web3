@@ -28,17 +28,38 @@ const PUBLIC_KEY_PREFIX = 'P';
 const SECRET_KEY_PREFIX = 'S';
 const MAX_WALLET_ACCOUNTS = 256;
 
+/**
+ * Retrieves the thread number associated with a given address.
+ *
+ * @param address - The address from which to extract the thread number.
+ *
+ * @returns The thread number associated with the address.
+ */
 const getThreadNumber = (address: string): number => {
   const pubKeyHash = base58Decode(address.slice(2));
   const threadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
   return threadNumber;
 };
 
-/** Wallet module that will under the hood interact with WebExtension, native client or interactively with user */
+/**
+ * A client class for interacting with wallets, which can seamlessly work with WebExtensions,
+ *
+ * @remarks
+ * The WalletClient manages multiple accounts and handles operations such as transaction signing,
+ * fetching account information, and interacting with the blockchain. It extends the BaseClient
+ * class and implements the IWalletClient interface.
+ */
 export class WalletClient extends BaseClient implements IWalletClient {
   private wallet: Array<IAccount> = [];
   private baseAccount?: IAccount;
 
+  /**
+   * Constructor of the {@link WalletClient} class
+   *
+   * @param clientConfig - Configuration parameters for the client.
+   * @param publicApiClient - A {@link PublicApiClient} instance used for making API calls.
+   * @param baseAccount - (Optional) An {@link IAccount} to set as the base account for the wallet.
+   */
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
@@ -69,7 +90,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
     this.getAccountBalance = this.getAccountBalance.bind(this);
   }
 
-  /** set the default (base) account */
+  /**
+   * Sets a provided account as the default (base) account for the wallet.
+   *
+   * @param baseAccount - An {@link IAccount} to be set as the base account.
+   *
+   * @returns A Promise that resolves to `void` when the base account has been set successfully.
+   */
   public async setBaseAccount(baseAccount: IAccount): Promise<void> {
     // in case of not set thread number, compute the value
     if (!baseAccount.createdInThread && baseAccount.address) {
@@ -85,29 +112,54 @@ export class WalletClient extends BaseClient implements IWalletClient {
     }
   }
 
-  /** get the default (base) account */
+  /**
+   * Retrieves the default (base) account of the wallet.
+   *
+   * @returns The default {@link IAccount} of the wallet. If no default account is set, it returns `null`.
+   */
   public getBaseAccount(): IAccount | null {
     return this.baseAccount;
   }
 
-  /** get all accounts under a wallet */
+  /**
+   * Retrieves all accounts stored in the wallet.
+   *
+   * @returns An array of {@link IAccount} objects.
+   */
   public getWalletAccounts(): Array<IAccount> {
     return this.wallet;
   }
 
-  /** delete all accounts under a wallet */
+  /**
+   * Removes all accounts from the wallet.
+   */
   public cleanWallet(): void {
     this.wallet.length = 0;
   }
 
-  /** get wallet account by an address */
+  /**
+   * Retrieves a wallet account based on its address.
+   *
+   * @param address - The address of the account to retrieve.
+   *
+   * @returns The {@link IAccount} associated with the provided address
+   * or `undefined` if no account with the given address is found in the wallet.
+   */
   public getWalletAccountByAddress(address: string): IAccount | undefined {
     return this.wallet.find(
       (w) => w.address.toLowerCase() === address.toLowerCase(),
     ); // ignore case for flexibility
   }
 
-  /** add a list of private keys to the wallet */
+  /**
+   * Adds a set of private keys to the wallet.
+   *
+   * @param secretKeys - An array of base58 encoded private keys to be added to the wallet.
+   *
+   * @throws if the number of private keys exceeds the maximum limit.
+   *
+   * @returns A Promise that resolves to an array of {@link IAccount} objects.
+   */
   public async addSecretKeysToWallet(
     secretKeys: Array<string>,
   ): Promise<Array<IAccount>> {
@@ -145,7 +197,22 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return accountsToCreate;
   }
 
-  /** add accounts to wallet. Prerequisite: each account must have a base58 encoded random entropy or private key */
+  /**
+   * Adds a set of accounts to the wallet.
+   *
+   * @privateRemarks
+   * Each account must have a base58 encoded random entropy or private key.
+   *
+   * @param accounts - An array of accounts ({@link IAccount} objects) to be added to the wallet.
+   *
+   * @throws
+   * - If the number of accounts exceeds the {@link MAX_WALLET_ACCOUNTS} limit
+   * - If an account is missing a private key
+   * - If a submitted public key doesn't correspond to the associated private key
+   * - If an account address doesn't correspond to the private key-derived address
+   *
+   * @returns A Promise that resolves to an array of {@link IAccount} objects.
+   */
   public async addAccountsToWallet(
     accounts: Array<IAccount>,
   ): Promise<Array<IAccount>> {
@@ -202,7 +269,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return accountsAdded;
   }
 
-  /** remove a list of addresses from the wallet */
+  /**
+   * Remove a list of addresses from the wallet
+   *
+   * @param addresses - An array of addresses to remove from the wallet
+   */
   public removeAddressesFromWallet(addresses: Array<string>): void {
     for (const address of addresses) {
       const index = this.wallet.findIndex((w) => w.address === address);
@@ -212,7 +283,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
     }
   }
 
-  /** show wallet info (private keys, public keys, addresses, balances ...) */
+  /**
+   * Retrieves detailed information about the wallet,
+   *
+   * @throws Will throw an error if the number of retrieved wallets does not match the number of addresses in the wallet.
+   *
+   * @returns A Promise that resolves to an array of {@link IFullAddressInfo} objects.
+   */
   public async walletInfo(): Promise<Array<IFullAddressInfo>> {
     if (this.wallet.length === 0) {
       return [];
@@ -238,7 +315,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
     });
   }
 
-  /** generate a new account */
+  /**
+   * Generates a new wallet account.
+   *
+   * @returns A Promise that resolves to an {@link IAccount} object, which represents the newly created account.
+   */
   public static async walletGenerateNewAccount(): Promise<IAccount> {
     // generate private key
     const secretKey: Uint8Array = ed.utils.randomPrivateKey();
@@ -264,7 +345,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
     } as IAccount;
   }
 
-  /** returns an account from private key */
+  /**
+   * Generates an account from a given private key.
+   *
+   * @param secretKeyBase58 - A base58 encoded private key from which the account will be generated.
+   *
+   * @returns A Promise that resolves to an {@link IAccount} object
+   */
   public static async getAccountFromSecretKey(
     secretKeyBase58: string,
   ): Promise<IAccount> {
@@ -288,7 +375,16 @@ export class WalletClient extends BaseClient implements IWalletClient {
     } as IAccount;
   }
 
-  /** sign random message data with an already added wallet account */
+  /**
+   * Signs a random message data using a wallet account that has already been added.
+   *
+   * @param data - The data to be signed.
+   * @param accountSignerAddress - The address of the wallet account that will sign the data.
+   *
+   * @throws Will throw an error if the account associated with the provided address is not found in the wallet.
+   *
+   * @returns A Promise that resolves to an {@link ISignature} object representing the signature.
+   */
   public async signMessage(
     data: string | Buffer,
     accountSignerAddress: string,
@@ -302,7 +398,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return WalletClient.walletSignMessage(data, signerAccount);
   }
 
-  /** get wallet addresses info */
+  /**
+   * Retrieves information about specified wallet addresses.
+   *
+   * @param addresses - An array of wallet addresses for which information is to be retrieved.
+   *
+   * @returns A Promise that resolves to an array of {@link IAddressInfo} objects, each containing
+   * information about a corresponding wallet address.
+   */
   private async getWalletAddressesInfo(
     addresses: Array<string>,
   ): Promise<Array<IAddressInfo>> {
@@ -320,7 +423,23 @@ export class WalletClient extends BaseClient implements IWalletClient {
     }
   }
 
-  /** sign provided string with given address (address must be in the wallet) */
+  /**
+   * Signs the provided data with the given address.
+   *
+   * @remarks
+   * The address must be present in the wallet.
+   *
+   * @param data - The data to be signed.
+   * @param signer - The account that will be used to sign the data.
+   *
+   * @throws
+   * - if no private key is available for signing the message.
+   * - if no public key is available for verifying the signed message.
+   * - if the length of the generated signature is not valid.
+   * - if the signature could not be verified with the public key.
+   *
+   * @returns A Promise that resolves to an {@link ISignature} object representing the signature.
+   */
   public static async walletSignMessage(
     data: string | Buffer,
     signer: IAccount,
@@ -380,10 +499,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
   /**
    * Verify a signature.
    *
-   * @param data The signed data to verify
-   * @param signature The signature to verify
-   * @param signerPubKey The public key of the signer
-   * @returns true if the signature is valid, false otherwise
+   * @param data - The signed data to verify
+   * @param signature - The signature to verify
+   * @param signerPubKey - The public key of the signer
+   *
+   * @returns A Promise that resolves to `true` if the signature is valid, `false` otherwise.
    */
   public async verifySignature(
     data: string | Buffer,
@@ -409,6 +529,15 @@ export class WalletClient extends BaseClient implements IWalletClient {
     )) as boolean;
   }
 
+  /**
+   * Retrieves the byte representation of a given public key.
+   *
+   * @param publicKey - The public key to obtain the bytes from.
+   *
+   * @throws If the public key has an incorrect {@link PUBLIC_KEY_PREFIX}.
+   *
+   * @returns A Uint8Array containing the bytes of the public key.
+   */
   public static getBytesPublicKey(publicKey: string): Uint8Array {
     if (!(publicKey[0] == PUBLIC_KEY_PREFIX)) {
       throw new Error(
@@ -424,6 +553,15 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return publicKeyBase58Decoded;
   }
 
+  /**
+   * Get the byte representation of a given secret key
+   *
+   * @param secretKey - The secret key to get the bytes from
+   *
+   * @throws if the secret key is not valid
+   *
+   * @returns a Uint8Array containing the bytes of the secret key
+   */
   public static getBytesSecretKey(secretKey: string): Uint8Array {
     if (!(secretKey[0] == SECRET_KEY_PREFIX)) {
       throw new Error(
@@ -439,7 +577,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return secretKeyBase58Decoded;
   }
 
-  /** Returns the account balance  */
+  /**
+   * Retrieves the balance of an account.
+   *
+   * @param address - The address to get the balance from.
+   *
+   * @returns A Promise that resolves to an {@link IBalance}. If the address is not found,
+   * it returns `null`.
+   */
   public async getAccountBalance(address: string): Promise<IBalance | null> {
     const addresses: Array<IAddressInfo> =
       await this.publicApiClient.getAddresses([address]);
@@ -451,7 +596,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
     } as IBalance;
   }
 
-  /** send native MAS from a wallet address to another */
+  /**
+   * Sends native MAS from a wallet address to another
+   *
+   * @param txData - The transaction data
+   * @param executor - (Optional) The account that will execute the transaction. If not
+   * provided, the base account is used.
+   *
+   * @throws if no sender account is available for the transaction.
+   *
+   * @returns a promise that resolves to an array of operations ids
+   */
   public async sendTransaction(
     txData: ITransactionData,
     executor?: IAccount,
@@ -498,7 +653,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return opIds;
   }
 
-  /** buy rolls with wallet address */
+  /**
+   * Buy rolls with wallet address
+   *
+   * @param txData - The transaction data
+   * @param executor - (Optional) The account that will execute the transaction.
+   * If not specified, the base account is used by default.
+   *
+   * @throws if no sender account is available for the transaction.
+   *
+   * @returns a promise that resolves to an array of operations ids
+   */
   public async buyRolls(
     txData: IRollsData,
     executor?: IAccount,
@@ -544,7 +709,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
     return opIds;
   }
 
-  /** sell rolls with wallet address */
+  /**
+   * Sell rolls with wallet address
+   *
+   * @param txData - The transaction data
+   * @param executor - (Optional) The account that will execute the transaction.
+   * If not specified, the base account is used by default.
+   *
+   * @throws if no sender account is available for the transaction.
+   *
+   * @returns a promise that resolves to an array of operations ids
+   */
   public async sellRolls(
     txData: IRollsData,
     executor?: IAccount,
