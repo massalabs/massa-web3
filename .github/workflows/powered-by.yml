@@ -2,7 +2,7 @@ name: Generate Powered-By
 on:
   push:
     branches:
-      - 219-fix-generate-powered-by
+      - main
 
 jobs:
   generate-powered-by:
