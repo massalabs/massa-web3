@@ -36,7 +36,7 @@ jobs:
 
     - name: Generate Powered-By
       run: |
-        ./generate_power-by.sh
+        ./generate_powered-by.sh
 
     - name: Commit Changes
       uses: stefanzweifel/git-auto-commit-action@v4
