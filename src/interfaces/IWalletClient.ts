@@ -34,15 +34,14 @@ export interface IWalletClient {
   /**
    * Get the base account.
    *
-   * @returns A promise that resolves to a IAccount object which represents
-   * the base account (or null if base account isnot set)
+   * @returns  The base account (or null if base account is not set)
    */
   getBaseAccount(): IAccount | null;
 
   /**
    * Get all accounts in wallet.
    *
-   * @returns array of IAccount objects
+   * @returns An array of IAccount objects
    */
   getWalletAccounts(): Array<IAccount>;
 
@@ -56,7 +55,7 @@ export interface IWalletClient {
    *
    * @param address - address of the account
    *
-   * @returns IAccount object or undefined if not found
+   * @returns An IAccount object or undefined if not found
    */
   getWalletAccountByAddress(address: string): IAccount | undefined;
 
@@ -65,8 +64,7 @@ export interface IWalletClient {
    *
    * @param secretKeys - array of secret keys
    *
-   * @returns a promise that resolves to an array of IAccount
-   * objects corresponding to the secret keys
+   * @returns A promise that resolves to an array of IAccount
    */
   addSecretKeysToWallet(secretKeys: Array<string>): Promise<Array<IAccount>>;
 
@@ -75,21 +73,21 @@ export interface IWalletClient {
    *
    * @param accounts - array of IAccount objects
    *
-   * @returns a promise that resolves to an array of IAccount objects
+   * @returns A promise that resolves to an array of IAccount objects
    */
   addAccountsToWallet(accounts: Array<IAccount>): Promise<Array<IAccount>>;
 
   /**
    * Remove accounts from wallet using their addresses.
    *
-   * @param addresses - a promise that resolves to an array of addresses
+   * @param addresses - An array of addresses
    */
   removeAddressesFromWallet(addresses: Array<string>): void;
 
   /**
    * Get all accounts info.
    *
-   * @returns a promise that resolves to an array of IFullAddressInfo objects
+   * @returns A promise that resolves to an array of IFullAddressInfo objects
    */
   walletInfo(): Promise<Array<IFullAddressInfo>>;
 
@@ -99,7 +97,7 @@ export interface IWalletClient {
    * @param data - message to sign
    * @param accountSignerAddress - address of the account used to sign the message
    *
-   * @returns a promise that resolves to the signed data as an ISignature object
+   * @returns A promise that resolves to the signed data as an ISignature object
    */
   signMessage(
     data: string | Buffer,
@@ -113,7 +111,7 @@ export interface IWalletClient {
    * @param signature - signature to verify
    * @param accountSignerAddress - address of the account used to sign the message
    *
-   * @returns a promise that resolves to a boolean
+   * @returns A promise that resolves to a boolean
    * (true if the signature is valid, false otherwise)
    */
   verifySignature(
@@ -127,7 +125,7 @@ export interface IWalletClient {
    *
    * @param address - address of the account
    *
-   * @returns a promise that resolves to an IBalance object or null if not found
+   * @returns A promise that resolves to an IBalance object or null if not found
    */
   getAccountBalance(address: string): Promise<IBalance | null>;
 
@@ -137,7 +135,7 @@ export interface IWalletClient {
    * @param txData - transaction data
    * @param executor - account used to send the transaction
    *
-   * @returns a promise that resolves to an array of operation ids
+   * @returns A promise that resolves to an array of operation ids as strings
    */
   sendTransaction(
     txData: ITransactionData,
@@ -150,7 +148,7 @@ export interface IWalletClient {
    * @param txData - transaction data
    * @param executor - account used to send the transaction
    *
-   * @returns a promise that resolves to an array of operation ids
+   * @returns a promise that resolves to an array of operation ids as strings
    */
   buyRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>>;
 
@@ -160,7 +158,7 @@ export interface IWalletClient {
    * @param txData - transaction data
    * @param executor - account used to send the transaction
    *
-   * @returns a promise that resolves to an array of operation ids
+   * @returns a promise that resolves to an array of operation ids as strings
    */
   sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
 }
