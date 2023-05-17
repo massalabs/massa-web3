@@ -1,4 +1,4 @@
-import * as unsigned from './unsigned.js';
+import * as unsigned from './unsigned';
 
 /**
  * @module Signed
