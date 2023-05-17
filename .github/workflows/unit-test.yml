@@ -41,11 +41,11 @@ jobs:
     - name: allow access to coverage.sh
       run: chmod +x ${GITHUB_WORKSPACE}/.github/coverage.sh
       shell: bash
-      
+
     - name: Extract coverage
       id: coverage
       run: |
-        value=$(npm run test:ci | grep -oE '^│\s*total\s+\│\s*([0-9.]+)%' | grep -oE '[0-9]+(\.[0-9]+)?%' | cut -d'.' -f1 | tr -d '%')
+        value=$(npm run test:ci | grep -oE '/All files\s*\|\s*([\d\.]+)/' | cut -d'.' -f1 | tr -d '%')
         echo "coverage=$value" >> $GITHUB_OUTPUT
         echo "${GITHUB_WORKSPACE}/.github/coverage.sh"
 
