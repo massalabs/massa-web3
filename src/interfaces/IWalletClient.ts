@@ -34,7 +34,8 @@ export interface IWalletClient {
   /**
    * Get the base account.
    *
-   * @returns base account as IAccount object (or null if not set)
+   * @returns A promise that resolves to a IAccount object which represents
+   * the base account (or null if base account isnot set)
    */
   getBaseAccount(): IAccount | null;
 
@@ -64,7 +65,8 @@ export interface IWalletClient {
    *
    * @param secretKeys - array of secret keys
    *
-   * @returns array of IAccount objects corresponding to the secret keys
+   * @returns a promise that resolves to an array of IAccount
+   * objects corresponding to the secret keys
    */
   addSecretKeysToWallet(secretKeys: Array<string>): Promise<Array<IAccount>>;
 
@@ -73,21 +75,21 @@ export interface IWalletClient {
    *
    * @param accounts - array of IAccount objects
    *
-   * @returns array of IAccount objects
+   * @returns a promise that resolves to an array of IAccount objects
    */
   addAccountsToWallet(accounts: Array<IAccount>): Promise<Array<IAccount>>;
 
   /**
    * Remove accounts from wallet using their addresses.
    *
-   * @param addresses - array of addresses
+   * @param addresses - a promise that resolves to an array of addresses
    */
   removeAddressesFromWallet(addresses: Array<string>): void;
 
   /**
    * Get all accounts info.
    *
-   * @returns array of IFullAddressInfo objects
+   * @returns a promise that resolves to an array of IFullAddressInfo objects
    */
   walletInfo(): Promise<Array<IFullAddressInfo>>;
 
@@ -97,7 +99,7 @@ export interface IWalletClient {
    * @param data - message to sign
    * @param accountSignerAddress - address of the account used to sign the message
    *
-   * @returns the signed data as an ISignature object
+   * @returns a promise that resolves to the signed data as an ISignature object
    */
   signMessage(
     data: string | Buffer,
@@ -111,7 +113,8 @@ export interface IWalletClient {
    * @param signature - signature to verify
    * @param accountSignerAddress - address of the account used to sign the message
    *
-   * @returns true if the signature is valid, false otherwise
+   * @returns a promise that resolves to a boolean
+   * (true if the signature is valid, false otherwise)
    */
   verifySignature(
     data: string | Buffer,
@@ -124,7 +127,7 @@ export interface IWalletClient {
    *
    * @param address - address of the account
    *
-   * @returns IBalance object or null if not found
+   * @returns a promise that resolves to an IBalance object or null if not found
    */
   getAccountBalance(address: string): Promise<IBalance | null>;
 
@@ -134,7 +137,7 @@ export interface IWalletClient {
    * @param txData - transaction data
    * @param executor - account used to send the transaction
    *
-   * @returns array of operation ids
+   * @returns a promise that resolves to an array of operation ids
    */
   sendTransaction(
     txData: ITransactionData,
@@ -147,7 +150,7 @@ export interface IWalletClient {
    * @param txData - transaction data
    * @param executor - account used to send the transaction
    *
-   * @returns array of operation ids
+   * @returns a promise that resolves to an array of operation ids
    */
   buyRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>>;
 
@@ -157,7 +160,7 @@ export interface IWalletClient {
    * @param txData - transaction data
    * @param executor - account used to send the transaction
    *
-   * @returns array of operation ids
+   * @returns a promise that resolves to an array of operation ids
    */
   sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
 }
