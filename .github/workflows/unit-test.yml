@@ -38,6 +38,10 @@ jobs:
         npm run fmt:check
         npm run test
 
+    - name: allow access to coverage.sh
+      run: chmod +x ${GITHUB_WORKSPACE}/.github/coverage.sh
+      shell: bash
+      
     - name: Extract coverage
       id: coverage
       run: |
