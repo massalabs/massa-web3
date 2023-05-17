@@ -105,6 +105,18 @@ export interface IWalletClient {
   ): Promise<ISignature>;
 
   /**
+   * Verify signature.
+   *
+   * @param data - message to verify
+   * @param signature - signature to verify
+   * @param accountSignerAddress - address of the account used to sign the message
+   */
+  verifySignature(
+    data: string | Buffer,
+    signature: ISignature,
+    accountSignerAddress: string,
+  ): Promise<boolean>;
+  /**
    * Get account balance.
    *
    * @param address - address of the account
