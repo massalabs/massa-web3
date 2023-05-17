@@ -39,5 +39,5 @@ jobs:
         env:
           JSON_RPC_URL_PUBLIC: https://test.massa.net/api/v2
           JSON_RPC_URL_PRIVATE: https://test.massa.net/api/v2
-          DEPLOYER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+          DEPLOYER_PRIVATE_KEY: S1ykLaxXyMnJoaWLYds8UntqKTamZ4vcxrZ1fdToR8WpWEpk3FC
           RECEIVER_PRIVATE_KEY: S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1
