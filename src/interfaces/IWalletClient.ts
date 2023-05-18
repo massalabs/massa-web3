@@ -25,79 +25,79 @@ import { ITransactionData } from './ITransactionData';
  */
 export interface IWalletClient {
   /**
-   * Set base account for wallet
+   * Set the base account.
    *
-   * @param baseAccount - base account as IAccount object
+   * @param baseAccount - The base account as an IAccount object.
    */
   setBaseAccount(baseAccount: IAccount): void;
 
   /**
    * Get the base account.
    *
-   * @returns base account as IAccount object (or null if not set)
+   * @returns The base account (or null if the base account is not set).
    */
   getBaseAccount(): IAccount | null;
 
   /**
-   * Get all accounts in wallet.
+   * Get all accounts in the wallet.
    *
-   * @returns array of IAccount objects
+   * @returns An array of IAccount objects.
    */
   getWalletAccounts(): Array<IAccount>;
 
   /**
-   * Delete all accounts from wallet.
+   * Delete all accounts from the wallet.
    */
   cleanWallet(): void;
 
   /**
    * Get an account by its address.
    *
-   * @param address - address of the account
+   * @param address - The address of the account.
    *
-   * @returns IAccount object or undefined if not found
+   * @returns An IAccount object or undefined if not found.
    */
   getWalletAccountByAddress(address: string): IAccount | undefined;
 
   /**
-   * Add accounts to wallet by secret keys.
+   * Add accounts to the wallet by secret keys.
    *
-   * @param secretKeys - array of secret keys
+   * @param secretKeys - An array of secret keys.
    *
-   * @returns array of IAccount objects corresponding to the secret keys
+   * @returns A promise that resolves to an array of IAccount.
    */
   addSecretKeysToWallet(secretKeys: Array<string>): Promise<Array<IAccount>>;
 
   /**
-   * Add accounts to wallet.
+   * Add accounts to the wallet.
    *
-   * @param accounts - array of IAccount objects
+   * @param accounts - An array of IAccount objects.
    *
-   * @returns array of IAccount objects
+   * @returns A promise that resolves to an array of IAccount objects.
    */
   addAccountsToWallet(accounts: Array<IAccount>): Promise<Array<IAccount>>;
 
   /**
-   * Remove accounts from wallet using their addresses.
+   * Remove accounts from the wallet using their addresses.
    *
-   * @param addresses - array of addresses
+   * @param addresses - An array of addresses.
    */
   removeAddressesFromWallet(addresses: Array<string>): void;
 
   /**
    * Get all accounts info.
    *
-   * @returns array of IFullAddressInfo objects
+   * @returns A promise that resolves to an array of IFullAddressInfo objects.
    */
   walletInfo(): Promise<Array<IFullAddressInfo>>;
 
   /**
-   * Sign message using a specific account.
+   * Sign a message using a specific account.
    *
-   * @param data - message to sign
-   * @param accountSignerAddress - address of the account used to sign the message
+   * @param data - The message to sign.
+   * @param accountSignerAddress - The address of the account used to sign the message.
    *
-   * @returns the signed data as an ISignature object
+   * @returns A promise that resolves to the signed data as an ISignature object.
    */
   signMessage(
     data: string | Buffer,
@@ -105,21 +105,37 @@ export interface IWalletClient {
   ): Promise<ISignature>;
 
   /**
-   * Get account balance.
+   * Verify a signature.
    *
-   * @param address - address of the account
+   * @param data - The message to verify.
+   * @param signature - The signature to verify.
+   * @param accountSignerAddress - The address of the account used to sign the message.
    *
-   * @returns IBalance object or null if not found
+   * @returns A promise that resolves to a boolean (true if the signature is valid,
+   * false otherwise).
+   */
+  verifySignature(
+    data: string | Buffer,
+    signature: ISignature,
+    accountSignerAddress: string,
+  ): Promise<boolean>;
+
+  /**
+   * Get the account balance.
+   *
+   * @param address - The address of the account.
+   *
+   * @returns A promise that resolves to an IBalance object or null if not found.
    */
   getAccountBalance(address: string): Promise<IBalance | null>;
 
   /**
-   * Send transaction.
+   * Send a transaction.
    *
-   * @param txData - transaction data
-   * @param executor - account used to send the transaction
+   * @param txData - The transaction data.
+   * @param executor - The account used to send the transaction.
    *
-   * @returns array of operation ids
+   * @returns A promise that resolves to an array of operation ids as strings.
    */
   sendTransaction(
     txData: ITransactionData,
@@ -129,20 +145,20 @@ export interface IWalletClient {
   /**
    * Buy rolls.
    *
-   * @param txData - transaction data
-   * @param executor - account used to send the transaction
+   * @param txData - The transaction data.
+   * @param executor - The account used to send the transaction.
    *
-   * @returns array of operation ids
+   * @returns A promise that resolves to an array of operation ids as strings.
    */
   buyRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>>;
 
   /**
    * Sell rolls.
    *
-   * @param txData - transaction data
-   * @param executor - account used to send the transaction
+   * @param txData - The transaction data.
+   * @param executor - The account used to send the transaction.
    *
-   * @returns array of operation ids
+   * @returns A promise that resolves to an array of operation ids as strings.
    */
   sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
 }
