@@ -1,17 +1,9 @@
 /** Polyfills */
 // Check if we are on browser
-// if (typeof window !== 'undefined') {
-//   if (typeof Buffer === 'undefined') {
-//     window.Buffer = require('buffer').Buffer;
-//   }
-
-//   if (typeof window.crypto === 'undefined') {
-//     window.crypto = require('crypto-browserify');
-//   }
-//   if (typeof global.stream === 'undefined') {
-//     global.stream = require('stream-browserify');
-//   }
-// }
+import { Buffer } from 'buffer';
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer;
+}
 
 /** Exposed interfaces */
 export { IAccount } from './interfaces/IAccount';
