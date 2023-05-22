@@ -3,7 +3,7 @@
  *
  * @param contractByteCode - The byte code of the smart contract to be deployed.
  * @param transactionOperationCost - The transaction operation cost in MASSA. (it should be the same as the
- * 'coins' parameter used in the deploySC function)
+ * 'coins' parameter used in the deploySC function).
  *
  * @returns The estimated value of the maxCoins value (in MASSA coins).
  */
