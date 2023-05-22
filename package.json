@@ -16,7 +16,7 @@
         "update-version-major": "npm version major",
         "update-version-minor": "npm version minor",
         "update-version-patch": "npm version patch",
-        "test": "jest --coverage",
+        "test": "jest",
         "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
         "test-wallet": "ts-node ./examples/wallet/index.ts",
         "lint": "eslint .",
