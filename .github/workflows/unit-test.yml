@@ -45,7 +45,7 @@ jobs:
     - name: Extract coverage
       id: coverage
       run: |
-        value=$(npm run test | grep -oE '"lines":\s*{\s*"total":\s*{\s*"pct":\s*([\d.]+)\s*}' | grep -oE '[0-9]+(\.[0-9]+)?%' | cut -d'.' -f1 | tr -d '%')
+        value=$(npm run test | awk '/All files/ {print $10}' | tr -d '%')
         echo "coverage=$value" >> $GITHUB_OUTPUT
         echo "${GITHUB_WORKSPACE}/.github/coverage.sh"
 
