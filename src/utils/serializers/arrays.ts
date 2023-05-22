@@ -128,7 +128,7 @@ export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
  * @param source - the array to convert
  */
 export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
-  source: any[],
+  source: any[], // eslint-disable-line
   type: T,
 ): Uint8Array {
   const sourceLength = source.length;
