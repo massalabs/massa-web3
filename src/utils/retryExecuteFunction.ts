@@ -1,7 +1,7 @@
 import { wait } from './time';
 
 const MAX_NUMBER_RETRIALS = 5;
-type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;
+type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any; // eslint-disable-line
 
 /**
  * Tries to execute a function and retries if it fails.
@@ -16,7 +16,7 @@ type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;
  */
 export const trySafeExecute = async <T>(
   func: CallbackFunctionVariadicAnyReturn,
-  args?: any[],
+  args?: any[], // eslint-disable-line
   retryTimes: number = MAX_NUMBER_RETRIALS,
 ): Promise<T> => {
   args = args || [];

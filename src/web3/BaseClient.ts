@@ -206,7 +206,7 @@ export class BaseClient {
       } as JsonRpcResponseData<T>;
     }
 
-    const responseData: any = resp.data;
+    const responseData: any = resp.data; // eslint-disable-line
 
     if (responseData.error) {
       return {
