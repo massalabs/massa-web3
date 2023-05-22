@@ -204,7 +204,7 @@ describe('Args class', () => {
     expect(deserialized.name).toEqual('Poseidon');
   });
 
-  it('test nextSerializableObjectArray', () => {
+  it('should return undefined when deserializing an empty array using nextSerializableObjectArray', () => {
     const arrayOfSerializable = [];
     const args = new Args(
       new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
