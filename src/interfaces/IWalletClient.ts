@@ -129,19 +129,18 @@ export interface IWalletClient {
    */
   getAccountBalance(address: string): Promise<IBalance | null>;
 
-  
-    /**
+  /**
    * Verify signature.
    *
    * @param data - message to verify
    * @param signature - signature to verify
    * @param accountSignerAddress - address of the account used to sign the message
    */
-    verifySignature(
-      data: string | Buffer,
-      signature: ISignature,
-      accountSignerAddress: string,
-    ): Promise<boolean>;
+  verifySignature(
+    data: string | Buffer,
+    signature: ISignature,
+    accountSignerAddress: string,
+  ): Promise<boolean>;
 
   /**
    * Verify signature.
