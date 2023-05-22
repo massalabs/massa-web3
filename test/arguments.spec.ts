@@ -129,7 +129,7 @@ describe('Args class', () => {
     expect(args2.nextString()).toEqual('world');
   });
 
-  it('U8 and bool', () => {
+  it('should correctly serialize and deserialize an Args object containing a U8 and a boolean', () => {
     const args1 = new Args();
     args1.addU8(12);
     args1.addBool(true);
