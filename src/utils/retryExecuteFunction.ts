@@ -1,7 +1,7 @@
 import { wait } from './time';
 
 const MAX_NUMBER_RETRIALS = 5;
-type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any;
+type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any; // eslint-disable-line
 
 /**
  * Tries to execute a function and retries if it fails.
