@@ -204,6 +204,16 @@ describe('Args class', () => {
     expect(deserialized.name).toEqual('Poseidon');
   });
 
+  it('test nextSerializableObjectArray', () => {
+    const arrayOfSerializable = [];
+    const args = new Args(
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+    );
+
+    const deserialized = args.nextSerializableObjectArray(Divinity);
+    expect(deserialized[0]).toBe(undefined);
+  });
+
   it('an array of serializables', () => {
     const arrayOfSerializable = [
       new Divinity(14, 'Poseidon'),
