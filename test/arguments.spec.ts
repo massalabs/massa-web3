@@ -120,12 +120,23 @@ describe('Args class', () => {
     args1.addI64(BigInt(-97));
     args1.addString('hello');
     args1.addString('world');
+    args1.addU8(12);
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextF32()).toBeCloseTo(1.234, 1e-7);
     expect(args2.nextI64()).toEqual(BigInt(-97));
     expect(args2.nextString()).toEqual('hello');
     expect(args2.nextString()).toEqual('world');
+  });
+
+  it('U8 and bool', () => {
+    const args1 = new Args();
+    args1.addU8(12);
+    args1.addBool(true);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextU8()).toEqual(BigInt(12));
+    expect(args2.nextBool()).toEqual(true);
   });
 
   it('f64, i64 and string', () => {
