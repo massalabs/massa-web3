@@ -15,8 +15,8 @@ type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any; // eslint-disa
  * @returns The result of the function upon successful execution
  */
 export const trySafeExecute = async <T>(
-  func: CallbackFunctionVariadicAnyReturn, // eslint-disable-line
-  args?: any[],
+  func: CallbackFunctionVariadicAnyReturn,
+  args?: any[], // eslint-disable-line
   retryTimes: number = MAX_NUMBER_RETRIALS,
 ): Promise<T> => {
   args = args || [];
