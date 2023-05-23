@@ -45,7 +45,7 @@ jobs:
     - name: Extract coverage
       id: coverage
       run: |
-        value=$(npm run test | awk '/All files/ {print $10}' | tr -d '%')
+        value=$(npm run test:cov | awk '/All files/ {print $10}' | tr -d '%')
         echo "coverage=$value" >> $GITHUB_OUTPUT
         echo "${GITHUB_WORKSPACE}/.github/coverage.sh"
 
