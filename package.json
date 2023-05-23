@@ -65,12 +65,14 @@
         "axios": "^0.26.1",
         "bignumber.js": "^9.1.1",
         "bip39": "^3.0.4",
+        "bs58check": "^3.0.1",
         "buffer": "^6.0.3",
         "crypto-js": "^4.1.1",
         "dotenv": "^16.0.3",
         "esmify": "^2.1.1",
         "jest-environment-jsdom": "^29.5.0",
         "js-base64": "^3.7.5",
+        "tslib": "^2.5.2",
         "varint": "^6.0.0"
     },
     "devDependencies": {

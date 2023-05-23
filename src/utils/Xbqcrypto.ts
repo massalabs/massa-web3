@@ -11,7 +11,8 @@ import { blake3 } from '@noble/hashes/blake3';
  */
 
 import { unsignedBigIntUtils } from './encode_decode_int';
-import { encode, decode } from '@web3pack/base58-check';
+import bs58check from 'bs58check';
+
 /**
  * Hashes data with blake3
  *
@@ -29,8 +30,7 @@ export function hashBlake3(data: Uint8Array | string): Uint8Array {
  * @returns The base58 encoded data as a string
  */
 export function base58Encode(data: Buffer | Uint8Array): string {
-  const bufData = Buffer.from(data);
-  return encode(bufData);
+  return bs58check.encode(data);
 }
 
 /**
@@ -41,8 +41,8 @@ export function base58Encode(data: Buffer | Uint8Array): string {
  * @returns The decoded buffer
  */
 export function base58Decode(data: string): Buffer {
-  const decoded = decode(data);
-  return decoded;
+  const decoded = bs58check.decode(data);
+  return Buffer.from(decoded);
 }
 
 /**
