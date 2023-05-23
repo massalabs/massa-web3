@@ -1,3 +1,10 @@
+/** Polyfills */
+// Check if we are on browser
+import { Buffer } from 'buffer';
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer;
+}
+
 /** Exposed interfaces */
 export { IAccount } from './interfaces/IAccount';
 export { IEvent } from './interfaces/IEvent';
