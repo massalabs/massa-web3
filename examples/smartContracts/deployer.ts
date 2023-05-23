@@ -79,7 +79,7 @@ export const deploySmartContracts = async (
   try {
     // do checks
     if (!deployerAccount) {
-      deployerAccount = web3Client.wallet().getBaseAccount();
+      deployerAccount = web3Client.wallet().getBaseAccount()!;
     }
 
     // check deployer account balance
