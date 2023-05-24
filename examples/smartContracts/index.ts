@@ -211,7 +211,6 @@ const pollAsyncEvents = async (
         },
       ],
       web3Client,
-      fromMAS(0.1),
       0n,
       1_000_000n,
       deployerAccount,
