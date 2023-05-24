@@ -8,7 +8,6 @@
  * and an optional datastore for the smart contract's operational storage data.
  *
  * @see fee of type `bigint` represents the storage fee for the smart contract.
- * @see maxCoins of type `bigint` represents maximum amount of coins allowed to be spent by the execution
  * @see maxGas of type `bigint` represents the maximum gas that can be consumed by the smart contract.
  * @see contractDataText of type `string | undefined` represents the contract's data as string (optional).
  * @see contractDataBinary of type `Uint8Array | undefined` represents the contract's data as bytecode (optional).
@@ -17,9 +16,6 @@
  */
 export interface IContractData {
   fee: bigint;
-
-  maxCoins: bigint;
-
   maxGas: bigint;
   contractDataText?: string;
   contractDataBinary?: Uint8Array;

@@ -277,11 +277,6 @@ export class BaseClient {
           varintEncode((data as IContractData).maxGas),
         );
 
-        // max coins amount
-        const maxCoinEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxCoins),
-        );
-
         // contract data
         const contractDataEncoded = Buffer.from(scBinaryCode);
         const dataLengthEncoded = Buffer.from(
@@ -319,7 +314,6 @@ export class BaseClient {
             expirePeriodEncoded,
             typeIdEncoded,
             maxGasEncoded,
-            maxCoinEncoded,
             dataLengthEncoded,
             contractDataEncoded,
             datastoreSerializedBufferLen,
@@ -331,7 +325,6 @@ export class BaseClient {
           expirePeriodEncoded,
           typeIdEncoded,
           maxGasEncoded,
-          maxCoinEncoded,
           dataLengthEncoded,
           contractDataEncoded,
           datastoreSerializedBufferLen,
