@@ -183,7 +183,7 @@ export class BaseClient {
     resource: JSON_RPC_REQUEST_METHOD,
     params: object,
   ): Promise<JsonRpcResponseData<T>> {
-    let resp: AxiosResponse = null;
+    let resp: AxiosResponse<JsonRpcResponseData<T>> = null;
 
     const body = {
       jsonrpc: '2.0',
@@ -206,7 +206,7 @@ export class BaseClient {
       } as JsonRpcResponseData<T>;
     }
 
-    const responseData: any = resp.data; // eslint-disable-line
+    const responseData: JsonRpcResponseData<T> = resp.data;
 
     if (responseData.error) {
       return {
