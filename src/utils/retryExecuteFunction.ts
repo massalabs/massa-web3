@@ -1,7 +1,11 @@
 import { wait } from './time';
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 
 const MAX_NUMBER_RETRIALS = 5;
-type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any; // eslint-disable-line
+type CallbackFunction<R> = (
+  resource: JSON_RPC_REQUEST_METHOD,
+  params: object,
+) => Promise<R>;
 
 /**
  * Tries to execute a function and retries if it fails.
@@ -14,12 +18,12 @@ type CallbackFunctionVariadicAnyReturn = (...args: any[]) => any; // eslint-disa
  *
  * @returns The result of the function upon successful execution
  */
-export const trySafeExecute = async <T>(
-  func: CallbackFunctionVariadicAnyReturn,
-  args?: any[], // eslint-disable-line
+export const trySafeExecute = async <R>(
+  func: CallbackFunction<R>,
+  args?: [JSON_RPC_REQUEST_METHOD, object],
   retryTimes: number = MAX_NUMBER_RETRIALS,
-): Promise<T> => {
-  args = args || [];
+): Promise<R> => {
+  args = args || [null, {}];
 
   if (!func)
     throw new Error(
@@ -27,7 +31,7 @@ export const trySafeExecute = async <T>(
     );
 
   let failureCounter = 0;
-  let res: T = null;
+  let res: R = null;
   while (true) {
     try {
       res = await func(...args);

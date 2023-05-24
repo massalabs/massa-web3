@@ -43,6 +43,14 @@ export enum TypedArrayUnit {
 }
 
 /**
+ * Native types in AssemblyScript
+ *
+ * @remarks
+ * These are the types that can be used in AssemblyScript
+ */
+export type NativeType = string | boolean | number | bigint;
+
+/**
  * Storage and serialization class for remote function call arguments.
  *
  * @remarks
@@ -522,8 +530,10 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  addNativeTypeArray<T extends TypedArrayUnit>(arg: any[], type: T): Args {
+  addNativeTypeArray<T extends TypedArrayUnit>(
+    arg: NativeType[],
+    type: T,
+  ): Args {
     const content = nativeTypeArrayToBytes(arg, type);
     this.addU32(content.length);
     this.serialized = this.concatArrays(this.serialized, content);

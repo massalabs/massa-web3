@@ -1,5 +1,7 @@
 /* eslint-disable no-case-declarations */
 
+import { NativeType } from '../arguments';
+
 const MAX_STRING_CHARS = 100;
 
 /**
@@ -128,7 +130,7 @@ export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
  * @param source - the array to convert
  */
 export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
-  source: any[], // eslint-disable-line
+  source: NativeType[],
   type: T,
 ): Uint8Array {
   const sourceLength = source.length;
@@ -162,25 +164,25 @@ export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
         view.setUint8(0, value ? 1 : 0);
         break;
       case TypedArrayUnit.U8:
-        view.setUint8(0, value);
+        view.setUint8(0, value as number);
         break;
       case TypedArrayUnit.F64:
-        view.setFloat64(0, value, true);
+        view.setFloat64(0, value as number, true);
         break;
       case TypedArrayUnit.F32:
-        view.setFloat32(0, value, true);
+        view.setFloat32(0, value as number, true);
         break;
       case TypedArrayUnit.I32:
-        view.setInt32(0, value, true);
+        view.setInt32(0, value as number, true);
         break;
       case TypedArrayUnit.I64:
-        view.setBigInt64(0, BigInt(value), true);
+        view.setBigInt64(0, BigInt(value as bigint), true);
         break;
       case TypedArrayUnit.U32:
-        view.setUint32(0, value, true);
+        view.setUint32(0, value as number, true);
         break;
       case TypedArrayUnit.U64:
-        view.setBigUint64(0, BigInt(value), true);
+        view.setBigUint64(0, BigInt(value as bigint), true);
         break;
       default:
         throw new Error(`Unsupported type ${type}`);
