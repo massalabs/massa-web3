@@ -213,6 +213,7 @@ const pollAsyncEvents = async (
       web3Client,
       0n,
       1_000_000n,
+      fromMAS(0.2),
       deployerAccount,
     );
     spinner.succeed(
