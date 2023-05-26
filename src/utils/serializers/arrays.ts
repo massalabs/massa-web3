@@ -5,11 +5,11 @@ import { NativeType } from '../arguments';
 const MAX_STRING_CHARS = 100;
 
 /**
- * Get the byte size of a type
+ * Get the byte size of a typed array unit.
  *
- * @param typedArrayType - the type to get the size of
+ * @param typedArrayType - The typed array unit to get the size of.
  *
- * @returns the size of the type
+ * @returns The size of the typed array unit.
  */
 const getDatatypeSize = (typedArrayType: TypedArrayUnit): number => {
   switch (typedArrayType) {
@@ -42,11 +42,11 @@ import { TypedArrayUnit } from '../arguments';
 import { bytesToStr, strToBytes } from './strings';
 
 /**
- * Serializes an array to bytes
+ * Serializes an array of serializable objects to bytes.
  *
- * @param source - the array to serialize
+ * @param source - The array of serializable objects to serialize.
  *
- * @returns the serialized array
+ * @returns The serialized array as Uint8Array.
  */
 export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
   source: T[],
@@ -63,12 +63,10 @@ export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
     totalLength += bytes.length;
   }
 
-  // allocates a new Array in the memory
   const target = new Uint8Array(totalLength);
 
   let offset = 0;
   for (let i = 0; i < nbElements; i++) {
-    // copies the content of the source buffer to the newly allocated array.
     target.set(pointers[i], offset);
     offset += sizes[i];
   }
@@ -77,13 +75,13 @@ export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
 }
 
 /**
- * Deserializes a bytes array
+ * Deserializes a bytes array into an array of deserialized objects.
  *
- * @param data - the array to deserialize
- * @param offset - the offset to start deserializing from
- * @param Clazz - The output class
+ * @param data - The bytes array to deserialize.
+ * @param offset - The offset to start deserializing from.
+ * @param Clazz - The class used for deserialization.
  *
- * @returns the deserialized array
+ * @returns The deserialized array of objects.
  */
 export function deserializeObj<T extends ISerializable<T>>(
   data: Uint8Array,
@@ -95,12 +93,12 @@ export function deserializeObj<T extends ISerializable<T>>(
 }
 
 /**
- * Converts a Uint8Array into an Array of deserialized type parameters T.
+ * Converts a Uint8Array into an array of deserialized type parameters.
  *
- * @param source - the Uint8Array to convert
- * @param Clazz - the class constructor prototype T.prototype
+ * @param source - The Uint8Array to convert.
+ * @param Clazz - The class constructor for deserialization.
  *
- * @returns an array of deserialized T's
+ * @returns An array of deserialized objects.
  */
 export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
   source: Uint8Array,
@@ -119,15 +117,16 @@ export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
 }
 
 /**
- * Convert an array of type parameter to StaticArray<u8>
+ * Convert an array of native types to a Uint8Array.
  *
  * @remarks
- * This will perform a deep copy only for native types.
- * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ * This function performs a deep copy for native types only.
+ * It is inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  *
- * @see {@link Serializable}
+ * @param source - The array to convert.
+ * @param type - The typed array unit type.
  *
- * @param source - the array to convert
+ * @returns The converted Uint8Array.
  */
 export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
   source: NativeType[],
@@ -135,15 +134,15 @@ export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
 ): Uint8Array {
   const sourceLength = source.length;
 
-  // Calculate the target length based on the type size and source length
+  // Calculate the target length based on the type size and source length.
   const targetLength = sourceLength * getDatatypeSize(type);
 
-  // allocates a new Uint8Array in the memory
+  // Allocate a new Uint8Array in memory.
   let target = new Uint8Array(targetLength);
 
   for (let i = 0; i < sourceLength; i++) {
     const value = source[i];
-    // For boolean and number values, we can just write them to the target buffer directly
+    // For boolean and number values, write them directly to the target buffer.
     const view = new DataView(
       target.buffer,
       target.byteOffset + i * getDatatypeSize(type),
@@ -152,12 +151,12 @@ export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
       case TypedArrayUnit.STRING:
         if ((value as string).length > MAX_STRING_CHARS) {
           throw new Error(
-            `String has more than ${MAX_STRING_CHARS} (max.). Please limit your strings to ${MAX_STRING_CHARS} chars`,
+            `String length exceeds the maximum limit of ${MAX_STRING_CHARS} characters. Please limit your strings to ${MAX_STRING_CHARS} characters.`,
           );
         }
-        const b: Uint8Array = strToBytes(value as string);
-        for (let j = 0; j < b.length; j++) {
-          view.setUint8(j, b[j]);
+        const bytes: Uint8Array = strToBytes(value as string);
+        for (let j = 0; j < bytes.length; j++) {
+          view.setUint8(j, bytes[j]);
         }
         break;
       case TypedArrayUnit.BOOL:
@@ -185,33 +184,36 @@ export function nativeTypeArrayToBytes<T extends TypedArrayUnit>(
         view.setBigUint64(0, BigInt(value as bigint), true);
         break;
       default:
-        throw new Error(`Unsupported type ${type}`);
+        throw new Error(`Unsupported type: ${type}`);
     }
   }
   return target;
 }
 
 /**
- * Converts a StaticArray<u8> into an Array of type parameter.
+ * Converts a Uint8Array into an array of native types.
  *
  * @remarks
- * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ * This function is inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  *
- * @param source - the array to convert
+ * @param source - The Uint8Array to convert.
+ * @param typedArrayType - The typed array unit type.
+ *
+ * @returns An array of converted native types.
  */
 export function bytesToNativeTypeArray<T extends TypedArrayUnit>(
   source: Uint8Array,
   typedArrayType: T,
 ): T[] {
   const sourceLength = source.length;
-  // Calculate the total length of the array
+  // Calculate the total length of the array.
   let targetLength = sourceLength / getDatatypeSize(typedArrayType);
   if (!(targetLength % 1 === 0)) {
     throw new Error(`None-integer array length computation`);
   }
   const dataView = new DataView(source.buffer);
 
-  // Create a new typed array of type T and fill it with the converted values
+  // Create a new typed array of type T and fill it with the converted values.
   const result: T[] = [];
   let byteOffset = 0;
   for (let i = 0; i < targetLength; i++) {

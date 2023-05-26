@@ -69,7 +69,7 @@ export class SmartContractsClient
 
   /**
    * Deploy a smart contract on th massa blockchain by creating and sending
-   * an operation containing byte code
+   * an operation containing byte code.
    *
    * @remarks
    * If no executor is provided, the default wallet account from the provided {@link WalletClient}
@@ -146,7 +146,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Calls a smart contract method
+   * Calls a smart contract method.
    *
    * @remarks
    * If no executor is provided, the default wallet account will be used.
@@ -214,7 +214,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Executes a read operation on a smart contract
+   * Executes a read operation on a smart contract.
    *
    * @param readData - The data required for the a read operation of a smart contract.
    *
@@ -270,7 +270,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Returns the balance of the smart contract
+   * Returns the balance of the smart contract.
    *
    * @param address - The address of the smart contract.
    *
@@ -288,11 +288,11 @@ export class SmartContractsClient
   }
 
   /**
-   * Get filtered smart contract output events
+   * Get filtered smart contract output events.
    *
    * @param eventFilterData - The filter data for the events.
    *
-   * @returns A promise that resolves to an array of IEvent objects containing the filtered events
+   * @returns A promise that resolves to an array of IEvent objects containing the filtered events.
    */
   public async getFilteredScOutputEvents(
     eventFilterData: IEventFilter,
@@ -385,7 +385,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Get the status of a specific operation
+   * Get the status of a specific operation.
    *
    * @param opId - The operation id.
    *
@@ -411,7 +411,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Get the status of a specific operation and wait until it reaches the required status
+   * Get the status of a specific operation and wait until it reaches the required status.
    *
    * @param opId - The required operation id.
    * @param requiredStatus - The required status.
