@@ -40,11 +40,11 @@ export class EventPoller extends EventEmitter {
   private lastSlot: ISlot;
 
   /**
-   * Constructor of the EventPoller object
+   * Constructor of the EventPoller object.
    *
-   * @param eventsFilter - The filter to use for the events
-   * @param pollIntervalMillis - The interval in milliseconds to poll for events
-   * @param web3Client - The web3 client to use for polling
+   * @param eventsFilter - The filter to use for the events.
+   * @param pollIntervalMillis - The interval in milliseconds to poll for events.
+   * @param web3Client - The web3 client to use for polling.
    */
   public constructor(
     private readonly eventsFilter: IEventFilter | IEventRegexFilter,
@@ -53,7 +53,7 @@ export class EventPoller extends EventEmitter {
   ) {
     super();
 
-    // bind class methods
+    // bind class methods.
     this.callback = this.callback.bind(this);
     this.stopPolling = this.stopPolling.bind(this);
     this.startPolling = this.startPolling.bind(this);
@@ -63,20 +63,20 @@ export class EventPoller extends EventEmitter {
    * Polls for new events that match a specified filter and emits them.
    *
    * @remarks
-   * It uses the Web3 client to retrieve events from a smart contract and filters them further
+   * It uses the Web3 client to retrieve events from a smart contract and filters them further.
    * based on regular expression and last scanned slot.
    * If any matching events are found, it sorts them based on the highest period and thread and emits them.
    */
   private async callback() {
     try {
-      // get all events using the filter
+      // get all events using the filter.
       const events: Array<IEvent> = await this.web3Client
         .smartContracts()
         .getFilteredScOutputEvents(this.eventsFilter);
 
-      // filter further using regex and last scanned slot
+      // filter further using regex and last scanned slot.
       const filteredEvents: Array<IEvent> = events.filter((event) => {
-        // check if regex condition is met
+        // check if regex condition is met.
         let meetsRegex = true;
         if ((this.eventsFilter as IEventRegexFilter).eventsNameRegex) {
           meetsRegex = event.data.includes(
@@ -84,7 +84,7 @@ export class EventPoller extends EventEmitter {
           );
         }
 
-        // check if after last slot
+        // check if after last slot.
         let isAfterLastSlot = true;
         if (this.lastSlot) {
           isAfterLastSlot =
@@ -94,40 +94,40 @@ export class EventPoller extends EventEmitter {
         return meetsRegex && isAfterLastSlot;
       });
 
-      // sort after highest period and thread
+      // sort after highest period and thread.
       const sortedByHighestThreadAndPeriod = filteredEvents.sort((a, b) => {
         return compareByThreadAndPeriod(a.context.slot, b.context.slot);
       });
 
       if (sortedByHighestThreadAndPeriod.length > 0) {
-        // update slot to be the very last slot
+        // update slot to be the very last slot.
         this.lastSlot =
           sortedByHighestThreadAndPeriod[
             sortedByHighestThreadAndPeriod.length - 1
           ].context.slot;
 
-        // emit the filtered events
+        // emit the filtered events.
         this.emit(ON_MASSA_EVENT_DATA, sortedByHighestThreadAndPeriod);
       }
     } catch (ex) {
       this.emit(ON_MASSA_EVENT_ERROR, ex);
     }
 
-    // reset the interval
+    // reset the interval.
     this.timeoutId = new Timeout(this.pollIntervalMillis, () =>
       this.callback(),
     );
   }
 
   /**
-   * Stops polling for events
+   * Stops polling for events.
    */
   public stopPolling(): void {
     if (this.timeoutId) this.timeoutId.clear();
   }
 
   /**
-   * Starts polling for events
+   * Starts polling for events.
    */
   public startPolling(): void {
     const that = this;
@@ -140,15 +140,15 @@ export class EventPoller extends EventEmitter {
   }
 
   /**
-   * Starts polling for events and returns the EventPoller object
+   * Starts polling for events and returns the EventPoller object.
    *
-   * @param eventsFilter - The filter to use for the events
-   * @param pollIntervalMillis - The interval in milliseconds to poll for events
-   * @param web3Client - The web3 client to use for polling
-   * @param onData - The callback function to call when new events are found
-   * @param onError - The callback function to call when an error occurs
+   * @param eventsFilter - The filter to use for the events.
+   * @param pollIntervalMillis - The interval in milliseconds to poll for events.
+   * @param web3Client - The web3 client to use for polling.
+   * @param onData - The callback function to call when new events are found.
+   * @param onError - The callback function to call when an error occurs.
    *
-   * @returns The EventPoller object created
+   * @returns The EventPoller object created.
    */
   public static startEventsPolling(
     eventsFilter: IEventFilter | IEventRegexFilter,
@@ -177,12 +177,12 @@ export class EventPoller extends EventEmitter {
   }
 
   /**
-   * Get only the events that match the filter once
+   * Get only the events that match the filter once.
    *
-   * @param eventsFilter - The filter to use for the events
-   * @param web3Client - The web3 client to use for polling
+   * @param eventsFilter - The filter to use for the events.
+   * @param web3Client - The web3 client to use for polling.
    *
-   * @returns The events that match the filter as a promise
+   * @returns The events that match the filter as a promise.
    */
   public static async getEventsOnce(
     eventsFilter: IEventFilter | IEventRegexFilter,

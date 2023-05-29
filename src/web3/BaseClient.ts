@@ -11,7 +11,7 @@ import { OperationTypeId } from '../interfaces/OperationTypes';
 import { IRollsData } from '../interfaces/IRollsData';
 import { ICallData } from '../interfaces/ICallData';
 
-// encode a string address to bytes
+// encode a string address to bytes.
 const encodeAddressToBytes = (
   address: string,
   isSmartContract = false,
@@ -82,21 +82,21 @@ export class BaseClient {
   }
 
   /**
-   * Set new providers as {@link IProvider}
+   * Set new providers as {@link IProvider}.
    *
    * @privateRemarks
-   * This methods add the providers to the existing ones in the clientConfig object
+   * This methods add the providers to the existing ones in the clientConfig object.
    *
-   * @param providers - The new providers to set as an array of IProvider
+   * @param providers - The new providers to set as an array of IProvider.
    */
   public setProviders(providers: Array<IProvider>): void {
     this.clientConfig.providers = providers;
   }
 
   /**
-   * Returns all the private providers
+   * Returns all the private providers.
    *
-   * @returns An array of IProvider containing all the private providers
+   * @returns An array of IProvider containing all the private providers.
    */
   protected getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
@@ -105,9 +105,9 @@ export class BaseClient {
   }
 
   /**
-   * Returns all the public providers
+   * Returns all the public providers.
    *
-   * @returns An array of IProvider containing all the public providers
+   * @returns An array of IProvider containing all the public providers.
    */
   protected getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
@@ -123,11 +123,11 @@ export class BaseClient {
    *  - If the rpc method is about getting or sending data to the blockchain,
    *    it will choose a public provider.
    *  - If the rpc method is meant to be used by the node itself, it will choose a private provider.
-   *  - An error is thrown if no provider is found for the rpc method
+   *  - An error is thrown if no provider is found for the rpc method.
    *
-   * @param requestMethod - The rpc method to find the provider for
+   * @param requestMethod - The rpc method to find the provider for.
    *
-   * @returns The provider for the rpc method
+   * @returns The provider for the rpc method.
    */
   private getProviderForRpcMethod(
     requestMethod: JSON_RPC_REQUEST_METHOD,
@@ -174,10 +174,10 @@ export class BaseClient {
    * property is set to true, the result property set to null, and the error property set to a
    * new Error object with a message indicating that there was an error.
    *
-   * @param resource - The rpc method to call
-   * @param params - The parameters to pass to the rpc method
+   * @param resource - The rpc method to call.
+   * @param params - The parameters to pass to the rpc method.
    *
-   * @returns A promise that resolves as a JsonRpcResponseData
+   * @returns A promise that resolves as a JsonRpcResponseData.
    */
   private async promisifyJsonRpcCall<T>(
     resource: JSON_RPC_REQUEST_METHOD,
@@ -224,14 +224,14 @@ export class BaseClient {
   }
 
   /**
-   * Sends a post JSON rpc request to the node
+   * Sends a post JSON rpc request to the node.
    *
-   * @throws An error if the rpc method returns an error
+   * @param resource - The rpc method to call.
+   * @param params - The parameters to pass to the rpc method.
    *
-   * @param resource - The rpc method to call
-   * @param params - The parameters to pass to the rpc method
+   * @throws An error if the rpc method returns an error.
    *
-   * @returns A promise that resolves as the result of the rpc method
+   * @returns A promise that resolves as the result of the rpc method.
    */
   protected async sendJsonRPCRequest<T>(
     resource: JSON_RPC_REQUEST_METHOD,
@@ -240,7 +240,7 @@ export class BaseClient {
     let resp: JsonRpcResponseData<T> = null;
     resp = await this.promisifyJsonRpcCall(resource, params);
 
-    // in case of rpc error, rethrow the error
+    // in case of rpc error, rethrow the error.
     if (resp.error && resp.error) {
       throw resp.error;
     }
@@ -249,14 +249,14 @@ export class BaseClient {
   }
 
   /**
-   * Compacts bytes payload per operation
+   * Compacts bytes payload per operation.
    *
-   * @param data - The operation data
-   * @param opTypeId - The operation type id
-   * @param account - The account used
-   * @param expirePeriod - The expire period
+   * @param data - The operation data.
+   * @param opTypeId - The operation type id.
+   * @param account - The account used.
+   * @param expirePeriod - The expire period.
    *
-   * @returns The compacted bytes payload
+   * @returns The compacted bytes payload.
    */
   protected compactBytesForOperation(
     data: DataType,

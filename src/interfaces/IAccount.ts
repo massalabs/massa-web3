@@ -1,16 +1,14 @@
 /**
  * Represents the structure of an account object.
  *
- * @remarks
- * An account object consists of an address, a public key, a secret key.
- * An optional field is also included to indicate the thread in which the
- * account was created.
- *
+ * @see address - A string representing the address of the account.
+ * @see publicKey - A string representing the base58 encoded public key associated with the account.
+ * @see secretKey - A string representing the base58 encoded private key associated with the account.
+ * @see createdInThread - A number (optional) indicating the thread in which the account was created.
  */
-
 export interface IAccount {
   address: string | null;
-  publicKey: string | null; // base58 encoded public key
-  secretKey: string | null; // base58 encoded private key
+  publicKey: string | null;
+  secretKey: string | null;
   createdInThread?: number;
 }

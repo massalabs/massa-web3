@@ -24,11 +24,10 @@ export class ClientFactory {
    * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET).
    *
    * @param provider - Default provider to be used by the client.
-   * @param retryStrategyOn - Whether to retry failed requests
-   * @param baseAccount - Base account to use with the client (optional)
+   * @param retryStrategyOn - Whether to retry failed requests.
+   * @param baseAccount - Base account to use with the client (optional).
    *
-   * @returns A promise that resolves to a Client object
-   *
+   * @returns A promise that resolves to a Client object.
    */
   public static async createDefaultClient(
     provider: DefaultProviderUrls,
@@ -38,7 +37,7 @@ export class ClientFactory {
     let publicProviderUrl = provider.toString();
     let privateProviderUrl = provider.toString();
     switch (provider) {
-      // in the case of LocalNet append specific default ports to url
+      // in the case of LocalNet append specific default ports to url.
       case DefaultProviderUrls.LOCALNET: {
         privateProviderUrl = `${privateProviderUrl}:33034`;
         publicProviderUrl = `${publicProviderUrl}:33035`;
@@ -80,11 +79,11 @@ export class ClientFactory {
    * @remarks
    * Suitable for local node interactions.
    *
-   * @param providers - Array of providers to be used by the client
-   * @param retryStrategyOn - Whether to retry failed requests
-   * @param baseAccount - Base account to be used by the client (optional)
+   * @param providers - Array of providers to be used by the client.
+   * @param retryStrategyOn - Whether to retry failed requests.
+   * @param baseAccount - Base account to be used by the client (optional).
    *
-   * @returns A promise that resolves to a Client object
+   * @returns A promise that resolves to a Client object.
    */
   public static async createCustomClient(
     providers: Array<IProvider>,
