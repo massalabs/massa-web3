@@ -52,11 +52,11 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   }
 
   /**
-   * Get graph interval
+   * Get graph interval.
    *
-   * @param graphInterval - The graph interval values in ms as an IGetGraphInterval
+   * @param graphInterval - The graph interval values in ms as an IGetGraphInterval.
    *
-   * @returns A promise which resolves in the graph interval
+   * @returns A promise which resolves in the graph interval.
    */
   public async getGraphInterval(
     graphInterval: IGetGraphInterval,
@@ -76,11 +76,11 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   }
 
   /**
-   * Get blockclique details by period and thread
+   * Get blockclique details by period and thread.
    *
-   * @param slot - The slot as an ISlot
+   * @param slot - The slot as an ISlot.
    *
-   * @returns A promise which resolves in the blockclique details
+   * @returns A promise which resolves in the blockclique details.
    */
   public async getBlockcliqueBlockBySlot(
     slot: ISlot,
@@ -152,11 +152,11 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   }
 
   /**
-   * Show data about a block (content, finality ...)
+   * Show data about a block (content, finality ...).
    *
-   * @param blockIds - The block ids as an array of strings
+   * @param blockIds - The block ids as an array of strings.
    *
-   * @returns A promise which resolves in the block data
+   * @returns A promise which resolves in the block data.
    */
   public async getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_BLOCKS;
@@ -174,11 +174,11 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   }
 
   /**
-   * Show info about a list of endorsements
+   * Show info about a list of endorsements.
    *
-   * @param endorsementIds - The endorsement ids as an array of strings
+   * @param endorsementIds - The endorsement ids as an array of strings.
    *
-   * @returns A promise which resolves in the endorsement data
+   * @returns A promise which resolves in the endorsement data.
    */
   public async getEndorsements(
     endorsementIds: Array<string>,
@@ -222,9 +222,9 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   }
 
   /**
-   * Get cliques
+   * Get cliques.
    *
-   * @returns A promise which resolves to the cliques
+   * @returns A promise which resolves to the cliques.
    */
   public async getCliques(): Promise<Array<IClique>> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_CLIQUES;

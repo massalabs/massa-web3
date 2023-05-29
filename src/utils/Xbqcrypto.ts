@@ -16,6 +16,7 @@ import { encode, decode } from 'bs58check';
  * Hashes data with blake3
  *
  * @param data - The data to hash
+ *
  * @returns The hash of the data with blake3
  */
 export function hashBlake3(data: Uint8Array | string): Uint8Array {
@@ -26,6 +27,7 @@ export function hashBlake3(data: Uint8Array | string): Uint8Array {
  * Encodes a buffer or an Uint8Array to base58
  *
  * @param data - The data to encode
+ *
  * @returns The base58 encoded data as a string
  */
 export function base58Encode(data: Buffer | Uint8Array): string {

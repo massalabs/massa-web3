@@ -14,7 +14,6 @@ import { ISlot } from './ISlot';
  * @see endorsement.content.index of type `number` represents the index of the endorsement inside the slot.
  * @see endorsement.content.endorsed_block of type `string` represents the ID of the block that was endorsed.
  * @see endorsement.signature of type `string` represents the signature of the endorsement by its sender public key.
- *
  */
 export interface IEndorsement {
   id: string; // EndorsementId,

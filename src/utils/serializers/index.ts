@@ -1,4 +1,12 @@
 /**
+ * This module provides encoding and decoding functions for various data types.
+ * It includes functions for strings, numeric data (integers and floating-point numbers),
+ * booleans, and arrays containing native types.
+ *
+ * @module
+ */
+
+/**
  * This module exports encoding and decoding functions for strings.
  */
 export * from './strings';
