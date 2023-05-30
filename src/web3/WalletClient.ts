@@ -183,9 +183,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
         ADDRESS_PREFIX +
         base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
 
+      const secretKeyBase58Encoded: string =
+        SECRET_KEY_PREFIX +
+        base58Encode(Buffer.concat([version, secretKeyBase58Decoded]));
+
       if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
         accountsToCreate.push({
-          secretKey: secretKey, // submitted in base58
+          secretKey: secretKeyBase58Encoded,
           publicKey: publicKeyBase58Encoded,
           address: addressBase58Encoded,
           createdInThread: getThreadNumber(addressBase58Encoded),
@@ -367,9 +371,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const addressBase58Encoded =
       ADDRESS_PREFIX +
       base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
+
+    const secretKeyBase58Encoded: string =
+      SECRET_KEY_PREFIX +
+      base58Encode(Buffer.concat([version, secretKeyBase58Decoded]));
+
     return {
       address: addressBase58Encoded,
-      secretKey: secretKeyBase58,
+      secretKey: secretKeyBase58Encoded,
       publicKey: publicKeyBase58Encoded,
       createdInThread: getThreadNumber(addressBase58Encoded),
     } as IAccount;
@@ -476,11 +485,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
     if (signer.publicKey) {
       // get public key
       const publicKeyBase58Decoded = this.getBytesPublicKey(signer.publicKey);
+
       const isVerified = await ed.verify(
         sig,
         messageHashDigest,
         publicKeyBase58Decoded,
       );
+
       if (!isVerified) {
         throw new Error(
           `Signature could not be verified with public key. Please inspect`,
@@ -488,8 +499,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
       }
     }
 
-    // convert sig
-    const base58Encoded = base58Encode(sig);
+    // convert signature to base58
+    const version = Buffer.from(varintEncode(VERSION_NUMBER));
+    const base58Encoded = base58Encode(Buffer.concat([version, sig]));
 
     return {
       base58Encoded,
@@ -521,9 +533,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // setup the signature.
     const signatureBytes: Buffer = base58Decode(signature.base58Encoded);
 
+    // Slice version bytes from signature bytes
+    signatureBytes.slice(0, 1); // version byte is not used for verification
+    const signatureVersioned = signatureBytes.slice(1);
+
     // verify signature.
     return (await ed.verify(
-      signatureBytes,
+      signatureVersioned,
       messageDigest,
       publicKeyBase58Decoded,
     )) as boolean;
