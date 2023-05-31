@@ -173,7 +173,7 @@ export class SmartContractsClient
       throw new Error(`No tx sender available`);
     }
 
-    console.log('sender', sender);
+    
 
     // bytes compaction
     const bytesCompact: Buffer = this.compactBytesForOperation(
