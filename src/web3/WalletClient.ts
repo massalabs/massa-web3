@@ -661,8 +661,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
       throw new Error(`No tx sender available`);
     }
 
-    console.log(`Sending tx from ${sender.address}...`);
-
     // get next period info
     const nodeStatusInfo: INodeStatus =
       await this.publicApiClient.getNodeStatus();
@@ -691,8 +689,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
       creator_public_key: sender.publicKey,
       signature: signature.base58Encoded,
     };
-
-    console.log("tx data: ", data);
     // returns operation ids
     const opIds: Array<string> = await this.sendJsonRPCRequest(
       JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
@@ -738,7 +734,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // sign payload
     const signature: ISignature = await WalletClient.walletSignMessage(
       Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
+        WalletClient.getBytesPublicKeyVersioned(sender.publicKey),
         bytesCompact,
       ]),
       sender,
