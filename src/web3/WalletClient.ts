@@ -564,7 +564,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public static getBytesSecretKey(secretKey: string): Uint8Array {
     if (!(secretKey[0] == SECRET_KEY_PREFIX)) {
       throw new Error(
-        `Invalid secret key prefix: ${secretKey[0]} should be ${SECRET_KEY_PREFIX}`,
+        `Invalid secret key prefix: "${secretKey[0]}". The secret key should start with "${SECRET_KEY_PREFIX}". Please verify your secret key and try again.`,
       );
     }
     const secretKeyVersionBase58Decoded: Buffer = base58Decode(
