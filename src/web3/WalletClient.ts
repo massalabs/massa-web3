@@ -177,11 +177,15 @@ export class WalletClient extends BaseClient implements IWalletClient {
       );
 
       const version = Buffer.from(varintEncode(VERSION_NUMBER));
-      const publicKeyBase58Encoded: string =
-        PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
+      const concatVersionPublicKey = Buffer.concat([version, publicKey]);
       const addressBase58Encoded =
         ADDRESS_PREFIX +
-        base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
+        base58Encode(
+          Buffer.concat([version, hashBlake3(concatVersionPublicKey)]),
+        );
+
+      const publicKeyBase58Encoded: string =
+        PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
 
       const secretKeyBase58Encoded: string =
         SECRET_KEY_PREFIX +
@@ -250,9 +254,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
       }
 
       // get wallet account address
+      const concatVersionPublicKey = Buffer.concat([version, publicKey]);
       const addressBase58Encoded =
         ADDRESS_PREFIX +
-        base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
+        base58Encode(
+          Buffer.concat([version, hashBlake3(concatVersionPublicKey)]),
+        );
       if (account.address && account.address !== addressBase58Encoded) {
         throw new Error(
           'Account address not correspond the the address submitted',
@@ -368,9 +375,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
       PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
 
     // get wallet account address
+    const concatVersionPublicKey = Buffer.concat([version, publicKey]);
     const addressBase58Encoded =
       ADDRESS_PREFIX +
-      base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
+      base58Encode(
+        Buffer.concat([version, hashBlake3(concatVersionPublicKey)]),
+      );
 
     const secretKeyBase58Encoded: string =
       SECRET_KEY_PREFIX +
@@ -534,12 +544,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const signatureBytes: Buffer = base58Decode(signature.base58Encoded);
 
     // Slice version bytes from signature bytes
-    signatureBytes.slice(0, 1); // version byte is not used for verification
-    const signatureVersioned = signatureBytes.slice(1);
+    // const signatureVersioned = signatureBytes.slice(1);
 
     // verify signature.
     return (await ed.verify(
-      signatureVersioned,
+      signatureBytes,
       messageDigest,
       publicKeyBase58Decoded,
     )) as boolean;
@@ -566,6 +575,27 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // Version is little for now.
     const publicKeyBase58Decoded = publicKeyVersionBase58Decoded.slice(1);
     return publicKeyBase58Decoded;
+  }
+
+  /**
+   * Retrieves the byte representation of a given public key with the version.
+   *
+   * @param publicKey - The public key to obtain the bytes from.
+   *
+   * @throws If the public key has an incorrect {@link PUBLIC_KEY_PREFIX}.
+   *
+   * @returns A Uint8Array containing the bytes of the public key.
+   */
+  public static getBytesPublicKeyVersioned(publicKey: string): Uint8Array {
+    if (!(publicKey[0] == PUBLIC_KEY_PREFIX)) {
+      throw new Error(
+        `Invalid public key prefix: ${publicKey[0]} should be ${PUBLIC_KEY_PREFIX}`,
+      );
+    }
+    const publicKeyVersionBase58Decoded: Buffer = base58Decode(
+      publicKey.slice(1),
+    );
+    return publicKeyVersionBase58Decoded;
   }
 
   /**
@@ -631,6 +661,8 @@ export class WalletClient extends BaseClient implements IWalletClient {
       throw new Error(`No tx sender available`);
     }
 
+    console.log(`Sending tx from ${sender.address}...`);
+
     // get next period info
     const nodeStatusInfo: INodeStatus =
       await this.publicApiClient.getNodeStatus();
@@ -647,7 +679,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // sign payload
     const signature: ISignature = await WalletClient.walletSignMessage(
       Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
+        WalletClient.getBytesPublicKeyVersioned(sender.publicKey),
         bytesCompact,
       ]),
       sender,
@@ -659,6 +691,8 @@ export class WalletClient extends BaseClient implements IWalletClient {
       creator_public_key: sender.publicKey,
       signature: signature.base58Encoded,
     };
+
+    console.log("tx data: ", data);
     // returns operation ids
     const opIds: Array<string> = await this.sendJsonRPCRequest(
       JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
