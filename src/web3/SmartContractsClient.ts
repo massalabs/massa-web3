@@ -173,7 +173,7 @@ export class SmartContractsClient
       throw new Error(`No tx sender available`);
     }
 
-    console.log("sender", sender);
+    console.log('sender', sender);
 
     // bytes compaction
     const bytesCompact: Buffer = this.compactBytesForOperation(
@@ -181,7 +181,10 @@ export class SmartContractsClient
       OperationTypeId.CallSC,
       expiryPeriod,
     );
-    console.log("bytespublickeyversioned", WalletClient.getBytesPublicKeyVersioned(sender.publicKey));
+    console.log(
+      'bytespublickeyversioned',
+      WalletClient.getBytesPublicKeyVersioned(sender.publicKey),
+    );
 
     // sign payload
     const signature: ISignature = await WalletClient.walletSignMessage(
