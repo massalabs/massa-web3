@@ -116,7 +116,7 @@ export class SmartContractsClient
     // sign payload
     const signature: ISignature = await WalletClient.walletSignMessage(
       Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
+        WalletClient.getBytesPublicKeyVersioned(sender.publicKey),
         bytesCompact,
       ]),
       sender,
@@ -183,7 +183,7 @@ export class SmartContractsClient
     // sign payload
     const signature: ISignature = await WalletClient.walletSignMessage(
       Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
+        WalletClient.getBytesPublicKeyVersioned(sender.publicKey),
         bytesCompact,
       ]),
       sender,

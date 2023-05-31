@@ -16,11 +16,12 @@ const encodeAddressToBytes = (
   address: string,
   isSmartContract = false,
 ): Buffer => {
-  let targetAddressEncoded = base58Decode(address.slice(2)).slice(1);
+  let targetAddressEncoded = base58Decode(address.slice(2));
   targetAddressEncoded = Buffer.concat([
     isSmartContract ? Buffer.from([1]) : Buffer.from([0]),
     targetAddressEncoded,
   ]);
+
   return targetAddressEncoded;
 };
 
