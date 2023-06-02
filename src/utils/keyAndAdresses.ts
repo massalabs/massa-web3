@@ -4,9 +4,9 @@ import {
   varintEncode,
   varintDecode,
   hashBlake3,
-} from '../utils/Xbqcrypto';
+} from './Xbqcrypto';
 
-import { getBytesSecretKey } from '../utils/bytes';
+import { getBytesSecretKey } from './bytes';
 
 const PUBLIC_KEY_PREFIX = 'P';
 const ADDRESS_PREFIX = 'AU';
@@ -40,7 +40,6 @@ export class PublicKey {
   constructor(publicKeyArray: Uint8Array, secretKey: SecretKey) {
     this.version = secretKey.version;
     this.publicKey = publicKeyArray;
-
     const versionBuffer = Buffer.from(varintEncode(this.version));
     this.base58Encoded =
       PUBLIC_KEY_PREFIX +
