@@ -27,7 +27,7 @@ import {
   getBytesSecretKey,
 } from '../utils/bytes';
 
-import { Address, SecretKey, PublicKey } from '../utils/Address';
+import { Address, SecretKey, PublicKey } from '../utils/keyAndAdresses';
 const SECRET_KEY_PREFIX = 'S';
 
 const VERSION_NUMBER = 0;
@@ -319,7 +319,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public static async walletGenerateNewAccount(): Promise<IAccount> {
     // generate private key
     const secretKeyArray: Uint8Array = ed.utils.randomPrivateKey();
-    // const secretKey: SecretKey = new SecretKey(base58Encode(secretKeyArray));
 
     const version = Buffer.from(varintEncode(VERSION_NUMBER)); // issue here
     const secretKeyBase58Encoded: string =
@@ -328,9 +327,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
 
     // get public key
-    const publicKeyArray: Uint8Array = await ed.getPublicKey(
-      secretKeyArray,
-    );
+    const publicKeyArray: Uint8Array = await ed.getPublicKey(secretKeyArray);
     const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
 
     // get wallet account address
