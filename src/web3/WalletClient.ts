@@ -313,14 +313,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
   /**
    * Generates a new wallet account.
+   * @param version_number - The version number of the secret key to be generated, to create a new account.
    *
    * @returns A Promise that resolves to an {@link IAccount} object, which represents the newly created account.
    */
-  public static async walletGenerateNewAccount(): Promise<IAccount> {
+  public static async walletGenerateNewAccount(
+    version_number: number,
+  ): Promise<IAccount> {
     // generate private key
     const secretKeyArray: Uint8Array = ed.utils.randomPrivateKey();
 
-    const version = Buffer.from(varintEncode(VERSION_NUMBER)); // issue here
+    const version = Buffer.from(varintEncode(version_number));
     const secretKeyBase58Encoded: string =
       SECRET_KEY_PREFIX +
       base58Encode(Buffer.concat([version, secretKeyArray]));
