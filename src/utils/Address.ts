@@ -3,23 +3,34 @@ import {
   base58Encode,
   varintEncode,
   varintDecode,
+  hashBlake3,
 } from '../utils/Xbqcrypto';
+import { WalletClient } from '../web3/WalletClient';
 
 import * as ed from '@noble/ed25519';
 
 const PUBLIC_KEY_PREFIX = 'P';
 const ADDRESS_PREFIX = 'AU';
+const SECRET_KEY_PREFIX = 'S';
 
 export class SecretKey {
   secretKeyBase58Encoded: string;
   secretKeyBase58Decoded: Uint8Array;
+  prefix: string;
   version: number;
 
   constructor(secretKeyBase58Encoded: string) {
+    this.prefix = SECRET_KEY_PREFIX;
     this.secretKeyBase58Encoded = secretKeyBase58Encoded;
-    this.secretKeyBase58Decoded = base58Decode(this.secretKeyBase58Encoded);
+    this.secretKeyBase58Decoded = WalletClient.getBytesSecretKey(
+      secretKeyBase58Encoded,
+    );
 
-    const decodedVersion = varintDecode(this.secretKeyBase58Decoded);
+    const secretKeyUnprefixed = secretKeyBase58Encoded.slice(
+      SECRET_KEY_PREFIX.length,
+    );
+    const decoded = base58Decode(secretKeyUnprefixed);
+    const decodedVersion = varintDecode(decoded);
     this.version = decodedVersion.value;
   }
 }
@@ -29,45 +40,60 @@ export class PublicKey {
   publicKey: Uint8Array;
   publicKeyBase58Encoded: string;
 
-  constructor(secretKey: SecretKey) {
-    (async () => {
-      this.version = secretKey.version;
+  constructor(publicKeyArray: Uint8Array, secretKey: SecretKey) {
+    this.version = secretKey.version;
+    this.publicKey = publicKeyArray;
 
-      this.publicKey = await ed.getPublicKey(secretKey.secretKeyBase58Decoded);
-      const versionBuffer = Buffer.from(varintEncode(this.version));
-      this.publicKeyBase58Encoded =
-        PUBLIC_KEY_PREFIX +
-        base58Encode(
-          Buffer.concat([versionBuffer, Buffer.from(this.publicKey)]),
-        );
-    })();
+    const versionBuffer = Buffer.from(varintEncode(this.version));
+    this.publicKeyBase58Encoded =
+      PUBLIC_KEY_PREFIX +
+      base58Encode(Buffer.concat([versionBuffer, Buffer.from(this.publicKey)]));
   }
 }
 
 export class Address {
   prefix: string;
   version: number;
-  publicKey: string;
+  addressBase58Encoded: string;
 
-  constructor(addressBase58Encoded: string) {
+  constructor(publicKey: PublicKey) {
     this.prefix = ADDRESS_PREFIX;
+    this.version = publicKey.version;
 
-    // Slicing the address prefix from the base58 encoded address
-    const addressUnprefixed = addressBase58Encoded.slice(ADDRESS_PREFIX.length);
+    // console.log("la version est : " + this.version);
 
-    // Decoding the base58 encoded unprefixed address
-    const decoded = base58Decode(addressUnprefixed);
+    const versionBuffer = Buffer.from(varintEncode(this.version));
 
-    // Decoding the version number of the address
-    const decodedVersion = varintDecode(decoded);
-    this.version = varintDecode(decoded).value;
+    const concatVersionPublicKey = Buffer.concat([
+      versionBuffer,
+      publicKey.publicKey,
+    ]);
 
-    this.publicKey = addressUnprefixed.slice(decodedVersion.bytes);
+    // console.log("la concat est : " + concatVersionPublicKey);
+
+    this.addressBase58Encoded =
+      ADDRESS_PREFIX +
+      base58Encode(
+        Buffer.concat([versionBuffer, hashBlake3(concatVersionPublicKey)]),
+      );
+
+    // console.log("l'adresse est : " + this.addressBase58Encoded);
   }
 }
 
-const ADDRESSE = 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK';
-const addr = new Address(ADDRESSE);
-console.log('prefix = ', addr.prefix);
-console.log('version = ', addr.version);
-console.log('publicKey = ', addr.publicKey);
+(async () => {
+  const secretKeyString =
+    'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
+
+  const secretKey = new SecretKey(secretKeyString);
+  console.log(secretKey);
+
+  const publicKeyArray = await ed.getPublicKey(
+    secretKey.secretKeyBase58Decoded,
+  );
+  const publicKey = new PublicKey(publicKeyArray, secretKey);
+  console.log(publicKey);
+
+  const address = new Address(publicKey);
+  console.log(address);
+})();
