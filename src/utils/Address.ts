@@ -3,13 +3,46 @@ import {
   base58Encode,
   varintEncode,
   varintDecode,
-  hashBlake3,
 } from '../utils/Xbqcrypto';
 
 import * as ed from '@noble/ed25519';
 
 const PUBLIC_KEY_PREFIX = 'P';
 const ADDRESS_PREFIX = 'AU';
+
+export class SecretKey {
+  secretKeyBase58Encoded: string;
+  secretKeyBase58Decoded: Uint8Array;
+  version: number;
+
+  constructor(secretKeyBase58Encoded: string) {
+    this.secretKeyBase58Encoded = secretKeyBase58Encoded;
+    this.secretKeyBase58Decoded = base58Decode(this.secretKeyBase58Encoded);
+
+    const decodedVersion = varintDecode(this.secretKeyBase58Decoded);
+    this.version = decodedVersion.value;
+  }
+}
+
+export class PublicKey {
+  version: number;
+  publicKey: Uint8Array;
+  publicKeyBase58Encoded: string;
+
+  constructor(secretKey: SecretKey) {
+    (async () => {
+      this.version = secretKey.version;
+
+      this.publicKey = await ed.getPublicKey(secretKey.secretKeyBase58Decoded);
+      const versionBuffer = Buffer.from(varintEncode(this.version));
+      this.publicKeyBase58Encoded =
+        PUBLIC_KEY_PREFIX +
+        base58Encode(
+          Buffer.concat([versionBuffer, Buffer.from(this.publicKey)]),
+        );
+    })();
+  }
+}
 
 export class Address {
   prefix: string;
