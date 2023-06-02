@@ -326,9 +326,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
       SECRET_KEY_PREFIX +
       base58Encode(Buffer.concat([version, secretKeyArray]));
     const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
+
     // get public key
     const publicKeyArray: Uint8Array = await ed.getPublicKey(
-      secretKey.base58Encoded,
+      secretKeyArray,
     );
     const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
 
