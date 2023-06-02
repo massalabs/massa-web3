@@ -214,11 +214,12 @@ export class SmartContractsClient
   }
 
   /**
-   * Executes a read operation on a smart contract.
+   * Execute a dry run Smart contract call and returns some data regarding its execution
+   * such as the changes of in the states that would have happen if the transaction was really executed on chain.
    *
    * @param readData - The data required for the a read operation of a smart contract.
    *
-   * @returns A promise that resolves to object the result of the read operation.
+   * @returns A promise that resolves to an object which represents the result of the operation and contains various data about its execution.
    */
   public async readSmartContract(
     readData: IReadData,
