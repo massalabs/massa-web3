@@ -5,7 +5,8 @@ import {
   varintDecode,
   hashBlake3,
 } from '../utils/Xbqcrypto';
-import { WalletClient } from '../web3/WalletClient';
+
+import { getBytesSecretKey } from '../utils/bytes';
 
 import * as ed from '@noble/ed25519';
 
@@ -22,9 +23,7 @@ export class SecretKey {
   constructor(secretKeyBase58Encoded: string) {
     this.prefix = SECRET_KEY_PREFIX;
     this.secretKeyBase58Encoded = secretKeyBase58Encoded;
-    this.secretKeyBase58Decoded = WalletClient.getBytesSecretKey(
-      secretKeyBase58Encoded,
-    );
+    this.secretKeyBase58Decoded = getBytesSecretKey(secretKeyBase58Encoded);
 
     const secretKeyUnprefixed = secretKeyBase58Encoded.slice(
       SECRET_KEY_PREFIX.length,
@@ -80,20 +79,3 @@ export class Address {
     // console.log("l'adresse est : " + this.addressBase58Encoded);
   }
 }
-
-(async () => {
-  const secretKeyString =
-    'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
-
-  const secretKey = new SecretKey(secretKeyString);
-  console.log(secretKey);
-
-  const publicKeyArray = await ed.getPublicKey(
-    secretKey.secretKeyBase58Decoded,
-  );
-  const publicKey = new PublicKey(publicKeyArray, secretKey);
-  console.log(publicKey);
-
-  const address = new Address(publicKey);
-  console.log(address);
-})();
