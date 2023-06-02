@@ -6,7 +6,7 @@ import {
   hashBlake3,
 } from './Xbqcrypto';
 
-import { getBytesSecretKey } from './bytes';
+import { getBytesSecretKeyVersioned } from './bytes';
 
 const PUBLIC_KEY_PREFIX = 'P';
 const ADDRESS_PREFIX = 'AU';
@@ -21,7 +21,7 @@ export class SecretKey {
   constructor(secretKeyBase58Encoded: string) {
     this.prefix = SECRET_KEY_PREFIX;
     this.base58Encoded = secretKeyBase58Encoded;
-    this.base58Decoded = getBytesSecretKey(secretKeyBase58Encoded);
+    this.base58Decoded = getBytesSecretKeyVersioned(secretKeyBase58Encoded);
 
     const secretKeyUnprefixed = secretKeyBase58Encoded.slice(
       SECRET_KEY_PREFIX.length,
