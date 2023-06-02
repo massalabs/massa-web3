@@ -325,12 +325,16 @@ export class SmartContractsClient
   }
 
   /**
-   * Execute a read-only smart contract.
+   * Send a read-only smart contract execution request.
    *
-   * @param contractData - The data required for the read-only smart contract.
+   * @remarks
+   * This method is used to dry-run a smart contract execution and get the changes of the states that would
+   * have happen if the transaction was really executed on chain.
+   * This operation does not modify the blockchain state.
    *
-   * @returns A promise which resolves to an object containing the result
-   * of the operation.
+   * @param contractData - The data required for the operation.
+   *
+   * @returns A promise which resolves to an object containing data about the operation.
    *
    * @throws
    * - If the contract binary data is missing.

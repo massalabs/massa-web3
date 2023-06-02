@@ -1,7 +1,7 @@
 import { IContractReadOperationData } from './IContractReadOperationData';
 
 /**
- * Represents the output of a smart contract execution dry run. 
+ * Represents the output of a smart contract execution dry run.
  * (this operation did not modify the blockchain state)
  *
  * @see returnValue of type `Uint8Array` represents the return value of the read operation.
