@@ -32,7 +32,7 @@ import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
-import { getBytesPublicKeyVersioned } from '../utils/bytes';
+import { getBytesPublicKey } from '../utils/bytes';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -115,11 +115,9 @@ export class SmartContractsClient
     );
 
     // sign payload
+    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
     const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([
-        getBytesPublicKeyVersioned(sender.publicKey),
-        bytesCompact,
-      ]),
+      Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
 
@@ -182,11 +180,9 @@ export class SmartContractsClient
     );
 
     // sign payload
+    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
     const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([
-        getBytesPublicKeyVersioned(sender.publicKey),
-        bytesCompact,
-      ]),
+      Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
     // request data
