@@ -219,7 +219,7 @@ export class SmartContractsClient
    *
    * @param readData - The data required for the a read operation of a smart contract.
    *
-   * @returns A promise that resolves to an object which represents the result of the operation and contains various data about its execution.
+   * @returns A promise that resolves to an object which represents the result of the operation and contains data about its execution.
    */
   public async readSmartContract(
     readData: IReadData,
