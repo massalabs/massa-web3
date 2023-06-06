@@ -456,10 +456,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
 
     // sign the digest
-    const sig = await ed.sign(
-      messageHashDigest,
-      secretKey.bytesUnversioned,
-    );
+    const sig = await ed.sign(messageHashDigest, secretKey.bytesUnversioned);
 
     // check sig length
     if (sig.length != 64) {
