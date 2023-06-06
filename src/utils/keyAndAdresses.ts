@@ -9,24 +9,27 @@ import {
 import { getBytesSecretKey, getBytesPublicKey } from './bytes';
 
 /**
- * Prefixes for secret and public keys.
+ * Prefixes for secret keys, public keys, and addresses.
  * Prefixes are used as a convention to differentiate one key from another.
  */
 
+const SECRET_KEY_PREFIX = 'S';
 const PUBLIC_KEY_PREFIX = 'P';
 const ADDRESS_PREFIX = 'AU';
-const SECRET_KEY_PREFIX = 'S';
 
 /**
  * A secret key.
- *
- * @remarks the secret key object is created from a base58 encoded string representing the secret key.
+ * The secret key object is created from a base58 encoded string representing the secret key.
  * The secret key bytes representation is `version + secretKey` where secretKey is the 32 bytes of the secret key.
+ *
+ * @remarks base58Encoded attribute is the readable string representation of the public key.
+ * @remarks base58Decoded attribute is the Uint8Array representation of the public key.
+ * @remarks bytesUnversioned attribute is the Uint8Array representation of the public key without the version byte.
  */
 export class SecretKey {
   base58Encoded: string;
   base58Decoded: Uint8Array;
-  base58DecodedUnversioned: Uint8Array;
+  bytesUnversioned: Uint8Array;
   prefix: string;
   version: number;
 
@@ -36,7 +39,7 @@ export class SecretKey {
     this.base58Decoded = getBytesSecretKey(secretKeyBase58Encoded);
 
     // Slice off the version byte
-    this.base58DecodedUnversioned = this.base58Decoded.slice(1);
+    this.bytesUnversioned = this.base58Decoded.slice(1);
 
     const secretKeyUnprefixed = secretKeyBase58Encoded.slice(
       SECRET_KEY_PREFIX.length,
@@ -50,19 +53,23 @@ export class SecretKey {
 }
 
 /**
- * A public key.
+ * The PublicKey class represents a cryptographic public key.
  *
- * @remarks the public key object is created from a base58 encoded string representing the public key.
+ * The public key object is created from a base58 encoded string representing the public key.
  * The public key bytes representation is `version + publicKey` where publicKey is the 32 bytes of the public key.
  *
- * @remarks the public key is derived from the secret key and got the same version as the secret key.
+ * @remarks The public key is derived from the secret key and got the same version as the secret key.
+ *
+ * @remarks base58Encoded attribute is the readable string representation of the public key.
+ * @remarks base58Decoded attribute is the Uint8Array representation of the public key.
+ * @remarks bytesUnversioned attribute is the Uint8Array representation of the public key without the version byte.
  */
 export class PublicKey {
   version: number;
   publicKey: Uint8Array;
   base58Encoded: string;
   base58Decoded: Uint8Array;
-  base58DecodedUnversioned: Uint8Array;
+  bytesUnversioned: Uint8Array;
 
   constructor(publicKeyArray: Uint8Array, secretKey: SecretKey) {
     this.version = secretKey.version;
@@ -76,7 +83,7 @@ export class PublicKey {
     this.base58Decoded = getBytesPublicKey(this.base58Encoded);
 
     // Slice off the version byte
-    this.base58DecodedUnversioned = this.base58Decoded.slice(1);
+    this.bytesUnversioned = this.base58Decoded.slice(1);
   }
 }
 
@@ -92,7 +99,7 @@ export class PublicKey {
 export class Address {
   prefix: string;
   version: number;
-  addressBase58Encoded: string;
+  base58Encoded: string;
 
   constructor(publicKey: PublicKey) {
     this.prefix = ADDRESS_PREFIX;
@@ -105,7 +112,7 @@ export class Address {
     ]);
 
     // Generate base58 encoded address
-    this.addressBase58Encoded =
+    this.base58Encoded =
       ADDRESS_PREFIX +
       base58Encode(
         Buffer.concat([versionBuffer, hashBlake3(concatVersionPublicKey)]),

@@ -173,17 +173,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
     for (const secretKeyBase58Encoded of secretKeys) {
       const secretKey = new SecretKey(secretKeyBase58Encoded);
       const publicKeyArray: Uint8Array = await ed.getPublicKey(
-        secretKey.base58DecodedUnversioned,
+        secretKey.bytesUnversioned,
       );
       const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
       const address: Address = new Address(publicKey);
 
-      if (!this.getWalletAccountByAddress(address.addressBase58Encoded)) {
+      if (!this.getWalletAccountByAddress(address.base58Encoded)) {
         accountsToCreate.push({
           secretKey: secretKeyBase58Encoded,
           publicKey: publicKey.base58Encoded,
-          address: address.addressBase58Encoded,
-          createdInThread: getThreadNumber(address.addressBase58Encoded),
+          address: address.base58Encoded,
+          createdInThread: getThreadNumber(address.base58Encoded),
         } as IAccount);
       }
     }
@@ -229,7 +229,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
       // create the public key object
       const publicKeyArray: Uint8Array = await ed.getPublicKey(
-        secretKey.base58DecodedUnversioned,
+        secretKey.bytesUnversioned,
       );
       const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
       if (account.publicKey && account.publicKey !== publicKey.base58Encoded) {
@@ -240,18 +240,18 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
       // get wallet account address
       const address: Address = new Address(publicKey);
-      if (account.address && account.address !== address.addressBase58Encoded) {
+      if (account.address && account.address !== address.base58Encoded) {
         throw new Error(
           'Account address not correspond the the address submitted',
         );
       }
 
-      if (!this.getWalletAccountByAddress(address.addressBase58Encoded)) {
+      if (!this.getWalletAccountByAddress(address.base58Encoded)) {
         accountsAdded.push({
-          address: address.addressBase58Encoded,
+          address: address.base58Encoded,
           secretKey: secretKeyBase58Encoded,
           publicKey: publicKey.base58Encoded,
-          createdInThread: getThreadNumber(address.addressBase58Encoded),
+          createdInThread: getThreadNumber(address.base58Encoded),
         } as IAccount);
       }
     }
@@ -332,10 +332,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const address: Address = new Address(publicKey);
 
     return {
-      address: address.addressBase58Encoded,
+      address: address.base58Encoded,
       secretKey: secretKeyBase58Encoded,
       publicKey: publicKey.base58Encoded,
-      createdInThread: getThreadNumber(address.addressBase58Encoded),
+      createdInThread: getThreadNumber(address.base58Encoded),
     } as IAccount;
   }
 
@@ -353,7 +353,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const secretKey: SecretKey = new SecretKey(secretKeyBase58);
     // get public key
     const publicKeyArray: Uint8Array = await ed.getPublicKey(
-      secretKey.base58DecodedUnversioned,
+      secretKey.bytesUnversioned,
     );
     const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
 
@@ -361,10 +361,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const address: Address = new Address(publicKey);
 
     return {
-      address: address.addressBase58Encoded,
+      address: address.base58Encoded,
       secretKey: secretKey.base58Encoded,
       publicKey: publicKey.base58Encoded,
-      createdInThread: getThreadNumber(address.addressBase58Encoded),
+      createdInThread: getThreadNumber(address.base58Encoded),
     } as IAccount;
   }
 
@@ -458,7 +458,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // sign the digest
     const sig = await ed.sign(
       messageHashDigest,
-      secretKey.base58DecodedUnversioned,
+      secretKey.bytesUnversioned,
     );
 
     // check sig length
