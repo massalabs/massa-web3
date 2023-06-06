@@ -3,8 +3,8 @@ import { expect, it, describe } from '@jest/globals';
 import {
   IDeserializedResult,
   ISerializable,
-} from '../src/interfaces/ISerializable';
-import { Args, TypedArrayUnit } from '../src/utils/arguments';
+} from '../../src/interfaces/ISerializable';
+import { Args, TypedArrayUnit } from '../../src/utils/arguments';
 
 export class Divinity implements ISerializable<Divinity> {
   constructor(public age: number = 0, public name: string = '') {}

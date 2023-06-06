@@ -1,6 +1,6 @@
 import { expect, it, describe } from '@jest/globals';
 import BigNumber from 'bignumber.js';
-import * as converters from '../src/utils/converters';
+import * as converters from '../../src/utils/converters';
 
 describe('conversion tests', () => {
   it('test conversions to and from (all ranges and formats)', () => {
