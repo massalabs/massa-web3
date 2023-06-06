@@ -1,5 +1,5 @@
 import { expect, it, describe } from '@jest/globals';
-import * as ser from '../src/utils/serializers';
+import * as ser from '../../src/utils/serializers';
 import { asTests } from './fixtures/as-serializer';
 
 describe('Serialization tests', () => {
