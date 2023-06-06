@@ -1,5 +1,9 @@
 import { base58Decode } from './Xbqcrypto';
 
+/**
+ * Prefixes for secret and public keys.
+ * Prefixes are used as a convention to differentiate one key from another.
+ */
 const SECRET_KEY_PREFIX = 'S';
 const PUBLIC_KEY_PREFIX = 'P';
 
