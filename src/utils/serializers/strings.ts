@@ -24,18 +24,18 @@ export function bytesToStr(arr: Uint8Array): string {
     return '';
   }
 
-  if (typeof window !== 'undefined') {
-    let TextDecoder = window.TextDecoder;
-    if (typeof TextDecoder === 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      TextDecoder = require('util').TextDecoder;
-    }
-    const textDecoder = new TextDecoder('utf-8');
-    return textDecoder.decode(arr);
-  } else {
+  if (typeof window === 'undefined') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const StringDecoder = require('string_decoder').StringDecoder;
     const decoder = new StringDecoder('utf-8');
     return decoder.write(Buffer.from(arr));
   }
+
+  let TextDecoder = window.TextDecoder;
+  if (typeof TextDecoder === 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    TextDecoder = require('util').TextDecoder;
+  }
+  const textDecoder = new TextDecoder('utf-8');
+  return textDecoder.decode(arr);
 }
