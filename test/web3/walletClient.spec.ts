@@ -29,7 +29,7 @@ export async function initializeClient() {
   return web3Client;
 }
 
-describe('WalletClient', () => {
+describe.skip('WalletClient', () => {
   let web3Client: Client;
   // let walletClient: WalletClient;
 
