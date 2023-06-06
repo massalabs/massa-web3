@@ -6,6 +6,7 @@ import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 
+// TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
   'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
 const receiverPrivateKey =
