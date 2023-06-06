@@ -8,10 +8,21 @@ import {
 
 import { getBytesSecretKey, getBytesPublicKey } from './bytes';
 
+/**
+ * Prefixes for secret and public keys.
+ * Prefixes are used as a convention to differentiate one key from another.
+ */
+
 const PUBLIC_KEY_PREFIX = 'P';
 const ADDRESS_PREFIX = 'AU';
 const SECRET_KEY_PREFIX = 'S';
 
+/**
+ * A secret key.
+ *
+ * @remarks the secret key object is created from a base58 encoded string representing the secret key.
+ * The secret key bytes representation is `version + secretKey` where secretKey is the 32 bytes of the secret key.
+ */
 export class SecretKey {
   base58Encoded: string;
   base58Decoded: Uint8Array;
@@ -38,6 +49,14 @@ export class SecretKey {
   }
 }
 
+/**
+ * A public key.
+ *
+ * @remarks the public key object is created from a base58 encoded string representing the public key.
+ * The public key bytes representation is `version + publicKey` where publicKey is the 32 bytes of the public key.
+ *
+ * @remarks the public key is derived from the secret key and got the same version as the secret key.
+ */
 export class PublicKey {
   version: number;
   publicKey: Uint8Array;
@@ -61,6 +80,15 @@ export class PublicKey {
   }
 }
 
+/**
+ * An address.
+ *
+ * @remarks the address object is created from a public key.
+ *
+ * @remarks the address bytes representation is `version + hashBlake3(version + publicKey)`.
+ *
+ * @remarks the address is derived from the public key and got the same version as the public key.
+ */
 export class Address {
   prefix: string;
   version: number;
