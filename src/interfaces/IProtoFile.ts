@@ -6,6 +6,6 @@
  * candidate file (as a byte array) to replace the current proto file.
  */
 export interface IProtoFile {
-  final_value: string;
-  candidate_value: string;
+  final_value: Uint8Array;
+  candidate_value: Uint8Array;
 }

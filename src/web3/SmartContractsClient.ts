@@ -473,9 +473,9 @@ export class SmartContractsClient
   ): Promise<IProtoFile[]> {
     // prepare request body
     const requestProtoFiles: object[] = [];
-    for (let i = 0; i < contractAddresses.length; i++) {
+    for (let address of contractAddresses) {
       requestProtoFiles.push({
-        address: contractAddresses[i],
+        address: address,
         key: Array.from(strToBytes(MASSA_PROTOFILE_KEY)),
       });
     }
