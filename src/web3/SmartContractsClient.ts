@@ -38,6 +38,10 @@ import { WalletClient } from './WalletClient';
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
+
+/**
+ * The key name (as a string) to look for when we are retrieving the proto file from a contract
+ */
 const MASSA_PROTOFILE_KEY = 'protoMassa';
 /**
  * Smart Contracts Client object enables smart contract deployment, calls and streaming of events.
