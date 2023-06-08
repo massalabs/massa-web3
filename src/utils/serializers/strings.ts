@@ -1,5 +1,3 @@
-import { StringDecoder } from 'string_decoder';
-
 /**
  * Converts utf-16 string to a Uint8Array.
  *
@@ -25,5 +23,19 @@ export function bytesToStr(arr: Uint8Array): string {
   if (!arr.length) {
     return '';
   }
-  return new StringDecoder('utf8').write(Buffer.from(arr));
+
+  if (typeof window === 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const StringDecoder = require('string_decoder').StringDecoder;
+    const decoder = new StringDecoder('utf-8');
+    return decoder.write(Buffer.from(arr));
+  }
+
+  let TextDecoder = window.TextDecoder;
+  if (typeof TextDecoder === 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    TextDecoder = require('util').TextDecoder;
+  }
+  const textDecoder = new TextDecoder('utf-8');
+  return textDecoder.decode(arr);
 }
