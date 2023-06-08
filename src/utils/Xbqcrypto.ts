@@ -65,8 +65,13 @@ export function varintEncode(data: number | bigint): Uint8Array {
  *
  * @param data - The varint encoded Uint8Array
  *
- * @returns The decoded number
+ * @returns The decoded number and the number of bytes read
  */
-export function varintDecode(data: Uint8Array): number {
-  return varint.decode(data);
+export function varintDecode(data: Uint8Array): {
+  value: number;
+  bytes: number;
+} {
+  const value = varint.decode(data);
+  const bytes = varint.decode.bytes;
+  return { value, bytes };
 }

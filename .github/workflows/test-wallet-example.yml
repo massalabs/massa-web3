@@ -1,7 +1,7 @@
 name: Wallet example
 
 on:
-  [push]
+  []
 
 
 jobs:
