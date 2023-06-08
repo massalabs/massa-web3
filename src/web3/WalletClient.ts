@@ -25,7 +25,7 @@ import { getBytesPublicKey } from '../utils/bytes';
 
 import { Address, SecretKey, PublicKey } from '../utils/keyAndAdresses';
 const SECRET_KEY_PREFIX = 'S';
-
+const VERSION_NUMBER = 0;
 const MAX_WALLET_ACCOUNTS = 256;
 
 /**
@@ -172,10 +172,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
     for (const secretKeyBase58Encoded of secretKeys) {
       const secretKey = new SecretKey(secretKeyBase58Encoded);
-      const publicKeyArray: Uint8Array = await ed.getPublicKey(
-        secretKey.bytesUnversioned,
-      );
-      const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
+      const publicKey: PublicKey = await PublicKey.fromSecretKey(secretKey);
       const address: Address = new Address(publicKey);
 
       if (!this.getWalletAccountByAddress(address.base58Encoded)) {
@@ -228,10 +225,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
       const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
 
       // create the public key object
-      const publicKeyArray: Uint8Array = await ed.getPublicKey(
-        secretKey.bytesUnversioned,
-      );
-      const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
+      const publicKey: PublicKey = await PublicKey.fromSecretKey(secretKey);
       if (account.publicKey && account.publicKey !== publicKey.base58Encoded) {
         throw new Error(
           'Public key does not correspond the the private key submitted',
@@ -308,25 +302,21 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
   /**
    * Generates a new wallet account.
-   * @param version_number - The version number of the secret key to be generated, to create a new account.
    *
    * @returns A Promise that resolves to an {@link IAccount} object, which represents the newly created account.
    */
-  public static async walletGenerateNewAccount(
-    version_number: number,
-  ): Promise<IAccount> {
+  public static async walletGenerateNewAccount(): Promise<IAccount> {
     // generate private key
     const secretKeyArray: Uint8Array = ed.utils.randomPrivateKey();
 
-    const version = Buffer.from(varintEncode(version_number));
+    const version = Buffer.from(varintEncode(VERSION_NUMBER));
     const secretKeyBase58Encoded: string =
       SECRET_KEY_PREFIX +
       base58Encode(Buffer.concat([version, secretKeyArray]));
     const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
 
     // get public key
-    const publicKeyArray: Uint8Array = await ed.getPublicKey(secretKeyArray);
-    const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
+    const publicKey: PublicKey = await PublicKey.fromSecretKey(secretKey);
 
     // get wallet account address
     const address: Address = new Address(publicKey);
@@ -352,10 +342,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // get private key
     const secretKey: SecretKey = new SecretKey(secretKeyBase58);
     // get public key
-    const publicKeyArray: Uint8Array = await ed.getPublicKey(
-      secretKey.bytesUnversioned,
-    );
-    const publicKey: PublicKey = new PublicKey(publicKeyArray, secretKey);
+    const publicKey: PublicKey = await PublicKey.fromSecretKey(secretKey);
 
     // get wallet account address
     const address: Address = new Address(publicKey);
