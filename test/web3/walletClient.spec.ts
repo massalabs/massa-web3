@@ -34,7 +34,12 @@ export async function initializeClient() {
 describe('WalletClient', () => {
   let web3Client: Client;
   // let walletClient: WalletClient;
-  let baseAccount: IAccount;
+  let baseAccount: IAccount = {
+    address: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+    secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
+    publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
+    createdInThread: 6,
+  };
 
   beforeEach(async () => {
     web3Client = await initializeClient();
@@ -92,6 +97,7 @@ describe('WalletClient', () => {
     test('should return the base account', async () => {
       const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).not.toBeNull();
+      console.log('fetchedBaseAccount', fetchedBaseAccount);
       expect(fetchedBaseAccount?.address).toEqual(baseAccount.address);
     });
 
@@ -102,7 +108,7 @@ describe('WalletClient', () => {
     });
   });
 
-  describe.only('getWalletAccounts', () => {
+  describe('getWalletAccounts', () => {
     test('should return all accounts in the wallet', async () => {
       const accounts = [
         await WalletClient.walletGenerateNewAccount(),
@@ -133,39 +139,6 @@ describe('WalletClient', () => {
         accountFromSecretKey2.publicKey,
       );
     });
-
-    test('should return undefined for a non-existent address', async () => {
-      const nonexistentAddress =
-        'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3'; // This address doesn't exist in the wallet
-      const fetchedAccount = web3Client
-        .wallet()
-        .getWalletAccountByAddress(nonexistentAddress);
-      expect(fetchedAccount).toBeUndefined();
-    });
-
-    // TODO: should we implement this? atm it has the same behavior as when the address doesn't exist in the wallet
-    test.skip('should return an error for an incorrect address', async () => {
-      const incorrectAddress = 'incorrect address';
-      await expect(
-        web3Client.wallet().getWalletAccountByAddress(incorrectAddress),
-      ).rejects.toThrow();
-    });
-
-    test('should return the account regardless of address case', async () => {
-      const accounts = [await WalletClient.walletGenerateNewAccount()];
-
-      await web3Client.wallet().addAccountsToWallet(accounts);
-
-      const targetAccount = accounts[0]; // Assume we want to find the first account
-      const upperCaseAddress = targetAccount.address?.toUpperCase();
-      const fetchedAccount = web3Client
-        .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .getWalletAccountByAddress(upperCaseAddress!);
-
-      expect(fetchedAccount).not.toBeNull();
-      expect(fetchedAccount?.address).toEqual(targetAccount.address);
-    });
   });
 
   describe('getWalletAccountByAddress', () => {
@@ -179,13 +152,46 @@ describe('WalletClient', () => {
       await web3Client.wallet().addAccountsToWallet(accounts);
 
       const targetAccount = accounts[1]; // Assume we want to find the second account
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const fetchedAccount = web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getWalletAccountByAddress(targetAccount.address!);
 
       expect(fetchedAccount).not.toBeNull();
       expect(fetchedAccount?.address).toEqual(targetAccount.address);
+    });
+
+    test('should return undefined for a non-existent address', async () => {
+      const nonexistentAddress =
+        'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3'; // This address doesn't exist in the wallet
+      const fetchedAccount = web3Client
+        .wallet()
+        .getWalletAccountByAddress(nonexistentAddress);
+      expect(fetchedAccount).toBeUndefined();
+    });
+
+    test('should return the account regardless of address case', async () => {
+      const accounts = [await WalletClient.walletGenerateNewAccount()];
+
+      await web3Client.wallet().addAccountsToWallet(accounts);
+
+      const targetAccount = accounts[0]; // Assume we want to find the first account
+      const upperCaseAddress = targetAccount.address?.toUpperCase();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const fetchedAccount = web3Client
+        .wallet()
+        .getWalletAccountByAddress(upperCaseAddress!);
+
+      expect(fetchedAccount).not.toBeNull();
+      expect(fetchedAccount?.address).toEqual(targetAccount.address);
+    });
+
+    // TODO: should we implement this? atm it has the same behavior as when the address doesn't exist in the wallet
+    test.skip('should return an error for an incorrect address', async () => {
+      const incorrectAddress = 'incorrect address';
+      await expect(
+        web3Client.wallet().getWalletAccountByAddress(incorrectAddress),
+      ).rejects.toThrow();
     });
   });
 
@@ -271,7 +277,7 @@ describe('WalletClient', () => {
       const data = 'Test message';
       const signer = baseAccount;
       const modelSignedMessage =
-        '1VtLvridaHVYQB1njbTdPndJYt9Eb2qgoi8iWfrgpQmYw61MXC2GCpt374Gm78f7W3Xw9w38FdjBmf5Zmv7yGbhJr55Nbq';
+        '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
 
       const signedMessage = await WalletClient.walletSignMessage(data, signer);
 
