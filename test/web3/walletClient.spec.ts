@@ -25,14 +25,13 @@ export async function initializeClient() {
       { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
     ],
     true,
-    deployerAccount,
+    deployerAccount, // setting deployer account as base account
   );
   return web3Client;
 }
 
 describe.skip('WalletClient', () => {
   let web3Client: Client;
-  // let walletClient: WalletClient;
 
   beforeEach(async () => {
     web3Client = await initializeClient();
