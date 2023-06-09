@@ -29,16 +29,16 @@ const ADDRESS_PREFIX = 'AU';
  */
 export class SecretKey {
   version: number;
-  base58Encoded: string;
-  base58Decoded: Uint8Array;
-  bytesUnversioned: Uint8Array;
+  base58EncodeString: string;
+  base58EncodeBytes: Uint8Array;
+  bytes: Uint8Array;
 
   constructor(secretKeyBase58Encoded: string) {
-    this.base58Encoded = secretKeyBase58Encoded;
-    this.base58Decoded = getBytesSecretKey(secretKeyBase58Encoded);
+    this.base58EncodeString = secretKeyBase58Encoded;
+    this.base58EncodeBytes = getBytesSecretKey(secretKeyBase58Encoded);
 
     // Slice off the version byte
-    this.bytesUnversioned = this.base58Decoded.slice(1);
+    this.bytes = this.base58EncodeBytes.slice(1);
 
     const secretKeyUnprefixed = secretKeyBase58Encoded.slice(
       SECRET_KEY_PREFIX.length,
@@ -66,30 +66,26 @@ export class SecretKey {
  */
 export class PublicKey {
   version: number;
-  base58Encoded: string;
+  base58EncodeString: string;
   base58Decoded: Uint8Array;
-  bytesUnversioned: Uint8Array;
+  bytes: Uint8Array;
 
-  private constructor(publicKeyArray: Uint8Array, secretKey: SecretKey) {
-    this.version = secretKey.version;
-    this.bytesUnversioned = publicKeyArray;
+  private constructor(bytes: Uint8Array, version: number) {
+    this.version = version;
+    this.bytes = bytes;
     const versionBuffer = Buffer.from(varintEncode(this.version));
 
     // Generate base58 encoded public key
-    this.base58Encoded =
+    this.base58EncodeString =
       PUBLIC_KEY_PREFIX +
-      base58Encode(
-        Buffer.concat([versionBuffer, Buffer.from(this.bytesUnversioned)]),
-      );
-    this.base58Decoded = getBytesPublicKey(this.base58Encoded);
+      base58Encode(Buffer.concat([versionBuffer, Buffer.from(this.bytes)]));
+    this.base58Decoded = getBytesPublicKey(this.base58EncodeString);
   }
 
   // Call this method to create a new PublicKey from a secret key.
   static async fromSecretKey(secretKey: SecretKey): Promise<PublicKey> {
-    const publicKeyArray: Uint8Array = await ed.getPublicKey(
-      secretKey.bytesUnversioned,
-    );
-    return new PublicKey(publicKeyArray, secretKey);
+    const publicKeyArray: Uint8Array = await ed.getPublicKey(secretKey.bytes);
+    return new PublicKey(publicKeyArray, secretKey.version);
   }
 }
 
@@ -104,7 +100,7 @@ export class PublicKey {
  */
 export class Address {
   version: number;
-  base58Encoded: string;
+  base58EncodeString: string;
 
   constructor(publicKey: PublicKey) {
     this.version = publicKey.version;
@@ -112,11 +108,11 @@ export class Address {
 
     const concatVersionPublicKey = Buffer.concat([
       versionBuffer,
-      publicKey.bytesUnversioned,
+      publicKey.bytes,
     ]);
 
     // Generate base58 encoded address
-    this.base58Encoded =
+    this.base58EncodeString =
       ADDRESS_PREFIX +
       base58Encode(
         Buffer.concat([versionBuffer, hashBlake3(concatVersionPublicKey)]),

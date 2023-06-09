@@ -175,12 +175,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
       const publicKey: PublicKey = await PublicKey.fromSecretKey(secretKey);
       const address: Address = new Address(publicKey);
 
-      if (!this.getWalletAccountByAddress(address.base58Encoded)) {
+      if (!this.getWalletAccountByAddress(address.base58EncodeString)) {
         accountsToCreate.push({
           secretKey: secretKeyBase58Encoded,
-          publicKey: publicKey.base58Encoded,
-          address: address.base58Encoded,
-          createdInThread: getThreadNumber(address.base58Encoded),
+          publicKey: publicKey.base58EncodeString,
+          address: address.base58EncodeString,
+          createdInThread: getThreadNumber(address.base58EncodeString),
         } as IAccount);
       }
     }
@@ -226,7 +226,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
       // create the public key object
       const publicKey: PublicKey = await PublicKey.fromSecretKey(secretKey);
-      if (account.publicKey && account.publicKey !== publicKey.base58Encoded) {
+      if (
+        account.publicKey &&
+        account.publicKey !== publicKey.base58EncodeString
+      ) {
         throw new Error(
           'Public key does not correspond the the private key submitted',
         );
@@ -234,18 +237,18 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
       // get wallet account address
       const address: Address = new Address(publicKey);
-      if (account.address && account.address !== address.base58Encoded) {
+      if (account.address && account.address !== address.base58EncodeString) {
         throw new Error(
           'Account address not correspond the the address submitted',
         );
       }
 
-      if (!this.getWalletAccountByAddress(address.base58Encoded)) {
+      if (!this.getWalletAccountByAddress(address.base58EncodeString)) {
         accountsAdded.push({
-          address: address.base58Encoded,
+          address: address.base58EncodeString,
           secretKey: secretKeyBase58Encoded,
-          publicKey: publicKey.base58Encoded,
-          createdInThread: getThreadNumber(address.base58Encoded),
+          publicKey: publicKey.base58EncodeString,
+          createdInThread: getThreadNumber(address.base58EncodeString),
         } as IAccount);
       }
     }
@@ -323,10 +326,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const address: Address = new Address(publicKey);
 
     return {
-      address: address.base58Encoded,
+      address: address.base58EncodeString,
       secretKey: secretKeyBase58Encoded,
-      publicKey: publicKey.base58Encoded,
-      createdInThread: getThreadNumber(address.base58Encoded),
+      publicKey: publicKey.base58EncodeString,
+      createdInThread: getThreadNumber(address.base58EncodeString),
     } as IAccount;
   }
 
@@ -349,10 +352,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const address: Address = new Address(publicKey);
 
     return {
-      address: address.base58Encoded,
-      secretKey: secretKey.base58Encoded,
-      publicKey: publicKey.base58Encoded,
-      createdInThread: getThreadNumber(address.base58Encoded),
+      address: address.base58EncodeString,
+      secretKey: secretKey.base58EncodeString,
+      publicKey: publicKey.base58EncodeString,
+      createdInThread: getThreadNumber(address.base58EncodeString),
     } as IAccount;
   }
 
@@ -444,7 +447,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
 
     // sign the digest
-    const sig = await ed.sign(messageHashDigest, secretKey.bytesUnversioned);
+    const sig = await ed.sign(messageHashDigest, secretKey.bytes);
 
     // check sig length
     if (sig.length != 64) {
