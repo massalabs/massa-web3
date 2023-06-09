@@ -135,6 +135,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public cleanWallet(): void {
     this.wallet.length = 0;
+    this.baseAccount = null;
   }
 
   /**
