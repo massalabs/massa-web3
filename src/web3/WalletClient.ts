@@ -169,13 +169,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
         `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${secretKeys.length}`,
       );
     }
+
+    // removing duplicates
+    const uniqueSecretKeys = Array.from(new Set(secretKeys));
+
     const accountsToCreate: IAccount[] = [];
 
-    for (const secretKeyBase58Encoded of secretKeys) {
+    for (const secretKeyBase58Encoded of uniqueSecretKeys) {
       const secretKey = new SecretKey(secretKeyBase58Encoded);
       const publicKey: PublicKey = await PublicKey.fromSecretKey(secretKey);
       const address: Address = new Address(publicKey);
-
+      // check if account already exists in wallet
       if (!this.getWalletAccountByAddress(address.base58Encoded)) {
         accountsToCreate.push({
           secretKey: secretKeyBase58Encoded,
