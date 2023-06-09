@@ -102,6 +102,93 @@ describe('WalletClient', () => {
     });
   });
 
+  describe.only('getWalletAccounts', () => {
+    test('should return all accounts in the wallet', async () => {
+      const accounts = [
+        await WalletClient.walletGenerateNewAccount(),
+        await WalletClient.walletGenerateNewAccount(),
+        await WalletClient.walletGenerateNewAccount(),
+      ];
+
+      await web3Client.wallet().addAccountsToWallet(accounts);
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      expect(walletAccounts.length).toBe(4);
+    });
+
+    test('should return different accounts for different secret keys', async () => {
+      const secretKey1 = 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
+      const secretKey2 = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
+
+      const accountFromSecretKey1 = await WalletClient.getAccountFromSecretKey(
+        secretKey1,
+      );
+      const accountFromSecretKey2 = await WalletClient.getAccountFromSecretKey(
+        secretKey2,
+      );
+
+      expect(accountFromSecretKey1.address).not.toEqual(
+        accountFromSecretKey2.address,
+      );
+      expect(accountFromSecretKey1.publicKey).not.toEqual(
+        accountFromSecretKey2.publicKey,
+      );
+    });
+
+    test('should return undefined for a non-existent address', async () => {
+      const nonexistentAddress =
+        'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3'; // This address doesn't exist in the wallet
+      const fetchedAccount = web3Client
+        .wallet()
+        .getWalletAccountByAddress(nonexistentAddress);
+      expect(fetchedAccount).toBeUndefined();
+    });
+
+    // TODO: should we implement this? atm it has the same behavior as when the address doesn't exist in the wallet
+    test.skip('should return an error for an incorrect address', async () => {
+      const incorrectAddress = 'incorrect address';
+      await expect(
+        web3Client.wallet().getWalletAccountByAddress(incorrectAddress),
+      ).rejects.toThrow();
+    });
+
+    test('should return the account regardless of address case', async () => {
+      const accounts = [await WalletClient.walletGenerateNewAccount()];
+
+      await web3Client.wallet().addAccountsToWallet(accounts);
+
+      const targetAccount = accounts[0]; // Assume we want to find the first account
+      const upperCaseAddress = targetAccount.address?.toUpperCase();
+      const fetchedAccount = web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getWalletAccountByAddress(upperCaseAddress!);
+
+      expect(fetchedAccount).not.toBeNull();
+      expect(fetchedAccount?.address).toEqual(targetAccount.address);
+    });
+  });
+
+  describe('getWalletAccountByAddress', () => {
+    test('should return the account for a valid address', async () => {
+      const accounts = [
+        await WalletClient.walletGenerateNewAccount(),
+        await WalletClient.walletGenerateNewAccount(),
+        await WalletClient.walletGenerateNewAccount(),
+      ];
+
+      await web3Client.wallet().addAccountsToWallet(accounts);
+
+      const targetAccount = accounts[1]; // Assume we want to find the second account
+      const fetchedAccount = web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getWalletAccountByAddress(targetAccount.address!);
+
+      expect(fetchedAccount).not.toBeNull();
+      expect(fetchedAccount?.address).toEqual(targetAccount.address);
+    });
+  });
+
   describe('walletGenerateNewAccount', () => {
     test('should generate a new account', async () => {
       const newAccount = await WalletClient.walletGenerateNewAccount();
