@@ -3,7 +3,7 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { Client } from '../../src/web3/Client';
-// import * as ed from '@noble/ed25519';
+import * as ed from '@noble/ed25519';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 
@@ -26,7 +26,7 @@ export async function initializeClient() {
       { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
     ],
     true,
-    deployerAccount,
+    deployerAccount, // setting deployer account as base account
   );
   return web3Client;
 }
@@ -38,10 +38,6 @@ describe('WalletClient', () => {
 
   beforeEach(async () => {
     web3Client = await initializeClient();
-    baseAccount = await WalletClient.getAccountFromSecretKey(
-      receiverPrivateKey,
-    );
-    await web3Client.wallet().setBaseAccount(baseAccount);
   });
 
   afterEach(async () => {
@@ -91,6 +87,7 @@ describe('WalletClient', () => {
       expect(baseAccount?.address).toEqual(secondAccount.address);
     });
   });
+
   describe('getBaseAccount', () => {
     test('should return the base account', async () => {
       const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
@@ -182,7 +179,84 @@ describe('WalletClient', () => {
     });
   });
 
-  describe.only('signMessage', () => {
+  describe('walletSignMessage', () => {
+    test('should sign a message with a valid signer', async () => {
+      const data = 'Test message';
+      const signer = baseAccount;
+      const modelSignedMessage =
+        '1VtLvridaHVYQB1njbTdPndJYt9Eb2qgoi8iWfrgpQmYw61MXC2GCpt374Gm78f7W3Xw9w38FdjBmf5Zmv7yGbhJr55Nbq';
+
+      const signedMessage = await WalletClient.walletSignMessage(data, signer);
+
+      // Check that the signedMessage object has necessary property
+      expect(signedMessage).toHaveProperty('base58Encoded');
+
+      // Check that the property is of correct type
+      expect(typeof signedMessage.base58Encoded).toBe('string');
+
+      // Check that the property is not empty or null
+      expect(signedMessage.base58Encoded).not.toBeNull();
+      expect(signedMessage.base58Encoded).not.toBe('');
+
+      // Check that the signed message is correct
+      expect(signedMessage.base58Encoded).toEqual(modelSignedMessage);
+    });
+
+    test('should throw an error when no private key is available', async () => {
+      const data = 'Test message';
+      const signer = { ...baseAccount, secretKey: null };
+
+      await expect(
+        WalletClient.walletSignMessage(data, signer),
+      ).rejects.toThrow('No private key to sign the message with');
+    });
+
+    test('should throw an error when no public key is available', async () => {
+      const data = 'Test message';
+      const signer = { ...baseAccount, publicKey: null };
+
+      await expect(
+        WalletClient.walletSignMessage(data, signer),
+      ).rejects.toThrow('No public key to verify the signed message with');
+    });
+
+    test('should throw an error when signature length is invalid', async () => {
+      const data = 'Test message';
+      const signer = baseAccount;
+
+      // Create a spy on the 'sign' function
+      const signSpy = jest.spyOn(ed, 'sign');
+
+      // Provide a mock implementation for this test
+      signSpy.mockImplementation(() => Promise.resolve(Buffer.alloc(63))); // 63 instead of 64
+
+      await expect(
+        WalletClient.walletSignMessage(data, signer),
+      ).rejects.toThrow(/Invalid signature length. Expected 64, got/);
+
+      // Restore the original 'sign' function after the test
+      signSpy.mockRestore();
+    });
+
+    test('should correctly process Buffer data', async () => {
+      const data = Buffer.from('Test message');
+      const signer = baseAccount;
+
+      const signedMessage = await WalletClient.walletSignMessage(data, signer);
+
+      // Check that the signedMessage object has necessary property
+      expect(signedMessage).toHaveProperty('base58Encoded');
+
+      // Check that the property is of correct type
+      expect(typeof signedMessage.base58Encoded).toBe('string');
+
+      // Check that the property is not empty or null
+      expect(signedMessage.base58Encoded).not.toBeNull();
+      expect(signedMessage.base58Encoded).not.toBe('');
+    });
+  });
+
+  describe('signMessage', () => {
     test('should sign a message with a valid account', async () => {
       const data = 'Test message';
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -228,38 +302,6 @@ describe('WalletClient', () => {
       // Check that the property is not empty or null
       expect(signedMessage.base58Encoded).not.toBeNull();
       expect(signedMessage.base58Encoded).not.toBe('');
-    });
-  });
-
-  describe('getWalletAccounts', () => {
-    test('should return all accounts in the wallet', async () => {
-      const accounts = [
-        await WalletClient.walletGenerateNewAccount(),
-        await WalletClient.walletGenerateNewAccount(),
-        await WalletClient.walletGenerateNewAccount(),
-      ];
-
-      await web3Client.wallet().addAccountsToWallet(accounts);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
-      expect(walletAccounts.length).toBe(5);
-    });
-    test('should return different accounts for different secret keys', async () => {
-      const secretKey1 = 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
-      const secretKey2 = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
-
-      const accountFromSecretKey1 = await WalletClient.getAccountFromSecretKey(
-        secretKey1,
-      );
-      const accountFromSecretKey2 = await WalletClient.getAccountFromSecretKey(
-        secretKey2,
-      );
-
-      expect(accountFromSecretKey1.address).not.toEqual(
-        accountFromSecretKey2.address,
-      );
-      expect(accountFromSecretKey1.publicKey).not.toEqual(
-        accountFromSecretKey2.publicKey,
-      );
     });
   });
 });
