@@ -14,6 +14,7 @@ const receiverSecretKey = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 const publicApi = 'http://127.0.0.1:33035';
 const privateApi = 'http://127.0.0.1:33034';
+const MAX_WALLET_ACCOUNTS = 256;
 
 export async function initializeClient() {
   const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
@@ -196,7 +197,6 @@ describe('WalletClient', () => {
 
   describe('addSecretKeysToWallet', () => {
     test('should throw an error when the number of accounts exceeds the maximum limit', async () => {
-      const MAX_WALLET_ACCOUNTS = 256;
       const secretKeys = new Array(MAX_WALLET_ACCOUNTS + 1).fill(
         receiverSecretKey,
       );
@@ -271,6 +271,73 @@ describe('WalletClient', () => {
           }),
         ]),
       );
+    });
+  });
+
+  describe.only('addAccountsToWallet', () => {
+    // Prepare an array of MAX_WALLET_ACCOUNTS valid accounts
+    const fillAccounts = async () => {
+      const accounts = await Promise.all(
+        Array.from({ length: MAX_WALLET_ACCOUNTS }, async () => {
+          return WalletClient.walletGenerateNewAccount();
+        }),
+      );
+      return accounts;
+    };
+
+    test('should throw an error when the number of accounts exceeds MAX_WALLET_ACCOUNTS', async () => {
+      const newAccount = await WalletClient.walletGenerateNewAccount();
+      const accounts = [...(await fillAccounts()), newAccount];
+      await expect(
+        web3Client.wallet().addAccountsToWallet(accounts),
+      ).rejects.toThrow(/Maximum number of allowed wallet accounts exceeded/);
+    });
+
+    test('should throw an error when an account is missing a private key', async () => {
+      const account = await WalletClient.walletGenerateNewAccount();
+      account.secretKey = null;
+      await expect(
+        web3Client.wallet().addAccountsToWallet([account]),
+      ).rejects.toThrow(/Missing account private key/);
+    });
+
+    test("should throw an error when the submitted public key doesn't correspond to the associated private key", async () => {
+      const account = await WalletClient.walletGenerateNewAccount();
+      account.publicKey = 'wrongPublicKey';
+      await expect(
+        web3Client.wallet().addAccountsToWallet([account]),
+      ).rejects.toThrow(
+        /Public key does not correspond the the private key submitted/,
+      );
+    });
+
+    test("should throw an error when the account address doesn't correspond to the private key-derived address", async () => {
+      const account = await WalletClient.walletGenerateNewAccount();
+      account.address = 'wrongAddress';
+      await expect(
+        web3Client.wallet().addAccountsToWallet([account]),
+      ).rejects.toThrow(
+        /Account address not correspond the the address submitted/,
+      );
+    });
+
+    test('should add account to the wallet when valid accounts are passed', async () => {
+      const accounts = await fillAccounts();
+      const addedAccounts = await web3Client
+        .wallet()
+        .addAccountsToWallet(accounts);
+      expect(addedAccounts.length).toBe(accounts.length);
+    });
+
+    test('should ignore accounts that already exist in the wallet', async () => {
+      const account = await WalletClient.walletGenerateNewAccount();
+      await web3Client.wallet().addAccountsToWallet([account]);
+
+      // Attempt to add the same accounts again
+      const addedAccounts = await web3Client
+        .wallet()
+        .addAccountsToWallet([account]);
+      expect(addedAccounts.length).toBe(0); // None of the accounts should be added
     });
   });
 
