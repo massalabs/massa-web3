@@ -102,7 +102,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     if (!baseAccount.createdInThread && baseAccount.address) {
       baseAccount.createdInThread = getThreadNumber(baseAccount.address);
     }
-    // see if base account is already added, if not, add it
+    // see if base account is already added, if not, add it, else change it
     let baseAccountAdded: Array<IAccount> = null;
     if (!this.getWalletAccountByAddress(baseAccount.address)) {
       baseAccountAdded = await this.addAccountsToWallet([baseAccount]);
