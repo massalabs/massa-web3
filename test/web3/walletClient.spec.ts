@@ -96,7 +96,6 @@ describe.skip('WalletClient', () => {
     test('should return the base account', async () => {
       const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).not.toBeNull();
-      console.log('fetchedBaseAccount', fetchedBaseAccount);
       expect(fetchedBaseAccount?.address).toEqual(baseAccount.address);
     });
 
