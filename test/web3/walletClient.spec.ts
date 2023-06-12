@@ -7,17 +7,16 @@ import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
-const deployerPrivateKey =
+const deployerSecretKey =
   'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
-const receiverPrivateKey =
-  'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
+const receiverSecretKey = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 const publicApi = 'http://127.0.0.1:33035';
 const privateApi = 'http://127.0.0.1:33034';
 
 export async function initializeClient() {
   const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
-    deployerPrivateKey,
+    deployerSecretKey,
   );
   const web3Client: Client = await ClientFactory.createCustomClient(
     [
@@ -30,8 +29,15 @@ export async function initializeClient() {
   return web3Client;
 }
 
-describe.skip('WalletClient', () => {
+describe('WalletClient', () => {
   let web3Client: Client;
+  // let walletClient: WalletClient;
+  let baseAccount: IAccount = {
+    address: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+    secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
+    publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
+    createdInThread: 6,
+  };
 
   beforeEach(async () => {
     web3Client = await initializeClient();
@@ -44,7 +50,7 @@ describe.skip('WalletClient', () => {
   describe('setBaseAccount', () => {
     test('should set base account', async () => {
       const account = await WalletClient.getAccountFromSecretKey(
-        receiverPrivateKey,
+        receiverSecretKey,
       );
       await web3Client.wallet().setBaseAccount(account);
       const baseAccount = await web3Client.wallet().getBaseAccount();
@@ -53,6 +59,7 @@ describe.skip('WalletClient', () => {
     });
 
     test('should throw error if account is not valid', async () => {
+      await web3Client.wallet().cleanWallet();
       await expect(
         web3Client.wallet().setBaseAccount({} as IAccount),
       ).rejects.toThrow();
@@ -69,18 +76,66 @@ describe.skip('WalletClient', () => {
 
     test('should change base account if already set', async () => {
       const firstAccount = await WalletClient.getAccountFromSecretKey(
-        receiverPrivateKey,
+        receiverSecretKey,
       );
       await web3Client.wallet().setBaseAccount(firstAccount);
 
       const secondAccount = await WalletClient.getAccountFromSecretKey(
-        deployerPrivateKey,
+        deployerSecretKey,
       );
       await web3Client.wallet().setBaseAccount(secondAccount);
 
       const baseAccount = await web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address).toEqual(secondAccount.address);
+    });
+  });
+
+  describe('getBaseAccount', () => {
+    test('should return the base account', async () => {
+      const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
+      expect(fetchedBaseAccount).not.toBeNull();
+      console.log('fetchedBaseAccount', fetchedBaseAccount);
+      expect(fetchedBaseAccount?.address).toEqual(baseAccount.address);
+    });
+
+    test('should return null if base account is not set', async () => {
+      await web3Client.wallet().cleanWallet();
+      const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
+      expect(fetchedBaseAccount).toBeNull();
+    });
+  });
+
+  describe('getWalletAccounts', () => {
+    test('should return all accounts in the wallet', async () => {
+      const accounts = [
+        await WalletClient.walletGenerateNewAccount(),
+        await WalletClient.walletGenerateNewAccount(),
+        await WalletClient.walletGenerateNewAccount(),
+      ];
+
+      await web3Client.wallet().addAccountsToWallet(accounts);
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      expect(walletAccounts.length).toBe(4);
+    });
+
+    test('should return different accounts for different secret keys', async () => {
+      const secretKey1 = 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
+      const secretKey2 = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
+
+      const accountFromSecretKey1 = await WalletClient.getAccountFromSecretKey(
+        secretKey1,
+      );
+      const accountFromSecretKey2 = await WalletClient.getAccountFromSecretKey(
+        secretKey2,
+      );
+
+      expect(accountFromSecretKey1.address).not.toEqual(
+        accountFromSecretKey2.address,
+      );
+      expect(accountFromSecretKey1.publicKey).not.toEqual(
+        accountFromSecretKey2.publicKey,
+      );
     });
   });
 });
