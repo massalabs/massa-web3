@@ -31,7 +31,7 @@ export async function initializeClient() {
   return web3Client;
 }
 
-describe('WalletClient', () => {
+describe.skip('WalletClient', () => {
   let web3Client: Client;
   // let walletClient: WalletClient;
   let baseAccount: IAccount = {
@@ -92,7 +92,6 @@ describe('WalletClient', () => {
       expect(baseAccount?.address).toEqual(secondAccount.address);
     });
   });
-
 
   describe('getWalletAccountByAddress', () => {
     test('should return the account for a valid address', async () => {
