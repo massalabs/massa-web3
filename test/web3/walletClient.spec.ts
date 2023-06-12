@@ -104,9 +104,9 @@ describe.skip('WalletClient', () => {
       await web3Client.wallet().addAccountsToWallet(accounts);
 
       const targetAccount = accounts[1]; // Assume we want to find the second account
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const fetchedAccount = web3Client
         .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getWalletAccountByAddress(targetAccount.address!);
 
       expect(fetchedAccount).not.toBeNull();
@@ -129,24 +129,15 @@ describe.skip('WalletClient', () => {
 
       const targetAccount = accounts[0]; // Assume we want to find the first account
       const upperCaseAddress = targetAccount.address?.toUpperCase();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const fetchedAccount = web3Client
         .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getWalletAccountByAddress(upperCaseAddress!);
 
       expect(fetchedAccount).not.toBeNull();
       expect(fetchedAccount?.address).toEqual(targetAccount.address);
     });
-
-    // TODO: should we implement this? atm it has the same behavior as when the address doesn't exist in the wallet
-    test.skip('should return an error for an incorrect address', async () => {
-      const incorrectAddress = 'incorrect address';
-      await expect(
-        web3Client.wallet().getWalletAccountByAddress(incorrectAddress),
-      ).rejects.toThrow();
-    });
   });
-
   describe('addSecretKeysToWallet', () => {
     test('should throw an error when the number of accounts exceeds the maximum limit', async () => {
       const secretKeys = new Array(MAX_WALLET_ACCOUNTS + 1).fill(
@@ -180,13 +171,6 @@ describe.skip('WalletClient', () => {
       const addedAccounts = await web3Client
         .wallet()
         .addSecretKeysToWallet([deployerPrivateKey, receiverPrivateKey]);
-
-      console.log('addedAccounts', addedAccounts);
-      console.log(
-        'web3Client.wallet().getWalletAccounts()',
-        web3Client.wallet().getWalletAccounts(),
-      );
-
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
 
       // only receiver account should be added
