@@ -116,7 +116,7 @@ describe.skip('WalletClient', () => {
 
       await web3Client.wallet().addAccountsToWallet(accounts);
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
-      expect(walletAccounts.length).toBe(4);
+      expect(walletAccounts.length).toBe(4); // 3 generated + 1 base account
     });
 
     test('should return different accounts for different secret keys', async () => {
