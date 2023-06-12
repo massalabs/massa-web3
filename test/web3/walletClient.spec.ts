@@ -7,16 +7,16 @@ import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
-const deployerSecretKey =
+const deployerPrivateKey =
   'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
-const receiverSecretKey = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
+const receiverPrivateKey = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 const publicApi = 'http://127.0.0.1:33035';
 const privateApi = 'http://127.0.0.1:33034';
 
 export async function initializeClient() {
   const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
-    deployerSecretKey,
+    deployerPrivateKey,
   );
   const web3Client: Client = await ClientFactory.createCustomClient(
     [
@@ -50,7 +50,7 @@ describe('WalletClient', () => {
   describe('setBaseAccount', () => {
     test('should set base account', async () => {
       const account = await WalletClient.getAccountFromSecretKey(
-        receiverSecretKey,
+        receiverPrivateKey,
       );
       await web3Client.wallet().setBaseAccount(account);
       const baseAccount = await web3Client.wallet().getBaseAccount();
@@ -76,12 +76,12 @@ describe('WalletClient', () => {
 
     test('should change base account if already set', async () => {
       const firstAccount = await WalletClient.getAccountFromSecretKey(
-        receiverSecretKey,
+        receiverPrivateKey,
       );
       await web3Client.wallet().setBaseAccount(firstAccount);
 
       const secondAccount = await WalletClient.getAccountFromSecretKey(
-        deployerSecretKey,
+        deployerPrivateKey,
       );
       await web3Client.wallet().setBaseAccount(secondAccount);
 
@@ -123,18 +123,18 @@ describe('WalletClient', () => {
       const secretKey1 = 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
       const secretKey2 = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
-      const accountFromSecretKey1 = await WalletClient.getAccountFromSecretKey(
+      const accountFromPrivateKey1 = await WalletClient.getAccountFromSecretKey(
         secretKey1,
       );
-      const accountFromSecretKey2 = await WalletClient.getAccountFromSecretKey(
+      const accountFromPrivateKey2 = await WalletClient.getAccountFromSecretKey(
         secretKey2,
       );
 
-      expect(accountFromSecretKey1.address).not.toEqual(
-        accountFromSecretKey2.address,
+      expect(accountFromPrivateKey1.address).not.toEqual(
+        accountFromPrivateKey2.address,
       );
-      expect(accountFromSecretKey1.publicKey).not.toEqual(
-        accountFromSecretKey2.publicKey,
+      expect(accountFromPrivateKey1.publicKey).not.toEqual(
+        accountFromPrivateKey2.publicKey,
       );
     });
   });
