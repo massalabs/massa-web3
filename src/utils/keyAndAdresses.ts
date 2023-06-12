@@ -42,8 +42,7 @@ export class SecretKey {
 
   /* Sign a message hash digest with the secret key */
   async signDigest(messageHashDigest: Uint8Array): Promise<Uint8Array> {
-    const sig = await ed.sign(messageHashDigest, this.bytes);
-    return sig;
+    return await ed.sign(messageHashDigest, this.bytes);
   }
 }
 
