@@ -1,7 +1,9 @@
 name: Smart contract example Deploy
 
 on:
-  []
+  push:
+    branches:
+      - main
 
 
 jobs:

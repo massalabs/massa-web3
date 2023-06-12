@@ -1,7 +1,9 @@
 name: Wallet example
 
 on:
-  []
+  push:
+    branches:
+      - main
 
 
 jobs:
