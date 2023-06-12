@@ -9,7 +9,8 @@ import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
   'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
-const receiverPrivateKey = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
+const receiverPrivateKey =
+  'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 const publicApi = 'http://127.0.0.1:33035';
 const privateApi = 'http://127.0.0.1:33034';
