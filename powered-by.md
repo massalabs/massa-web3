@@ -17,6 +17,22 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** Paul Miller (https://paulmillr.com)
 
+## [@types/ws](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 8.5.4
+
+**Many thanks to:** n/a
+
+## [@web3pack/base58-check](git+https://github.com/Web3Pack/base58-check.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 1.0.3
+
+**Many thanks to:** Evren Ceyhan
+
 ## [axios](git+https://github.com/axios/axios.git)
 
 **License:** MIT - perpetual
@@ -24,14 +40,6 @@ The following is a list of all the dependencies of this project:
 **Used version:** 0.26.1
 
 **Many thanks to:** Matt Zabriskie
-
-## [base58check](git+https://github.com/wzbg/base58check.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 2.0.0
-
-**Many thanks to:** unrealce z3530515@gmail.com
 
 ## [bignumber.js](git+https://github.com/MikeMcl/bignumber.js.git)
 
@@ -48,6 +56,14 @@ The following is a list of all the dependencies of this project:
 **Used version:** 3.1.0
 
 **Many thanks to:** Wei Lu
+
+## [bs58check](git+https://github.com/bitcoinjs/bs58check.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 3.0.1
+
+**Many thanks to:** Daniel Cousens
 
 ## [buffer](git://github.com/feross/buffer.git)
 
@@ -73,14 +89,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [esmify](git://github.com/mattdesl/esmify.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 2.1.1
-
-**Many thanks to:** Matt DesLauriers dave.des@gmail.com https://github.com/mattdesl
-
 ## [jest-environment-jsdom](git+https://github.com/facebook/jest.git)
 
 **License:** MIT - perpetual
@@ -96,6 +104,30 @@ The following is a list of all the dependencies of this project:
 **Used version:** 3.7.5
 
 **Many thanks to:** Dan Kogai
+
+## [string_decoder](git://github.com/nodejs/string_decoder.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 1.3.0
+
+**Many thanks to:** n/a
+
+## [tslib](git+https://github.com/Microsoft/tslib.git)
+
+**License:** 0BSD - perpetual
+
+**Used version:** 2.5.2
+
+**Many thanks to:** Microsoft Corp.
+
+## [util](git://github.com/browserify/node-util.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 0.12.5
+
+**Many thanks to:** Joyent http://www.joyent.com
 
 ## [varint](git://github.com/chrisdickinson/varint.git)
 
@@ -168,22 +200,6 @@ The following is a list of all the dependencies of this project:
 **Used version:** 5.59.5
 
 **Many thanks to:** n/a
-
-## [babel-jest](git+https://github.com/facebook/jest.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 29.5.0
-
-**Many thanks to:** n/a
-
-## [browserify](git+ssh://git@github.com/browserify/browserify.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 17.0.0
-
-**Many thanks to:** James Halliday mail@substack.net http://substack.net
 
 ## [chalk](git+https://github.com/chalk/chalk.git)
 
@@ -273,14 +289,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [lint-staged](git+https://github.com/okonet/lint-staged.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 13.2.2
-
-**Many thanks to:** [Andrey Okonetchnikov](andrey@okonet.ru)
-
 ## [node-ts](git://github.com/nikeee/node-ts.git)
 
 **License:** LGPL-3.0 - perpetual
@@ -288,6 +296,14 @@ The following is a list of all the dependencies of this project:
 **Used version:** 5.1.2
 
 **Many thanks to:** [Niklas Mollenhauer](nikeee@outlook.com)
+
+## [npm-run-all](git+https://github.com/mysticatea/npm-run-all.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 4.1.5
+
+**Many thanks to:** Toru Nagashima
 
 ## [ora](git+https://github.com/sindresorhus/ora.git)
 
@@ -329,6 +345,14 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Kulshekhar Kabra](kulshekhar@users.noreply.github.com> (https://github.com/kulshekhar)
 
+## [ts-loader](git+https://github.com/TypeStrong/ts-loader.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 9.4.2
+
+**Many thanks to:** [John Reilly](johnny_reilly@hotmail.com> (https://blog.johnnyreilly.com)
+
 ## [ts-node](git://github.com/TypeStrong/ts-node.git)
 
 **License:** MIT - perpetual
@@ -336,22 +360,6 @@ The following is a list of all the dependencies of this project:
 **Used version:** 10.9.1
 
 **Many thanks to:** Blake Embrey hello@blakeembrey.com http://blakeembrey.me
-
-## [tslib](git+https://github.com/Microsoft/tslib.git)
-
-**License:** 0BSD - perpetual
-
-**Used version:** 2.5.0
-
-**Many thanks to:** Microsoft Corp.
-
-## [tslint](https://github.com/palantir/tslint.git)
-
-**License:** Apache-2.0 - perpetual
-
-**Used version:** 6.1.3
-
-**Many thanks to:** n/a
 
 ## [typedoc](git://github.com/TypeStrong/TypeDoc.git)
 
@@ -369,21 +377,21 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** Microsoft Corp.
 
-## [uglify-js](git+https://github.com/mishoo/UglifyJS.git)
-
-**License:** BSD-2-Clause - perpetual
-
-**Used version:** 3.17.4
-
-**Many thanks to:** [Mihai Bazon](mihai.bazon@gmail.com> (http://lisperator.net/)
-
-## [uglifyify](git://github.com/hughsk/uglifyify.git)
+## [webpack](git+https://github.com/webpack/webpack.git)
 
 **License:** MIT - perpetual
 
-**Used version:** 5.0.2
+**Used version:** 5.83.1
 
-**Many thanks to:** [Hugh Kennedy](hughskennedy@gmail.com> (http://hughskennedy.com/)
+**Many thanks to:** Tobias Koppers @sokra
+
+## [webpack-cli](git+https://github.com/webpack/webpack-cli.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 5.1.1
+
+**Many thanks to:** n/a
 
 ## [bufferutil](git+https://github.com/websockets/bufferutil.git)
 
