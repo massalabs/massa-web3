@@ -61,7 +61,6 @@ describe.skip('WalletClient', () => {
     });
 
     test('should throw error if account is not valid', async () => {
-      await web3Client.wallet().cleanWallet();
       await expect(
         web3Client.wallet().setBaseAccount({} as IAccount),
       ).rejects.toThrow();
@@ -155,7 +154,6 @@ describe.skip('WalletClient', () => {
 
     test('should not add duplicate accounts to the wallet (duplicate in arguments)', async () => {
       // Add receiverPrivateKey's secret key twice
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const secretKeys: string[] = [receiverPrivateKey, receiverPrivateKey];
 
       const addedAccounts = await web3Client
