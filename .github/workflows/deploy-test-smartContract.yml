@@ -2,8 +2,6 @@ name: Smart contract example Deploy
 
 on:
   push:
-    branches:
-      - '*'
 
 jobs:
   deploy-SC-example:
@@ -43,5 +41,5 @@ jobs:
 
           JSON_RPC_URL_PRIVATE: https://buildnet.massa.net/api/v2
 
-          DEPLOYER_PRIVATE_KEY: ${{ secret.WALLET_PRIVATE_KEY }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
           RECEIVER_PRIVATE_KEY: S1ykLaxXyMnJoaWLYds8UntqKTamZ4vcxrZ1fdToR8WpWEpk3FC
