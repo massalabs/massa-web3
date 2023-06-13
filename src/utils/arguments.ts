@@ -21,6 +21,10 @@ import {
   bytesToSerializableObjectArray,
   nativeTypeArrayToBytes,
   bytesToNativeTypeArray,
+  u128ToBytes,
+  u256ToBytes,
+  bytesToU128,
+  bytesToU256,
 } from './serializers';
 
 /**
@@ -153,6 +157,36 @@ export class Args {
     const value = bytesToU64(this.serialized, this.offset);
 
     this.offset += 8;
+    return value;
+  }
+
+  /**
+   * Returns the next uint128 in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextU128(): bigint {
+    const value = bytesToU128(this.serialized, this.offset);
+
+    this.offset += 16;
+    return value;
+  }
+
+  /**
+   * Returns the next uint256 in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextU256(): bigint {
+    const value = bytesToU256(this.serialized, this.offset);
+
+    this.offset += 32;
     return value;
   }
 
@@ -378,6 +412,36 @@ export class Args {
     this.serialized = this.concatArrays(this.serialized, u64ToBytes(bigInt));
 
     this.offset += 8;
+
+    return this;
+  }
+
+  /**
+   * Adds an unsigned long integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addU128(bigInt: bigint): Args {
+    this.serialized = this.concatArrays(this.serialized, u128ToBytes(bigInt));
+
+    this.offset += 16;
+
+    return this;
+  }
+
+  /**
+   * Adds an unsigned long integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addU256(bigInt: bigint): Args {
+    this.serialized = this.concatArrays(this.serialized, u256ToBytes(bigInt));
+
+    this.offset += 32;
 
     return this;
   }
