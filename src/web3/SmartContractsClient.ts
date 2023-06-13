@@ -458,6 +458,8 @@ export class SmartContractsClient
 
       await wait(TX_POLL_INTERVAL_MS);
     }
+
+
   }
 
   /**
@@ -499,7 +501,8 @@ export class SmartContractsClient
 
       // parse response
       const json = await response.json();
-      return json.result as IProtoFile[];
+      return json.result;
+      
     } catch (ex) {
       const msg = `Failed to retrieve the proto files.`;
       console.error(msg, ex);
