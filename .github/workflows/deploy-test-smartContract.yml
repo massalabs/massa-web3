@@ -45,4 +45,3 @@ jobs:
 
           DEPLOYER_PRIVATE_KEY: ${{ secret.WALLET_PRIVATE_KEY }}
           RECEIVER_PRIVATE_KEY: S1ykLaxXyMnJoaWLYds8UntqKTamZ4vcxrZ1fdToR8WpWEpk3FC
-          
