@@ -32,6 +32,8 @@ import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
+import { spawnSync } from 'child_process';
+
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -453,4 +455,35 @@ export class SmartContractsClient
       await wait(TX_POLL_INTERVAL_MS);
     }
   }
+
+  /**
+   * helper to generate serialization/deserialization functions directly for Protobuf in AS and TS projects
+   * genere fichier ts et as dans le dossier src\generated_helpers
+   */
+  public generateHelpers(protoFile: string, outputPath: string): void {
+    // une fois que j'ai le fichier protofile, je lance la commande:
+    let protocProcess = spawnSync('protoc', [
+      `--plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen`,
+      `--as_out=${outputPath}`,
+      `--as_opt=gen-helper-methods`,
+      `--proto_path=./build`,
+      protoFile,
+  ]);
+  if (protocProcess.status !== 0) {
+      console.error(`Failed to generate AS helpers code for ${protoFile} with error: ${protocProcess.stderr}`);
+  }
+  }
 }
+
+// export function generateASHelpers(protoFile, outputPath) {
+//   let protocProcess = spawnSync('protoc', [
+//       `--plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen`,
+//       `--as_out=${outputPath}`,
+//       `--as_opt=gen-helper-methods`,
+//       `--proto_path=./build`,
+//       protoFile,
+//   ]);
+//   if (protocProcess.status !== 0) {
+//       console.error(`Failed to generate AS helpers code for ${protoFile} with error: ${protocProcess.stderr}`);
+//   }
+// }
