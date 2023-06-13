@@ -189,7 +189,7 @@ export function bytesToU128(arr: Uint8Array, offset = 0): bigint {
   const lower = view.getBigUint64(0, true); // Lower 64 bits
   const upper = view.getBigUint64(8, true); // Upper 64 bits
 
-  return (upper << 64n) + lower;
+  return (upper << 64n) | lower;
 }
 
 /**
