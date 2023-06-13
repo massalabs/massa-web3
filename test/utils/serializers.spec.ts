@@ -34,6 +34,14 @@ describe('Serialization tests', () => {
     const val = BigInt(666);
     expect(ser.bytesToU64(ser.u64ToBytes(val))).toEqual(val);
   });
+  it('ser/deser u128', () => {
+    const val = 123456789123456789n;
+    expect(ser.bytesToU128(ser.u128ToBytes(val))).toEqual(val);
+  });
+  it('ser/deser u256', () => {
+    const val = 123456789012345678901234567890n;
+    expect(ser.bytesToU256(ser.u256ToBytes(val))).toEqual(val);
+  });
   it('ser/deser i32', () => {
     const val = -666;
     expect(ser.bytesToI32(ser.i32ToBytes(val))).toEqual(val);
