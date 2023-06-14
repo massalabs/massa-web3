@@ -34,7 +34,6 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { spawnSync } from 'child_process';
 
-
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
@@ -468,10 +467,12 @@ export class SmartContractsClient
       `--as_opt=gen-helper-methods`,
       `--proto_path=./build`,
       protoFile,
-  ]);
-  if (protocProcess.status !== 0) {
-      console.error(`Failed to generate AS helpers code for ${protoFile} with error: ${protocProcess.stderr}`);
-  }
+    ]);
+    if (protocProcess.status !== 0) {
+      console.error(
+        `Failed to generate AS helpers code for ${protoFile} with error: ${protocProcess.stderr}`,
+      );
+    }
   }
 }
 
