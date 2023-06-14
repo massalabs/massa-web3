@@ -535,4 +535,48 @@ describe('WalletClient', () => {
       expect(result).toBe(false);
     });
   });
+
+  describe('getAccountBalance', () => {
+    test('should return balance for a valid address', async () => {
+      const ACCOUNT_ADDRESS =
+        'AU1ELsdabgHd7qqYdHLPW4eN6jnaxF6egNZVpyx5B4MYjR7XiUVZ';
+      const expectedBalance = 500000000000n;
+
+      const balance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(ACCOUNT_ADDRESS!);
+
+      expect(balance).not.toBeNull();
+      expect(balance).toHaveProperty('candidate');
+      expect(balance).toHaveProperty('final');
+      expect(balance?.candidate).toEqual(expectedBalance);
+      expect(balance?.final).toEqual(expectedBalance);
+    });
+
+    test.only('should return 0 balance for a fresh account', async () => {
+      const freshAccount = await WalletClient.walletGenerateNewAccount();
+
+      const balance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(freshAccount.address!);
+
+      expect(balance).not.toBeNull();
+      expect(balance).toHaveProperty('candidate');
+      expect(balance).toHaveProperty('final');
+      expect(balance?.candidate).toEqual(0n);
+      expect(balance?.final).toEqual(0n);
+    });
+
+    test.only('should return null for an invalid address', async () => {
+      const invalidAddress = 'invalid address';
+
+      const balance = await web3Client
+        .wallet()
+        .getAccountBalance(invalidAddress);
+
+      expect(balance).toBeNull();
+    });
+  });
 });

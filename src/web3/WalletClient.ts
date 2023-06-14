@@ -508,7 +508,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
     const messageDigest: Uint8Array = hashBlake3(bytesCompact);
-    
+
     try {
       // setup the signature.
       const versionAndSignatureBytes: Buffer = base58Decode(
@@ -545,14 +545,19 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * it returns `null`.
    */
   public async getAccountBalance(address: string): Promise<IBalance | null> {
-    const addresses: Array<IAddressInfo> =
-      await this.publicApiClient.getAddresses([address]);
-    if (addresses.length === 0) return null;
-    const addressInfo: IAddressInfo = addresses.at(0);
-    return {
-      candidate: fromMAS(addressInfo.candidate_balance),
-      final: fromMAS(addressInfo.final_balance),
-    } as IBalance;
+    try {
+      const addresses: Array<IAddressInfo> =
+        await this.publicApiClient.getAddresses([address]);
+      if (addresses.length === 0) return null;
+      const addressInfo: IAddressInfo = addresses.at(0);
+      return {
+        candidate: fromMAS(addressInfo.candidate_balance),
+        final: fromMAS(addressInfo.final_balance),
+      } as IBalance;
+    } catch (err) {
+      console.error('Failed to get account balance:', err);
+      return null;
+    }
   }
 
   /**
