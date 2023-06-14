@@ -171,7 +171,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
     }
     const accountsToCreate: IAccount[] = [];
 
-    for (const secretKeyBase58Encoded of secretKeys) {
+    const uniqueSecretKeys = secretKeys.filter(
+      (value, index, self) => self.indexOf(value) === index,
+    );
+
+    for (const secretKeyBase58Encoded of uniqueSecretKeys) {
       const secretKey = new SecretKey(secretKeyBase58Encoded);
       const publicKey: PublicKey = await secretKey.getPublicKey();
       const address: Address = new Address(publicKey);

@@ -313,4 +313,83 @@ describe('WalletClient', () => {
       expect(walletAccounts.length).toBe(0); // only base account should be left
     });
   });
+
+  describe('walletGenerateNewAccount', () => {
+    test('should generate a new account', async () => {
+      const newAccount = await WalletClient.walletGenerateNewAccount();
+      // Check that the newAccount object has all necessary properties
+      expect(newAccount).toHaveProperty('address');
+      expect(newAccount).toHaveProperty('secretKey');
+      expect(newAccount).toHaveProperty('publicKey');
+      expect(newAccount).toHaveProperty('createdInThread');
+
+      // Check that the properties are of correct type
+      expect(typeof newAccount.address).toBe('string');
+      expect(typeof newAccount.secretKey).toBe('string');
+      expect(typeof newAccount.publicKey).toBe('string');
+      expect(typeof newAccount.createdInThread).toBe('number');
+
+      // Check that the properties are not empty or null
+      expect(newAccount.address).not.toBeNull();
+      expect(newAccount.address).not.toBe('');
+      expect(newAccount.secretKey).not.toBeNull();
+      expect(newAccount.secretKey).not.toBe('');
+      expect(newAccount.publicKey).not.toBeNull();
+      expect(newAccount.publicKey).not.toBe('');
+
+      // Check that keys and address have the correct length
+      expect(newAccount.address?.length).toBeGreaterThanOrEqual(50);
+      expect(newAccount.secretKey?.length).toBeGreaterThanOrEqual(50);
+      expect(newAccount.publicKey?.length).toBeGreaterThanOrEqual(50);
+    });
+
+    test('should generate unique accounts each time', async () => {
+      const newAccount1 = await WalletClient.walletGenerateNewAccount();
+      const newAccount2 = await WalletClient.walletGenerateNewAccount();
+      expect(newAccount1).not.toEqual(newAccount2);
+    });
+  });
+
+  describe('getAccountFromSecretKey', () => {
+    test('should generate an account from a secret key', async () => {
+      const secretKey = 'S12syP5uCVEwaJwvXLqJyD1a2GqZjsup13UnhY6uzbtyu7ExXWZS';
+      const addressModel =
+        'AU12KgrLq2vhMgi8aAwbxytiC4wXBDGgvTtqGTM5R7wEB9En8WBHB';
+      const publicKeyModel =
+        'P12c2wsKxEyAhPC4ouNsgywzM41VsNSuwH9JdMbRt9bM8ZsMLPQA';
+      const createdInThreadModel = 21;
+      const accountFromSecretKey = await WalletClient.getAccountFromSecretKey(
+        secretKey,
+      );
+      // Check that the accountFromSecretKey object has all necessary properties
+      expect(accountFromSecretKey).toHaveProperty('address');
+      expect(accountFromSecretKey).toHaveProperty('secretKey');
+      expect(accountFromSecretKey).toHaveProperty('publicKey');
+      expect(accountFromSecretKey).toHaveProperty('createdInThread');
+      // Check that the secretKey matches the models
+      expect(accountFromSecretKey.address).toEqual(addressModel);
+      expect(accountFromSecretKey.publicKey).toEqual(publicKeyModel);
+      expect(accountFromSecretKey.secretKey).toEqual(secretKey);
+      expect(accountFromSecretKey.createdInThread).toEqual(
+        createdInThreadModel,
+      );
+    });
+
+    test('should throw error if invalid secret key is provided', async () => {
+      const invalidSecretKey = 'invalidSecretKey';
+      await expect(
+        WalletClient.getAccountFromSecretKey(invalidSecretKey),
+      ).rejects.toThrow();
+
+      const emptySecretKey = '';
+      await expect(
+        WalletClient.getAccountFromSecretKey(emptySecretKey),
+      ).rejects.toThrow();
+
+      const nullSecretKey = null;
+      await expect(
+        WalletClient.getAccountFromSecretKey(nullSecretKey as never),
+      ).rejects.toThrow();
+    });
+  });
 });
