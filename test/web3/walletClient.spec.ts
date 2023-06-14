@@ -31,7 +31,7 @@ export async function initializeClient() {
   return web3Client;
 }
 
-describe.skip('WalletClient', () => {
+describe('WalletClient', () => {
   let web3Client: Client;
   // let walletClient: WalletClient;
   let baseAccount: IAccount = {
@@ -253,6 +253,64 @@ describe.skip('WalletClient', () => {
       expect(accountFromPrivateKey1.publicKey).not.toEqual(
         accountFromPrivateKey2.publicKey,
       );
+    });
+  });
+
+  describe('walletInfo', () => {
+    test('should return information for each address in the wallet', async () => {
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletInfo = await web3Client.wallet().walletInfo();
+
+      expect(walletInfo.length).toBe(walletAccounts.length);
+
+      walletInfo.forEach((info, index) => {
+        expect(info.publicKey).toBe(walletAccounts[index].publicKey);
+        expect(info.secretKey).toBe(walletAccounts[index].secretKey);
+      });
+    });
+  });
+
+  describe('removeAddressesFromWallet', () => {
+    test('should remove specified addresses from the wallet', async () => {
+      const accountsToRemove = await web3Client
+        .wallet()
+        .addSecretKeysToWallet([
+          receiverPrivateKey,
+          'S1USr9AFUaH7taTKeWt94qGTgaS9XkpnH1SPpctRDoK3sSJkYWk',
+          'S16cS2QnKmyxxiU68Bw9Lnmt2Yttva42nahDG68awziextJgBze',
+        ]);
+      let addressesToRemove = accountsToRemove.map(
+        (account) => account.address,
+      );
+
+      expect(addressesToRemove.length).toBe(3);
+      expect(addressesToRemove).not.toContain(null);
+      await web3Client
+        .wallet()
+        .removeAddressesFromWallet(addressesToRemove as string[]);
+
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      addressesToRemove.forEach((address) => {
+        expect(walletAccounts).not.toContainEqual(
+          expect.objectContaining({ address }),
+        );
+      });
+    });
+
+    test.skip('should not throw error if an address to remove is not in the wallet', async () => {
+      const nonExistentAddress =
+        'AU12MvQVNNYtBx1VnM6dTvpEJzuqVAon48tccacXRyc5fwG5gZQn7';
+      await expect(
+        web3Client.wallet().removeAddressesFromWallet([nonExistentAddress]),
+      ).not.toThrow();
+    });
+  });
+
+  describe('cleanWallet', () => {
+    test('remove all accounts from the wallet', async () => {
+      await web3Client.wallet().cleanWallet();
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      expect(walletAccounts.length).toBe(0); // only base account should be left
     });
   });
 });
