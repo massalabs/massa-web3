@@ -365,7 +365,7 @@ describe('WalletClient', () => {
       expect(signedMessage.base58Encoded).toEqual(modelSignedMessage);
     });
   });
-  
+
   describe('walletGenerateNewAccount', () => {
     test('should generate a new account', async () => {
       const newAccount = await WalletClient.walletGenerateNewAccount();
