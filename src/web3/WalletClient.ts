@@ -461,13 +461,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // verify signature
     if (signer.publicKey) {
       // get public key
-      const publicKeyBase58Decoded = getBytesPublicKey(signer.publicKey);
-      const publicKeyBase58DecodedUnversioned = publicKeyBase58Decoded.slice(1);
+      const versionAndPublicKeyBytes = getBytesPublicKey(signer.publicKey);
+      const publicKeyBytes = versionAndPublicKeyBytes.slice(1);
 
       const isVerified = await ed.verify(
         sig,
         messageHashDigest,
-        publicKeyBase58DecodedUnversioned,
+        publicKeyBytes,
       );
 
       if (!isVerified) {
@@ -501,22 +501,39 @@ export class WalletClient extends BaseClient implements IWalletClient {
     signerPubKey: string,
   ): Promise<boolean> {
     // setup the public key.
-    const publicKeyBase58Decoded: Uint8Array = getBytesPublicKey(signerPubKey);
-    const publicKeyBase58DecodedUnversioned = publicKeyBase58Decoded.slice(1);
+    const versionAndPublicKeyBytes: Uint8Array =
+      getBytesPublicKey(signerPubKey);
+    const publicKeyBytes = versionAndPublicKeyBytes.slice(1);
 
     // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
     const messageDigest: Uint8Array = hashBlake3(bytesCompact);
+    
+    try {
+      // setup the signature.
+      const versionAndSignatureBytes: Buffer = base58Decode(
+        signature.base58Encoded,
+      );
 
-    // setup the signature.
-    const signatureBytes: Buffer = base58Decode(signature.base58Encoded);
-
-    // verify signature.
-    return (await ed.verify(
-      signatureBytes,
-      messageDigest,
-      publicKeyBase58DecodedUnversioned,
-    )) as boolean;
+      // removing the version byte
+      const signatureBytes: Uint8Array = versionAndSignatureBytes.slice(1);
+      // check sig length
+      if (signatureBytes.length != 64) {
+        throw new Error(
+          `Invalid signature length. Expected 64, got ${signatureBytes.length}`,
+        );
+      }
+      // verify signature.
+      const isVerified = await ed.verify(
+        signatureBytes,
+        messageDigest,
+        publicKeyBytes,
+      );
+      return isVerified;
+    } catch (err) {
+      console.error('Failed to verify signature:', err);
+      return false;
+    }
   }
 
   /**

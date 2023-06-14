@@ -6,6 +6,7 @@ import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
+import { ISignature } from '../../src/interfaces/ISignature';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -498,6 +499,40 @@ describe('WalletClient', () => {
       await expect(
         WalletClient.getAccountFromSecretKey(nullSecretKey as never),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('verifySignature', () => {
+    test('should return true for a valid signature', async () => {
+      const message = 'Test message';
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const signerPublicKey = baseAccount.publicKey!;
+      const validSignature: ISignature = {
+        base58Encoded:
+          '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
+      };
+      const result = await web3Client
+        .wallet()
+        .verifySignature(message, validSignature, signerPublicKey);
+
+      expect(result).toBe(true);
+    });
+
+    test('should return false for an invalid signature', async () => {
+      const data = 'Test message';
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const signerPublicKey = baseAccount.publicKey!;
+      const invalidSignature: ISignature = {
+        base58Encoded:
+          '2TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE', // starts with 2 and not 1
+      };
+      const result = await web3Client
+        .wallet()
+        .verifySignature(data, invalidSignature, signerPublicKey);
+
+      expect(result).toBe(false);
     });
   });
 });
