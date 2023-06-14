@@ -5,6 +5,7 @@ import { WalletClient } from '../../src/web3/WalletClient';
 import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
+import { ITransactionData } from '../../src/interfaces/ITransactionData';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -332,6 +333,71 @@ describe('WalletClient', () => {
       await expect(
         WalletClient.getAccountFromSecretKey(nullSecretKey as never),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('sendTransaction', () => {
+    let receiverAccount: IAccount;
+    let transactionData: ITransactionData;
+    let amountSent = 100n;
+
+    beforeEach(async () => {
+      receiverAccount = await WalletClient.getAccountFromSecretKey(
+        receiverPrivateKey,
+      );
+      transactionData = {
+        fee: 10n,
+        amount: amountSent,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        recipientAddress: receiverAccount.address!,
+      };
+    });
+
+    test('should throw an error if no sender account is available for the transaction', async () => {
+      await web3Client.wallet().cleanWallet();
+      await expect(
+        web3Client.wallet().sendTransaction(transactionData),
+      ).rejects.toThrow(`No tx sender available`);
+    });
+
+    test('should use base account as sender if executor is not provided', async () => {
+      const initialBalance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(receiverAccount.address!);
+      const operationIds = await web3Client
+        .wallet()
+        .sendTransaction(transactionData);
+
+      const finalBalance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(receiverAccount.address!);
+      expect(operationIds).not.toBeNull();
+      expect(operationIds.length).toBeGreaterThan(0);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expect(finalBalance!.final - initialBalance!.final).toEqual(amountSent);
+    });
+
+    test('should use provided executor account as sender', async () => {
+      const executorAccount = await WalletClient.getAccountFromSecretKey(
+        receiverPrivateKey,
+      );
+      const initialBalance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(receiverAccount.address!);
+      const operationIds = await web3Client
+        .wallet()
+        .sendTransaction(transactionData, executorAccount);
+      const finalBalance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(receiverAccount.address!);
+      expect(operationIds).not.toBeNull();
+      expect(operationIds.length).toBeGreaterThan(0);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expect(finalBalance!.final - initialBalance!.final).toEqual(amountSent);
     });
   });
 });
