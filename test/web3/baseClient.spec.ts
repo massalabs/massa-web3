@@ -1,6 +1,7 @@
 import { BaseClient } from '../../src/web3/BaseClient';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
+import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 
 // for CI testing:
 const publicApi = 'https://test.massa.net/api/v2:33035';
@@ -172,6 +173,62 @@ describe('BaseClient', () => {
       expect(publicProviders).toHaveLength(1);
       expect(publicProviders[0].url).toBe(publicApi);
       expect(publicProviders[0].type).toBe(ProviderType.PUBLIC);
+    });
+  });
+
+  describe('getProviderForRpcMethod', () => {
+    test('getProviderForRpcMethod should return a public provider for public RPC methods', () => {
+      const clientConfig: IClientConfig = {
+        providers: [
+          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+        ],
+        periodOffset: 0,
+      };
+
+      const baseClient = new BaseClient(clientConfig);
+      const provider = baseClient.getProviderForRpcMethod(
+        JSON_RPC_REQUEST_METHOD.GET_ADDRESSES,
+      );
+
+      expect(provider.url).toBe(publicApi);
+      expect(provider.type).toBe(ProviderType.PUBLIC);
+    });
+
+    test('getProviderForRpcMethod should return a private provider for private RPC methods', () => {
+      const clientConfig: IClientConfig = {
+        providers: [
+          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+        ],
+        periodOffset: 0,
+      };
+
+      const baseClient = new BaseClient(clientConfig);
+      const provider = baseClient.getProviderForRpcMethod(
+        JSON_RPC_REQUEST_METHOD.STOP_NODE,
+      );
+
+      expect(provider.url).toBe(privateApi);
+      expect(provider.type).toBe(ProviderType.PRIVATE);
+    });
+
+    test('getProviderForRpcMethod should throw an error for unknown RPC methods', () => {
+      const clientConfig: IClientConfig = {
+        providers: [
+          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+        ],
+        periodOffset: 0,
+      };
+
+      const baseClient = new BaseClient(clientConfig);
+
+      expect(() => {
+        baseClient.getProviderForRpcMethod(
+          'UNKNOWN_METHOD' as JSON_RPC_REQUEST_METHOD,
+        );
+      }).toThrow(Error);
     });
   });
 });
