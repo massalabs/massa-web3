@@ -5,12 +5,12 @@ import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import nock from 'nock';
 
 // for CI testing:
-// const publicApi = 'https://test.massa.net/api/v2:33035';
-// const privateApi = 'https://test.massa.net/api/v2:33034';
+const publicApi = 'https://test.massa.net/api/v2:33035';
+const privateApi = 'https://test.massa.net/api/v2:33034';
 
 // For local testing:
-const publicApi = 'http://127.0.0.1:33035';
-const privateApi = 'http://127.0.0.1:33034';
+// const publicApi = 'http://127.0.0.1:33035';
+// const privateApi = 'http://127.0.0.1:33034';
 
 export const PERIOD_OFFSET = 5;
 
@@ -238,11 +238,11 @@ describe('BaseClient', () => {
     const clientConfig: IClientConfig = {
       providers: [
         {
-          url: publicApi,
+          url: 'http://mock-public-api.com',
           type: ProviderType.PUBLIC,
         } as IProvider,
         {
-          url: privateApi,
+          url: 'http://mock-private-api.com',
           type: ProviderType.PRIVATE,
         } as IProvider,
       ],
