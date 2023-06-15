@@ -149,7 +149,7 @@ export class BaseClient {
    *
    * @returns The provider for the rpc method.
    */
-  private getProviderForRpcMethod(
+  public getProviderForRpcMethod(
     requestMethod: JSON_RPC_REQUEST_METHOD,
   ): IProvider {
     switch (requestMethod) {
