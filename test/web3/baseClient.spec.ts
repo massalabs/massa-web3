@@ -3,12 +3,12 @@ import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 
 // for CI testing:
-// const publicApi = 'https://test.massa.net/api/v2:33035';
-// const privateApi = 'https://test.massa.net/api/v2:33034';
+const publicApi = 'https://test.massa.net/api/v2:33035';
+const privateApi = 'https://test.massa.net/api/v2:33034';
 
 // For local testing:
-const publicApi = 'http://127.0.0.1:33035';
-const privateApi = 'http://127.0.0.1:33034';
+// const publicApi = 'http://127.0.0.1:33035';
+// const privateApi = 'http://127.0.0.1:33034';
 
 export const PERIOD_OFFSET = 5;
 
