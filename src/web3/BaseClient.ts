@@ -91,6 +91,25 @@ export class BaseClient {
    * @param providers - The new providers to set as an array of IProvider.
    */
   public setProviders(providers: Array<IProvider>): void {
+    const hasPublicProvider = providers.some(
+      (provider) => provider.type === ProviderType.PUBLIC,
+    );
+    const hasPrivateProvider = providers.some(
+      (provider) => provider.type === ProviderType.PRIVATE,
+    );
+
+    if (!hasPublicProvider) {
+      throw new Error(
+        'Cannot set providers with no public providers. Need at least one',
+      );
+    }
+
+    if (!hasPrivateProvider) {
+      throw new Error(
+        'Cannot set providers with no private providers. Need at least one',
+      );
+    }
+
     this.clientConfig.providers = providers;
   }
 
