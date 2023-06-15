@@ -13,8 +13,14 @@ const deployerPrivateKey =
 const receiverPrivateKey =
   'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
-const publicApi = 'http://127.0.0.1:33035';
-const privateApi = 'http://127.0.0.1:33034';
+// for CI testing:
+const publicApi = 'https://test.massa.net/api/v2:33035';
+const privateApi = 'https://test.massa.net/api/v2:33034';
+
+// For local testing:
+// const publicApi = 'http://127.0.0.1:33035';
+// const privateApi = 'http://127.0.0.1:33034';
+
 const MAX_WALLET_ACCOUNTS = 256;
 
 export async function initializeClient() {
@@ -254,6 +260,56 @@ describe('WalletClient', () => {
       expect(accountFromPrivateKey1.publicKey).not.toEqual(
         accountFromPrivateKey2.publicKey,
       );
+    });
+  });
+
+  describe('walletInfo', () => {
+    test('should return information for each address in the wallet', async () => {
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletInfo = await web3Client.wallet().walletInfo();
+
+      expect(walletInfo.length).toBe(walletAccounts.length);
+
+      walletInfo.forEach((info, index) => {
+        expect(info.publicKey).toBe(walletAccounts[index].publicKey);
+        expect(info.secretKey).toBe(walletAccounts[index].secretKey);
+      });
+    });
+  });
+
+  describe('removeAddressesFromWallet', () => {
+    test('should remove specified addresses from the wallet', async () => {
+      const accountsToRemove = await web3Client
+        .wallet()
+        .addSecretKeysToWallet([
+          receiverPrivateKey,
+          'S1USr9AFUaH7taTKeWt94qGTgaS9XkpnH1SPpctRDoK3sSJkYWk',
+          'S16cS2QnKmyxxiU68Bw9Lnmt2Yttva42nahDG68awziextJgBze',
+        ]);
+      let addressesToRemove = accountsToRemove.map(
+        (account) => account.address,
+      );
+
+      expect(addressesToRemove.length).toBe(3);
+      expect(addressesToRemove).not.toContain(null);
+      await web3Client
+        .wallet()
+        .removeAddressesFromWallet(addressesToRemove as string[]);
+
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      addressesToRemove.forEach((address) => {
+        expect(walletAccounts).not.toContainEqual(
+          expect.objectContaining({ address }),
+        );
+      });
+    });
+  });
+
+  describe('cleanWallet', () => {
+    test('remove all accounts from the wallet', async () => {
+      await web3Client.wallet().cleanWallet();
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      expect(walletAccounts.length).toBe(0); // only base account should be left
     });
   });
 
