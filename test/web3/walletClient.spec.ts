@@ -15,12 +15,12 @@ const receiverPrivateKey =
   'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 // for CI testing:
-const publicApi = 'https://test.massa.net/api/v2:33035';
-const privateApi = 'https://test.massa.net/api/v2:33034';
+// const publicApi = 'https://test.massa.net/api/v2:33035';
+// const privateApi = 'https://test.massa.net/api/v2:33034';
 
 // For local testing:
-// const publicApi = 'http://127.0.0.1:33035';
-// const privateApi = 'http://127.0.0.1:33034';
+const publicApi = 'http://127.0.0.1:33035';
+const privateApi = 'http://127.0.0.1:33034';
 
 const MAX_WALLET_ACCOUNTS = 256;
 
@@ -555,6 +555,9 @@ describe('WalletClient', () => {
     });
 
     test.only('should return 0 balance for a fresh account', async () => {
+      const consoleSpy = jest.spyOn(console, 'error');
+      consoleSpy.mockImplementation(() => null);
+
       const freshAccount = await WalletClient.walletGenerateNewAccount();
 
       const balance = await web3Client
@@ -567,9 +570,11 @@ describe('WalletClient', () => {
       expect(balance).toHaveProperty('final');
       expect(balance?.candidate).toEqual(0n);
       expect(balance?.final).toEqual(0n);
+
+      consoleSpy.mockRestore();
     });
 
-    test.only('should return null for an invalid address', async () => {
+    test('should return null for an invalid address', async () => {
       const invalidAddress = 'invalid address';
 
       const balance = await web3Client
