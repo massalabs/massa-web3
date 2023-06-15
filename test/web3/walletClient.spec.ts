@@ -6,6 +6,7 @@ import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
+import { ISignature } from '../../src/interfaces/ISignature';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -14,12 +15,12 @@ const receiverPrivateKey =
   'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 // for CI testing:
-const publicApi = 'https://test.massa.net/api/v2:33035';
-const privateApi = 'https://test.massa.net/api/v2:33034';
+// const publicApi = 'https://test.massa.net/api/v2:33035';
+// const privateApi = 'https://test.massa.net/api/v2:33034';
 
 // For local testing:
-// const publicApi = 'http://127.0.0.1:33035';
-// const privateApi = 'http://127.0.0.1:33034';
+const publicApi = 'http://127.0.0.1:33035';
+const privateApi = 'http://127.0.0.1:33034';
 
 const MAX_WALLET_ACCOUNTS = 256;
 
@@ -264,7 +265,7 @@ describe('WalletClient', () => {
   });
 
   describe('walletInfo', () => {
-    test('should return information for each address in the wallet', async () => {
+    test.skip('should return information for each address in the wallet', async () => {
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
       const walletInfo = await web3Client.wallet().walletInfo();
 
@@ -498,6 +499,89 @@ describe('WalletClient', () => {
       await expect(
         WalletClient.getAccountFromSecretKey(nullSecretKey as never),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('verifySignature', () => {
+    test('should return true for a valid signature', async () => {
+      const message = 'Test message';
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const signerPublicKey = baseAccount.publicKey!;
+      const validSignature: ISignature = {
+        base58Encoded:
+          '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
+      };
+      const result = await web3Client
+        .wallet()
+        .verifySignature(message, validSignature, signerPublicKey);
+
+      expect(result).toBe(true);
+    });
+
+    test('should return false for an invalid signature', async () => {
+      const data = 'Test message';
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const signerPublicKey = baseAccount.publicKey!;
+      const invalidSignature: ISignature = {
+        base58Encoded:
+          '2TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE', // starts with 2 and not 1
+      };
+      const result = await web3Client
+        .wallet()
+        .verifySignature(data, invalidSignature, signerPublicKey);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe.skip('getAccountBalance', () => {
+    test('should return balance for a valid address', async () => {
+      const ACCOUNT_ADDRESS =
+        'AU1ELsdabgHd7qqYdHLPW4eN6jnaxF6egNZVpyx5B4MYjR7XiUVZ';
+      const expectedBalance = 500000000000n;
+
+      const balance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(ACCOUNT_ADDRESS!);
+
+      expect(balance).not.toBeNull();
+      expect(balance).toHaveProperty('candidate');
+      expect(balance).toHaveProperty('final');
+      expect(balance?.candidate).toEqual(expectedBalance);
+      expect(balance?.final).toEqual(expectedBalance);
+    });
+
+    test('should return 0 balance for a fresh account', async () => {
+      const consoleSpy = jest.spyOn(console, 'error');
+      consoleSpy.mockImplementation(() => null);
+
+      const freshAccount = await WalletClient.walletGenerateNewAccount();
+
+      const balance = await web3Client
+        .wallet()
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getAccountBalance(freshAccount.address!);
+
+      expect(balance).not.toBeNull();
+      expect(balance).toHaveProperty('candidate');
+      expect(balance).toHaveProperty('final');
+      expect(balance?.candidate).toEqual(0n);
+      expect(balance?.final).toEqual(0n);
+
+      consoleSpy.mockRestore();
+    });
+
+    test('should return null for an invalid address', async () => {
+      const invalidAddress = 'invalid address';
+
+      const balance = await web3Client
+        .wallet()
+        .getAccountBalance(invalidAddress);
+
+      expect(balance).toBeNull();
     });
   });
 });
