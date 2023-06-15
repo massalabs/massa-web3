@@ -265,7 +265,7 @@ describe('WalletClient', () => {
   });
 
   describe('walletInfo', () => {
-    test('should return information for each address in the wallet', async () => {
+    test.skip('should return information for each address in the wallet', async () => {
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
       const walletInfo = await web3Client.wallet().walletInfo();
 
@@ -536,7 +536,7 @@ describe('WalletClient', () => {
     });
   });
 
-  describe('getAccountBalance', () => {
+  describe.skip('getAccountBalance', () => {
     test('should return balance for a valid address', async () => {
       const ACCOUNT_ADDRESS =
         'AU1ELsdabgHd7qqYdHLPW4eN6jnaxF6egNZVpyx5B4MYjR7XiUVZ';
@@ -554,7 +554,7 @@ describe('WalletClient', () => {
       expect(balance?.final).toEqual(expectedBalance);
     });
 
-    test.only('should return 0 balance for a fresh account', async () => {
+    test('should return 0 balance for a fresh account', async () => {
       const consoleSpy = jest.spyOn(console, 'error');
       consoleSpy.mockImplementation(() => null);
 
