@@ -302,14 +302,6 @@ describe('WalletClient', () => {
         );
       });
     });
-
-    test.skip('should not throw error if an address to remove is not in the wallet', async () => {
-      const nonExistentAddress =
-        'AU12MvQVNNYtBx1VnM6dTvpEJzuqVAon48tccacXRyc5fwG5gZQn7';
-      await expect(
-        web3Client.wallet().removeAddressesFromWallet([nonExistentAddress]),
-      ).not.toThrow();
-    });
   });
 
   describe('cleanWallet', () => {
