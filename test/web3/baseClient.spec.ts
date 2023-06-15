@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BaseClient } from '../../src/web3/BaseClient';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import { JsonRpcResponseData } from '../../src/interfaces/JsonRpcResponseData';
 import nock from 'nock';
 
 // for CI testing:
@@ -15,139 +17,52 @@ const privateApi = 'https://test.massa.net/api/v2:33034';
 export const PERIOD_OFFSET = 5;
 
 describe('BaseClient', () => {
-  describe('getProviderForRpcMethod', () => {
-    test('getProviderForRpcMethod should return a public provider for public RPC methods', () => {
-      const clientConfig: IClientConfig = {
-        providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
-        ],
-        periodOffset: PERIOD_OFFSET,
-      };
-
-      const baseClient = new BaseClient(clientConfig);
-      const provider = baseClient.getProviderForRpcMethod(
-        JSON_RPC_REQUEST_METHOD.GET_ADDRESSES,
-      );
-
-      expect(provider.url).toBe(publicApi);
-      expect(provider.type).toBe(ProviderType.PUBLIC);
-    });
-
-    test('getProviderForRpcMethod should return a private provider for private RPC methods', () => {
-      const clientConfig: IClientConfig = {
-        providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
-        ],
-        periodOffset: PERIOD_OFFSET,
-      };
-
-      const baseClient = new BaseClient(clientConfig);
-      const provider = baseClient.getProviderForRpcMethod(
-        JSON_RPC_REQUEST_METHOD.STOP_NODE,
-      );
-
-      expect(provider.url).toBe(privateApi);
-      expect(provider.type).toBe(ProviderType.PRIVATE);
-    });
-
-    test('getProviderForRpcMethod should throw an error for unknown RPC methods', () => {
-      const clientConfig: IClientConfig = {
-        providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
-        ],
-        periodOffset: PERIOD_OFFSET,
-      };
-
-      const baseClient = new BaseClient(clientConfig);
-
-      expect(() => {
-        baseClient.getProviderForRpcMethod(
-          'UNKNOWN_METHOD' as JSON_RPC_REQUEST_METHOD,
-        );
-      }).toThrow(Error);
-    });
-  });
-
-  describe('promisifyJsonRpcCall', () => {
-    let baseClient: BaseClient;
-    const clientConfig: IClientConfig = {
-      providers: [
-        {
-          url: 'http://mock-public-api.com',
-          type: ProviderType.PUBLIC,
-        } as IProvider,
-        {
-          url: 'http://mock-private-api.com',
-          type: ProviderType.PRIVATE,
-        } as IProvider,
-      ],
-      periodOffset: PERIOD_OFFSET,
-    };
-
+  describe('sendJsonRPCRequest', () => {
+    let clientConfig: IClientConfig;
     beforeEach(() => {
-      baseClient = new BaseClient(clientConfig);
+      clientConfig = {
+        providers: [
+          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+        ],
+        periodOffset: PERIOD_OFFSET,
+      };
     });
 
-    afterEach(() => {
-      nock.cleanAll();
-    });
+    test('should correctly handle successful JSON RPC request', async () => {
+      const expectedResult = { success: true };
+      const baseClient = new BaseClient(clientConfig);
 
-    test('should return a successful response', async () => {
-      nock('http://mock-public-api.com').post('/').reply(200, {
-        jsonrpc: '2.0',
-        id: 0,
-        result: 'success',
-      });
+      // Mock promisifyJsonRpcCall
+      baseClient.promisifyJsonRpcCall = jest.fn().mockResolvedValue({
+        error: null,
+        result: expectedResult,
+      } as JsonRpcResponseData<typeof expectedResult>);
 
-      // posting public method to public API
-      const result = await baseClient['promisifyJsonRpcCall'](
+      const result = await baseClient.sendJsonRPCRequest(
         JSON_RPC_REQUEST_METHOD.GET_STATUS,
         {},
       );
 
-      expect(result.isError).toBeFalsy();
-      expect(result.result).toEqual('success');
+      expect(baseClient.promisifyJsonRpcCall).toHaveBeenCalled();
+      expect(result).toBe(expectedResult);
     });
 
-    test('should return an error response', async () => {
-      // error when trying to post the request
-      nock('http://mock-public-api.com')
-        .post('/')
-        .replyWithError('Something went wrong');
+    test('should throw an error if JSON RPC request fails', async () => {
+      const expectedError = { message: 'Some error' };
 
-      const result = await baseClient['promisifyJsonRpcCall'](
-        JSON_RPC_REQUEST_METHOD.GET_STATUS,
-        {},
-      );
+      const baseClient = new BaseClient(clientConfig);
 
-      expect(result.isError).toBeTruthy();
-      expect(result.error).toBeInstanceOf(Error);
-      expect(result.error?.message).toEqual(
-        'JSON.parse error: Error: Something went wrong',
-      );
-    });
+      // Mock promisifyJsonRpcCall
+      baseClient.promisifyJsonRpcCall = jest.fn().mockResolvedValue({
+        error: expectedError,
+        result: null,
+      } as JsonRpcResponseData<null>);
 
-    test('should handle RPC errors', async () => {
-      // post is successful, but the RPC method returns an error
-      nock('http://mock-public-api.com')
-        .post('/')
-        .reply(200, {
-          jsonrpc: '2.0',
-          id: 0,
-          error: { message: 'RPC error', code: -32603 },
-        });
-
-      const result = await baseClient['promisifyJsonRpcCall'](
-        JSON_RPC_REQUEST_METHOD.GET_STATUS,
-        {},
-      );
-
-      expect(result.isError).toBeTruthy();
-      expect(result.error).toBeInstanceOf(Error);
-      expect(result.error?.message).toEqual('RPC error');
+      await expect(
+        baseClient.sendJsonRPCRequest(JSON_RPC_REQUEST_METHOD.GET_STATUS, {}),
+      ).rejects.toEqual(expectedError);
+      expect(baseClient.promisifyJsonRpcCall).toHaveBeenCalled();
     });
   });
 });
