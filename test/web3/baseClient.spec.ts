@@ -29,4 +29,23 @@ describe('BaseClient', () => {
       expect(privateProviders[0].type).toBe(ProviderType.PRIVATE);
     });
   });
+
+  describe('getPublicProviders', () => {
+    test('getPublicProviders should return an array of public providers', () => {
+      const clientConfig: IClientConfig = {
+        providers: [
+          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+        ],
+        periodOffset: 0,
+      };
+
+      const baseClient = new BaseClient(clientConfig);
+      const publicProviders = baseClient.getPublicProviders();
+
+      expect(publicProviders).toHaveLength(1);
+      expect(publicProviders[0].url).toBe(publicApi);
+      expect(publicProviders[0].type).toBe(ProviderType.PUBLIC);
+    });
+  });
 });
