@@ -458,8 +458,6 @@ export class SmartContractsClient
 
       await wait(TX_POLL_INTERVAL_MS);
     }
-
-
   }
 
   /**
@@ -467,7 +465,7 @@ export class SmartContractsClient
    *
    * @param contractAddresses - An array of contract addresses (as strings)
    *
-   * @return A promise that resolves to the array of IProtoFiles corresponding
+   * @returns A promise that resolves to the array of IProtoFiles corresponding
    * to the proto file associated with each contract or the values are null if the file is unavailable.
    */
   public async getProtoFiles(
@@ -502,7 +500,6 @@ export class SmartContractsClient
       // parse response
       const json = await response.json();
       return json.result;
-      
     } catch (ex) {
       const msg = `Failed to retrieve the proto files.`;
       console.error(msg, ex);
