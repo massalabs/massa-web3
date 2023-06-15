@@ -5,6 +5,7 @@ import { WalletClient } from '../../src/web3/WalletClient';
 import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
+import * as ed from '@noble/ed25519';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -309,6 +310,115 @@ describe('WalletClient', () => {
       await web3Client.wallet().cleanWallet();
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
       expect(walletAccounts.length).toBe(0); // only base account should be left
+    });
+  });
+
+  describe('walletSignMessage', () => {
+    test('should sign a message with a valid signer', async () => {
+      const data = 'Test message';
+      const signer = baseAccount;
+      const modelSignedMessage =
+        '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
+
+      const signedMessage = await WalletClient.walletSignMessage(data, signer);
+
+      expect(signedMessage).toHaveProperty('base58Encoded');
+      expect(typeof signedMessage.base58Encoded).toBe('string');
+      expect(signedMessage.base58Encoded).toEqual(modelSignedMessage);
+    });
+
+    test('should throw an error when no private key is available', async () => {
+      const data = 'Test message';
+      const signer = { ...baseAccount, secretKey: null };
+
+      await expect(
+        WalletClient.walletSignMessage(data, signer),
+      ).rejects.toThrow('No private key to sign the message with');
+    });
+
+    test('should throw an error when no public key is available', async () => {
+      const data = 'Test message';
+      const signer = { ...baseAccount, publicKey: null };
+
+      await expect(
+        WalletClient.walletSignMessage(data, signer),
+      ).rejects.toThrow('No public key to verify the signed message with');
+    });
+
+    test('should throw an error when signature length is invalid', async () => {
+      const data = 'Test message';
+      const signer = baseAccount;
+
+      // Create a spy on the 'sign' function to provide an incorrect mock implementation for this test
+      const signSpy = jest.spyOn(ed, 'sign');
+      signSpy.mockImplementation(() => Promise.resolve(Buffer.alloc(63))); // 63 instead of 64
+
+      await expect(
+        WalletClient.walletSignMessage(data, signer),
+      ).rejects.toThrow(/Invalid signature length. Expected 64, got/);
+
+      // Restore the original 'sign' function after the test
+      signSpy.mockRestore();
+    });
+
+    test('should correctly process Buffer data', async () => {
+      const data = Buffer.from('Test message');
+      const modelSignedMessage =
+        '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
+      const signer = baseAccount;
+
+      const signedMessage = await WalletClient.walletSignMessage(data, signer);
+
+      expect(signedMessage).toHaveProperty('base58Encoded');
+      expect(typeof signedMessage.base58Encoded).toBe('string');
+      expect(signedMessage.base58Encoded).toEqual(modelSignedMessage);
+    });
+  });
+
+  describe('signMessage', () => {
+    test('should sign a message with a valid account', async () => {
+      const data = 'Test message';
+      const modelSignedMessage =
+        '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const accountSignerAddress: string = baseAccount.address!;
+
+      const signedMessage = await web3Client
+        .wallet()
+        .signMessage(data, accountSignerAddress);
+
+      expect(signedMessage).toHaveProperty('base58Encoded');
+      expect(typeof signedMessage.base58Encoded).toBe('string');
+      expect(signedMessage.base58Encoded).toEqual(modelSignedMessage);
+    });
+
+    test('should throw an error when the account is not found', async () => {
+      const data = 'Test message';
+      const nonExistentSignerAddress = 'nonExistentSignerAddress';
+
+      await expect(
+        web3Client.wallet().signMessage(data, nonExistentSignerAddress),
+      ).rejects.toThrow(
+        `No signer account ${nonExistentSignerAddress} found in wallet`,
+      );
+    });
+
+    test('should correctly process Buffer data', async () => {
+      const data = Buffer.from('Test message');
+      const modelSignedMessage =
+        '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const accountSignerAddress = baseAccount.address!;
+
+      const signedMessage = await web3Client
+        .wallet()
+        .signMessage(data, accountSignerAddress);
+
+      expect(signedMessage).toHaveProperty('base58Encoded');
+      expect(typeof signedMessage.base58Encoded).toBe('string');
+      expect(signedMessage.base58Encoded).toEqual(modelSignedMessage);
     });
   });
 
