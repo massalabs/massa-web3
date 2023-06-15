@@ -5,12 +5,12 @@ import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import nock from 'nock';
 
 // for CI testing:
-const publicApi = 'https://test.massa.net/api/v2:33035';
-const privateApi = 'https://test.massa.net/api/v2:33034';
+// const publicApi = 'https://test.massa.net/api/v2:33035';
+// const privateApi = 'https://test.massa.net/api/v2:33034';
 
 // For local testing:
-// const publicApi = 'http://127.0.0.1:33035';
-// const privateApi = 'http://127.0.0.1:33034';
+const publicApi = 'http://127.0.0.1:33035';
+const privateApi = 'http://127.0.0.1:33034';
 
 export const PERIOD_OFFSET = 5;
 
@@ -257,13 +257,14 @@ describe('BaseClient', () => {
       nock.cleanAll();
     });
 
-    test.only('should return a successful response', async () => {
-      nock(publicApi).post('/').reply(200, {
+    test('should return a successful response', async () => {
+      nock('http://mock-public-api.com').post('/').reply(200, {
         jsonrpc: '2.0',
         id: 0,
         result: 'success',
       });
 
+      // posting public method to public API
       const result = await baseClient['promisifyJsonRpcCall'](
         JSON_RPC_REQUEST_METHOD.GET_STATUS,
         {},
@@ -274,7 +275,8 @@ describe('BaseClient', () => {
     });
 
     test('should return an error response', async () => {
-      nock(publicApi)
+      // error when trying to post the request
+      nock('http://mock-public-api.com')
         .post('/')
         .replyWithError('Something went wrong');
 
@@ -286,27 +288,28 @@ describe('BaseClient', () => {
       expect(result.isError).toBeTruthy();
       expect(result.error).toBeInstanceOf(Error);
       expect(result.error?.message).toEqual(
-        'JSON.parse error: Something went wrong',
+        'JSON.parse error: Error: Something went wrong',
       );
     });
 
-    // test('should handle RPC errors', async () => {
-    //   nock('http://test-public-api.com')
-    //     .post('/')
-    //     .reply(200, {
-    //       jsonrpc: '2.0',
-    //       id: 0,
-    //       error: { message: 'RPC error', code: -32603 },
-    //     });
+    test('should handle RPC errors', async () => {
+      // post is successful, but the RPC method returns an error
+      nock('http://mock-public-api.com')
+        .post('/')
+        .reply(200, {
+          jsonrpc: '2.0',
+          id: 0,
+          error: { message: 'RPC error', code: -32603 },
+        });
 
-    //   const result = await baseClient['promisifyJsonRpcCall'](
-    //     JSON_RPC_REQUEST_METHOD.BAD_METHOD,
-    //     {},
-    //   );
+      const result = await baseClient['promisifyJsonRpcCall'](
+        JSON_RPC_REQUEST_METHOD.GET_STATUS,
+        {},
+      );
 
-    //   expect(result.isError).toBeTruthy();
-    //   expect(result.error).toBeInstanceOf(Error);
-    //   expect(result.error?.message).toEqual('RPC error');
-    // });
+      expect(result.isError).toBeTruthy();
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error?.message).toEqual('RPC error');
+    });
   });
 });
