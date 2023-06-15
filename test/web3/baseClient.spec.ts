@@ -2,6 +2,7 @@ import { BaseClient } from '../../src/web3/BaseClient';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import nock from 'nock';
 
 // for CI testing:
 const publicApi = 'https://test.massa.net/api/v2:33035';
@@ -230,5 +231,82 @@ describe('BaseClient', () => {
         );
       }).toThrow(Error);
     });
+  });
+
+  describe('promisifyJsonRpcCall', () => {
+    let baseClient: BaseClient;
+    const clientConfig: IClientConfig = {
+      providers: [
+        {
+          url: publicApi,
+          type: ProviderType.PUBLIC,
+        } as IProvider,
+        {
+          url: privateApi,
+          type: ProviderType.PRIVATE,
+        } as IProvider,
+      ],
+      periodOffset: 0,
+    };
+
+    beforeEach(() => {
+      baseClient = new BaseClient(clientConfig);
+    });
+
+    afterEach(() => {
+      nock.cleanAll();
+    });
+
+    test.only('should return a successful response', async () => {
+      nock(publicApi).post('/').reply(200, {
+        jsonrpc: '2.0',
+        id: 0,
+        result: 'success',
+      });
+
+      const result = await baseClient['promisifyJsonRpcCall'](
+        JSON_RPC_REQUEST_METHOD.GET_STATUS,
+        {},
+      );
+
+      expect(result.isError).toBeFalsy();
+      expect(result.result).toEqual('success');
+    });
+
+    test('should return an error response', async () => {
+      nock(publicApi)
+        .post('/')
+        .replyWithError('Something went wrong');
+
+      const result = await baseClient['promisifyJsonRpcCall'](
+        JSON_RPC_REQUEST_METHOD.GET_STATUS,
+        {},
+      );
+
+      expect(result.isError).toBeTruthy();
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error?.message).toEqual(
+        'JSON.parse error: Something went wrong',
+      );
+    });
+
+    // test('should handle RPC errors', async () => {
+    //   nock('http://test-public-api.com')
+    //     .post('/')
+    //     .reply(200, {
+    //       jsonrpc: '2.0',
+    //       id: 0,
+    //       error: { message: 'RPC error', code: -32603 },
+    //     });
+
+    //   const result = await baseClient['promisifyJsonRpcCall'](
+    //     JSON_RPC_REQUEST_METHOD.BAD_METHOD,
+    //     {},
+    //   );
+
+    //   expect(result.isError).toBeTruthy();
+    //   expect(result.error).toBeInstanceOf(Error);
+    //   expect(result.error?.message).toEqual('RPC error');
+    // });
   });
 });
