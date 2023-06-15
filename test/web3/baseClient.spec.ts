@@ -22,7 +22,7 @@ describe('BaseClient', () => {
           { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
           { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
         ],
-        periodOffset: 0,
+        periodOffset: PERIOD_OFFSET,
       };
 
       const baseClient = new BaseClient(clientConfig);
@@ -40,7 +40,7 @@ describe('BaseClient', () => {
           { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
           { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
         ],
-        periodOffset: 0,
+        periodOffset: PERIOD_OFFSET,
       };
 
       const baseClient = new BaseClient(clientConfig);
@@ -58,7 +58,7 @@ describe('BaseClient', () => {
           { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
           { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
         ],
-        periodOffset: 0,
+        periodOffset: PERIOD_OFFSET,
       };
 
       const baseClient = new BaseClient(clientConfig);
@@ -84,7 +84,7 @@ describe('BaseClient', () => {
           type: ProviderType.PRIVATE,
         } as IProvider,
       ],
-      periodOffset: 0,
+      periodOffset: PERIOD_OFFSET,
     };
 
     beforeEach(() => {
