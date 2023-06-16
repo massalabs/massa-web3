@@ -217,11 +217,12 @@ export class SmartContractsClient
   }
 
   /**
-   * Executes a read operation on a smart contract.
+   * Execute a dry run Smart contract call and returns some data regarding its execution
+   * such as the changes of in the states that would have happen if the transaction was really executed on chain.
    *
    * @param readData - The data required for the a read operation of a smart contract.
    *
-   * @returns A promise that resolves to object the result of the read operation.
+   * @returns A promise that resolves to an object which represents the result of the operation and contains data about its execution.
    */
   public async readSmartContract(
     readData: IReadData,
@@ -327,12 +328,16 @@ export class SmartContractsClient
   }
 
   /**
-   * Execute a read-only smart contract.
+   * Send a read-only smart contract execution request.
    *
-   * @param contractData - The data required for the read-only smart contract.
+   * @remarks
+   * This method is used to dry-run a smart contract execution and get the changes of the states that would
+   * have happen if the transaction was really executed on chain.
+   * This operation does not modify the blockchain state.
    *
-   * @returns A promise which resolves to an object containing the result
-   * of the operation.
+   * @param contractData - The data required for the operation.
+   *
+   * @returns A promise which resolves to an object containing data about the operation.
    *
    * @throws
    * - If the contract binary data is missing.
