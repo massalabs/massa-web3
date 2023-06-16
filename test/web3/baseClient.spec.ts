@@ -124,7 +124,7 @@ describe('BaseClient', () => {
       expect(result).toEqual(mockResponse.data.result);
     });
 
-    test('getProviderForRpcMethod should throw an error for unknown RPC methods', async () => {
+    test('should throw an error for unknown RPC methods', async () => {
       const mockResponse = {
         data: {
           result: {
@@ -144,6 +144,61 @@ describe('BaseClient', () => {
       await expect(
         baseClient.getSendJsonRPCRequest(unknownMethod, {}),
       ).rejects.toThrowError(`Unknown Json rpc method: ${unknownMethod}`);
+    });
+
+    test('should throw an error if no private providers are configured', async () => {
+      const clientConfig: IClientConfig = {
+        providers: [{ url: publicApi, type: ProviderType.PUBLIC } as IProvider],
+        periodOffset: PERIOD_OFFSET,
+      };
+
+      const createClient = () => {
+        baseClient = new TestBaseClient(clientConfig);
+      };
+
+      expect(createClient).toThrowError(
+        'Cannot initialize web3 with no private providers. Need at least one',
+      );
+    });
+
+    test('should throw an error if no public providers are configured', async () => {
+      const clientConfig: IClientConfig = {
+        providers: [
+          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+        ],
+        periodOffset: PERIOD_OFFSET,
+      };
+
+      const createClient = () => {
+        baseClient = new TestBaseClient(clientConfig);
+      };
+
+      expect(createClient).toThrowError(
+        'Cannot initialize web3 with no public providers. Need at least one',
+      );
+    });
+
+    test('should handle JSON-RPC error responses', async () => {
+      const mockResponse = {
+        data: {
+          result: null,
+          error: {
+            code: -32600,
+            message: 'Invalid Request',
+          },
+          id: null,
+          jsonrpc: '2.0',
+        },
+      };
+
+      mockAxios.post.mockResolvedValueOnce(mockResponse);
+
+      await expect(
+        baseClient.getSendJsonRPCRequest(
+          JSON_RPC_REQUEST_METHOD.GET_STATUS,
+          {},
+        ),
+      ).rejects.toThrowError('Invalid Request');
     });
   });
 });
