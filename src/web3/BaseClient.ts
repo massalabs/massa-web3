@@ -47,6 +47,9 @@ export const PERIOD_OFFSET = 5;
  * The `BaseClient` class should not be instantiated directly; instead, it should
  * be extended by other client classes to provide additional functionality on top of the core
  * methods provided by this class.
+ *
+ * @throws Will throw an error if no public providers are included in client configuration.
+ * @throws Will throw an error if no private providers are included in client configuration.
  */
 export class BaseClient {
   protected clientConfig: IClientConfig;
@@ -88,8 +91,30 @@ export class BaseClient {
    * This methods add the providers to the existing ones in the clientConfig object.
    *
    * @param providers - The new providers to set as an array of IProvider.
+   *
+   * @throws Will throw an error if no public providers are included in the given array of providers.
+   * @throws Will throw an error if no private providers are included in the given array of providers.
    */
   public setProviders(providers: Array<IProvider>): void {
+    const hasPublicProvider = providers.some(
+      (provider) => provider.type === ProviderType.PUBLIC,
+    );
+    const hasPrivateProvider = providers.some(
+      (provider) => provider.type === ProviderType.PRIVATE,
+    );
+
+    if (!hasPublicProvider) {
+      throw new Error(
+        'Cannot set providers with no public providers. Need at least one',
+      );
+    }
+
+    if (!hasPrivateProvider) {
+      throw new Error(
+        'Cannot set providers with no private providers. Need at least one',
+      );
+    }
+
     this.clientConfig.providers = providers;
   }
 
