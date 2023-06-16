@@ -2,13 +2,8 @@ import { BaseClient } from '../../src/web3/BaseClient';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 
-// for CI testing:
-const publicApi = 'http://mock-public-api.com';
-const privateApi = 'http://mock-private-api.com';
-
-// For local testing:
-// const publicApi = 'http://127.0.0.1:33035';
-// const privateApi = 'http://127.0.0.1:33034';
+const publicApi = process.env.CI ? 'http://mock-public-api.com' : 'http://127.0.0.1:33035';
+const privateApi = process.env.CI ? 'http://mock-private-api.com' : 'http://127.0.0.1:33034';
 
 export const PERIOD_OFFSET = 5;
 
