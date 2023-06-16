@@ -6,13 +6,12 @@ import axios, { AxiosRequestHeaders } from 'axios';
 
 jest.mock('axios');
 
-// for CI testing:
-// const publicApi = 'http://mock-public-api.com';
-// const privateApi = 'http://mock-private-api.com';
+const publicApi = 'http://mock-public-api.com';
+const privateApi = 'http://mock-private-api.com';
 
 // For local testing:
-const publicApi = 'http://127.0.0.1:33035';
-const privateApi = 'http://127.0.0.1:33034';
+// const publicApi = 'http://127.0.0.1:33035';
+// const privateApi = 'http://127.0.0.1:33034';
 
 export const PERIOD_OFFSET = 5;
 
