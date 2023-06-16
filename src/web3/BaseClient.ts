@@ -149,7 +149,7 @@ export class BaseClient {
    *
    * @returns The provider for the rpc method.
    */
-  public getProviderForRpcMethod(
+  private getProviderForRpcMethod(
     requestMethod: JSON_RPC_REQUEST_METHOD,
   ): IProvider {
     switch (requestMethod) {
@@ -199,7 +199,7 @@ export class BaseClient {
    *
    * @returns A promise that resolves as a JsonRpcResponseData.
    */
-  private async promisifyJsonRpcCall<T>(
+  public async promisifyJsonRpcCall<T>(
     resource: JSON_RPC_REQUEST_METHOD,
     params: object,
   ): Promise<JsonRpcResponseData<T>> {
