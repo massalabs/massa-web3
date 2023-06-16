@@ -12,6 +12,20 @@ const privateApi = 'https://test.massa.net/api/v2:33034';
 
 export const PERIOD_OFFSET = 5;
 
+class TestBaseClient extends BaseClient {
+  constructor(config: IClientConfig) {
+    super(config);
+  }
+
+  public getPrivateProviders() {
+    return super.getPrivateProviders();
+  }
+
+  public getPublicProviders() {
+    return super.getPublicProviders();
+  }
+}
+
 describe('BaseClient', () => {
   describe('setProviders', () => {
     test('setProviders should correctly set the new providers', () => {
@@ -40,7 +54,7 @@ describe('BaseClient', () => {
         } as IProvider,
       ];
 
-      const baseClient = new BaseClient(clientConfig);
+      const baseClient = new TestBaseClient(clientConfig);
       const oldPrivateProviders = baseClient.getPrivateProviders();
       const oldPublicProviders = baseClient.getPublicProviders();
 
@@ -121,7 +135,7 @@ describe('BaseClient', () => {
         } as IProvider,
       ];
 
-      const baseClient = new BaseClient(clientConfig);
+      const baseClient = new TestBaseClient(clientConfig);
       baseClient.setProviders(newProviders);
 
       const privateProviders = baseClient.getPrivateProviders();
@@ -147,7 +161,7 @@ describe('BaseClient', () => {
         periodOffset: PERIOD_OFFSET,
       };
 
-      const baseClient = new BaseClient(clientConfig);
+      const baseClient = new TestBaseClient(clientConfig);
       const privateProviders = baseClient.getPrivateProviders();
 
       expect(privateProviders).toHaveLength(1);
@@ -166,7 +180,7 @@ describe('BaseClient', () => {
         periodOffset: PERIOD_OFFSET,
       };
 
-      const baseClient = new BaseClient(clientConfig);
+      const baseClient = new TestBaseClient(clientConfig);
       const publicProviders = baseClient.getPublicProviders();
 
       expect(publicProviders).toHaveLength(1);
