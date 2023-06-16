@@ -118,7 +118,7 @@ export class BaseClient {
    *
    * @returns An array of IProvider containing all the private providers.
    */
-  public getPrivateProviders(): Array<IProvider> {
+  protected getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PRIVATE,
     );
@@ -129,7 +129,7 @@ export class BaseClient {
    *
    * @returns An array of IProvider containing all the public providers.
    */
-  public getPublicProviders(): Array<IProvider> {
+  protected getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PUBLIC,
     );

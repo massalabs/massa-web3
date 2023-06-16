@@ -14,6 +14,20 @@ const privateApi = 'https://test.massa.net/api/v2:33034';
 
 export const PERIOD_OFFSET = 5;
 
+class TestBaseClient extends BaseClient {
+  constructor(config: IClientConfig) {
+    super(config);
+  }
+
+  public getPrivateProviders() {
+    return super.getPrivateProviders();
+  }
+
+  public getPublicProviders() {
+    return super.getPublicProviders();
+  }
+}
+
 describe('BaseClient', () => {
   describe('getProviderForRpcMethod', () => {
     test('getProviderForRpcMethod should return a public provider for public RPC methods', () => {
