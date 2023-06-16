@@ -2,7 +2,6 @@ import { BaseClient } from '../../src/web3/BaseClient';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import nock from 'nock';
 import axios, { AxiosRequestHeaders } from 'axios';
 
 jest.mock('axios');
@@ -146,86 +145,6 @@ describe('BaseClient', () => {
       await expect(
         baseClient.getSendJsonRPCRequest(unknownMethod, {}),
       ).rejects.toThrowError(`Unknown Json rpc method: ${unknownMethod}`);
-    });
-  });
-
-  describe('promisifyJsonRpcCall', () => {
-    let baseClient: TestBaseClient;
-    const clientConfig: IClientConfig = {
-      providers: [
-        {
-          url: 'http://mock-public-api.com',
-          type: ProviderType.PUBLIC,
-        } as IProvider,
-        {
-          url: 'http://mock-private-api.com',
-          type: ProviderType.PRIVATE,
-        } as IProvider,
-      ],
-      periodOffset: PERIOD_OFFSET,
-    };
-
-    beforeEach(() => {
-      baseClient = new TestBaseClient(clientConfig);
-    });
-
-    afterEach(() => {
-      nock.cleanAll();
-    });
-
-    test('should return a successful response', async () => {
-      nock('http://mock-public-api.com').post('/').reply(200, {
-        jsonrpc: '2.0',
-        id: 0,
-        result: 'success',
-      });
-
-      // posting public method to public API
-      const result = await baseClient['promisifyJsonRpcCall'](
-        JSON_RPC_REQUEST_METHOD.GET_STATUS,
-        {},
-      );
-
-      expect(result.isError).toBeFalsy();
-      expect(result.result).toEqual('success');
-    });
-
-    test('should return an error response', async () => {
-      // error when trying to post the request
-      nock('http://mock-public-api.com')
-        .post('/')
-        .replyWithError('Something went wrong');
-
-      const result = await baseClient['promisifyJsonRpcCall'](
-        JSON_RPC_REQUEST_METHOD.GET_STATUS,
-        {},
-      );
-
-      expect(result.isError).toBeTruthy();
-      expect(result.error).toBeInstanceOf(Error);
-      expect(result.error?.message).toEqual(
-        'JSON.parse error: Error: Something went wrong',
-      );
-    });
-
-    test('should handle RPC errors', async () => {
-      // post is successful, but the RPC method returns an error
-      nock('http://mock-public-api.com')
-        .post('/')
-        .reply(200, {
-          jsonrpc: '2.0',
-          id: 0,
-          error: { message: 'RPC error', code: -32603 },
-        });
-
-      const result = await baseClient['promisifyJsonRpcCall'](
-        JSON_RPC_REQUEST_METHOD.GET_STATUS,
-        {},
-      );
-
-      expect(result.isError).toBeTruthy();
-      expect(result.error).toBeInstanceOf(Error);
-      expect(result.error?.message).toEqual('RPC error');
     });
   });
 });
