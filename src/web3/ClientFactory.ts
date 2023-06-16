@@ -9,6 +9,7 @@ export enum DefaultProviderUrls {
   TESTNET = 'https://test.massa.net/api/v2',
   LABNET = 'https://labnet.massa.net/api/v2',
   LOCALNET = 'http://127.0.0.1',
+  BUILDNET = 'https://buildernet.massa.net/api/v2:33035',
 }
 
 /**
