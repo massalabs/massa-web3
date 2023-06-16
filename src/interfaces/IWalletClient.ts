@@ -109,7 +109,7 @@ export interface IWalletClient {
    *
    * @param data - The message to verify.
    * @param signature - The signature to verify.
-   * @param accountSignerAddress - The address of the account used to sign the message.
+   * @param signerPublicKey - The public key of the signer.
    *
    * @returns A promise that resolves to a boolean (true if the signature is valid,
    * false otherwise).
@@ -117,7 +117,7 @@ export interface IWalletClient {
   verifySignature(
     data: string | Buffer,
     signature: ISignature,
-    accountSignerAddress: string,
+    signerPublicKey: string,
   ): Promise<boolean>;
 
   /**
