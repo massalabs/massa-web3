@@ -3,8 +3,8 @@ import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 
 // for CI testing:
-const publicApi = 'https://test.massa.net/api/v2:33035';
-const privateApi = 'https://test.massa.net/api/v2:33034';
+const publicApi = 'http://mock-public-api.com';
+const privateApi = 'http://mock-private-api.com';
 
 // For local testing:
 // const publicApi = 'http://127.0.0.1:33035';
