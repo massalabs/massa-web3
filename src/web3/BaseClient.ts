@@ -48,7 +48,7 @@ export const PERIOD_OFFSET = 5;
  * The `BaseClient` class should not be instantiated directly; instead, it should
  * be extended by other client classes to provide additional functionality on top of the core
  * methods provided by this class.
- * 
+ *
  * @throws Will throw an error if no public providers are included in client configuration.
  * @throws Will throw an error if no private providers are included in client configuration.
  */
@@ -92,7 +92,7 @@ export class BaseClient {
    * This methods add the providers to the existing ones in the clientConfig object.
    *
    * @param providers - The new providers to set as an array of IProvider.
-   * 
+   *
    * @throws Will throw an error if no public providers are included in the given array of providers.
    * @throws Will throw an error if no private providers are included in the given array of providers.
    */
