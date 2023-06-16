@@ -199,7 +199,7 @@ export class BaseClient {
    *
    * @returns A promise that resolves as a JsonRpcResponseData.
    */
-  public async promisifyJsonRpcCall<T>(
+  private async promisifyJsonRpcCall<T>(
     resource: JSON_RPC_REQUEST_METHOD,
     params: object,
   ): Promise<JsonRpcResponseData<T>> {
