@@ -37,7 +37,7 @@ class TestBaseClient extends BaseClient {
 }
 
 describe('BaseClient', () => {
-  describe('getProviderForRpcMethod', () => {
+  describe('sendJsonRPCRequest', () => {
     let baseClient: TestBaseClient;
     const mockAxios = axios as jest.Mocked<typeof axios>;
 
