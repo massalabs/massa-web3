@@ -1,4 +1,8 @@
-import { EventPoller, ON_MASSA_EVENT_DATA } from '../../src/web3/EventPoller';
+import {
+  EventPoller,
+  ON_MASSA_EVENT_DATA,
+  ON_MASSA_EVENT_ERROR,
+} from '../../src/web3/EventPoller';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
 import { IEvent } from '../../src/interfaces/IEvent';
@@ -120,6 +124,23 @@ describe('EventPoller', () => {
     );
     expect(eventPoller['lastSlot']).toEqual(
       mockedEvents[mockedEvents.length - 1].context.slot,
+    );
+  });
+
+  test.only('should emit ON_MASSA_EVENT_ERROR event if an error occurs', async () => {
+    const errorMessage = 'An error occurred';
+    // Mock the getFilteredScOutputEvents method to throw an error
+    jest
+      .spyOn(web3Client.smartContracts(), 'getFilteredScOutputEvents')
+      .mockRejectedValue(new Error(errorMessage));
+    jest.spyOn(eventPoller, 'emit');
+
+    await eventPoller['callback']();
+
+    // Verify the error event was emitted
+    expect(eventPoller.emit).toHaveBeenCalledWith(
+      ON_MASSA_EVENT_ERROR,
+      new Error(errorMessage),
     );
   });
 });
