@@ -125,6 +125,7 @@ describe('EventPoller', () => {
 
   afterEach(() => {
     eventPoller.stopPolling();
+    jest.clearAllMocks();
   });
 
   test('should poll for events, filter them, sort them, and emit ON_MASSA_EVENT_DATA event', async () => {
