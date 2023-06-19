@@ -1,4 +1,8 @@
-import { EventPoller, ON_MASSA_EVENT_DATA } from '../../src/web3/EventPoller';
+import {
+  EventPoller,
+  ON_MASSA_EVENT_DATA,
+  ON_MASSA_EVENT_ERROR,
+} from '../../src/web3/EventPoller';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
 import { IEvent } from '../../src/interfaces/IEvent';
@@ -41,6 +45,28 @@ jest.mock('../../src/utils/time', () => {
   };
 });
 
+function createEvent(
+  id: string,
+  data: string,
+  slot: ISlot,
+  callStack: string[],
+): IEvent {
+  return {
+    id,
+    data: JSON.stringify(data),
+    context: {
+      slot,
+      block: null,
+      read_only: false,
+      call_stack: callStack,
+      index_in_slot: 0,
+      origin_operation_id: null,
+      is_final: true,
+      is_error: false,
+    },
+  };
+}
+
 describe('EventPoller', () => {
   let eventPoller: EventPoller;
   let baseAccount: IAccount;
@@ -73,33 +99,10 @@ describe('EventPoller', () => {
   afterEach(() => {
     eventPoller.stopPolling();
     jest.clearAllMocks();
-    jest.resetAllMocks();
   });
 
   describe('compareByThreadAndPeriod', () => {
     test('callback should sort events by thread and period correctly', async () => {
-      function createEvent(
-        id: string,
-        data: string,
-        slot: ISlot,
-        callStack: string[],
-      ): IEvent {
-        return {
-          id,
-          data: JSON.stringify(data),
-          context: {
-            slot,
-            block: null,
-            read_only: false,
-            call_stack: callStack,
-            index_in_slot: 0,
-            origin_operation_id: null,
-            is_final: true,
-            is_error: false,
-          },
-        };
-      }
-
       const mockedEvents: IEvent[] = [
         createEvent('event1', 'value1', { period: 1, thread: 1 }, ['address1']), // n°1
         createEvent('event2', 'value2', { period: 2, thread: 1 }, ['address2']), // n°3
@@ -145,6 +148,29 @@ describe('EventPoller', () => {
       ).toHaveBeenCalledTimes(1);
 
       jest.useRealTimers();
+    });
+  });
+
+  describe('EventPoller startEventsPolling', () => {
+    const onData = jest.fn();
+    const onError = jest.fn();
+
+    beforeEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    test('should start events polling and set onData and onError when both are provided', () => {
+      const eventPoller = EventPoller.startEventsPolling(
+        eventFilter,
+        pollIntervalMillis,
+        web3Client,
+        onData,
+        onError,
+      );
+
+      expect(eventPoller).toBeInstanceOf(EventPoller);
+      expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(1);
+      expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(1);
     });
   });
 });
