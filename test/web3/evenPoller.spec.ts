@@ -172,5 +172,32 @@ describe('EventPoller', () => {
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(1);
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(1);
     });
+
+    test('should start events polling and set onData only when onError is not provided', () => {
+      const eventPoller = EventPoller.startEventsPolling(
+        eventFilter,
+        pollIntervalMillis,
+        web3Client,
+        onData,
+      );
+
+      expect(eventPoller).toBeInstanceOf(EventPoller);
+      expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(1);
+      expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(0);
+    });
+
+    test('should start events polling and set onError only when onData is not provided', () => {
+      const eventPoller = EventPoller.startEventsPolling(
+        eventFilter,
+        pollIntervalMillis,
+        web3Client,
+        undefined,
+        onError,
+      );
+
+      expect(eventPoller).toBeInstanceOf(EventPoller);
+      expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(0);
+      expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(1);
+    });
   });
 });
