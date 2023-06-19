@@ -14,6 +14,85 @@ import {
   DefaultProviderUrls,
 } from '../../src/web3/ClientFactory';
 import { IAccount } from '../../src/interfaces/IAccount';
+import { Timeout } from '../../src/utils/time';
+
+// Mock the Timeout class
+jest.mock('../../src/utils/time', () => {
+  function Timeout(timeoutMil, callback) {
+    this.isCleared = false;
+    this.isCalled = false;
+    this.timeoutHook = setTimeout(() => {
+      if (!this.isCleared) {
+        this.isCalled = true;
+        callback();
+      }
+    }, timeoutMil);
+    this.clear = function () {
+      if (!this.isCleared) {
+        clearTimeout(this.timeoutHook);
+        this.isCleared = true;
+      }
+    };
+  }
+
+  return {
+    Timeout: jest.fn(Timeout),
+  };
+});
+
+const mockedEvents: IEvent[] = [
+  {
+    id: 'event1',
+    data: '{"key1": "value1"}',
+    context: {
+      slot: {
+        period: 1,
+        thread: 1,
+      },
+      block: null,
+      read_only: false,
+      call_stack: ['address1'],
+      index_in_slot: 0,
+      origin_operation_id: null,
+      is_final: true,
+      is_error: false,
+    },
+  },
+  {
+    id: 'event2',
+    data: '{"key2": "value2"}',
+    context: {
+      slot: {
+        period: 2,
+        thread: 2,
+      },
+      block: null,
+      read_only: false,
+      call_stack: ['address2'],
+      index_in_slot: 0,
+      origin_operation_id: null,
+      is_final: true,
+      is_error: false,
+    },
+  },
+  {
+    id: 'event3',
+    data: '{"key3": "value3"}',
+    context: {
+      slot: {
+        period: 3,
+        thread: 3,
+      },
+      block: null,
+      read_only: false,
+      call_stack: ['address3'],
+      index_in_slot: 0,
+      origin_operation_id: null,
+      is_final: true,
+      is_error: false,
+    },
+  },
+];
 
 describe('EventPoller', () => {
   let eventPoller: EventPoller;
@@ -49,60 +128,6 @@ describe('EventPoller', () => {
   });
 
   test('should poll for events, filter them, sort them, and emit ON_MASSA_EVENT_DATA event', async () => {
-    const mockedEvents: IEvent[] = [
-      {
-        id: 'event1',
-        data: '{"key1": "value1"}',
-        context: {
-          slot: {
-            period: 1,
-            thread: 1,
-          },
-          block: null,
-          read_only: false,
-          call_stack: ['address1'],
-          index_in_slot: 0,
-          origin_operation_id: null,
-          is_final: true,
-          is_error: false,
-        },
-      },
-      {
-        id: 'event2',
-        data: '{"key2": "value2"}',
-        context: {
-          slot: {
-            period: 2,
-            thread: 2,
-          },
-          block: null,
-          read_only: false,
-          call_stack: ['address2'],
-          index_in_slot: 0,
-          origin_operation_id: null,
-          is_final: true,
-          is_error: false,
-        },
-      },
-      {
-        id: 'event3',
-        data: '{"key3": "value3"}',
-        context: {
-          slot: {
-            period: 3,
-            thread: 3,
-          },
-          block: null,
-          read_only: false,
-          call_stack: ['address3'],
-          index_in_slot: 0,
-          origin_operation_id: null,
-          is_final: true,
-          is_error: false,
-        },
-      },
-    ];
-
     // Mock the getFilteredScOutputEvents method to return the mocked events
     jest
       .spyOn(web3Client.smartContracts(), 'getFilteredScOutputEvents')
@@ -127,7 +152,7 @@ describe('EventPoller', () => {
     );
   });
 
-  test.only('should emit ON_MASSA_EVENT_ERROR event if an error occurs', async () => {
+  test('should emit ON_MASSA_EVENT_ERROR event if an error occurs', async () => {
     const errorMessage = 'An error occurred';
     // Mock the getFilteredScOutputEvents method to throw an error
     jest
@@ -136,11 +161,41 @@ describe('EventPoller', () => {
     jest.spyOn(eventPoller, 'emit');
 
     await eventPoller['callback']();
-
     // Verify the error event was emitted
     expect(eventPoller.emit).toHaveBeenCalledWith(
       ON_MASSA_EVENT_ERROR,
       new Error(errorMessage),
     );
+  });
+
+  test('should reset the interval and call callback again after the specified poll interval', async () => {
+    // Mock the getFilteredScOutputEvents method to return the mocked events
+    jest
+      .spyOn(web3Client.smartContracts(), 'getFilteredScOutputEvents')
+      .mockResolvedValue(mockedEvents);
+
+    // Set lastSlot to simulate an existing value
+    eventPoller['lastSlot'] = { period: 1, thread: 1 } as ISlot;
+
+    // Replacing setTimeout with jest's fake timers
+    jest.useFakeTimers();
+    await eventPoller['callback']();
+
+    // Assert that setTimeout was called once and with the correct arguments
+    expect(Timeout).toHaveBeenCalledTimes(1);
+    expect(Timeout).toHaveBeenCalledWith(
+      pollIntervalMillis,
+      expect.any(Function),
+    );
+
+    // Fast-forward the timer and assert callback is called again
+    jest.runOnlyPendingTimers();
+
+    // Assert that getFilteredScOutputEvents was called twice
+    expect(
+      web3Client.smartContracts().getFilteredScOutputEvents,
+    ).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
   });
 });
