@@ -7,8 +7,8 @@ import { ProviderType } from '../../src/interfaces/IProvider';
 import { Client } from '../../src/web3/Client';
 import { IAccount } from '../../src/interfaces/IAccount';
 
-const publicApi = 'http://mock-public-api.com';
-const privateApi = 'http://mock-private-api.com';
+const publicApi = 'https://mock-public-api.com';
+const privateApi = 'https://mock-private-api.com';
 
 describe('ClientFactory', () => {
   describe('createDefaultClient', () => {
