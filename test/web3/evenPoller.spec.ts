@@ -10,6 +10,36 @@ import {
 } from '../../src/web3/ClientFactory';
 import { IAccount } from '../../src/interfaces/IAccount';
 import { ISlot } from '../../src/interfaces/ISlot';
+import { Timeout } from '../../src/utils/time';
+
+// mock axios to intercept any axios POST request and resolve it immediately with an empty object, so
+// no request is pending before Jest finishes the test
+jest.mock('axios', () => ({
+  post: jest.fn(() => Promise.resolve({ data: {} })),
+}));
+
+jest.mock('../../src/utils/time', () => {
+  function Timeout(timeoutMil, callback) {
+    this.isCleared = false;
+    this.isCalled = false;
+    this.timeoutHook = setTimeout(() => {
+      if (!this.isCleared) {
+        this.isCalled = true;
+        callback();
+      }
+    }, timeoutMil);
+    this.clear = function () {
+      if (!this.isCleared) {
+        clearTimeout(this.timeoutHook);
+        this.isCleared = true;
+      }
+    };
+  }
+
+  return {
+    Timeout: jest.fn(Timeout),
+  };
+});
 
 describe('EventPoller', () => {
   let eventPoller: EventPoller;
@@ -43,9 +73,10 @@ describe('EventPoller', () => {
   afterEach(() => {
     eventPoller.stopPolling();
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
-  describe.only('compareByThreadAndPeriod', () => {
+  describe('compareByThreadAndPeriod', () => {
     test('callback should sort events by thread and period correctly', async () => {
       function createEvent(
         id: string,
@@ -94,6 +125,26 @@ describe('EventPoller', () => {
         mockedEvents[3],
         mockedEvents[5],
       ]);
+    });
+  });
+
+  describe('startPolling', () => {
+    test('should create a new Timeout instance and call callback function after delay', () => {
+      jest.useFakeTimers();
+      jest.spyOn(web3Client.smartContracts(), 'getFilteredScOutputEvents');
+
+      eventPoller.startPolling();
+
+      expect((Timeout as jest.Mock).mock.calls.length).toBe(1);
+      expect((Timeout as jest.Mock).mock.calls[0][0]).toBe(pollIntervalMillis);
+
+      // Fast-forward the timer and assert callback is called
+      jest.runOnlyPendingTimers();
+      expect(
+        web3Client.smartContracts().getFilteredScOutputEvents,
+      ).toHaveBeenCalledTimes(1);
+
+      jest.useRealTimers();
     });
   });
 });
