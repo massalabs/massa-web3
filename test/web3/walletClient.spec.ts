@@ -597,7 +597,7 @@ describe('WalletClient', () => {
     let receiverAccount: IAccount;
     let mockTxData: ITransactionData;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
       receiverAccount = await WalletClient.walletGenerateNewAccount();
       mockTxData = {
         fee: 1n,
