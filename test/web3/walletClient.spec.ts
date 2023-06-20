@@ -10,6 +10,7 @@ import { ISignature } from '../../src/interfaces/ISignature';
 import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import { mockNodeStatusInfo } from './mockData';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -18,12 +19,12 @@ const receiverPrivateKey =
   'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 // for CI testing:
-// const publicApi = 'https://test.massa.net/api/v2:33035';
-// const privateApi = 'https://test.massa.net/api/v2:33034';
+const publicApi = 'https://mock-public-api.com';
+const privateApi = 'https://mock-private-api.com';
 
-// For local testing:
-const publicApi = 'http://127.0.0.1:33035';
-const privateApi = 'http://127.0.0.1:33034';
+// // For local testing:
+// const publicApi = 'http://127.0.0.1:33035';
+// const privateApi = 'http://127.0.0.1:33034';
 
 const MAX_WALLET_ACCOUNTS = 256;
 
@@ -597,7 +598,7 @@ describe('WalletClient', () => {
     let receiverAccount: IAccount;
     let mockTxData: ITransactionData;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       receiverAccount = await WalletClient.walletGenerateNewAccount();
       mockTxData = {
         fee: 1n,
@@ -605,6 +606,24 @@ describe('WalletClient', () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         recipientAddress: receiverAccount.address!,
       };
+
+      // mock functions to not interact with the node directly
+      const spyGetNodeStatus = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (web3Client.wallet() as any).publicApiClient,
+        'getNodeStatus',
+      );
+      spyGetNodeStatus.mockReturnValue(mockNodeStatusInfo);
+
+      const mockOpIds = ['op1', 'op2', 'op3'];
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+        .mockResolvedValue(mockOpIds);
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
     });
 
     test('should throw an error if no sender account is available for the transaction', async () => {
@@ -621,6 +640,7 @@ describe('WalletClient', () => {
         web3Client.wallet() as any,
         'compactBytesForOperation',
       );
+
       await web3Client.wallet().sendTransaction(mockTxData);
 
       expect(spy).toHaveBeenCalledWith(
