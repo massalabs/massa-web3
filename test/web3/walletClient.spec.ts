@@ -370,6 +370,39 @@ describe('WalletClient', () => {
 
       expect(spy).toHaveBeenCalledWith(mockAddresses);
     });
+
+    test('should call trySafeExecute if retryStrategyOn is false', async () => {
+      const spy = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        web3Client.wallet() as any,
+        'getWalletAddressesInfo',
+      );
+      const mockAddresses = [
+        baseAccount.address!,
+        await WalletClient.walletGenerateNewAccount().then(
+          (account) => account.address!,
+        ),
+      ];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).wallet = mockAddresses.map((address) => ({
+        address,
+      }));
+
+      // Enable retry strategy
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalRetryStrategy = (web3Client.wallet() as any).clientConfig
+        .retryStrategyOn;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).clientConfig.retryStrategyOn = false;
+
+      await web3Client.wallet().walletInfo();
+      expect(spy).toHaveBeenCalledWith(mockAddresses);
+
+      // Restore original retry strategy setting
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
+    });
   });
 
   describe('removeAddressesFromWallet', () => {
