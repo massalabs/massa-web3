@@ -3,6 +3,7 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { Client } from '../../src/web3/Client';
+import { base58Decode } from '../../src/utils/Xbqcrypto';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
@@ -662,6 +663,29 @@ describe('WalletClient', () => {
           expect.objectContaining({ address: anotherAccountBis.address }),
         ]),
       );
+    });
+  });
+
+  describe('getThreadNumber', () => {
+    test('should correctly compute the thread number for an account', async () => {
+      // create an account without providing the 'createdInThread' field
+      const account = await WalletClient.getAccountFromSecretKey(
+        receiverPrivateKey,
+      );
+      delete account.createdInThread;
+
+      await web3Client.wallet().setBaseAccount(account);
+
+      // get the updated account (now with 'createdInThread' field)
+      const baseAccount = await web3Client.wallet().getBaseAccount();
+
+      // manually compute the expected thread number
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const pubKeyHash = base58Decode(account.address!.slice(2));
+      const expectedThreadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
+
+      expect(baseAccount).not.toBeNull();
+      expect(baseAccount?.createdInThread).toEqual(expectedThreadNumber);
     });
   });
 });
