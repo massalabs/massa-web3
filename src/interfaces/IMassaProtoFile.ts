@@ -5,7 +5,8 @@
  * @see candidate_value - If it is different from the final_value, it represents the
  * candidate file (as a byte array) to replace the current proto file.
  */
-export interface IProtoFile {
-  final_value: Uint8Array;
-  candidate_value: Uint8Array;
+export interface IMassaProtoFile {
+  data: string;
+  filePath: string;
+  protoFuncName: string;
 }
