@@ -151,7 +151,7 @@ describe('EventPoller', () => {
     });
   });
 
-  describe('EventPoller startEventsPolling', () => {
+  describe('startEventsPolling', () => {
     const onData = jest.fn();
     const onError = jest.fn();
 
@@ -198,6 +198,45 @@ describe('EventPoller', () => {
       expect(eventPoller).toBeInstanceOf(EventPoller);
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(0);
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(1);
+    });
+  });
+
+  describe.only('getEventsOnce', () => {
+    const eventFilter: IEventFilter | IEventRegexFilter = {
+      start: { period: 2, thread: 1 },
+      end: { period: 3, thread: 2 },
+      emitter_address: 'address4',
+      original_caller_address: null,
+      original_operation_id: null,
+      is_final: null,
+    };
+
+    test.only('should return events when they match the filter', async () => {
+      const mockedEvents: IEvent[] = [
+        createEvent('event1', 'value1', { period: 1, thread: 1 }, ['address1']),
+        createEvent('event3', 'value3', { period: 1, thread: 2 }, ['address3']),
+        createEvent('event4', 'value4', { period: 1, thread: 2 }, ['address4']),
+        createEvent('event2', 'value2', { period: 2, thread: 1 }, ['address2']),
+        createEvent('event5', 'value5', { period: 2, thread: 2 }, ['address4']),
+        createEvent('event6', 'value6', { period: 3, thread: 2 }, ['address5']),
+      ];
+
+      const expectedEvents: Array<IEvent> = [
+        mockedEvents[3],
+        mockedEvents[4],
+        mockedEvents[5],
+      ];
+
+      web3Client.smartContracts = jest.fn().mockReturnValue({
+        getFilteredScOutputEvents: jest.fn().mockResolvedValue(expectedEvents),
+      });
+
+      const events = await EventPoller.getEventsOnce(eventFilter, web3Client);
+
+      expect(
+        web3Client.smartContracts().getFilteredScOutputEvents,
+      ).toHaveBeenCalledWith(eventFilter);
+      expect(events).toEqual(expectedEvents);
     });
   });
 });
