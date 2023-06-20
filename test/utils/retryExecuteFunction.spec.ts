@@ -5,6 +5,11 @@ import { wait } from '../../src/utils/time';
 jest.mock('../../src/utils/time');
 
 describe('trySafeExecute function', () => {
+  beforeAll(() => {
+    const consoleSpy = jest.spyOn(console, 'error');
+    consoleSpy.mockImplementation(() => null);
+  });
+
   beforeEach(() => {
     jest.spyOn(global, 'setTimeout');
     (wait as jest.Mock).mockImplementation((delay: number) => {
@@ -14,6 +19,10 @@ describe('trySafeExecute function', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   it('should execute a function successfully on the first attempt', async () => {
