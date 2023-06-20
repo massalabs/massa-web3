@@ -314,20 +314,19 @@ export class Args {
     ctor: new () => T,
   ): T[] {
     const length = this.nextU32();
+
+    if (!length) {
+      return [];
+    }
+
     if (this.offset + length > this.serialized.length) {
       throw new Error("can't deserialize length of array from given argument");
     }
 
-    const bufferSize = length;
-
-    if (bufferSize === 0) {
-      return [];
-    }
-
-    const buffer = this.getNextData(bufferSize);
+    const buffer = this.getNextData(length);
 
     const value = bytesToSerializableObjectArray<T>(buffer, ctor);
-    this.offset += bufferSize;
+    this.offset += length;
     return value;
   }
 
@@ -343,19 +342,18 @@ export class Args {
    */
   nextNativeTypeArray<T>(typedArrayType: TypedArrayUnit): T[] {
     const length = this.nextU32();
+
+    if (!length) {
+      return [];
+    }
+
     if (this.offset + length > this.serialized.length) {
       throw new Error("can't deserialize length of array from given argument");
     }
 
-    const bufferSize = length;
-
-    if (bufferSize === 0) {
-      return [];
-    }
-
-    const buffer = this.getNextData(bufferSize);
+    const buffer = this.getNextData(length);
     const value = bytesToNativeTypeArray<T>(buffer, typedArrayType);
-    this.offset += bufferSize;
+    this.offset += length;
     return value;
   }
 
