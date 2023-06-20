@@ -170,6 +170,8 @@ describe('EventPoller', () => {
   });
 
   test('should reset the interval and call callback again after the specified poll interval', async () => {
+    const consoleSpy = jest.spyOn(console, 'error');
+    consoleSpy.mockImplementation(() => null);
     // Mock the getFilteredScOutputEvents method to return the mocked events
     jest
       .spyOn(web3Client.smartContracts(), 'getFilteredScOutputEvents')
@@ -198,5 +200,7 @@ describe('EventPoller', () => {
     ).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
+
+    consoleSpy.mockRestore();
   });
 });
