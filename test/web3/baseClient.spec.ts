@@ -7,8 +7,8 @@ import axios, { AxiosRequestHeaders } from 'axios';
 
 jest.mock('axios');
 
-const publicApi = 'http://mock-public-api.com';
-const privateApi = 'http://mock-private-api.com';
+const publicApi = 'https://mock-public-api.com';
+const privateApi = 'https://mock-private-api.com';
 
 export const PERIOD_OFFSET = 5;
 
@@ -133,19 +133,19 @@ describe('BaseClient', () => {
 
       const newProviders: Array<IProvider> = [
         {
-          url: 'http://new-public-api-1.com',
+          url: 'https://new-public-api-1.com',
           type: ProviderType.PUBLIC,
         } as IProvider,
         {
-          url: 'http://new-public-api-2.com',
+          url: 'https://new-public-api-2.com',
           type: ProviderType.PUBLIC,
         } as IProvider,
         {
-          url: 'http://new-private-api-1.com',
+          url: 'https://new-private-api-1.com',
           type: ProviderType.PRIVATE,
         } as IProvider,
         {
-          url: 'http://new-private-api-2.com',
+          url: 'https://new-private-api-2.com',
           type: ProviderType.PRIVATE,
         } as IProvider,
       ];
@@ -157,12 +157,12 @@ describe('BaseClient', () => {
       const publicProviders = baseClient.getPublicProviders();
 
       expect(privateProviders).toHaveLength(2);
-      expect(privateProviders[0].url).toBe('http://new-private-api-1.com');
-      expect(privateProviders[1].url).toBe('http://new-private-api-2.com');
+      expect(privateProviders[0].url).toBe('https://new-private-api-1.com');
+      expect(privateProviders[1].url).toBe('https://new-private-api-2.com');
 
       expect(publicProviders).toHaveLength(2);
-      expect(publicProviders[0].url).toBe('http://new-public-api-1.com');
-      expect(publicProviders[1].url).toBe('http://new-public-api-2.com');
+      expect(publicProviders[0].url).toBe('https://new-public-api-1.com');
+      expect(publicProviders[1].url).toBe('https://new-public-api-2.com');
     });
   });
 
