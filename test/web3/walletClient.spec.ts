@@ -276,6 +276,12 @@ describe('WalletClient', () => {
         expect(info.secretKey).toBe(walletAccounts[index].secretKey);
       });
     });
+
+    test('should return an empty array if the wallet is empty', async () => {
+      await web3Client.wallet().cleanWallet(); // Make sure the wallet is empty
+      const walletInfo = await web3Client.wallet().walletInfo();
+      expect(walletInfo).toEqual([]);
+    });
   });
 
   describe('removeAddressesFromWallet', () => {
@@ -590,7 +596,7 @@ describe('WalletClient', () => {
     });
   });
 
-  describe.only('addAccountsToWallet', () => {
+  describe('addAccountsToWallet', () => {
     test('should throw an error when the number of accounts exceeds the maximum limit', async () => {
       const accounts = new Array(MAX_WALLET_ACCOUNTS + 1).fill(baseAccount);
       await expect(
