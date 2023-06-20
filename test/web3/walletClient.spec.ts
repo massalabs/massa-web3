@@ -10,6 +10,7 @@ import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
 import { ISignature } from '../../src/interfaces/ISignature';
 import { IFullAddressInfo } from '../../src/interfaces/IFullAddressInfo';
+import { mockResultSendJsonRPCRequestWalletInfo } from '../../src/web3/mockData';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -18,12 +19,12 @@ const receiverPrivateKey =
   'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 // for CI testing:
-// const publicApi = 'https://test.massa.net/api/v2:33035';
-// const privateApi = 'https://test.massa.net/api/v2:33034';
+const publicApi = 'https://mock-public-api.com';
+const privateApi = 'https://mock-private-api.com';
 
 // For local testing:
-const publicApi = 'http://127.0.0.1:33035';
-const privateApi = 'http://127.0.0.1:33034';
+// const publicApi = 'http://127.0.0.1:33035';
+// const privateApi = 'http://127.0.0.1:33034';
 
 const MAX_WALLET_ACCOUNTS = 256;
 
@@ -349,6 +350,13 @@ describe('WalletClient', () => {
   });
 
   describe('getWalletAddressesInfo', () => {
+    beforeEach(() => {
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+        .mockResolvedValue(mockResultSendJsonRPCRequestWalletInfo);
+    });
+
     test('should call getWalletAddressesInfo when walletInfo is called', async () => {
       const spy = jest.spyOn(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
