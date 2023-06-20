@@ -39,7 +39,6 @@ jest.mock('../../src/utils/time', () => {
       }
     };
   }
-
   return {
     Timeout: jest.fn(Timeout),
   };
@@ -75,9 +74,9 @@ describe('EventPoller', () => {
 
   const pollIntervalMillis = 1000;
   const eventFilter: IEventFilter | IEventRegexFilter = {
-    start: null,
-    end: null,
-    emitter_address: null,
+    start: { period: 2, thread: 1 },
+    end: { period: 3, thread: 2 },
+    emitter_address: 'address4',
     original_caller_address: null,
     original_operation_id: null,
     is_final: null,
@@ -203,14 +202,10 @@ describe('EventPoller', () => {
   });
 
   describe('getEventsOnce', () => {
-    const eventFilter: IEventFilter | IEventRegexFilter = {
-      start: { period: 2, thread: 1 },
-      end: { period: 3, thread: 2 },
-      emitter_address: 'address4',
-      original_caller_address: null,
-      original_operation_id: null,
-      is_final: null,
-    };
+    const spygetFilteredEvents = jest.spyOn(
+      web3Client.smartContracts(),
+      'getFilteredScOutputEvents',
+    );
 
     afterEach(() => {
       jest.clearAllMocks();
@@ -218,15 +213,12 @@ describe('EventPoller', () => {
 
     test('should return events when they match the filter', async () => {
       const expectedEvents: Array<IEvent> = [
-        createEvent('event2', 'value2', { period: 2, thread: 1 }, ['address2']),
-        createEvent('event5', 'value5', { period: 2, thread: 2 }, ['address4']),
-        createEvent('event6', 'value6', { period: 3, thread: 2 }, ['address5']),
+        createEvent('1', 'data1', { period: 2, thread: 1 }, ['address1']),
+        createEvent('2', 'data2', { period: 2, thread: 2 }, ['address2']),
+        createEvent('3', 'data3', { period: 3, thread: 2 }, ['address3']),
       ];
 
-      web3Client.smartContracts = jest.fn().mockReturnValue({
-        getFilteredScOutputEvents: jest.fn().mockResolvedValue(expectedEvents),
-      });
-
+      spygetFilteredEvents.mockResolvedValue(expectedEvents);
       const events = await EventPoller.getEventsOnce(eventFilter, web3Client);
 
       expect(
@@ -236,9 +228,7 @@ describe('EventPoller', () => {
     });
 
     test('should return empty array when no events match the filter', async () => {
-      jest
-        .spyOn(web3Client.smartContracts(), 'getFilteredScOutputEvents')
-        .mockResolvedValue([]);
+      spygetFilteredEvents.mockResolvedValue([]);
 
       const events = await EventPoller.getEventsOnce(eventFilter, web3Client);
 
