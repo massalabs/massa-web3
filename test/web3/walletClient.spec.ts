@@ -520,6 +520,9 @@ describe('WalletClient', () => {
     });
 
     test('should return false for an invalid signature', async () => {
+      const consoleSpy = jest.spyOn(console, 'error');
+      consoleSpy.mockImplementation(() => null);
+
       const data = 'Test message';
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -533,6 +536,8 @@ describe('WalletClient', () => {
         .verifySignature(data, invalidSignature, signerPublicKey);
 
       expect(result).toBe(false);
+
+      consoleSpy.mockRestore();
     });
   });
 
