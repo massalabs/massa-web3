@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { IAccount } from '../../src/interfaces/IAccount';
 import { ClientFactory } from '../../src/web3/ClientFactory';
@@ -156,7 +157,6 @@ describe('WalletClient', () => {
       const targetAccount = accounts[1]; // Assume we want to find the second account
       const fetchedAccount = web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getWalletAccountByAddress(targetAccount.address!);
 
       expect(fetchedAccount).not.toBeNull();
@@ -181,7 +181,6 @@ describe('WalletClient', () => {
       const upperCaseAddress = targetAccount.address?.toUpperCase();
       const fetchedAccount = web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getWalletAccountByAddress(upperCaseAddress!);
 
       expect(fetchedAccount).not.toBeNull();
@@ -235,9 +234,7 @@ describe('WalletClient', () => {
         await WalletClient.walletGenerateNewAccount(),
       ];
       const secretKeys: string[] = [
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         accounts[0].secretKey!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         accounts[1].secretKey!,
       ];
 
@@ -323,19 +320,13 @@ describe('WalletClient', () => {
 
       const mockAddressInfo: IFullAddressInfo[] = [
         createFullAddressInfo(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           baseAccount.address!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           baseAccount.publicKey!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           baseAccount.secretKey!,
         ),
         createFullAddressInfo(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           accounts[1].address!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           accounts[1].publicKey!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           accounts[1].secretKey!,
         ),
       ];
@@ -354,6 +345,30 @@ describe('WalletClient', () => {
         expect(info.publicKey).toBe(accounts[index].publicKey);
         expect(info.secretKey).toBe(accounts[index].secretKey);
       });
+    });
+  });
+
+  describe('getWalletAddressesInfo', () => {
+    test('should call getWalletAddressesInfo when walletInfo is called', async () => {
+      const spy = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        web3Client.wallet() as any,
+        'getWalletAddressesInfo',
+      );
+      const mockAddresses = [
+        baseAccount.address!,
+        await WalletClient.walletGenerateNewAccount().then(
+          (account) => account.address!,
+        ),
+      ];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).wallet = mockAddresses.map((address) => ({
+        address,
+      }));
+
+      await web3Client.wallet().walletInfo();
+
+      expect(spy).toHaveBeenCalledWith(mockAddresses);
     });
   });
 
@@ -461,7 +476,6 @@ describe('WalletClient', () => {
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const accountSignerAddress: string = baseAccount.address!;
 
       const signedMessage = await web3Client
@@ -489,7 +503,6 @@ describe('WalletClient', () => {
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const accountSignerAddress = baseAccount.address!;
 
       const signedMessage = await web3Client
@@ -585,7 +598,6 @@ describe('WalletClient', () => {
     test('should return true for a valid signature', async () => {
       const message = 'Test message';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const signerPublicKey = baseAccount.publicKey!;
       const validSignature: ISignature = {
         base58Encoded:
@@ -604,7 +616,6 @@ describe('WalletClient', () => {
 
       const data = 'Test message';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const signerPublicKey = baseAccount.publicKey!;
       const invalidSignature: ISignature = {
         base58Encoded:
@@ -628,7 +639,6 @@ describe('WalletClient', () => {
 
       const balance = await web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getAccountBalance(ACCOUNT_ADDRESS!);
 
       expect(balance).not.toBeNull();
@@ -646,7 +656,6 @@ describe('WalletClient', () => {
 
       const balance = await web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getAccountBalance(freshAccount.address!);
 
       expect(balance).not.toBeNull();
@@ -752,7 +761,6 @@ describe('WalletClient', () => {
       const baseAccount = await web3Client.wallet().getBaseAccount();
 
       // manually compute the expected thread number
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const pubKeyHash = base58Decode(account.address!.slice(2));
       const expectedThreadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
 
