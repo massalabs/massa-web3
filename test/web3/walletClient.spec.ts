@@ -8,6 +8,7 @@ import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
 import { ISignature } from '../../src/interfaces/ISignature';
+import { IFullAddressInfo } from '../../src/interfaces/IFullAddressInfo';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -38,6 +39,32 @@ export async function initializeClient() {
     deployerAccount, // setting deployer account as base account
   );
   return web3Client;
+}
+
+function createFullAddressInfo(
+  address: string,
+  publicKey: string,
+  secretKey: string,
+): IFullAddressInfo {
+  return {
+    address,
+    candidate_balance: '0',
+    candidate_datastore_keys: [],
+    candidate_roll_count: 0,
+    created_blocks: [],
+    created_endorsements: [],
+    created_operations: [],
+    cycle_infos: [],
+    deferred_credits: [],
+    final_balance: '0',
+    final_datastore_keys: [],
+    final_roll_count: 0,
+    next_block_draws: [],
+    next_endorsement_draws: [],
+    thread: 0,
+    publicKey,
+    secretKey,
+  };
 }
 
 describe('WalletClient', () => {
@@ -266,22 +293,67 @@ describe('WalletClient', () => {
   });
 
   describe('walletInfo', () => {
-    test.skip('should return information for each address in the wallet', async () => {
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
-      const walletInfo = await web3Client.wallet().walletInfo();
-
-      expect(walletInfo.length).toBe(walletAccounts.length);
-
-      walletInfo.forEach((info, index) => {
-        expect(info.publicKey).toBe(walletAccounts[index].publicKey);
-        expect(info.secretKey).toBe(walletAccounts[index].secretKey);
-      });
-    });
-
     test('should return an empty array if the wallet is empty', async () => {
       await web3Client.wallet().cleanWallet(); // Make sure the wallet is empty
       const walletInfo = await web3Client.wallet().walletInfo();
       expect(walletInfo).toEqual([]);
+    });
+
+    test('should throw an error if the number of retrieved wallets does not match the number of addresses in the wallet', async () => {
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'getWalletAddressesInfo')
+        .mockImplementation(async () => {
+          return [
+            /* return fewer or more addresses than in the wallet */
+          ];
+        });
+
+      await expect(web3Client.wallet().walletInfo()).rejects.toThrow(
+        /Requested wallets not fully retrieved./,
+      );
+    });
+
+    test('should return IFullAddressInfo objects that include information from the corresponding IAddressInfo', async () => {
+      const accounts = [
+        baseAccount,
+        await WalletClient.walletGenerateNewAccount(),
+      ];
+      await web3Client.wallet().addAccountsToWallet(accounts); // will not add the base account
+
+      const mockAddressInfo: IFullAddressInfo[] = [
+        createFullAddressInfo(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          baseAccount.address!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          baseAccount.publicKey!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          baseAccount.secretKey!,
+        ),
+        createFullAddressInfo(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          accounts[1].address!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          accounts[1].publicKey!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          accounts[1].secretKey!,
+        ),
+      ];
+
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'getWalletAddressesInfo')
+        .mockImplementation(async () => {
+          return mockAddressInfo;
+        });
+
+      const walletInfo = await web3Client.wallet().walletInfo();
+      // check that the returned walletInfo is an array of IFullAddressInfo with correct information
+      walletInfo.forEach((info, index) => {
+        expect(info.address).toBe(mockAddressInfo[index].address);
+        expect(info.publicKey).toBe(accounts[index].publicKey);
+        expect(info.secretKey).toBe(accounts[index].secretKey);
+      });
     });
   });
 
