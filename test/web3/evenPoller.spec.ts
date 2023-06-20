@@ -202,13 +202,13 @@ describe('EventPoller', () => {
   });
 
   describe('getEventsOnce', () => {
-    const spygetFilteredEvents = jest.spyOn(
-      web3Client.smartContracts(),
-      'getFilteredScOutputEvents',
-    );
+    let spygetFilteredEvents;
 
-    afterEach(() => {
-      jest.clearAllMocks();
+    beforeEach(() => {
+      spygetFilteredEvents = jest.spyOn(
+        web3Client.smartContracts(),
+        'getFilteredScOutputEvents',
+      );
     });
 
     test('should return events when they match the filter', async () => {
