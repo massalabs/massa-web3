@@ -589,4 +589,73 @@ describe('WalletClient', () => {
       expect(balance).toBeNull();
     });
   });
+
+  describe.only('addAccountsToWallet', () => {
+    test('should throw an error when the number of accounts exceeds the maximum limit', async () => {
+      const accounts = new Array(MAX_WALLET_ACCOUNTS + 1).fill(baseAccount);
+      await expect(
+        web3Client.wallet().addAccountsToWallet(accounts),
+      ).rejects.toThrow(
+        new RegExp(
+          `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}`,
+        ),
+      );
+    });
+    test('should throw an error when an account private key is missing', async () => {
+      const accountWithoutKey = { ...baseAccount, secretKey: null };
+      await expect(
+        web3Client.wallet().addAccountsToWallet([accountWithoutKey]),
+      ).rejects.toThrow(new Error('Missing account private key'));
+    });
+
+    test('should throw an error when the submitted public key does not match the private key', async () => {
+      const accountWithMismatchedPublicKey = {
+        ...baseAccount,
+        publicKey: 'mismatchedPublicKey',
+      };
+      await expect(
+        web3Client
+          .wallet()
+          .addAccountsToWallet([accountWithMismatchedPublicKey]),
+      ).rejects.toThrow(
+        new Error(
+          'Public key does not correspond the the private key submitted',
+        ),
+      );
+    });
+
+    test('should throw an error when the account address does not match the private key-derived address', async () => {
+      const accountWithMismatchedAddress = {
+        ...baseAccount,
+        address: 'mismatchedAddress',
+      };
+      await expect(
+        web3Client.wallet().addAccountsToWallet([accountWithMismatchedAddress]),
+      ).rejects.toThrow(
+        new Error('Account address not correspond the the address submitted'),
+      );
+    });
+
+    test('should not add duplicate accounts to the wallet', async () => {
+      await web3Client.wallet().addAccountsToWallet([baseAccount, baseAccount]);
+      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      expect(walletAccounts.length).toBe(1); // only one unique account should be added
+    });
+
+    test('should correctly add accounts to the wallet', async () => {
+      const anotherAccount = await WalletClient.walletGenerateNewAccount();
+      const anotherAccountBis = await WalletClient.walletGenerateNewAccount();
+      const addedAccounts = await web3Client
+        .wallet()
+        .addAccountsToWallet([baseAccount, anotherAccount, anotherAccountBis]);
+      expect(addedAccounts.length).toBe(2);
+      // baseAccount should be ignored as it is already in the wallet
+      expect(addedAccounts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ address: anotherAccount.address }),
+          expect.objectContaining({ address: anotherAccountBis.address }),
+        ]),
+      );
+    });
+  });
 });
