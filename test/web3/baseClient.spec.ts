@@ -1,9 +1,9 @@
 import { BaseClient } from '../../src/web3/BaseClient';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
-
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import axios, { AxiosRequestHeaders } from 'axios';
+import axios from 'axios';
+import { requestHeaders } from '../../src/web3/BaseClient';
 
 jest.mock('axios');
 
@@ -11,14 +11,6 @@ const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';
 
 export const PERIOD_OFFSET = 5;
-
-const requestHeaders = {
-  Accept:
-    'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': true,
-  'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-} as AxiosRequestHeaders;
 
 class TestBaseClient extends BaseClient {
   constructor(config: IClientConfig) {
