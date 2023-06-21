@@ -33,22 +33,26 @@ describe('PublicApiClient', () => {
     jsonRpcRequestMethod: JSON_RPC_REQUEST_METHOD,
     wrapArgsInArray: boolean,
   ) {
-    test(`should call sendJsonRPCRequest with correct arguments for ${operation}`, async () => {
+    test(`should call sendJsonRPCRequest with correct arguments`, async () => {
       mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
 
       await (client as any)[operation](mockData);
 
+      let rpcArgs;
+
+      if (wrapArgsInArray) {
+        rpcArgs = [Array.isArray(mockData) ? mockData : []];
+      } else {
+        rpcArgs = Array.isArray(mockData) ? mockData : [];
+      }
+
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,
-        wrapArgsInArray
-          ? [Array.isArray(mockData) ? mockData : []]
-          : Array.isArray(mockData)
-          ? mockData
-          : [],
+        rpcArgs,
       );
     });
 
-    test(`should return the correct result for ${operation}`, async () => {
+    test(`should return the correct result`, async () => {
       mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
 
       const result = await (client as any)[operation](mockData);
@@ -56,7 +60,7 @@ describe('PublicApiClient', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    test(`should handle errors correctly for ${operation}`, async () => {
+    test(`should handle errors correctly`, async () => {
       const mockError = new Error('Error message');
       mockSendJsonRPCRequest.mockRejectedValue(mockError);
 
@@ -65,7 +69,7 @@ describe('PublicApiClient', () => {
       );
     });
 
-    test(`should call trySafeExecute if retryStrategyOn is true for ${operation}`, async () => {
+    test(`should call trySafeExecute if retryStrategyOn is true`, async () => {
       // Enable retry strategy
       const originalRetryStrategy = (client as any).clientConfig
         .retryStrategyOn;
@@ -75,13 +79,16 @@ describe('PublicApiClient', () => {
 
       const result = await (client as any)[operation](mockData);
 
+      let rpcArgs;
+      if (wrapArgsInArray) {
+        rpcArgs = [Array.isArray(mockData) ? mockData : []];
+      } else {
+        rpcArgs = Array.isArray(mockData) ? mockData : [];
+      }
+
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,
-        wrapArgsInArray
-          ? [Array.isArray(mockData) ? mockData : []]
-          : Array.isArray(mockData)
-          ? mockData
-          : [],
+        rpcArgs,
       );
 
       expect(result).toEqual(mockResponse);
