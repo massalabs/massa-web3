@@ -85,7 +85,7 @@ export {
   ON_MASSA_EVENT_ERROR,
 } from './web3/EventPoller';
 export { SmartContractsClient } from './web3/SmartContractsClient';
-export { Args } from './utils/arguments';
+export * from './utils/arguments';
 export { fromMAS, toMAS, MassaUnits } from './utils/converters';
 export * from './utils/serializers';
 
