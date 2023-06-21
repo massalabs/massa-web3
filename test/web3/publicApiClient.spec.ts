@@ -75,12 +75,14 @@ describe('PublicApiClient', () => {
         Promise.resolve(mockGraphInterval),
       );
 
-      await client.getGraphInterval(mockGraphInterval);
+      const result = await client.getGraphInterval(mockGraphInterval);
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         JSON_RPC_REQUEST_METHOD.GET_GRAPH_INTERVAL,
         [mockGraphInterval],
       );
+
+      expect(result).toEqual(mockGraphInterval);
 
       // Restore retry strategy
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
