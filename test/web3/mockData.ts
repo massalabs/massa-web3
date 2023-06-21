@@ -2,6 +2,8 @@
     This file contains mock data for testing purposes.
 */
 
+import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
+
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   node_ip: null,
@@ -47,4 +49,9 @@ export const mockNodeStatusInfo = {
     roll_price: '100',
     max_block_size: 1000000,
   },
+};
+
+export const mockGraphInterval: IGetGraphInterval = {
+  start: 1624153200000,
+  end: 1624156800000,
 };
