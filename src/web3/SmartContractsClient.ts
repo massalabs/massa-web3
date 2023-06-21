@@ -508,7 +508,7 @@ export class SmartContractsClient
         let content = proto['final_value'].toString();
         let protos = content.split('syntax = "proto3";'); // splitting all the proto functions to make separate proto file for each functions
         for (let func of protos) {
-          const rName = /message (.+)RHelper/gm;
+          const rName = /message (.+)RHelper /gm;
           const fName = rName.exec(func)[0]; // retrieving the proto function name
           const filepath = path.join(outputDirectory, fName + '.proto');
           writeFileSync(filepath, func); // writing the proto file
