@@ -2,7 +2,8 @@ import { PublicApiClient } from '../../src/web3/PublicApiClient';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
-import { mockGraphInterval } from './mockData';
+import { mockBlock, mockGraphInterval } from './mockData';
+import { ISlot } from '../../src/interfaces/ISlot';
 
 export const PERIOD_OFFSET = 5;
 
@@ -83,6 +84,64 @@ describe('PublicApiClient', () => {
       );
 
       expect(result).toEqual(mockGraphInterval);
+
+      // Restore retry strategy
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (client as any).clientConfig.retryStrategyOn = originalRetryStrategy;
+    });
+  });
+
+  describe('getBlockcliqueBlockBySlot', () => {
+    const mockSlot: ISlot = {
+      period: 1,
+      thread: 1,
+    };
+    test('should call sendJsonRPCRequest with correct arguments', async () => {
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockBlock));
+
+      await client.getBlockcliqueBlockBySlot(mockSlot);
+
+      expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT,
+        [mockSlot],
+      );
+    });
+
+    test('should return the correct result', async () => {
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockBlock));
+
+      const result = await client.getBlockcliqueBlockBySlot(mockSlot);
+
+      expect(result).toEqual(mockBlock);
+    });
+
+    test('should handle errors correctly', async () => {
+      const mockError = new Error('Error message');
+      mockSendJsonRPCRequest.mockRejectedValue(mockError);
+
+      await expect(client.getBlockcliqueBlockBySlot(mockSlot)).rejects.toThrow(
+        mockError,
+      );
+    });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      // Enable retry strategy
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalRetryStrategy = (client as any).clientConfig
+        .retryStrategyOn;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (client as any).clientConfig.retryStrategyOn = true;
+
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockBlock));
+
+      const result = await client.getBlockcliqueBlockBySlot(mockSlot);
+
+      expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT,
+        [mockSlot],
+      );
+
+      expect(result).toEqual(mockBlock);
 
       // Restore retry strategy
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

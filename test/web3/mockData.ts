@@ -55,3 +55,18 @@ export const mockGraphInterval: IGetGraphInterval = {
   start: 1624153200000,
   end: 1624156800000,
 };
+
+export const mockBlock = {
+  header: {
+    content: {
+      slot: { period: 830, thread: 1 },
+      parents: ['0x000'],
+      operation_merkle_root: '0x000',
+      endorsements: [],
+    },
+    signature: '0x000',
+    creator_public_key: '0x000',
+    creator_address: '0x000',
+    id: '0x000',
+  },
+};
