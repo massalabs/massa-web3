@@ -70,3 +70,110 @@ export const mockBlock = {
     id: '0x000',
   },
 };
+
+export const mockAddresses = [
+  'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+  'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
+  'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+];
+
+export const mockAddressesInfo = [
+  {
+    address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+    candidate_balance: '0',
+    thread: 0,
+  },
+  {
+    address: 'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
+    candidate_balance: '0',
+    thread: 0,
+  },
+  {
+    address: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+    candidate_balance: '0',
+    thread: 0,
+  },
+];
+
+export const mockBlockIds = ['0x000', '0x001'];
+
+export const mockBlockData = [
+  {
+    id: '0x000',
+    content: null,
+    is_final: false,
+    is_in_blockclique: false,
+    is_stale: false,
+  },
+  {
+    id: '0x001',
+    content: null,
+    is_final: true,
+    is_in_blockclique: false,
+    is_stale: false,
+  },
+];
+
+export const mockEndorsementIds = ['0x000', '0x001'];
+
+export const mockEndorsementData = [
+  {
+    id: '0x000',
+    in_pool: false,
+    in_blocks: ['0x000'],
+    is_final: false,
+    endorsement: {
+      content: {
+        sender_public_key: '0x000',
+        slot: { period: 830, thread: 1 },
+        index: 0,
+        endorsed_block: '0x000',
+      },
+      signature: '0x000',
+    },
+  },
+  {
+    id: '0x001',
+    in_pool: false,
+    in_blocks: ['0x001'],
+    is_final: true,
+    endorsement: {
+      content: {
+        sender_public_key: '0x000',
+        slot: { period: 830, thread: 1 },
+        index: 0,
+        endorsed_block: '0x000',
+      },
+      signature: '0x000',
+    },
+  },
+];
+
+export const mockOperationIds = ['0x000', '0x001'];
+
+export const mockOperationData = [
+  {
+    id: '0x000',
+    in_blocks: ['0x000'],
+    in_pool: false,
+    is_operation_final: false,
+    thread: 0,
+    operation: {},
+  },
+  {
+    id: '0x001',
+    in_blocks: ['0x001'],
+    in_pool: false,
+    is_operation_final: true,
+    thread: 0,
+    operation: {},
+  },
+];
+
+export const mockStackersData = [
+  {
+    tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb: 1,
+    tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6: 2,
+    tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx: 3,
+  },
+];
