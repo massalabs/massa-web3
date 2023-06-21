@@ -31,7 +31,7 @@ export type DataType =
   | IRollsData
   | ICallData;
 
-const requestHeaders = {
+export const requestHeaders = {
   Accept:
     'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Access-Control-Allow-Origin': '*',
