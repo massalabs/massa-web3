@@ -26,7 +26,7 @@ import { ISignature } from '../interfaces/ISignature';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
-import { IMassaProtoFile } from '../interfaces/IMassaProtoFile';
+import { MassaProtoFile } from '../interfaces/MassaProtoFile';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
@@ -475,7 +475,7 @@ export class SmartContractsClient
   public async getProtoFiles(
     contractAddresses: string[],
     outputDirectory: string,
-  ): Promise<IMassaProtoFile[]> {
+  ): Promise<MassaProtoFile[]> {
     // prepare request body
     const requestProtoFiles: object[] = [];
     for (let address of contractAddresses) {
@@ -501,7 +501,7 @@ export class SmartContractsClient
         },
         body: JSON.stringify(body),
       });
-      let protoFiles: IMassaProtoFile[];
+      let protoFiles: MassaProtoFile[];
       // parse response
       const json = await response.json();
       for (let proto of json) {
