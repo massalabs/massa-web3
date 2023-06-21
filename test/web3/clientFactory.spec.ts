@@ -6,7 +6,6 @@ import { WalletClient } from '../../src/web3/WalletClient';
 import { ProviderType } from '../../src/interfaces/IProvider';
 import { Client } from '../../src/web3/Client';
 import { IAccount } from '../../src/interfaces/IAccount';
-import { expect, test, describe } from '@jest/globals';
 
 const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';
