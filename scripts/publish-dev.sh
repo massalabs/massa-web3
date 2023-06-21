@@ -13,4 +13,4 @@ echo publishing @massalabs/massa-web3@$PUBLISH_VERSION
 # disable husky
 npm pkg delete scripts.prepare
 
-npm publish --access public --tag dev
+npm publish --access public --tag buildnet-dev

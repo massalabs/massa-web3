@@ -2,7 +2,7 @@ name: Generate Powered-By
 on:
   push:
     branches:
-      - main
+      - buildnet
 
 jobs:
   generate-powered-by:
