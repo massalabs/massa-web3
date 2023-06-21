@@ -379,12 +379,13 @@ describe('WalletClient', () => {
       expect(spy).toHaveBeenCalledWith(mockAddresses);
     });
 
-    test('should call trySafeExecute if retryStrategyOn is false', async () => {
-      const spy = jest.spyOn(
+    test('should call sendJsonRPCRequest if retryStrategyOn is false', async () => {
+      const sendJsonRPCRequestSpy = jest.spyOn(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         web3Client.wallet() as any,
-        'getWalletAddressesInfo',
+        'sendJsonRPCRequest',
       );
+
       const mockAddresses = [
         baseAccount.address!,
         await WalletClient.walletGenerateNewAccount().then(
@@ -404,7 +405,11 @@ describe('WalletClient', () => {
       (web3Client.wallet() as any).clientConfig.retryStrategyOn = false;
 
       await web3Client.wallet().walletInfo();
-      expect(spy).toHaveBeenCalledWith(mockAddresses);
+
+      expect(sendJsonRPCRequestSpy).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_ADDRESSES,
+        [mockAddresses],
+      );
 
       // Restore original retry strategy setting
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
