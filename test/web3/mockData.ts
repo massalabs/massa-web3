@@ -177,3 +177,25 @@ export const mockStackersData = [
     tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx: 3,
   },
 ];
+
+export const mockDatastoreEntryInput = [
+  {
+    address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+    key: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]),
+  },
+  {
+    address: 'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
+    key: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
+  },
+];
+
+export const mockDatastoreEntries = [
+  {
+    final_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]),
+    candidate_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]),
+  },
+  {
+    final_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
+    candidate_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
+  },
+];

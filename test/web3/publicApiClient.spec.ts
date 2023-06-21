@@ -15,6 +15,8 @@ import {
   mockOperationData,
   mockOperationIds,
   mockStackersData,
+  mockDatastoreEntryInput,
+  mockDatastoreEntries,
 } from './mockData';
 
 export const PERIOD_OFFSET = 5;
@@ -196,5 +198,64 @@ describe('PublicApiClient', () => {
       JSON_RPC_REQUEST_METHOD.GET_STAKERS,
       false,
     );
+  });
+
+  describe('getDatastoreEntries', () => {
+    const transformedInput = mockDatastoreEntryInput.map((input) => ({
+      address: input.address,
+      key: Array.prototype.slice.call(Buffer.from(input.key)),
+    }));
+
+    test('should call sendJsonRPCRequest with correct arguments', async () => {
+      mockSendJsonRPCRequest.mockResolvedValue(
+        Promise.resolve(mockDatastoreEntries),
+      );
+
+      await client.getDatastoreEntries(mockDatastoreEntryInput);
+
+      expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES,
+        [transformedInput],
+      );
+    });
+
+    test('should return correct result', async () => {
+      mockSendJsonRPCRequest.mockResolvedValue(
+        Promise.resolve(mockDatastoreEntries),
+      );
+
+      const result = await client.getDatastoreEntries(mockDatastoreEntryInput);
+
+      expect(result).toEqual(mockDatastoreEntries);
+    });
+
+    test('should handle errors correctly', async () => {
+      const mockError = new Error('Error message');
+      mockSendJsonRPCRequest.mockRejectedValue(mockError);
+
+      await expect(
+        client.getDatastoreEntries(mockDatastoreEntryInput),
+      ).rejects.toThrow(mockError);
+    });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      const originalRetryStrategy = (client as any).clientConfig
+        .retryStrategyOn;
+      (client as any).clientConfig.retryStrategyOn = true;
+
+      mockSendJsonRPCRequest.mockResolvedValue(
+        Promise.resolve(mockDatastoreEntries),
+      );
+
+      const result = await client.getDatastoreEntries(mockDatastoreEntryInput);
+
+      expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES,
+        [transformedInput],
+      );
+      expect(result).toEqual(mockDatastoreEntries);
+
+      (client as any).clientConfig.retryStrategyOn = originalRetryStrategy;
+    });
   });
 });
