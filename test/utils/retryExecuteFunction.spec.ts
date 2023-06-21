@@ -58,7 +58,8 @@ describe('trySafeExecute function', () => {
 
   it('should throw an error when no function is provided', async () => {
     await expect(
-      trySafeExecute(null, [JSON_RPC_REQUEST_METHOD.GET_STATUS, {}]),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      trySafeExecute(null as any, [JSON_RPC_REQUEST_METHOD.GET_STATUS, {}]),
     ).rejects.toThrow(`Function execution init conditions are erroneous: null`);
   });
 
