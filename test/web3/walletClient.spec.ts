@@ -10,8 +10,7 @@ import { ISignature } from '../../src/interfaces/ISignature';
 import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import { mockNodeStatusInfo } from './mockData';
-import { mockOpIds } from './mockData';
+import { mockNodeStatusInfo, mockOpIds } from './mockData';
 import { IRollsData } from '../../src/interfaces/IRollsData';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
