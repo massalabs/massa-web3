@@ -11,6 +11,8 @@ import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { mockNodeStatusInfo } from './mockData';
+import { mockOpIds } from './mockData';
+import { IRollsData } from '../../src/interfaces/IRollsData';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -614,8 +616,6 @@ describe('WalletClient', () => {
         'getNodeStatus',
       );
       spyGetNodeStatus.mockReturnValue(mockNodeStatusInfo);
-
-      const mockOpIds = ['op1', 'op2', 'op3'];
       jest
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
@@ -674,14 +674,166 @@ describe('WalletClient', () => {
     });
 
     test('should return an array of operation ids', async () => {
-      const mockOpIds = ['op1', 'op2', 'op3'];
-
       jest
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
         .mockResolvedValue(mockOpIds);
 
       const opIds = await web3Client.wallet().sendTransaction(mockTxData);
+
+      expect(opIds).toEqual(mockOpIds);
+    });
+  });
+
+  describe.only('buyRolls', () => {
+    let mockRollsData: IRollsData = {
+      fee: 1n,
+      amount: 100n,
+    };
+
+    beforeEach(async () => {
+      const spyGetNodeStatus = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (web3Client.wallet() as any).publicApiClient,
+        'getNodeStatus',
+      );
+      spyGetNodeStatus.mockReturnValue(mockNodeStatusInfo);
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+        .mockResolvedValue(mockOpIds);
+    });
+
+    test('should throw an error if no sender account is available for the transaction', async () => {
+      jest.spyOn(web3Client.wallet(), 'getBaseAccount').mockReturnValue(null);
+      await expect(web3Client.wallet().buyRolls(mockRollsData)).rejects.toThrow(
+        'No tx sender available',
+      );
+    });
+
+    test('should call compactBytesForOperation with correct arguments', async () => {
+      const spy = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        web3Client.wallet() as any,
+        'compactBytesForOperation',
+      );
+
+      await web3Client.wallet().buyRolls(mockRollsData);
+
+      expect(spy).toHaveBeenCalledWith(
+        mockRollsData,
+        OperationTypeId.RollBuy,
+        expect.any(Number), // expiryPeriod
+      );
+    });
+
+    test('should call walletSignMessage with correct arguments', async () => {
+      const spy = jest.spyOn(WalletClient, 'walletSignMessage');
+
+      await web3Client.wallet().buyRolls(mockRollsData);
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.any(Buffer), // Buffer.concat([bytesPublicKey, bytesCompact])
+        expect.any(Object), // sender
+      );
+    });
+
+    test('should call sendJsonRPCRequest with correct arguments', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const spy = jest.spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest');
+
+      await web3Client.wallet().buyRolls(mockRollsData);
+
+      expect(spy).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
+        expect.any(Array), // [[data]]
+      );
+    });
+
+    test('should return an array of operation ids', async () => {
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+        .mockResolvedValue(mockOpIds);
+
+      const opIds = await web3Client.wallet().buyRolls(mockRollsData);
+
+      expect(opIds).toEqual(mockOpIds);
+    });
+  });
+
+  describe.only('sellRolls', () => {
+    let mockRollsData: IRollsData = {
+      fee: 1n,
+      amount: 100n,
+    };
+
+    beforeEach(async () => {
+      const spyGetNodeStatus = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (web3Client.wallet() as any).publicApiClient,
+        'getNodeStatus',
+      );
+      spyGetNodeStatus.mockReturnValue(mockNodeStatusInfo);
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+        .mockResolvedValue(mockOpIds);
+    });
+
+    test('should throw an error if no sender account is available for the transaction', async () => {
+      jest.spyOn(web3Client.wallet(), 'getBaseAccount').mockReturnValue(null);
+      await expect(web3Client.wallet().buyRolls(mockRollsData)).rejects.toThrow(
+        'No tx sender available',
+      );
+    });
+
+    test('should call compactBytesForOperation with correct arguments', async () => {
+      const spy = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        web3Client.wallet() as any,
+        'compactBytesForOperation',
+      );
+
+      await web3Client.wallet().buyRolls(mockRollsData);
+
+      expect(spy).toHaveBeenCalledWith(
+        mockRollsData,
+        OperationTypeId.RollBuy,
+        expect.any(Number), // expiryPeriod
+      );
+    });
+
+    test('should call walletSignMessage with correct arguments', async () => {
+      const spy = jest.spyOn(WalletClient, 'walletSignMessage');
+
+      await web3Client.wallet().buyRolls(mockRollsData);
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.any(Buffer), // Buffer.concat([bytesPublicKey, bytesCompact])
+        expect.any(Object), // sender
+      );
+    });
+
+    test('should call sendJsonRPCRequest with correct arguments', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const spy = jest.spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest');
+
+      await web3Client.wallet().buyRolls(mockRollsData);
+
+      expect(spy).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
+        expect.any(Array), // [[data]]
+      );
+    });
+
+    test('should return an array of operation ids', async () => {
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+        .mockResolvedValue(mockOpIds);
+
+      const opIds = await web3Client.wallet().buyRolls(mockRollsData);
 
       expect(opIds).toEqual(mockOpIds);
     });
