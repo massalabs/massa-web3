@@ -20,7 +20,7 @@ describe('Timer utilities', () => {
   describe('Timeout class', () => {
     it('should call the callback after the specified timeout', () => {
       const callback = jest.fn();
-      new Timeout(1000, callback);
+      void new Timeout(1000, callback);
 
       expect(callback).not.toBeCalled();
       jest.advanceTimersByTime(1000);
@@ -40,7 +40,7 @@ describe('Timer utilities', () => {
   describe('Interval class', () => {
     it('should call the callback every interval', () => {
       const callback = jest.fn();
-      new Interval(1000, callback);
+      void new Interval(1000, callback);
 
       jest.advanceTimersByTime(3000);
       expect(callback).toBeCalledTimes(3);
