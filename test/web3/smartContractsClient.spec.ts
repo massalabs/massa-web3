@@ -128,5 +128,28 @@ describe('SmartContractsClient', () => {
         smartContractsClient.readSmartContract(mockReadData),
       ).rejects.toThrow(mockContractReadOperationDataWithError[0].result.Error);
     });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+        .retryStrategyOn;
+      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+
+      await smartContractsClient.readSmartContract(mockReadData);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL, [
+        [
+          {
+            serialized_content: expect.any(Array),
+            creator_public_key: mockDeployerAccount.publicKey,
+            signature: 'signature',
+          },
+        ],
+      ]);
+
+      (smartContractsClient as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
+    });
   });
 });
