@@ -144,7 +144,6 @@ describe('SmartContractsClient', () => {
       );
     });
   });
-
   describe('callSmartContract', () => {
     test('should call sendJsonRPCRequest with correct arguments', async () => {
       await smartContractsClient.callSmartContract(
