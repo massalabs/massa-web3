@@ -1,4 +1,4 @@
-name: NPM Publish buildnet release
+name: NPM Publish
 
 on:
     release:
@@ -17,10 +17,7 @@ jobs:
               with:
                   node-version: 18
                   registry-url: https://registry.npmjs.org/
-            - run: |
-                  npm ci
-                  npm run build
-                  npm publish --access public --tag buildnet
+            - run: ./scripts/publish.sh
               env:
                   NODE_AUTH_TOKEN: ${{secrets.npm_token}}
             - uses: softprops/action-gh-release@v1

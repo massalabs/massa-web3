@@ -2,7 +2,7 @@ name: NPM Publish buildnet-dev
 
 on:
   push:
-    branches: [ buildnet ]
+    branches: [main, buildnet]
 
 jobs:
   test:
