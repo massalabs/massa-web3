@@ -130,6 +130,10 @@ describe('SmartContractsClient', () => {
     });
 
     test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationData);
+
       const originalRetryStrategy = (smartContractsClient as any).clientConfig
         .retryStrategyOn;
       (smartContractsClient as any).clientConfig.retryStrategyOn = true;
@@ -141,9 +145,11 @@ describe('SmartContractsClient', () => {
       ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL, [
         [
           {
-            serialized_content: expect.any(Array),
-            creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            max_gas: Number(mockReadData.maxGas),
+            target_address: mockReadData.targetAddress,
+            target_function: mockReadData.targetFunction,
+            parameter: mockReadData.parameter,
+            caller_address: mockReadData.callerAddress,
           },
         ],
       ]);
