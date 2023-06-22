@@ -87,7 +87,7 @@ describe('WalletClient', () => {
   });
 
   afterEach(async () => {
-    await web3Client.wallet().cleanWallet();
+    web3Client.wallet().cleanWallet();
   });
 
   describe('setBaseAccount', () => {
@@ -95,14 +95,14 @@ describe('WalletClient', () => {
       const account = await WalletClient.getAccountFromSecretKey(
         receiverPrivateKey,
       );
-      await web3Client.wallet().setBaseAccount(account);
+      web3Client.wallet().setBaseAccount(account);
       const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address).toEqual(account.address);
     });
 
     test('should throw error if account is not valid', async () => {
-      await web3Client.wallet().cleanWallet();
+      web3Client.wallet().cleanWallet();
       await expect(
         web3Client.wallet().setBaseAccount({} as IAccount),
       ).rejects.toThrow();
@@ -121,12 +121,12 @@ describe('WalletClient', () => {
       const firstAccount = await WalletClient.getAccountFromSecretKey(
         receiverPrivateKey,
       );
-      await web3Client.wallet().setBaseAccount(firstAccount);
+      web3Client.wallet().setBaseAccount(firstAccount);
 
       const secondAccount = await WalletClient.getAccountFromSecretKey(
         deployerPrivateKey,
       );
-      await web3Client.wallet().setBaseAccount(secondAccount);
+      web3Client.wallet().setBaseAccount(secondAccount);
 
       const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
@@ -142,7 +142,7 @@ describe('WalletClient', () => {
     });
 
     test('should return null if base account is not set', async () => {
-      await web3Client.wallet().cleanWallet();
+      web3Client.wallet().cleanWallet();
       const fetchedBaseAccount = web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).toBeNull();
     });
@@ -213,7 +213,7 @@ describe('WalletClient', () => {
       const addedAccounts = await web3Client
         .wallet()
         .addSecretKeysToWallet(secretKeys);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
       expect([baseAccount, addedAccounts[0]]).toStrictEqual(walletAccounts);
       expect(addedAccounts.length).toBe(1); // only one unique account should be added
       expect(web3Client.wallet().getWalletAccounts().length).toBe(2); // only one unique account should be added
@@ -223,7 +223,7 @@ describe('WalletClient', () => {
       const addedAccounts = await web3Client
         .wallet()
         .addSecretKeysToWallet([deployerPrivateKey, receiverPrivateKey]);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
 
       // only receiver account should be added
       expect(addedAccounts[0].secretKey).toBe(receiverPrivateKey);
@@ -269,7 +269,7 @@ describe('WalletClient', () => {
       ];
 
       await web3Client.wallet().addAccountsToWallet(accounts);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
       expect(walletAccounts.length).toBe(4); // 3 generated + 1 base account
     });
 
@@ -329,7 +329,7 @@ describe('WalletClient', () => {
           baseAccount.secretKey,
         ),
         createFullAddressInfo(
-          accounts[1].address!,
+          accounts[1].address,
           accounts[1].publicKey,
           accounts[1].secretKey,
         ),
@@ -440,7 +440,7 @@ describe('WalletClient', () => {
         .wallet()
         .removeAddressesFromWallet(addressesToRemove as string[]);
 
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
       addressesToRemove.forEach((address) => {
         expect(walletAccounts).not.toContainEqual(
           expect.objectContaining({ address }),
@@ -451,7 +451,7 @@ describe('WalletClient', () => {
 
   describe('cleanWallet', () => {
     test('remove all accounts from the wallet', async () => {
-      await web3Client.wallet().cleanWallet();
+      web3Client.wallet().cleanWallet();
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
       expect(walletAccounts.length).toBe(0); // only base account should be left
     });
@@ -775,7 +775,7 @@ describe('WalletClient', () => {
 
     test('should not add duplicate accounts to the wallet', async () => {
       await web3Client.wallet().addAccountsToWallet([baseAccount, baseAccount]);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
       expect(walletAccounts.length).toBe(1); // only one unique account should be added
     });
 
@@ -810,7 +810,10 @@ describe('WalletClient', () => {
       const baseAccount = web3Client.wallet().getBaseAccount();
 
       // manually compute the expected thread number
-      const pubKeyHash = base58Decode(account.address!.slice(2));
+      if (!account.address) {
+        throw new Error('Missing account address');
+      }
+      const pubKeyHash = base58Decode(account.address.slice(2));
       const expectedThreadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
 
       expect(baseAccount).not.toBeNull();
