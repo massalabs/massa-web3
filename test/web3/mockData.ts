@@ -9,6 +9,33 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { ICallData } from '../../src/interfaces/ICallData';
 import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
+import { IEvent } from '../../src/interfaces/IEvent';
+import { ISlot } from '../../src/interfaces/ISlot';
+import { IEventFilter } from '../../src/interfaces/IEventFilter';
+import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
+
+// util function to create an event, only for that test file to avoid code duplication
+function createEvent(
+  id: string,
+  data: string,
+  slot: ISlot,
+  callStack: string[],
+): IEvent {
+  return {
+    id,
+    data: JSON.stringify(data),
+    context: {
+      slot,
+      block: null,
+      read_only: false,
+      call_stack: callStack,
+      index_in_slot: 0,
+      origin_operation_id: null,
+      is_final: true,
+      is_error: false,
+    },
+  };
+}
 
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
@@ -267,4 +294,22 @@ export const mockCallData: ICallData = {
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   functionName: 'test',
   parameter: [1, 2, 3, 4],
+};
+
+export const mockedEvents: IEvent[] = [
+  createEvent('event1', 'value1', { period: 1, thread: 1 }, ['address1']), // n°1
+  createEvent('event2', 'value2', { period: 2, thread: 1 }, ['address2']), // n°3
+  createEvent('event3', 'value3', { period: 1, thread: 2 }, ['address3']), // n°2
+  createEvent('event5', 'value5', { period: 2, thread: 2 }, ['address4']), // n°4
+  createEvent('event4', 'value4', { period: 1, thread: 2 }, ['address4']), // n°2
+  createEvent('event6', 'value6', { period: 3, thread: 2 }, ['address4']), // n°5
+];
+
+export const mockEventFilter: IEventFilter | IEventRegexFilter = {
+  start: { period: 2, thread: 1 },
+  end: { period: 3, thread: 2 },
+  emitter_address: 'address4',
+  original_caller_address: null,
+  original_operation_id: null,
+  is_final: null,
 };

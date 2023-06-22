@@ -12,6 +12,8 @@ import {
   mockNodeStatusInfo,
   mockOpIds,
   mockAddressesInfo,
+  mockedEvents,
+  mockEventFilter,
 } from './mockData';
 
 describe('SmartContractsClient', () => {
@@ -147,7 +149,7 @@ describe('SmartContractsClient', () => {
     });
   });
 
-  describe.only('getContractBalance', () => {
+  describe('getContractBalance', () => {
     const mockAddress = 'address';
 
     const expectedBalance: IBalance = {
@@ -181,6 +183,57 @@ describe('SmartContractsClient', () => {
       expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
         mockAddress,
       ]);
+    });
+  });
+
+  describe('getFilteredScOutputEvents', () => {
+    test('should send the correct JSON RPC request', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      await smartContractsClient.getFilteredScOutputEvents(mockEventFilter);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT,
+        [mockEventFilter],
+      );
+    });
+
+    test('should return the correct array of IEvent objects', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      const result = await smartContractsClient.getFilteredScOutputEvents(
+        mockEventFilter,
+      );
+
+      expect(result).toEqual(mockedEvents);
+    });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+        .retryStrategyOn;
+      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+
+      await smartContractsClient.getFilteredScOutputEvents(mockEventFilter);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT,
+        [mockEventFilter],
+      );
+
+      (smartContractsClient as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
     });
   });
 });
