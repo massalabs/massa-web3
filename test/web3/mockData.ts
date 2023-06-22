@@ -9,7 +9,6 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { ICallData } from '../../src/interfaces/ICallData';
 import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
-
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   node_ip: null,
