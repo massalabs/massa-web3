@@ -99,6 +99,13 @@ export class SmartContractsClient
     const expiryPeriod: number =
       nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
+    // Check if SC data exists
+    if (!contractData.contractDataBinary) {
+      throw new Error(
+        `Expected non-null contract bytecode, but received null.`,
+      );
+    }
+
     // get the block size
     if (
       contractData.contractDataBinary.length >
@@ -128,11 +135,6 @@ export class SmartContractsClient
       Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
-
-    // Check if SC data exists
-    if (!contractData.contractDataBinary) {
-      throw new Error(`Contract data required. Got null`);
-    }
 
     const data = {
       serialized_content: Array.prototype.slice.call(bytesCompact),
