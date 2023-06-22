@@ -1,12 +1,16 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { IAccount } from '../../src/interfaces/IAccount';
 import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { Client } from '../../src/web3/Client';
+import { base58Decode } from '../../src/utils/Xbqcrypto';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
 import { ISignature } from '../../src/interfaces/ISignature';
+import { IFullAddressInfo } from '../../src/interfaces/IFullAddressInfo';
+import { mockResultSendJsonRPCRequestWalletInfo } from '../../src/web3/mockData';
 import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
@@ -22,10 +26,6 @@ const receiverPrivateKey =
 // for CI testing:
 const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';
-
-// // For local testing:
-// const publicApi = 'http://127.0.0.1:33035';
-// const privateApi = 'http://127.0.0.1:33034';
 
 const MAX_WALLET_ACCOUNTS = 256;
 
@@ -44,6 +44,35 @@ export async function initializeClient() {
   return web3Client;
 }
 
+function createFullAddressInfo(
+  address: string | null,
+  publicKey: string | null,
+  secretKey: string | null,
+): IFullAddressInfo {
+  if (!address || !publicKey || !secretKey) {
+    throw new Error('Invalid address, public key or secret key');
+  }
+  return {
+    address,
+    candidate_balance: '0',
+    candidate_datastore_keys: [],
+    candidate_roll_count: 0,
+    created_blocks: [],
+    created_endorsements: [],
+    created_operations: [],
+    cycle_infos: [],
+    deferred_credits: [],
+    final_balance: '0',
+    final_datastore_keys: [],
+    final_roll_count: 0,
+    next_block_draws: [],
+    next_endorsement_draws: [],
+    thread: 0,
+    publicKey,
+    secretKey,
+  };
+}
+
 describe('WalletClient', () => {
   let web3Client: Client;
   // let walletClient: WalletClient;
@@ -59,7 +88,7 @@ describe('WalletClient', () => {
   });
 
   afterEach(async () => {
-    await web3Client.wallet().cleanWallet();
+    web3Client.wallet().cleanWallet();
   });
 
   describe('setBaseAccount', () => {
@@ -68,13 +97,13 @@ describe('WalletClient', () => {
         receiverPrivateKey,
       );
       await web3Client.wallet().setBaseAccount(account);
-      const baseAccount = await web3Client.wallet().getBaseAccount();
+      const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address).toEqual(account.address);
     });
 
     test('should throw error if account is not valid', async () => {
-      await web3Client.wallet().cleanWallet();
+      web3Client.wallet().cleanWallet();
       await expect(
         web3Client.wallet().setBaseAccount({} as IAccount),
       ).rejects.toThrow();
@@ -93,14 +122,14 @@ describe('WalletClient', () => {
       const firstAccount = await WalletClient.getAccountFromSecretKey(
         receiverPrivateKey,
       );
-      await web3Client.wallet().setBaseAccount(firstAccount);
+      web3Client.wallet().setBaseAccount(firstAccount);
 
       const secondAccount = await WalletClient.getAccountFromSecretKey(
         deployerPrivateKey,
       );
-      await web3Client.wallet().setBaseAccount(secondAccount);
+      web3Client.wallet().setBaseAccount(secondAccount);
 
-      const baseAccount = await web3Client.wallet().getBaseAccount();
+      const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address).toEqual(secondAccount.address);
     });
@@ -108,14 +137,14 @@ describe('WalletClient', () => {
 
   describe('getBaseAccount', () => {
     test('should return the base account', async () => {
-      const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
+      const fetchedBaseAccount = web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).not.toBeNull();
       expect(fetchedBaseAccount?.address).toEqual(baseAccount.address);
     });
 
     test('should return null if base account is not set', async () => {
-      await web3Client.wallet().cleanWallet();
-      const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
+      web3Client.wallet().cleanWallet();
+      const fetchedBaseAccount = web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).toBeNull();
     });
   });
@@ -133,7 +162,6 @@ describe('WalletClient', () => {
       const targetAccount = accounts[1]; // Assume we want to find the second account
       const fetchedAccount = web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getWalletAccountByAddress(targetAccount.address!);
 
       expect(fetchedAccount).not.toBeNull();
@@ -158,7 +186,6 @@ describe('WalletClient', () => {
       const upperCaseAddress = targetAccount.address?.toUpperCase();
       const fetchedAccount = web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getWalletAccountByAddress(upperCaseAddress!);
 
       expect(fetchedAccount).not.toBeNull();
@@ -187,7 +214,7 @@ describe('WalletClient', () => {
       const addedAccounts = await web3Client
         .wallet()
         .addSecretKeysToWallet(secretKeys);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
       expect([baseAccount, addedAccounts[0]]).toStrictEqual(walletAccounts);
       expect(addedAccounts.length).toBe(1); // only one unique account should be added
       expect(web3Client.wallet().getWalletAccounts().length).toBe(2); // only one unique account should be added
@@ -197,7 +224,7 @@ describe('WalletClient', () => {
       const addedAccounts = await web3Client
         .wallet()
         .addSecretKeysToWallet([deployerPrivateKey, receiverPrivateKey]);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
 
       // only receiver account should be added
       expect(addedAccounts[0].secretKey).toBe(receiverPrivateKey);
@@ -212,9 +239,7 @@ describe('WalletClient', () => {
         await WalletClient.walletGenerateNewAccount(),
       ];
       const secretKeys: string[] = [
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         accounts[0].secretKey!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         accounts[1].secretKey!,
       ];
 
@@ -245,7 +270,7 @@ describe('WalletClient', () => {
       ];
 
       await web3Client.wallet().addAccountsToWallet(accounts);
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
       expect(walletAccounts.length).toBe(4); // 3 generated + 1 base account
     });
 
@@ -270,16 +295,130 @@ describe('WalletClient', () => {
   });
 
   describe('walletInfo', () => {
-    test.skip('should return information for each address in the wallet', async () => {
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+    test('should return an empty array if the wallet is empty', async () => {
+      web3Client.wallet().cleanWallet(); // Make sure the wallet is empty
       const walletInfo = await web3Client.wallet().walletInfo();
+      expect(walletInfo).toEqual([]);
+    });
 
-      expect(walletInfo.length).toBe(walletAccounts.length);
+    test('should throw an error if the number of retrieved wallets does not match the number of addresses in the wallet', async () => {
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'getWalletAddressesInfo')
+        .mockImplementation(async () => {
+          return [
+            /* return fewer or more addresses than in the wallet */
+          ];
+        });
 
+      await expect(web3Client.wallet().walletInfo()).rejects.toThrow(
+        /Requested wallets not fully retrieved./,
+      );
+    });
+
+    test('should return IFullAddressInfo objects that include information from the corresponding IAddressInfo', async () => {
+      const accounts = [
+        baseAccount,
+        await WalletClient.walletGenerateNewAccount(),
+      ];
+      await web3Client.wallet().addAccountsToWallet(accounts); // will not add the base account
+
+      const mockAddressInfo: IFullAddressInfo[] = [
+        createFullAddressInfo(
+          baseAccount.address,
+          baseAccount.publicKey,
+          baseAccount.secretKey,
+        ),
+        createFullAddressInfo(
+          accounts[1].address,
+          accounts[1].publicKey,
+          accounts[1].secretKey,
+        ),
+      ];
+
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'getWalletAddressesInfo')
+        .mockImplementation(async () => {
+          return mockAddressInfo;
+        });
+
+      const walletInfo = await web3Client.wallet().walletInfo();
+      // check that the returned walletInfo is an array of IFullAddressInfo with correct information
       walletInfo.forEach((info, index) => {
-        expect(info.publicKey).toBe(walletAccounts[index].publicKey);
-        expect(info.secretKey).toBe(walletAccounts[index].secretKey);
+        expect(info.address).toBe(mockAddressInfo[index].address);
+        expect(info.publicKey).toBe(accounts[index].publicKey);
+        expect(info.secretKey).toBe(accounts[index].secretKey);
       });
+    });
+  });
+
+  describe('getWalletAddressesInfo', () => {
+    beforeEach(() => {
+      jest
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+        .mockResolvedValue(mockResultSendJsonRPCRequestWalletInfo);
+    });
+
+    test('should call getWalletAddressesInfo when walletInfo is called', async () => {
+      const spy = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        web3Client.wallet() as any,
+        'getWalletAddressesInfo',
+      );
+      const mockAddresses = [
+        baseAccount.address,
+        await WalletClient.walletGenerateNewAccount().then(
+          (account) => account.address,
+        ),
+      ];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).wallet = mockAddresses.map((address) => ({
+        address,
+      }));
+
+      await web3Client.wallet().walletInfo();
+
+      expect(spy).toHaveBeenCalledWith(mockAddresses);
+    });
+
+    test('should call sendJsonRPCRequest if retryStrategyOn is false', async () => {
+      const sendJsonRPCRequestSpy = jest.spyOn(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        web3Client.wallet() as any,
+        'sendJsonRPCRequest',
+      );
+
+      const mockAddresses = [
+        baseAccount.address,
+        await WalletClient.walletGenerateNewAccount().then(
+          (account) => account.address,
+        ),
+      ];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).wallet = mockAddresses.map((address) => ({
+        address,
+      }));
+
+      // Enable retry strategy
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalRetryStrategy = (web3Client.wallet() as any).clientConfig
+        .retryStrategyOn;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).clientConfig.retryStrategyOn = false;
+
+      await web3Client.wallet().walletInfo();
+
+      expect(sendJsonRPCRequestSpy).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_ADDRESSES,
+        [mockAddresses],
+      );
+
+      // Restore original retry strategy setting
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
     });
   });
 
@@ -302,7 +441,7 @@ describe('WalletClient', () => {
         .wallet()
         .removeAddressesFromWallet(addressesToRemove as string[]);
 
-      const walletAccounts = await web3Client.wallet().getWalletAccounts();
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
       addressesToRemove.forEach((address) => {
         expect(walletAccounts).not.toContainEqual(
           expect.objectContaining({ address }),
@@ -313,7 +452,7 @@ describe('WalletClient', () => {
 
   describe('cleanWallet', () => {
     test('remove all accounts from the wallet', async () => {
-      await web3Client.wallet().cleanWallet();
+      web3Client.wallet().cleanWallet();
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
       expect(walletAccounts.length).toBe(0); // only base account should be left
     });
@@ -387,7 +526,6 @@ describe('WalletClient', () => {
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const accountSignerAddress: string = baseAccount.address!;
 
       const signedMessage = await web3Client
@@ -415,7 +553,6 @@ describe('WalletClient', () => {
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const accountSignerAddress = baseAccount.address!;
 
       const signedMessage = await web3Client
@@ -511,7 +648,6 @@ describe('WalletClient', () => {
     test('should return true for a valid signature', async () => {
       const message = 'Test message';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const signerPublicKey = baseAccount.publicKey!;
       const validSignature: ISignature = {
         base58Encoded:
@@ -530,7 +666,6 @@ describe('WalletClient', () => {
 
       const data = 'Test message';
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const signerPublicKey = baseAccount.publicKey!;
       const invalidSignature: ISignature = {
         base58Encoded:
@@ -554,7 +689,6 @@ describe('WalletClient', () => {
 
       const balance = await web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getAccountBalance(ACCOUNT_ADDRESS!);
 
       expect(balance).not.toBeNull();
@@ -572,7 +706,6 @@ describe('WalletClient', () => {
 
       const balance = await web3Client
         .wallet()
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .getAccountBalance(freshAccount.address!);
 
       expect(balance).not.toBeNull();
@@ -592,6 +725,100 @@ describe('WalletClient', () => {
         .getAccountBalance(invalidAddress);
 
       expect(balance).toBeNull();
+    });
+  });
+
+  describe('addAccountsToWallet', () => {
+    test('should throw an error when the number of accounts exceeds the maximum limit', async () => {
+      const accounts = new Array(MAX_WALLET_ACCOUNTS + 1).fill(baseAccount);
+      await expect(
+        web3Client.wallet().addAccountsToWallet(accounts),
+      ).rejects.toThrow(
+        new RegExp(
+          `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}`,
+        ),
+      );
+    });
+    test('should throw an error when an account private key is missing', async () => {
+      const accountWithoutKey = { ...baseAccount, secretKey: null };
+      await expect(
+        web3Client.wallet().addAccountsToWallet([accountWithoutKey]),
+      ).rejects.toThrow(new Error('Missing account private key'));
+    });
+
+    test('should throw an error when the submitted public key does not match the private key', async () => {
+      const accountWithMismatchedPublicKey = {
+        ...baseAccount,
+        publicKey: 'mismatchedPublicKey',
+      };
+      await expect(
+        web3Client
+          .wallet()
+          .addAccountsToWallet([accountWithMismatchedPublicKey]),
+      ).rejects.toThrow(
+        new Error(
+          'Public key does not correspond the the private key submitted',
+        ),
+      );
+    });
+
+    test('should throw an error when the account address does not match the private key-derived address', async () => {
+      const accountWithMismatchedAddress = {
+        ...baseAccount,
+        address: 'mismatchedAddress',
+      };
+      await expect(
+        web3Client.wallet().addAccountsToWallet([accountWithMismatchedAddress]),
+      ).rejects.toThrow(
+        new Error('Account address not correspond the the address submitted'),
+      );
+    });
+
+    test('should not add duplicate accounts to the wallet', async () => {
+      await web3Client.wallet().addAccountsToWallet([baseAccount, baseAccount]);
+      const walletAccounts = web3Client.wallet().getWalletAccounts();
+      expect(walletAccounts.length).toBe(1); // only one unique account should be added
+    });
+
+    test('should correctly add accounts to the wallet', async () => {
+      const anotherAccount = await WalletClient.walletGenerateNewAccount();
+      const anotherAccountBis = await WalletClient.walletGenerateNewAccount();
+      const addedAccounts = await web3Client
+        .wallet()
+        .addAccountsToWallet([baseAccount, anotherAccount, anotherAccountBis]);
+      expect(addedAccounts.length).toBe(2);
+      // baseAccount should be ignored as it is already in the wallet
+      expect(addedAccounts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ address: anotherAccount.address }),
+          expect.objectContaining({ address: anotherAccountBis.address }),
+        ]),
+      );
+    });
+  });
+
+  describe('getThreadNumber', () => {
+    test('should correctly compute the thread number for an account', async () => {
+      // create an account without providing the 'createdInThread' field
+      const account = await WalletClient.getAccountFromSecretKey(
+        receiverPrivateKey,
+      );
+      delete account.createdInThread;
+
+      await web3Client.wallet().setBaseAccount(account);
+
+      // get the updated account (now with 'createdInThread' field)
+      const baseAccount = web3Client.wallet().getBaseAccount();
+
+      // manually compute the expected thread number
+      if (!account.address) {
+        throw new Error('Missing account address');
+      }
+      const pubKeyHash = base58Decode(account.address.slice(2));
+      const expectedThreadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
+
+      expect(baseAccount).not.toBeNull();
+      expect(baseAccount?.createdInThread).toEqual(expectedThreadNumber);
     });
   });
 
