@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
-import { IEvent } from '../interfaces/IEvent';
-import { IEventFilter } from '../interfaces/IEventFilter';
-import { IEventRegexFilter } from '../interfaces/IEventRegexFilter';
-import { ISlot } from '../interfaces/ISlot';
+import { Event } from '../interfaces/Event';
+import { EventFilter } from '../interfaces/EventFilter';
+import { EventRegexFilter } from '../interfaces/EventRegexFilter';
+import { Slot } from '../interfaces/Slot';
 import { Timeout } from '../utils/time';
 import { Client } from './Client';
 
@@ -11,19 +11,19 @@ export const ON_MASSA_EVENT_DATA = 'ON_MASSA_EVENT';
 export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR';
 
 /**
- * Compares two ISlot instances based on their `period` and `thread` properties.
+ * Compares two Slot instances based on their `period` and `thread` properties.
  *
  * @remarks
  * The comparison is primarily based on the 'period' property.  If the 'period' values are the same,
  * the comparison is then based on the 'thread' property.
  *
- * @param a - The first ISlot instance to be compared.
- * @param b - The second ISlot instance to be compared.
+ * @param a - The first Slot instance to be compared.
+ * @param b - The second Slot instance to be compared.
  *
  * @returns A positive number if 'a' should come after 'b', a negative number if 'a' should come before 'b',
  * or 0 if 'a' and 'b' are considered equal.
  */
-const compareByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
+const compareByThreadAndPeriod = (a: Slot, b: Slot): number => {
   const periodOrder = a.period - b.period;
   if (periodOrder === 0) {
     const threadOrder = a.thread - b.thread;
@@ -37,7 +37,7 @@ const compareByThreadAndPeriod = (a: ISlot, b: ISlot): number => {
  */
 export class EventPoller extends EventEmitter {
   private timeoutId: Timeout | null = null;
-  private lastSlot: ISlot;
+  private lastSlot: Slot;
 
   /**
    * Constructor of the EventPoller object.
@@ -47,7 +47,7 @@ export class EventPoller extends EventEmitter {
    * @param web3Client - The web3 client to use for polling.
    */
   public constructor(
-    private readonly eventsFilter: IEventFilter | IEventRegexFilter,
+    private readonly eventsFilter: EventFilter | EventRegexFilter,
     private readonly pollIntervalMillis: number,
     private readonly web3Client: Client,
   ) {
@@ -70,17 +70,17 @@ export class EventPoller extends EventEmitter {
   private async callback() {
     try {
       // get all events using the filter.
-      const events: Array<IEvent> = await this.web3Client
+      const events: Array<Event> = await this.web3Client
         .smartContracts()
         .getFilteredScOutputEvents(this.eventsFilter);
 
       // filter further using regex and last scanned slot.
-      const filteredEvents: Array<IEvent> = events.filter((event) => {
+      const filteredEvents: Array<Event> = events.filter((event) => {
         // check if regex condition is met.
         let meetsRegex = true;
-        if ((this.eventsFilter as IEventRegexFilter).eventsNameRegex) {
+        if ((this.eventsFilter as EventRegexFilter).eventsNameRegex) {
           meetsRegex = event.data.includes(
-            (this.eventsFilter as IEventRegexFilter).eventsNameRegex,
+            (this.eventsFilter as EventRegexFilter).eventsNameRegex,
           );
         }
 
@@ -151,10 +151,10 @@ export class EventPoller extends EventEmitter {
    * @returns The EventPoller object created.
    */
   public static startEventsPolling(
-    eventsFilter: IEventFilter | IEventRegexFilter,
+    eventsFilter: EventFilter | EventRegexFilter,
     pollIntervalMillis: number,
     web3Client: Client,
-    onData?: (data: Array<IEvent>) => void,
+    onData?: (data: Array<Event>) => void,
     onError?: (err: Error) => void,
   ): EventPoller {
     const eventPoller = new EventPoller(
@@ -164,7 +164,7 @@ export class EventPoller extends EventEmitter {
     );
     eventPoller.startPolling();
     if (onData) {
-      eventPoller.on(ON_MASSA_EVENT_DATA, (data: [IEvent]) => {
+      eventPoller.on(ON_MASSA_EVENT_DATA, (data: [Event]) => {
         onData(data);
       });
     }
@@ -185,10 +185,10 @@ export class EventPoller extends EventEmitter {
    * @returns The events that match the filter as a promise.
    */
   public static async getEventsOnce(
-    eventsFilter: IEventFilter | IEventRegexFilter,
+    eventsFilter: EventFilter | EventRegexFilter,
     web3Client: Client,
-  ): Promise<Array<IEvent>> {
-    const events: Array<IEvent> = await web3Client
+  ): Promise<Array<Event>> {
+    const events: Array<Event> = await web3Client
       .smartContracts()
       .getFilteredScOutputEvents(eventsFilter);
     return events;

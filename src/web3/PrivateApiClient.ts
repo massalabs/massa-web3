@@ -1,20 +1,20 @@
-import { IClientConfig } from '../interfaces/IClientConfig';
+import { ClientConfig } from '../interfaces/ClientConfig';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { ISignedMessage } from '../interfaces/ISignedMessage';
+import { SignedMessage } from '../interfaces/SignedMessage';
 import { BaseClient } from './BaseClient';
-import { IPrivateApiClient } from '../interfaces/IPrivateApiClient';
+import { PrivateApiClient } from '../interfaces/PrivateApiClient';
 
 /**
  * Private Api Client for interacting with a massa node.
  */
-export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
+export class PrivateApiClient extends BaseClient implements PrivateApiClient {
   /**
    * Constructor for the {@link PrivateApiClient} object.
    *
    * @param clientConfig - The client configuration.
    */
-  public constructor(clientConfig: IClientConfig) {
+  public constructor(clientConfig: ClientConfig) {
     super(clientConfig);
 
     // ========== bind api methods ========= //
@@ -35,9 +35,9 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   }
 
   /**
-   * Add a given Node IP address from the whitelist.
+   * Add a given Node P address from the whitelist.
    *
-   * @param ipAddress - The IP address to add to the whitelist.
+   * @param ipAddress - The P address to add to the whitelist.
    *
    * @returns A promise that resolves when the request is complete.
    */
@@ -57,9 +57,9 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   }
 
   /**
-   * Remove a given Node IP address from the whitelist.
+   * Remove a given Node P address from the whitelist.
    *
-   * @param ipAddress - The IP address to remove from the whitelist.
+   * @param ipAddress - The P address to remove from the whitelist.
    *
    * @returns A promise that resolves when the request is complete.
    */
@@ -79,9 +79,9 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   }
 
   /**
-   * Unban a given IP address.
+   * Unban a given P address.
    *
-   * @param ipAddress - The IP address to unban.
+   * @param ipAddress - The P address to unban.
    *
    * @returns A promise that resolves when the request is complete.
    */
@@ -120,9 +120,9 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   }
 
   /**
-   * Ban a given node IP address.
+   * Ban a given node P address.
    *
-   * @param ipAddress - The IP address to ban.
+   * @param ipAddress - The P address to ban.
    * @returns A promise that resolves when the request is complete.
    */
   public async nodeBanByIpAddress(ipAddress: string): Promise<void> {
@@ -180,17 +180,17 @@ export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
    *
    * @param message - The message to sign.
    *
-   * @returns A promise that resolves to an ISignedMessage object.
+   * @returns A promise that resolves to an SignedMessage object.
    */
-  public async nodeSignMessage(message: Uint8Array): Promise<ISignedMessage> {
+  public async nodeSignMessage(message: Uint8Array): Promise<SignedMessage> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE;
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<ISignedMessage>(this.sendJsonRPCRequest, [
+      return await trySafeExecute<SignedMessage>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
         [message],
       ]);
     } else {
-      return await this.sendJsonRPCRequest<ISignedMessage>(
+      return await this.sendJsonRPCRequest<SignedMessage>(
         jsonRpcRequestMethod,
         [message],
       );

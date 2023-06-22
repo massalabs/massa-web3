@@ -1,7 +1,7 @@
-import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { IAccount } from '../interfaces/IAccount';
+import { Provider, ProviderType } from '../interfaces/Provider';
+import { Account } from '../interfaces/Account';
 import { Client } from './Client';
-import { IClientConfig } from '../interfaces/IClientConfig';
+import { ClientConfig } from '../interfaces/ClientConfig';
 
 /** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
 export enum DefaultProviderUrls {
@@ -32,7 +32,7 @@ export class ClientFactory {
   public static async createDefaultClient(
     provider: DefaultProviderUrls,
     retryStrategyOn = true,
-    baseAccount?: IAccount,
+    baseAccount?: Account,
   ): Promise<Client> {
     let publicProviderUrl = provider.toString();
     let privateProviderUrl = provider.toString();
@@ -53,18 +53,18 @@ export class ClientFactory {
       {
         url: publicProviderUrl,
         type: ProviderType.PUBLIC,
-      } as IProvider,
+      } as Provider,
       {
         url: privateProviderUrl,
         type: ProviderType.PRIVATE,
-      } as IProvider,
+      } as Provider,
     ];
 
     const client: Client = new Client(
       {
         retryStrategyOn,
         providers,
-      } as IClientConfig,
+      } as ClientConfig,
       baseAccount,
     );
 
@@ -86,15 +86,15 @@ export class ClientFactory {
    * @returns A promise that resolves to a Client object.
    */
   public static async createCustomClient(
-    providers: Array<IProvider>,
+    providers: Array<Provider>,
     retryStrategyOn = true,
-    baseAccount?: IAccount,
+    baseAccount?: Account,
   ): Promise<Client> {
     const client: Client = new Client(
       {
         retryStrategyOn,
         providers,
-      } as IClientConfig,
+      } as ClientConfig,
       baseAccount,
     );
 

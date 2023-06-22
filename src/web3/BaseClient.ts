@@ -1,15 +1,15 @@
-import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { IClientConfig } from '../interfaces/IClientConfig';
+import { Provider, ProviderType } from '../interfaces/Provider';
+import { ClientConfig } from '../interfaces/ClientConfig';
 import { Buffer } from 'buffer';
 import { base58Decode, varintEncode } from '../utils/Xbqcrypto';
-import { IContractData } from '../interfaces/IContractData';
+import { ContractData } from '../interfaces/ContractData';
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
 import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { ITransactionData } from '../interfaces/ITransactionData';
+import { TransactionData } from '../interfaces/TransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
-import { IRollsData } from '../interfaces/IRollsData';
-import { ICallData } from '../interfaces/ICallData';
+import { RollsData } from '../interfaces/RollsData';
+import { CallData } from '../interfaces/CallData';
 
 // encode a string address to bytes.
 const encodeAddressToBytes = (
@@ -25,11 +25,7 @@ const encodeAddressToBytes = (
   return targetAddressEncoded;
 };
 
-export type DataType =
-  | IContractData
-  | ITransactionData
-  | IRollsData
-  | ICallData;
+export type DataType = ContractData | TransactionData | RollsData | CallData;
 
 export const requestHeaders = {
   Accept:
@@ -53,14 +49,14 @@ export const PERIOD_OFFSET = 5;
  * @throws Will throw an error if no private providers are included in client configuration.
  */
 export class BaseClient {
-  protected clientConfig: IClientConfig;
+  protected clientConfig: ClientConfig;
 
   /**
    * Constructor of the BaseClient class
    *
-   * @param clientConfig - The client configuration object as defined in {@link IClientConfig}
+   * @param clientConfig - The client configuration object as defined in {@link ClientConfig}
    */
-  public constructor(clientConfig: IClientConfig) {
+  public constructor(clientConfig: ClientConfig) {
     this.clientConfig = clientConfig;
     this.clientConfig.periodOffset =
       this.clientConfig.periodOffset | PERIOD_OFFSET;
@@ -86,17 +82,17 @@ export class BaseClient {
   }
 
   /**
-   * Set new providers as {@link IProvider}.
+   * Set new providers as {@link Provider}.
    *
    * @privateRemarks
    * This methods add the providers to the existing ones in the clientConfig object.
    *
-   * @param providers - The new providers to set as an array of IProvider.
+   * @param providers - The new providers to set as an array of Provider.
    *
    * @throws Will throw an error if no public providers are included in the given array of providers.
    * @throws Will throw an error if no private providers are included in the given array of providers.
    */
-  public setProviders(providers: Array<IProvider>): void {
+  public setProviders(providers: Array<Provider>): void {
     const hasPublicProvider = providers.some(
       (provider) => provider.type === ProviderType.PUBLIC,
     );
@@ -122,9 +118,9 @@ export class BaseClient {
   /**
    * Returns all the private providers.
    *
-   * @returns An array of IProvider containing all the private providers.
+   * @returns An array of Provider containing all the private providers.
    */
-  protected getPrivateProviders(): Array<IProvider> {
+  protected getPrivateProviders(): Array<Provider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PRIVATE,
     );
@@ -133,9 +129,9 @@ export class BaseClient {
   /**
    * Returns all the public providers.
    *
-   * @returns An array of IProvider containing all the public providers.
+   * @returns An array of Provider containing all the public providers.
    */
-  protected getPublicProviders(): Array<IProvider> {
+  protected getPublicProviders(): Array<Provider> {
     return this.clientConfig.providers.filter(
       (provider) => provider.type === ProviderType.PUBLIC,
     );
@@ -157,7 +153,7 @@ export class BaseClient {
    */
   private getProviderForRpcMethod(
     requestMethod: JSON_RPC_REQUEST_METHOD,
-  ): IProvider {
+  ): Provider {
     switch (requestMethod) {
       case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
       case JSON_RPC_REQUEST_METHOD.GET_STATUS:
@@ -296,16 +292,16 @@ export class BaseClient {
     switch (opTypeId) {
       case OperationTypeId.ExecuteSC: {
         // get sc data binary
-        const scBinaryCode = (data as IContractData).contractDataBinary;
+        const scBinaryCode = (data as ContractData).contractDataBinary;
 
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxGas),
+          varintEncode((data as ContractData).maxGas),
         );
 
         // max coins amount
         const maxCoinEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxCoins),
+          varintEncode((data as ContractData).maxCoins),
         );
 
         // contract data
@@ -315,8 +311,8 @@ export class BaseClient {
         );
 
         // smart contract operation datastore
-        const datastoreKeyMap = (data as IContractData).datastore
-          ? (data as IContractData).datastore
+        const datastoreKeyMap = (data as ContractData).datastore
+          ? (data as ContractData).datastore
           : new Map<Uint8Array, Uint8Array>();
         let datastoreSerializedBuffer = Buffer.from(new Uint8Array());
         for (const [key, value] of datastoreKeyMap) {
@@ -367,30 +363,30 @@ export class BaseClient {
       case OperationTypeId.CallSC: {
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as ICallData).maxGas),
+          varintEncode((data as CallData).maxGas),
         );
 
         // coins to send
         const coinsEncoded = Buffer.from(
-          varintEncode((data as ICallData).coins),
+          varintEncode((data as CallData).coins),
         );
 
         // target address
         const targetAddressEncoded = encodeAddressToBytes(
-          (data as ICallData).targetAddress,
+          (data as CallData).targetAddress,
           true,
         );
 
         // target function name and name length
         const functionNameEncoded = new Uint8Array(
-          Buffer.from((data as ICallData).functionName, 'utf8'),
+          Buffer.from((data as CallData).functionName, 'utf8'),
         );
         const functionNameLengthEncoded = Buffer.from(
           varintEncode(functionNameEncoded.length),
         );
 
         // parameter
-        const parametersEncoded = new Uint8Array((data as ICallData).parameter);
+        const parametersEncoded = new Uint8Array((data as CallData).parameter);
         const parametersLengthEncoded = Buffer.from(
           varintEncode(parametersEncoded.length),
         );
@@ -410,11 +406,11 @@ export class BaseClient {
       }
       case OperationTypeId.Transaction: {
         // transfer amount
-        const amount = (data as ITransactionData).amount;
+        const amount = (data as TransactionData).amount;
         const transferAmountEncoded = Buffer.from(varintEncode(amount));
         // recipient
         const recipientAddressEncoded = encodeAddressToBytes(
-          (data as ITransactionData).recipientAddress,
+          (data as TransactionData).recipientAddress,
           false,
         );
 
@@ -430,7 +426,7 @@ export class BaseClient {
       case OperationTypeId.RollSell: {
         // rolls amount
         const rollsAmountEncoded = Buffer.from(
-          varintEncode((data as IRollsData).amount),
+          varintEncode((data as RollsData).amount),
         );
 
         return Buffer.concat([

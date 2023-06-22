@@ -2,9 +2,9 @@
 
 import { Args, NativeType, TypedArrayUnit } from '../arguments';
 import {
-  IDeserializedResult,
-  ISerializable,
-} from '../../interfaces/ISerializable';
+  DeserializedResult,
+  Serializable,
+} from '../../interfaces/Serializable';
 import { bytesToStr, strToBytes } from './strings';
 import { byteToBool } from './bool';
 import {
@@ -60,7 +60,7 @@ const getDatatypeSize = (type: TypedArrayUnit): number => {
  *
  * @returns The serialized array as Uint8Array.
  */
-export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
+export function serializableObjectsArrayToBytes<T extends Serializable<T>>(
   source: T[],
 ): Uint8Array {
   const nbElements = source.length;
@@ -95,11 +95,11 @@ export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
  *
  * @returns The deserialized array of objects.
  */
-export function deserializeObj<T extends ISerializable<T>>(
+export function deserializeObj<T extends Serializable<T>>(
   data: Uint8Array,
   offset: number,
   Clazz: new () => T,
-): IDeserializedResult<T> {
+): DeserializedResult<T> {
   const deserialized = new Clazz().deserialize(data, offset);
   return deserialized;
 }
@@ -112,7 +112,7 @@ export function deserializeObj<T extends ISerializable<T>>(
  *
  * @returns An array of deserialized objects.
  */
-export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
+export function bytesToSerializableObjectArray<T extends Serializable<T>>(
   source: Uint8Array,
   Clazz: new () => T,
 ): T[] {

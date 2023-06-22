@@ -4,7 +4,7 @@
  * @see Transaction.amount - represent an Amount in coins (string)
  * @see Transaction.recipient_address - the address of the recipient
  */
-export interface ITransactionOpType {
+export interface TransactionOpType {
   Transaction: {
     amount: string; // represent an Amount in coins
     recipient_address: string;
@@ -16,7 +16,7 @@ export interface ITransactionOpType {
  *
  * @see RollBuy.roll_count - the number of rolls to buy
  */
-export interface IRollBuyOpType {
+export interface RollBuyOpType {
   RollBuy: {
     roll_count: number;
   };
@@ -27,7 +27,7 @@ export interface IRollBuyOpType {
  *
  * @see RollSell.roll_count - the number of rolls to sell
  */
-export interface IRollSellOpType {
+export interface RollSellOpType {
   RollSell: {
     roll_count: number;
   };
@@ -40,7 +40,7 @@ export interface IRollSellOpType {
  * @see ExecuteSC.max_gas - maximum amount of gas that the execution of the contract is allowed to cost
  * @see ExecuteSC.datastore - key-value pairs of data to be used by the smart contract
  */
-export interface IExecSmartContractOpType {
+export interface ExecSmartContractOpType {
   ExecuteSC: {
     data: number[]; // vec of bytes to execute
     max_gas: number; // maximum amount of gas that the execution of the contract is allowed to cost
@@ -58,7 +58,7 @@ export interface IExecSmartContractOpType {
  * @see CallSC.target_func - target function name. No function is called if empty.
  * @see CallSC.caller_addr - caller address
  */
-export interface ICallSmartContractOpType {
+export interface CallSmartContractOpType {
   CallSC: {
     max_gas: number;
     param: Array<number>;
@@ -80,8 +80,8 @@ export enum OperationTypeId {
 }
 
 export type OpType =
-  | ITransactionOpType
-  | IRollSellOpType
-  | IRollBuyOpType
-  | IExecSmartContractOpType
-  | ICallSmartContractOpType;
+  | TransactionOpType
+  | RollSellOpType
+  | RollBuyOpType
+  | ExecSmartContractOpType
+  | CallSmartContractOpType;

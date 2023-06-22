@@ -16,62 +16,62 @@ if (typeof window !== 'undefined') {
 }
 
 /** Exposed interfaces */
-export { IAccount } from './interfaces/IAccount';
-export { IEvent } from './interfaces/IEvent';
-export { IEventFilter } from './interfaces/IEventFilter';
-export { IEventRegexFilter } from './interfaces/IEventRegexFilter';
-export { ISlot } from './interfaces/ISlot';
-export { IAddressInfo } from './interfaces/IAddressInfo';
-export { IBlockInfo } from './interfaces/IBlockInfo';
-export { IClientConfig } from './interfaces/IClientConfig';
-export { IClique } from './interfaces/IClique';
-export { IContractData } from './interfaces/IContractData';
-export { ICallData } from './interfaces/ICallData';
-export { IReadData } from './interfaces/IReadData';
-export { IFullAddressInfo } from './interfaces/IFullAddressInfo';
-export { IEndorsement } from './interfaces/IEndorsement';
-export { INodeStatus } from './interfaces/INodeStatus';
-export { IOperationData } from './interfaces/IOperationData';
-export { IProvider, ProviderType } from './interfaces/IProvider';
-export { IRollsData } from './interfaces/IRollsData';
-export { ISignature } from './interfaces/ISignature';
-export { ISignedMessage } from './interfaces/ISignedMessage';
-export { IStakingAddresses } from './interfaces/IStakingAddresses';
-export { ITransactionData } from './interfaces/ITransactionData';
-export { IBalance } from './interfaces/IBalance';
-export { ISerializable } from './interfaces/ISerializable';
-export { IDeserializedResult } from './interfaces/ISerializable';
-export { IDatastoreEntry } from './interfaces/IDatastoreEntry';
-export { IContractReadOperationData } from './interfaces/IContractReadOperationData';
-export { IContractReadOperationResponse } from './interfaces/IContractReadOperationResponse';
-export { IReadOperationResult } from './interfaces/IReadOperationResult';
-export { IExecuteReadOnlyData } from './interfaces/IExecuteReadOnlyData';
-export { IExecuteReadOnlyResponse } from './interfaces/IExecuteReadOnlyResponse';
+export { Account } from './interfaces/Account';
+export { Event } from './interfaces/Event';
+export { EventFilter } from './interfaces/EventFilter';
+export { EventRegexFilter } from './interfaces/EventRegexFilter';
+export { Slot } from './interfaces/Slot';
+export { AddressInfo } from './interfaces/AddressInfo';
+export { BlockInfo } from './interfaces/BlockInfo';
+export { ClientConfig } from './interfaces/ClientConfig';
+export { Clique } from './interfaces/Clique';
+export { ContractData } from './interfaces/ContractData';
+export { CallData } from './interfaces/CallData';
+export { ReadData } from './interfaces/ReadData';
+export { FullAddressInfo } from './interfaces/FullAddressInfo';
+export { Endorsement } from './interfaces/Endorsement';
+export { NodeStatus } from './interfaces/NodeStatus';
+export { OperationData } from './interfaces/OperationData';
+export { Provider, ProviderType } from './interfaces/Provider';
+export { RollsData } from './interfaces/RollsData';
+export { Signature } from './interfaces/Signature';
+export { SignedMessage } from './interfaces/SignedMessage';
+export { StakingAddresses } from './interfaces/StakingAddresses';
+export { TransactionData } from './interfaces/TransactionData';
+export { Balance } from './interfaces/Balance';
+export { Serializable } from './interfaces/Serializable';
+export { DeserializedResult } from './interfaces/Serializable';
+export { DatastoreEntry } from './interfaces/DatastoreEntry';
+export { ContractReadOperationData } from './interfaces/ContractReadOperationData';
+export { ContractReadOperationResponse } from './interfaces/ContractReadOperationResponse';
+export { ReadOperationResult } from './interfaces/ReadOperationResult';
+export { ExecuteReadOnlyData } from './interfaces/ExecuteReadOnlyData';
+export { ExecuteReadOnlyResponse } from './interfaces/ExecuteReadOnlyResponse';
 export { JsonRpcResponseData } from './interfaces/JsonRpcResponseData';
 export { EOperationStatus } from './interfaces/EOperationStatus';
 export {
-  ITransactionOpType,
-  IRollBuyOpType,
-  IRollSellOpType,
-  IExecSmartContractOpType,
+  TransactionOpType,
+  RollBuyOpType,
+  RollSellOpType,
+  ExecSmartContractOpType,
   OperationTypeId,
   OpType,
 } from './interfaces/OperationTypes';
-export { IClient } from './interfaces/IClient';
-export { IPublicApiClient } from './interfaces/IPublicApiClient';
-export { IPrivateApiClient } from './interfaces/IPrivateApiClient';
-export { IWalletClient } from './interfaces/IWalletClient';
-export { ISmartContractsClient } from './interfaces/ISmartContractsClient';
-export { IDatastoreEntryInput } from './interfaces/IDatastoreEntryInput';
-export { IGetGraphInterval } from './interfaces/IGetGraphInterval';
-export { IGraphInterval } from './interfaces/IGraphInterval';
+export { Client } from './interfaces/Client';
+export { PublicApiClient } from './interfaces/PublicApiClient';
+export { PrivateApiClient } from './interfaces/PrivateApiClient';
+export { WalletClient } from './interfaces/WalletClient';
+export { SmartContractsClient } from './interfaces/SmartContractsClient';
+export { DatastoreEntryInput } from './interfaces/DatastoreEntryInput';
+export { GetGraphInterval } from './interfaces/GetGraphInterval';
+export { GraphInterval } from './interfaces/GraphInterval';
 export {
-  IBlockcliqueBlockBySlot,
-  IBlockHeaderInfo,
-  IEndorsementInfo,
-} from './interfaces/IBlockcliqueBlockBySlot';
-export { ISubscribeNewBlocksMessage } from './interfaces/ISubscribeNewBlocksMessage';
-export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocksMessage';
+  BlockcliqueBlockBySlot,
+  BlockHeaderInfo,
+  EndorsementInfo,
+} from './interfaces/BlockcliqueBlockBySlot';
+export { SubscribeNewBlocksMessage } from './interfaces/SubscribeNewBlocksMessage';
+export { SubscribedFullBlocksMessage } from './interfaces/SubscribedFullBlocksMessage';
 
 /** Exposed clients and factories */
 export { ClientFactory, DefaultProviderUrls } from './web3/ClientFactory';

@@ -1,4 +1,4 @@
-import { ISerializable } from '../interfaces/ISerializable';
+import { Serializable } from '../interfaces/Serializable';
 import {
   bytesToF32,
   bytesToF64,
@@ -281,7 +281,7 @@ export class Args {
   }
 
   /**
-   * Returns the next {@link ISerializable} object in the serialized byte array
+   * Returns the next {@link Serializable} object in the serialized byte array
    *
    * @remarks
    * Increments to offset to point the data after the one that as been deserialized in the byte array.
@@ -290,7 +290,7 @@ export class Args {
    *
    * @returns the deserialized object T
    */
-  public nextSerializable<T extends ISerializable<T>>(ctor: new () => T): T {
+  public nextSerializable<T extends Serializable<T>>(ctor: new () => T): T {
     let deserializationResult = deserializeObj(
       this.serialized,
       this.offset,
@@ -301,16 +301,16 @@ export class Args {
   }
 
   /**
-   * Returns the next array of {@link ISerializable} objects in the serialized byte array
+   * Returns the next array of {@link Serializable} objects in the serialized byte array
    *
    * @remarks
    * Increments to offset to point the data after the one that as been deserialized in the byte array.
    *
    * @param ctor - the class constructor prototype T.prototype
    *
-   * @returns the deserialized array of object that implement ISerializable
+   * @returns the deserialized array of object that implement Serializable
    */
-  public nextSerializableObjectArray<T extends ISerializable<T>>(
+  public nextSerializableObjectArray<T extends Serializable<T>>(
     ctor: new () => T,
   ): T[] {
     const length = this.nextU32();
@@ -543,15 +543,15 @@ export class Args {
    * Adds a serializable object to the serialized arguments.
    *
    * @remarks
-   * The object must implement the {@link ISerializable} interface
+   * The object must implement the {@link Serializable} interface
    *
-   * @see {@link ISerializable}
+   * @see {@link Serializable}
    *
    * @param value - the object to add
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addSerializable<T>(value: ISerializable<T>): this {
+  public addSerializable<T>(value: Serializable<T>): this {
     const serializedValue = value.serialize();
     this.serialized = Args.concatArrays(this.serialized, serializedValue);
     this.offset += serializedValue.length;
@@ -562,19 +562,17 @@ export class Args {
    * Adds an array of serializable objects to the serialized arguments.
    *
    * @remarks
-   * Each object must implement the {@link ISerializable} interface.
-   * This will perform a deep copy of your objects thanks to the {@link ISerializable.serialize}
+   * Each object must implement the {@link Serializable} interface.
+   * This will perform a deep copy of your objects thanks to the {@link Serializable.serialize}
    * method you define in your class.
    *
-   * @see {@link ISerializable}
+   * @see {@link Serializable}
    *
    * @param arg - the argument to add
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addSerializableObjectArray<T extends ISerializable<T>>(
-    arg: T[],
-  ): this {
+  public addSerializableObjectArray<T extends Serializable<T>>(arg: T[]): this {
     const content: Uint8Array = serializableObjectsArrayToBytes(arg);
     this.addU32(content.length);
     this.serialized = Args.concatArrays(this.serialized, content);

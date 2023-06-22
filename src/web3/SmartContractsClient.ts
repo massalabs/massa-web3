@@ -7,26 +7,26 @@
  * @module SmartContractsClient
  */
 import { EOperationStatus } from '../interfaces/EOperationStatus';
-import { IAccount } from '../interfaces/IAccount';
-import { IAddressInfo } from '../interfaces/IAddressInfo';
-import { IBalance } from '../interfaces/IBalance';
-import { ICallData } from '../interfaces/ICallData';
-import { IClientConfig } from '../interfaces/IClientConfig';
-import { IContractData } from '../interfaces/IContractData';
-import { IContractReadOperationData } from '../interfaces/IContractReadOperationData';
-import { IContractReadOperationResponse } from '../interfaces/IContractReadOperationResponse';
-import { IEvent } from '../interfaces/IEvent';
-import { IEventFilter } from '../interfaces/IEventFilter';
-import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData';
-import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse';
-import { INodeStatus } from '../interfaces/INodeStatus';
-import { IOperationData } from '../interfaces/IOperationData';
-import { IReadData } from '../interfaces/IReadData';
-import { ISignature } from '../interfaces/ISignature';
-import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
+import { Account } from '../interfaces/Account';
+import { AddressInfo } from '../interfaces/AddressInfo';
+import { Balance } from '../interfaces/Balance';
+import { CallData } from '../interfaces/CallData';
+import { ClientConfig } from '../interfaces/ClientConfig';
+import { ContractData } from '../interfaces/ContractData';
+import { ContractReadOperationData } from '../interfaces/ContractReadOperationData';
+import { ContractReadOperationResponse } from '../interfaces/ContractReadOperationResponse';
+import { Event } from '../interfaces/Event';
+import { EventFilter } from '../interfaces/EventFilter';
+import { ExecuteReadOnlyData } from '../interfaces/ExecuteReadOnlyData';
+import { ExecuteReadOnlyResponse } from '../interfaces/ExecuteReadOnlyResponse';
+import { NodeStatus } from '../interfaces/NodeStatus';
+import { OperationData } from '../interfaces/OperationData';
+import { ReadData } from '../interfaces/ReadData';
+import { Signature } from '../interfaces/Signature';
+import { SmartContractsClient } from '../interfaces/SmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
-import { IProtoFile } from '../interfaces/IProtoFile';
+import { ProtoFile } from '../interfaces/ProtoFile';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
@@ -49,13 +49,13 @@ const MASSA_PROTOFILE_KEY = 'protoMassa';
  */
 export class SmartContractsClient
   extends BaseClient
-  implements ISmartContractsClient
+  implements SmartContractsClient
 {
   /**
    * Constructor for {@link SmartContractsClient} objects.
    */
   public constructor(
-    clientConfig: IClientConfig,
+    clientConfig: ClientConfig,
     private readonly publicApiClient: PublicApiClient,
     private readonly walletClient: WalletClient,
   ) {
@@ -85,14 +85,14 @@ export class SmartContractsClient
    * @param contractData - The deployment contract data.
    * @param executor - The account to use for the deployment.
    *
-   * @returns A promise that resolves to the operation ID of the deployment operation.
+   * @returns A promise that resolves to the operation D of the deployment operation.
    */
   public async deploySmartContract(
-    contractData: IContractData,
-    executor?: IAccount,
+    contractData: ContractData,
+    executor?: Account,
   ): Promise<string> {
     // get next period info
-    const nodeStatusInfo: INodeStatus =
+    const nodeStatusInfo: NodeStatus =
       await this.publicApiClient.getNodeStatus();
     const expiryPeriod: number =
       nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
@@ -108,7 +108,7 @@ export class SmartContractsClient
     }
 
     // check sender account
-    const sender: IAccount = executor || this.walletClient.getBaseAccount();
+    const sender: Account = executor || this.walletClient.getBaseAccount();
     if (!sender) {
       throw new Error(`No tx sender available`);
     }
@@ -122,7 +122,7 @@ export class SmartContractsClient
 
     // sign payload
     const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
-    const signature: ISignature = await WalletClient.walletSignMessage(
+    const signature: Signature = await WalletClient.walletSignMessage(
       Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
@@ -160,14 +160,14 @@ export class SmartContractsClient
    * @param executor - The account that will execute the call (default: the default
    * wallet account from {@link WalletClient}).
    *
-   * @returns A promise that resolves to the operation ID of the call operation as a string.
+   * @returns A promise that resolves to the operation D of the call operation as a string.
    */
   public async callSmartContract(
-    callData: ICallData,
-    executor?: IAccount,
+    callData: CallData,
+    executor?: Account,
   ): Promise<string> {
     // get next period info
-    const nodeStatusInfo: INodeStatus =
+    const nodeStatusInfo: NodeStatus =
       await this.publicApiClient.getNodeStatus();
     const expiryPeriod: number =
       nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
@@ -187,7 +187,7 @@ export class SmartContractsClient
 
     // sign payload
     const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
-    const signature: ISignature = await WalletClient.walletSignMessage(
+    const signature: Signature = await WalletClient.walletSignMessage(
       Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
@@ -225,8 +225,8 @@ export class SmartContractsClient
    * @returns A promise that resolves to an object which represents the result of the operation and contains data about its execution.
    */
   public async readSmartContract(
-    readData: IReadData,
-  ): Promise<IContractReadOperationResponse> {
+    readData: ReadData,
+  ): Promise<ContractReadOperationResponse> {
     // check the max. allowed gas
     if (readData.maxGas > MAX_READ_BLOCK_GAS) {
       throw new Error(
@@ -248,10 +248,10 @@ export class SmartContractsClient
     };
     // returns operation ids
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
-    let jsonRpcCallResult: Array<IContractReadOperationData> = [];
+    let jsonRpcCallResult: Array<ContractReadOperationData> = [];
     if (this.clientConfig.retryStrategyOn) {
       jsonRpcCallResult = await trySafeExecute<
-        Array<IContractReadOperationData>
+        Array<ContractReadOperationData>
       >(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
     } else {
       jsonRpcCallResult = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [
@@ -269,8 +269,8 @@ export class SmartContractsClient
     }
     return {
       returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,
-      info: jsonRpcCallResult[0] as IContractReadOperationData,
-    } as IContractReadOperationResponse;
+      info: jsonRpcCallResult[0] as ContractReadOperationData,
+    } as ContractReadOperationResponse;
   }
 
   /**
@@ -280,15 +280,15 @@ export class SmartContractsClient
    *
    * @returns A promise that resolves to the balance of the smart contract.
    */
-  public async getContractBalance(address: string): Promise<IBalance | null> {
-    const addresses: Array<IAddressInfo> =
+  public async getContractBalance(address: string): Promise<Balance | null> {
+    const addresses: Array<AddressInfo> =
       await this.publicApiClient.getAddresses([address]);
     if (addresses.length === 0) return null;
-    const addressInfo: IAddressInfo = addresses.at(0);
+    const addressInfo: AddressInfo = addresses.at(0);
     return {
       candidate: fromMAS(addressInfo.candidate_balance),
       final: fromMAS(addressInfo.final_balance),
-    } as IBalance;
+    } as Balance;
   }
 
   /**
@@ -296,11 +296,11 @@ export class SmartContractsClient
    *
    * @param eventFilterData - The filter data for the events.
    *
-   * @returns A promise that resolves to an array of IEvent objects containing the filtered events.
+   * @returns A promise that resolves to an array of Event objects containing the filtered events.
    */
   public async getFilteredScOutputEvents(
-    eventFilterData: IEventFilter,
-  ): Promise<Array<IEvent>> {
+    eventFilterData: EventFilter,
+  ): Promise<Array<Event>> {
     const data = {
       start: eventFilterData.start,
       end: eventFilterData.end,
@@ -315,15 +315,14 @@ export class SmartContractsClient
 
     // returns filtered events
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest, [
+      return await trySafeExecute<Array<Event>>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
         [data],
       ]);
     } else {
-      return await this.sendJsonRPCRequest<Array<IEvent>>(
-        jsonRpcRequestMethod,
-        [data],
-      );
+      return await this.sendJsonRPCRequest<Array<Event>>(jsonRpcRequestMethod, [
+        data,
+      ]);
     }
   }
 
@@ -346,8 +345,8 @@ export class SmartContractsClient
    * - If the result contains an error.
    */
   public async executeReadOnlySmartContract(
-    contractData: IContractData,
-  ): Promise<IExecuteReadOnlyResponse> {
+    contractData: ContractData,
+  ): Promise<ExecuteReadOnlyResponse> {
     if (!contractData.contractDataBinary) {
       throw new Error(`Contract binary data required. Got null`);
     }
@@ -362,17 +361,17 @@ export class SmartContractsClient
       address: contractData.address,
     };
 
-    let jsonRpcCallResult: Array<IExecuteReadOnlyData> = [];
+    let jsonRpcCallResult: Array<ExecuteReadOnlyData> = [];
     const jsonRpcRequestMethod =
       JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
     if (this.clientConfig.retryStrategyOn) {
-      jsonRpcCallResult = await trySafeExecute<Array<IExecuteReadOnlyData>>(
+      jsonRpcCallResult = await trySafeExecute<Array<ExecuteReadOnlyData>>(
         this.sendJsonRPCRequest,
         [jsonRpcRequestMethod, [[data]]],
       );
     } else {
       jsonRpcCallResult = await this.sendJsonRPCRequest<
-        Array<IExecuteReadOnlyData>
+        Array<ExecuteReadOnlyData>
       >(jsonRpcRequestMethod, [[data]]);
     }
 
@@ -388,8 +387,8 @@ export class SmartContractsClient
     }
     return {
       returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,
-      info: jsonRpcCallResult[0] as IExecuteReadOnlyData,
-    } as IExecuteReadOnlyResponse;
+      info: jsonRpcCallResult[0] as ExecuteReadOnlyData,
+    } as ExecuteReadOnlyResponse;
   }
 
   /**
@@ -400,7 +399,7 @@ export class SmartContractsClient
    * @returns A promise that resolves to the status of the operation.
    */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
-    const operationData: Array<IOperationData> =
+    const operationData: Array<OperationData> =
       await this.publicApiClient.getOperations([opId]);
     if (!operationData || operationData.length === 0)
       return EOperationStatus.NOT_FOUND;
@@ -415,7 +414,7 @@ export class SmartContractsClient
       return EOperationStatus.AWAITING_INCLUSION;
     }
 
-    return EOperationStatus.INCONSISTENT;
+    return EOperationStatus.NCONSISTENT;
   }
 
   /**
@@ -467,12 +466,12 @@ export class SmartContractsClient
    *
    * @param contractAddresses - An array of contract addresses (as strings)
    *
-   * @returns A promise that resolves to the array of IProtoFiles corresponding
+   * @returns A promise that resolves to the array of ProtoFiles corresponding
    * to the proto file associated with each contract or the values are null if the file is unavailable.
    */
   public async getProtoFiles(
     contractAddresses: string[],
-  ): Promise<IProtoFile[]> {
+  ): Promise<ProtoFile[]> {
     // prepare request body
     const requestProtoFiles: object[] = [];
     for (let address of contractAddresses) {
