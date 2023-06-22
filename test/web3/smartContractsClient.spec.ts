@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
 import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
