@@ -2,6 +2,12 @@
     This file contains mock data for testing purposes.
 */
 
+import { IClientConfig } from '../../src/interfaces/IClientConfig';
+import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
+import { PERIOD_OFFSET } from '../../src/web3/BaseClient';
+import { IAccount } from '../../src/interfaces/IAccount';
+import { IContractData } from '../../src/interfaces/IContractData';
+
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   node_ip: null,
@@ -48,3 +54,56 @@ export const mockNodeStatusInfo = {
     max_block_size: 1000000,
   },
 };
+
+export const mockClientConfig: IClientConfig = {
+  providers: [
+    {
+      url: 'https://mock-public-api.com',
+      type: ProviderType.PUBLIC,
+    } as IProvider,
+    {
+      url: 'https://mock-private-api.com',
+      type: ProviderType.PRIVATE,
+    } as IProvider,
+  ],
+  periodOffset: PERIOD_OFFSET,
+};
+
+export const mockDeployerAccount: IAccount = {
+  address: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+  publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
+  secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
+  createdInThread: 0,
+};
+
+export const mockContractData: IContractData = {
+  fee: 100000000000000000n,
+  maxGas: 100000000000000000n,
+  maxCoins: 100000000000000000n,
+  contractDataText: 'Hello World!',
+  contractDataBinary: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
+  datastore: new Map<Uint8Array, Uint8Array>([
+    [
+      new Uint8Array([0x00, 0x01, 0x02, 0x03]),
+      new Uint8Array([0x00, 0x01, 0x02, 0x03]),
+    ],
+    [
+      new Uint8Array([0x04, 0x05, 0x06, 0x07]),
+      new Uint8Array([0x04, 0x05, 0x06, 0x07]),
+    ],
+    [
+      new Uint8Array([0x08, 0x09, 0x0a, 0x0b]),
+      new Uint8Array([0x08, 0x09, 0x0a, 0x0b]),
+    ],
+    [
+      new Uint8Array([0x0c, 0x0d, 0x0e, 0x0f]),
+      new Uint8Array([0x0c, 0x0d, 0x0e, 0x0f]),
+    ],
+  ]),
+};
+
+export const mockOpIds: Array<string> = [
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9f',
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9g',
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9h',
+];
