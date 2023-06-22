@@ -44,10 +44,13 @@ export async function initializeClient() {
 }
 
 function createFullAddressInfo(
-  address: string,
-  publicKey: string,
-  secretKey: string,
+  address: string | null,
+  publicKey: string | null,
+  secretKey: string | null,
 ): IFullAddressInfo {
+  if (!address || !publicKey || !secretKey) {
+    throw new Error('Invalid address, public key or secret key');
+  }
   return {
     address,
     candidate_balance: '0',
@@ -93,7 +96,7 @@ describe('WalletClient', () => {
         receiverPrivateKey,
       );
       await web3Client.wallet().setBaseAccount(account);
-      const baseAccount = await web3Client.wallet().getBaseAccount();
+      const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address).toEqual(account.address);
     });
@@ -125,7 +128,7 @@ describe('WalletClient', () => {
       );
       await web3Client.wallet().setBaseAccount(secondAccount);
 
-      const baseAccount = await web3Client.wallet().getBaseAccount();
+      const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address).toEqual(secondAccount.address);
     });
@@ -133,14 +136,14 @@ describe('WalletClient', () => {
 
   describe('getBaseAccount', () => {
     test('should return the base account', async () => {
-      const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
+      const fetchedBaseAccount = web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).not.toBeNull();
       expect(fetchedBaseAccount?.address).toEqual(baseAccount.address);
     });
 
     test('should return null if base account is not set', async () => {
       await web3Client.wallet().cleanWallet();
-      const fetchedBaseAccount = await web3Client.wallet().getBaseAccount();
+      const fetchedBaseAccount = web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).toBeNull();
     });
   });
@@ -292,7 +295,7 @@ describe('WalletClient', () => {
 
   describe('walletInfo', () => {
     test('should return an empty array if the wallet is empty', async () => {
-      await web3Client.wallet().cleanWallet(); // Make sure the wallet is empty
+      web3Client.wallet().cleanWallet(); // Make sure the wallet is empty
       const walletInfo = await web3Client.wallet().walletInfo();
       expect(walletInfo).toEqual([]);
     });
@@ -321,14 +324,14 @@ describe('WalletClient', () => {
 
       const mockAddressInfo: IFullAddressInfo[] = [
         createFullAddressInfo(
-          baseAccount.address!,
-          baseAccount.publicKey!,
-          baseAccount.secretKey!,
+          baseAccount.address,
+          baseAccount.publicKey,
+          baseAccount.secretKey,
         ),
         createFullAddressInfo(
           accounts[1].address!,
-          accounts[1].publicKey!,
-          accounts[1].secretKey!,
+          accounts[1].publicKey,
+          accounts[1].secretKey,
         ),
       ];
 
@@ -364,9 +367,9 @@ describe('WalletClient', () => {
         'getWalletAddressesInfo',
       );
       const mockAddresses = [
-        baseAccount.address!,
+        baseAccount.address,
         await WalletClient.walletGenerateNewAccount().then(
-          (account) => account.address!,
+          (account) => account.address,
         ),
       ];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -387,9 +390,9 @@ describe('WalletClient', () => {
       );
 
       const mockAddresses = [
-        baseAccount.address!,
+        baseAccount.address,
         await WalletClient.walletGenerateNewAccount().then(
-          (account) => account.address!,
+          (account) => account.address,
         ),
       ];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -804,7 +807,7 @@ describe('WalletClient', () => {
       await web3Client.wallet().setBaseAccount(account);
 
       // get the updated account (now with 'createdInThread' field)
-      const baseAccount = await web3Client.wallet().getBaseAccount();
+      const baseAccount = web3Client.wallet().getBaseAccount();
 
       // manually compute the expected thread number
       const pubKeyHash = base58Decode(account.address!.slice(2));
