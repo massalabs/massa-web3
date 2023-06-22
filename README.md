@@ -1,6 +1,10 @@
 # massa-web3 ![Node CI](https://github.com/massalabs/massa-web3/workflows/Node.js%20CI/badge.svg)
 
+<<<<<<< HEAD
 ![check-code-coverage](https://img.shields.io/badge/coverage-86.37%25-green)
+=======
+![check-code-coverage](https://img.shields.io/badge/coverage-69.67%25-red)
+>>>>>>> 85f38b1 (Generate coverage badge)
 
 `Massa-web3` is a TypeScript library that allow you to interact with the `Massa` blockchain through a
 local or remote Massa node. In particular the massa-web3 library will allow you to call the JSON-RPC API,
