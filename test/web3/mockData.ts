@@ -7,6 +7,7 @@ import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
 import { PERIOD_OFFSET } from '../../src/web3/BaseClient';
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
+import { ICallData } from '../../src/interfaces/ICallData';
 
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
@@ -107,3 +108,12 @@ export const mockOpIds: Array<string> = [
   'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9g',
   'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9h',
 ];
+
+export const mockCallData: ICallData = {
+  fee: 100000000000000000n,
+  maxGas: 100000000000000000n,
+  coins: 100000000000000000n,
+  targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
+  functionName: 'test',
+  parameter: [1, 2, 3, 4],
+};
