@@ -85,19 +85,22 @@ export const mockAddresses = [
 
 export const mockAddressesInfo = [
   {
-    address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+    address: 'AU1qx8SWRBX3EaLLWmcviYiQqS7zb4jV4QykHt2TskjTPJbQAHF7',
     candidate_balance: '0',
-    thread: 0,
+    final_balance: '0',
+    thread: 1,
   },
   {
-    address: 'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
-    candidate_balance: '0',
-    thread: 0,
+    address: 'AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp',
+    candidate_balance: '1',
+    final_balance: '1',
+    thread: 2,
   },
   {
-    address: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
-    candidate_balance: '0',
-    thread: 0,
+    address: 'AU12WVAJoH2giHAjSxk9R1XK3YhpCw2QxmkCbtXxcr4T3XCUG55nr',
+    candidate_balance: '50',
+    final_balance: '50',
+    thread: 3,
   },
 ];
 

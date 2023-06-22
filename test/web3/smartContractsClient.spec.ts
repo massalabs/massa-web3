@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IBalance } from '../../src/interfaces/IBalance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import { fromMAS } from '../../src/utils/converters';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
 import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
@@ -9,6 +11,7 @@ import {
   mockContractData,
   mockNodeStatusInfo,
   mockOpIds,
+  mockAddressesInfo,
 } from './mockData';
 
 describe('SmartContractsClient', () => {
@@ -141,6 +144,43 @@ describe('SmartContractsClient', () => {
       ).rejects.toThrow(
         `Deploy smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
+    });
+  });
+
+  describe.only('getContractBalance', () => {
+    const mockAddress = 'address';
+
+    const expectedBalance: IBalance = {
+      candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
+      final: fromMAS(mockAddressesInfo[0].final_balance),
+    };
+
+    test('should return the correct balance when the address exists', async () => {
+      mockPublicApiClient.getAddresses = jest
+        .fn()
+        .mockResolvedValue(mockAddressesInfo);
+
+      const balance = await smartContractsClient.getContractBalance(
+        mockAddress,
+      );
+
+      expect(balance).toEqual(expectedBalance);
+      expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
+        mockAddress,
+      ]);
+    });
+
+    test('should return null when the address does not exist', async () => {
+      mockPublicApiClient.getAddresses = jest.fn().mockResolvedValue([]);
+
+      const balance = await smartContractsClient.getContractBalance(
+        mockAddress,
+      );
+
+      expect(balance).toBeNull();
+      expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
+        mockAddress,
+      ]);
     });
   });
 });
