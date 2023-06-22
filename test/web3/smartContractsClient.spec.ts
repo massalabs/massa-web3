@@ -110,12 +110,12 @@ describe('SmartContractsClient', () => {
       );
     });
 
-    test('should throw error when gas submitted exceeds the maximum allowed block gas', async () => {
+    test('should throw error when json rpc response has error', async () => {
       const mockContractReadOperationDataWithError = [
         {
           result: {
             Error:
-              'The gas submitted 100000000000000000 exceeds the max. allowed block gas of 4294967295',
+              'Some error message. Inspect smart contract for more details',
           },
         },
       ];
