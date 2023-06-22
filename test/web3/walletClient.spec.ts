@@ -95,7 +95,7 @@ describe('WalletClient', () => {
       const account = await WalletClient.getAccountFromSecretKey(
         receiverPrivateKey,
       );
-      web3Client.wallet().setBaseAccount(account);
+      await web3Client.wallet().setBaseAccount(account);
       const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address).toEqual(account.address);
