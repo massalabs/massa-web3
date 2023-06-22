@@ -26,7 +26,7 @@ import { ISignature } from '../interfaces/ISignature';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
-import { IProtoFile } from '../interfaces/IProtoFile';
+import { MassaProtoFile } from '../interfaces/MassaProtoFile';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
@@ -35,6 +35,8 @@ import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { getBytesPublicKey } from '../utils/bytes';
+import { writeFileSync } from 'fs';
+import path from 'path';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -474,7 +476,8 @@ export class SmartContractsClient
    */
   public async getProtoFiles(
     contractAddresses: string[],
-  ): Promise<IProtoFile[]> {
+    outputDirectory: string,
+  ): Promise<MassaProtoFile[]> {
     // prepare request body
     const requestProtoFiles: object[] = [];
     for (let address of contractAddresses) {
@@ -500,10 +503,25 @@ export class SmartContractsClient
         },
         body: JSON.stringify(body),
       });
-
+      let protoFiles: MassaProtoFile[];
       // parse response
       const json = await response.json();
-      return json.result;
+      for (let proto of json) {
+        let content = proto['final_value'].toString();
+        let protos = content.split('syntax = "proto3";'); // splitting all the proto functions to make separate proto file for each functions
+        for (let func of protos) {
+          const rName = /message (.+)RHelper /gm;
+          const fName = rName.exec(func)[0]; // retrieving the proto function name
+          const filepath = path.join(outputDirectory, fName + '.proto');
+          writeFileSync(filepath, func); // writing the proto file
+          protoFiles.push({
+            data: func,
+            filePath: filepath,
+            protoFuncName: fName,
+          });
+        }
+      }
+      return protoFiles;
     } catch (ex) {
       const msg = `Failed to retrieve the proto files.`;
       console.error(msg, ex);

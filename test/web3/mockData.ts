@@ -8,6 +8,7 @@ import { PERIOD_OFFSET } from '../../src/web3/BaseClient';
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { ICallData } from '../../src/interfaces/ICallData';
+import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
 
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
@@ -55,6 +56,153 @@ export const mockNodeStatusInfo = {
     max_block_size: 1000000,
   },
 };
+
+export const mockGraphInterval: IGetGraphInterval = {
+  start: 1624153200000,
+  end: 1624156800000,
+};
+
+export const mockBlock = {
+  header: {
+    content: {
+      slot: { period: 830, thread: 1 },
+      parents: ['0x000'],
+      operation_merkle_root: '0x000',
+      endorsements: [],
+    },
+    signature: '0x000',
+    creator_public_key: '0x000',
+    creator_address: '0x000',
+    id: '0x000',
+  },
+};
+
+export const mockAddresses = [
+  'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+  'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
+  'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+];
+
+export const mockAddressesInfo = [
+  {
+    address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+    candidate_balance: '0',
+    thread: 0,
+  },
+  {
+    address: 'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
+    candidate_balance: '0',
+    thread: 0,
+  },
+  {
+    address: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+    candidate_balance: '0',
+    thread: 0,
+  },
+];
+
+export const mockBlockIds = ['0x000', '0x001'];
+
+export const mockBlockData = [
+  {
+    id: '0x000',
+    content: null,
+    is_final: false,
+    is_in_blockclique: false,
+    is_stale: false,
+  },
+  {
+    id: '0x001',
+    content: null,
+    is_final: true,
+    is_in_blockclique: false,
+    is_stale: false,
+  },
+];
+
+export const mockEndorsementIds = ['0x000', '0x001'];
+
+export const mockEndorsementData = [
+  {
+    id: '0x000',
+    in_pool: false,
+    in_blocks: ['0x000'],
+    is_final: false,
+    endorsement: {
+      content: {
+        sender_public_key: '0x000',
+        slot: { period: 830, thread: 1 },
+        index: 0,
+        endorsed_block: '0x000',
+      },
+      signature: '0x000',
+    },
+  },
+  {
+    id: '0x001',
+    in_pool: false,
+    in_blocks: ['0x001'],
+    is_final: true,
+    endorsement: {
+      content: {
+        sender_public_key: '0x000',
+        slot: { period: 830, thread: 1 },
+        index: 0,
+        endorsed_block: '0x000',
+      },
+      signature: '0x000',
+    },
+  },
+];
+
+export const mockOperationData = [
+  {
+    id: '0x000',
+    in_blocks: ['0x000'],
+    in_pool: false,
+    is_operation_final: false,
+    thread: 0,
+    operation: {},
+  },
+  {
+    id: '0x001',
+    in_blocks: ['0x001'],
+    in_pool: false,
+    is_operation_final: true,
+    thread: 0,
+    operation: {},
+  },
+];
+
+export const mockStackersData = [
+  {
+    tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb: 1,
+    tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6: 2,
+    tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx: 3,
+  },
+];
+
+export const mockDatastoreEntryInput = [
+  {
+    address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+    key: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]),
+  },
+  {
+    address: 'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
+    key: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
+  },
+];
+
+export const mockDatastoreEntries = [
+  {
+    final_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]),
+    candidate_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]),
+  },
+  {
+    final_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
+    candidate_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
+  },
+];
 
 export const mockClientConfig: IClientConfig = {
   providers: [
