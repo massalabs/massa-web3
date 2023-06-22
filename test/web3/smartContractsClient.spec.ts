@@ -8,8 +8,12 @@ import {
   mockDeployerAccount,
   mockNodeStatusInfo,
   mockOpIds,
-  mockCallData,
+  mockContractReadOperationData,
+  mockContractReadOperationResponse,
+  mockReadData,
 } from './mockData';
+
+const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 
 describe('SmartContractsClient', () => {
   let smartContractsClient: SmartContractsClient;
@@ -48,91 +52,81 @@ describe('SmartContractsClient', () => {
       .mockResolvedValue(mockOpIds);
   });
 
-  describe('callSmartContract', () => {
-    test('should call sendJsonRPCRequest with correct arguments', async () => {
-      await smartContractsClient.callSmartContract(
-        mockCallData,
-        mockDeployerAccount,
-      );
+  describe('readSmartContract', () => {
+    test('should send the correct JSON RPC request', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationData);
+
+      await smartContractsClient.readSmartContract(mockReadData);
 
       expect(
         (smartContractsClient as any).sendJsonRPCRequest,
-      ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [
+      ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL, [
         [
           {
-            serialized_content: expect.any(Array),
-            creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            max_gas: Number(mockReadData.maxGas),
+            target_address: mockReadData.targetAddress,
+            target_function: mockReadData.targetFunction,
+            parameter: mockReadData.parameter,
+            caller_address: mockReadData.callerAddress,
           },
         ],
       ]);
     });
 
-    test('should return the correct result', async () => {
-      const result = await smartContractsClient.callSmartContract(
-        mockCallData,
-        mockDeployerAccount,
-      );
+    test('should return correct result', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationData);
 
-      expect(result).toBe(mockOpIds[0]);
+      const result = await smartContractsClient.readSmartContract(mockReadData);
+
+      expect(result).toEqual(mockContractReadOperationResponse);
     });
 
-    test('should use default account when no executor is provided', async () => {
-      await smartContractsClient.callSmartContract(mockCallData);
-      expect(mockWalletClient.getBaseAccount).toHaveBeenCalled();
-    });
-
-    test('should handle errors correctly', async () => {
-      const mockError = new Error('Error message');
-      (smartContractsClient as any).sendJsonRPCRequest.mockRejectedValue(
-        mockError,
-      );
+    test('should throw error when the gas submitted exceeds the maximum allowed block gas', async () => {
+      const mockReadDataWithLargeMaxGas = {
+        ...mockReadData,
+        maxGas: BigInt(4_294_967_296),
+      }; // value > MAX_READ_BLOCK_GAS
 
       await expect(
-        smartContractsClient.callSmartContract(mockCallData),
-      ).rejects.toThrow(mockError);
+        smartContractsClient.readSmartContract(mockReadDataWithLargeMaxGas),
+      ).rejects.toThrow(
+        `The gas submitted ${mockReadDataWithLargeMaxGas.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+      );
     });
 
-    test('should throw error when no executor is provided and base account is not set', async () => {
-      mockWalletClient.getBaseAccount = jest.fn().mockReturnValue(null);
-      await expect(
-        smartContractsClient.callSmartContract(mockCallData),
-      ).rejects.toThrow(`No tx sender available`);
-    });
-
-    test('should call trySafeExecute if retryStrategyOn is true', async () => {
-      const originalRetryStrategy = (smartContractsClient as any).clientConfig
-        .retryStrategyOn;
-      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
-
-      await smartContractsClient.callSmartContract(mockCallData);
-
-      expect(
-        (smartContractsClient as any).sendJsonRPCRequest,
-      ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [
-        [
-          {
-            serialized_content: expect.any(Array),
-            creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
-          },
-        ],
-      ]);
-
-      (smartContractsClient as any).clientConfig.retryStrategyOn =
-        originalRetryStrategy;
-    });
-
-    test('should throw error when no opId is returned', async () => {
+    test('should throw error when no results array in json rpc response', async () => {
       (smartContractsClient as any).sendJsonRPCRequest = jest
         .fn()
         .mockResolvedValue([]);
 
       await expect(
-        smartContractsClient.callSmartContract(mockCallData),
+        smartContractsClient.readSmartContract(mockReadData),
       ).rejects.toThrow(
-        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
+        `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
+    });
+
+    test('should throw error when gas submitted exceeds the maximum allowed block gas', async () => {
+      const mockContractReadOperationDataWithError = [
+        {
+          result: {
+            Error:
+              'The gas submitted 100000000000000000 exceeds the max. allowed block gas of 4294967295',
+          },
+        },
+      ];
+
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationDataWithError);
+
+      await expect(
+        smartContractsClient.readSmartContract(mockReadData),
+      ).rejects.toThrow(mockContractReadOperationDataWithError[0].result.Error);
     });
   });
 });
