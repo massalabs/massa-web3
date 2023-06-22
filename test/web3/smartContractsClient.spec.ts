@@ -99,7 +99,40 @@ describe('SmartContractsClient', () => {
         smartContractsClient.callSmartContract(mockCallData),
       ).rejects.toThrow(`No tx sender available`);
     });
-  });
 
-  // Expected non-null contract bytecode, but received null.
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+        .retryStrategyOn;
+      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+
+      await smartContractsClient.callSmartContract(mockCallData);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [
+        [
+          {
+            serialized_content: expect.any(Array),
+            creator_public_key: mockDeployerAccount.publicKey,
+            signature: 'signature',
+          },
+        ],
+      ]);
+
+      (smartContractsClient as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
+    });
+
+    test('should throw error when no opId is returned', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue([]);
+
+      await expect(
+        smartContractsClient.callSmartContract(mockCallData),
+      ).rejects.toThrow(
+        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
+      );
+    });
+  });
 });

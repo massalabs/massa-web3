@@ -351,11 +351,13 @@ export class SmartContractsClient
     contractData: IContractData,
   ): Promise<IExecuteReadOnlyResponse> {
     if (!contractData.contractDataBinary) {
-      throw new Error(`Contract binary data required. Got null`);
+      throw new Error(
+        `Expected non-null contract bytecode, but received null.`,
+      );
     }
 
     if (!contractData.address) {
-      throw new Error(`Contract address required. Got null`);
+      throw new Error(`Expected contract address, but received null.`);
     }
 
     const data = {
