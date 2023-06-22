@@ -1,6 +1,7 @@
 import { expect, it, describe } from '@jest/globals';
 import * as ser from '../../src/utils/serializers';
 import { asTests } from './fixtures/as-serializer';
+import { Args, ArrayType } from '../../src/utils/arguments';
 
 describe('Serialization tests', () => {
   it('ser/deser with emojis', () => {
@@ -84,4 +85,16 @@ describe('Test against assemblyscript serializer', () => {
       }
     });
   }
+
+  it(`AS tests Array<string>`, () => {
+    const input = ['Hello', 'World', '🙂'];
+    const serialized = [
+      26, 0, 0, 0, 5, 0, 0, 0, 72, 101, 108, 108, 111, 5, 0, 0, 0, 87, 111, 114,
+      108, 100, 4, 0, 0, 0, 240, 159, 153, 130,
+    ];
+    expect(new Args().addArray(input, ArrayType.STRING).serialize()).toEqual(
+      serialized,
+    );
+    expect(new Args(serialized).nextArray(ArrayType.STRING)).toEqual(input);
+  });
 });
