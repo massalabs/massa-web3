@@ -9,6 +9,10 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { ICallData } from '../../src/interfaces/ICallData';
 import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
+import { IReadData } from '../../src/interfaces/IReadData';
+import { IContractReadOperationData } from '../../src/interfaces/IContractReadOperationData';
+import { IContractReadOperationResponse } from '../../src/interfaces/IContractReadOperationResponse';
+
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   node_ip: null,
@@ -264,3 +268,50 @@ export const mockCallData: ICallData = {
   functionName: 'test',
   parameter: [1, 2, 3, 4],
 };
+
+export const mockReadData: IReadData = {
+  maxGas: 100000n,
+  targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
+  targetFunction: 'test',
+  parameter: [1, 2, 3, 4],
+  callerAddress: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+};
+
+export const mockContractReadOperationData: Array<IContractReadOperationData> =
+  [
+    {
+      executed_at: {
+        period: 1,
+        thread: 0,
+      },
+      result: {
+        Ok: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
+      },
+      output_events: [
+        {
+          id: 'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9f',
+          data: 'Hello World!',
+          context: {
+            slot: {
+              period: 1,
+              thread: 0,
+            },
+            block: null,
+            read_only: true,
+            call_stack: [],
+            index_in_slot: 0,
+            origin_operation_id: null,
+            is_final: true,
+            is_error: false,
+          },
+        },
+      ],
+      gas_cost: 1000000,
+    },
+  ];
+
+export const mockContractReadOperationResponse: IContractReadOperationResponse =
+  {
+    returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
+    info: mockContractReadOperationData[0],
+  };
