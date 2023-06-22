@@ -28,28 +28,26 @@ describe('SmartContractsClient', () => {
       mockPublicApiClient,
       mockWalletClient,
     );
+
+    // Mock returned values
+    mockPublicApiClient.getNodeStatus = jest
+      .fn()
+      .mockResolvedValue(mockNodeStatusInfo);
+    // Mock the getBaseAccount function
+    mockWalletClient.getBaseAccount = jest
+      .fn()
+      .mockReturnValue(mockDeployerAccount);
+    // Mock the walletSignMessage function
+    WalletClient.walletSignMessage = jest
+      .fn()
+      .mockResolvedValue({ base58Encoded: 'signature' });
+    // Mock the sendJsonRPCRequest function
+    (smartContractsClient as any).sendJsonRPCRequest = jest
+      .fn()
+      .mockResolvedValue(mockOpIds);
   });
 
   describe('deploySmartContract', () => {
-    beforeEach(() => {
-      // Mock returned values
-      mockPublicApiClient.getNodeStatus = jest
-        .fn()
-        .mockResolvedValue(mockNodeStatusInfo);
-      // Mock the getBaseAccount function
-      mockWalletClient.getBaseAccount = jest
-        .fn()
-        .mockReturnValue(mockDeployerAccount);
-      // Mock the walletSignMessage function
-      WalletClient.walletSignMessage = jest
-        .fn()
-        .mockResolvedValue({ base58Encoded: 'signature' });
-      // Mock the sendJsonRPCRequest function
-      (smartContractsClient as any).sendJsonRPCRequest = jest
-        .fn()
-        .mockResolvedValue(mockOpIds);
-    });
-
     test('should call sendJsonRPCRequest with correct arguments', async () => {
       await smartContractsClient.deploySmartContract(
         mockContractData,
