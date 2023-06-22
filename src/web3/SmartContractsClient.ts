@@ -99,7 +99,9 @@ export class SmartContractsClient
 
     // Check if SC data exists
     if (!contractData.contractDataBinary) {
-      throw new Error(`Contract data required. Got null`);
+      throw new Error(
+        `Expected non-null contract bytecode, but received null.`,
+      );
     }
 
     // get the block size

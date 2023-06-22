@@ -126,7 +126,9 @@ describe('SmartContractsClient', () => {
 
       await expect(
         smartContractsClient.deploySmartContract(modifiedMockContractData),
-      ).rejects.toThrow(`Contract data required. Got null`);
+      ).rejects.toThrow(
+        `Expected non-null contract bytecode, but received null.`,
+      );
     });
 
     test('should throw error when no opId is returned', async () => {
