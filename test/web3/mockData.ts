@@ -48,3 +48,5 @@ export const mockNodeStatusInfo = {
     max_block_size: 1000000,
   },
 };
+
+export const mockOpIds = ['op4', 'op5', 'op6'];
