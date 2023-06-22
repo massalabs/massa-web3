@@ -48,3 +48,9 @@ export const mockNodeStatusInfo = {
     max_block_size: 1000000,
   },
 };
+
+export const mockOpIds: Array<string> = [
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9f',
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9g',
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9h',
+];
