@@ -18,4 +18,4 @@ if [[ "$BRANCH" == "buildnet" ]]; then
   TAG="buildnet-"
 fi
 
-npm publish --access public --dry-run --tag ${TAG}dev
+npm publish --access public --tag ${TAG}dev
