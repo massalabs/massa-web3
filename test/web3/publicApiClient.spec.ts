@@ -13,10 +13,10 @@ import {
   mockEndorsementIds,
   mockEndorsementData,
   mockOperationData,
-  mockOperationIds,
   mockStackersData,
   mockDatastoreEntryInput,
   mockDatastoreEntries,
+  mockOpIds,
 } from './mockData';
 
 export const PERIOD_OFFSET = 5;
@@ -180,7 +180,7 @@ describe('PublicApiClient', () => {
   describe('getOperations', () => {
     generateAPITests(
       'getOperations',
-      mockOperationIds,
+      mockOpIds,
       mockOperationData,
       JSON_RPC_REQUEST_METHOD.GET_OPERATIONS,
       true,

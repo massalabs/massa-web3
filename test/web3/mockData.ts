@@ -149,8 +149,6 @@ export const mockEndorsementData = [
   },
 ];
 
-export const mockOperationIds = ['0x000', '0x001'];
-
 export const mockOperationData = [
   {
     id: '0x000',
@@ -198,4 +196,10 @@ export const mockDatastoreEntries = [
     final_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
     candidate_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
   },
+];
+
+export const mockOpIds: Array<string> = [
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9f',
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9g',
+  'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9h',
 ];
