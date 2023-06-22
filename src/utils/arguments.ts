@@ -21,6 +21,10 @@ import {
   bytesToSerializableObjectArray,
   nativeTypeArrayToBytes,
   bytesToNativeTypeArray,
+  u128ToBytes,
+  u256ToBytes,
+  bytesToU128,
+  bytesToU256,
 } from './serializers';
 
 /**
@@ -36,6 +40,8 @@ export enum TypedArrayUnit {
   U8,
   U32,
   U64,
+  U128,
+  U256,
   I32,
   I64,
   F32,
@@ -153,6 +159,36 @@ export class Args {
     const value = bytesToU64(this.serialized, this.offset);
 
     this.offset += 8;
+    return value;
+  }
+
+  /**
+   * Returns the next uint128 in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextU128(): bigint {
+    const value = bytesToU128(this.serialized, this.offset);
+
+    this.offset += 16;
+    return value;
+  }
+
+  /**
+   * Returns the next uint256 in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextU256(): bigint {
+    const value = bytesToU256(this.serialized, this.offset);
+
+    this.offset += 32;
     return value;
   }
 
@@ -278,20 +314,19 @@ export class Args {
     ctor: new () => T,
   ): T[] {
     const length = this.nextU32();
+
+    if (!length) {
+      return [];
+    }
+
     if (this.offset + length > this.serialized.length) {
       throw new Error("can't deserialize length of array from given argument");
     }
 
-    const bufferSize = length;
-
-    if (bufferSize === 0) {
-      return [];
-    }
-
-    const buffer = this.getNextData(bufferSize);
+    const buffer = this.getNextData(length);
 
     const value = bytesToSerializableObjectArray<T>(buffer, ctor);
-    this.offset += bufferSize;
+    this.offset += length;
     return value;
   }
 
@@ -305,21 +340,20 @@ export class Args {
    *
    * @returns the next array of object that are native type
    */
-  nextNativeTypeArray<T extends TypedArrayUnit>(typedArrayType: T): T[] {
+  nextNativeTypeArray<T>(typedArrayType: TypedArrayUnit): T[] {
     const length = this.nextU32();
+
+    if (!length) {
+      return [];
+    }
+
     if (this.offset + length > this.serialized.length) {
       throw new Error("can't deserialize length of array from given argument");
     }
 
-    const bufferSize = length;
-
-    if (bufferSize === 0) {
-      return [];
-    }
-
-    const buffer = this.getNextData(bufferSize);
+    const buffer = this.getNextData(length);
     const value = bytesToNativeTypeArray<T>(buffer, typedArrayType);
-    this.offset += bufferSize;
+    this.offset += length;
     return value;
   }
 
@@ -332,8 +366,8 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU8(value: number): Args {
-    this.serialized = this.concatArrays(this.serialized, u8toByte(value));
+  public addU8(value: number): this {
+    this.serialized = Args.concatArrays(this.serialized, u8toByte(value));
     this.offset++;
     return this;
   }
@@ -345,8 +379,8 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addBool(value: boolean): Args {
-    this.serialized = this.concatArrays(
+  public addBool(value: boolean): this {
+    this.serialized = Args.concatArrays(
       this.serialized,
       u8toByte(value ? 1 : 0),
     );
@@ -361,8 +395,8 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU32(value: number): Args {
-    this.serialized = this.concatArrays(this.serialized, u32ToBytes(value));
+  public addU32(value: number): this {
+    this.serialized = Args.concatArrays(this.serialized, u32ToBytes(value));
     this.offset += 4;
     return this;
   }
@@ -374,10 +408,40 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU64(bigInt: bigint): Args {
-    this.serialized = this.concatArrays(this.serialized, u64ToBytes(bigInt));
+  public addU64(bigInt: bigint): this {
+    this.serialized = Args.concatArrays(this.serialized, u64ToBytes(bigInt));
 
     this.offset += 8;
+
+    return this;
+  }
+
+  /**
+   * Adds an unsigned long integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addU128(bigInt: bigint): this {
+    this.serialized = Args.concatArrays(this.serialized, u128ToBytes(bigInt));
+
+    this.offset += 16;
+
+    return this;
+  }
+
+  /**
+   * Adds an unsigned long integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addU256(bigInt: bigint): this {
+    this.serialized = Args.concatArrays(this.serialized, u256ToBytes(bigInt));
+
+    this.offset += 32;
 
     return this;
   }
@@ -389,8 +453,8 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI32(value: number): Args {
-    this.serialized = this.concatArrays(this.serialized, i32ToBytes(value));
+  public addI32(value: number): this {
+    this.serialized = Args.concatArrays(this.serialized, i32ToBytes(value));
     this.offset += 4;
     return this;
   }
@@ -402,8 +466,8 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI64(bigInt: bigint): Args {
-    this.serialized = this.concatArrays(this.serialized, i64ToBytes(bigInt));
+  public addI64(bigInt: bigint): this {
+    this.serialized = Args.concatArrays(this.serialized, i64ToBytes(bigInt));
     this.offset += 8;
     return this;
   }
@@ -415,8 +479,8 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addF32(value: number): Args {
-    this.serialized = this.concatArrays(this.serialized, f32ToBytes(value));
+  public addF32(value: number): this {
+    this.serialized = Args.concatArrays(this.serialized, f32ToBytes(value));
     this.offset += 4;
     return this;
   }
@@ -428,8 +492,8 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addF64(value: number): Args {
-    this.serialized = this.concatArrays(this.serialized, f64ToBytes(value));
+  public addF64(value: number): this {
+    this.serialized = Args.concatArrays(this.serialized, f64ToBytes(value));
     this.offset += 8;
     return this;
   }
@@ -441,9 +505,9 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addUint8Array(array: Uint8Array): Args {
+  public addUint8Array(array: Uint8Array): this {
     this.addU32(array.length);
-    this.serialized = this.concatArrays(this.serialized, array);
+    this.serialized = Args.concatArrays(this.serialized, array);
     this.offset += array.length;
     return this;
   }
@@ -458,7 +522,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addString(arg: string): Args {
+  public addString(arg: string): this {
     const maxSize = 4294967295;
     const size = arg.length;
 
@@ -470,7 +534,7 @@ export class Args {
     const serialized = strToBytes(arg);
     this.addU32(serialized.length);
 
-    this.serialized = this.concatArrays(this.serialized, strToBytes(arg));
+    this.serialized = Args.concatArrays(this.serialized, strToBytes(arg));
 
     return this;
   }
@@ -487,9 +551,9 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addSerializable<T>(value: ISerializable<T>): Args {
+  public addSerializable<T>(value: ISerializable<T>): this {
     const serializedValue = value.serialize();
-    this.serialized = this.concatArrays(this.serialized, serializedValue);
+    this.serialized = Args.concatArrays(this.serialized, serializedValue);
     this.offset += serializedValue.length;
     return this;
   }
@@ -510,10 +574,10 @@ export class Args {
    */
   public addSerializableObjectArray<T extends ISerializable<T>>(
     arg: T[],
-  ): Args {
+  ): this {
     const content: Uint8Array = serializableObjectsArrayToBytes(arg);
     this.addU32(content.length);
-    this.serialized = this.concatArrays(this.serialized, content);
+    this.serialized = Args.concatArrays(this.serialized, content);
     return this;
   }
 
@@ -530,13 +594,10 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  addNativeTypeArray<T extends TypedArrayUnit>(
-    arg: NativeType[],
-    type: T,
-  ): Args {
+  addNativeTypeArray(arg: NativeType[], type: TypedArrayUnit): this {
     const content = nativeTypeArrayToBytes(arg, type);
     this.addU32(content.length);
-    this.serialized = this.concatArrays(this.serialized, content);
+    this.serialized = Args.concatArrays(this.serialized, content);
     return this;
   }
 
@@ -550,7 +611,7 @@ export class Args {
    *
    * @returns the concatenated array
    */
-  private concatArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
+  static concatArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
     return new Uint8Array([...a, ...b]);
   }
 

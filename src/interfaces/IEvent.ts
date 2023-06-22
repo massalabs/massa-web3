@@ -14,7 +14,6 @@ import { ISlot } from './ISlot';
  * @see context.origin_operation_id: the operation id of the operation that generated the event (null if unknown).
  * @see context.is_final: whether the event is final (boolean).
  * @see context.is_error: whether the event was generated in a failed execution (boolean).
- *
  */
 export interface IEvent {
   id?: string; // event id

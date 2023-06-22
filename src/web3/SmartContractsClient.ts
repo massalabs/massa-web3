@@ -26,9 +26,11 @@ import { ISignature } from '../interfaces/ISignature';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
+import { IProtoFile } from '../interfaces/IProtoFile';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
+import { strToBytes } from '../utils/serializers/strings';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
@@ -37,6 +39,10 @@ const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
+/**
+ * The key name (as a string) to look for when we are retrieving the proto file from a contract
+ */
+const MASSA_PROTOFILE_KEY = 'protoMassa';
 /**
  * Smart Contracts Client object enables smart contract deployment, calls and streaming of events.
  */
@@ -69,7 +75,7 @@ export class SmartContractsClient
 
   /**
    * Deploy a smart contract on th massa blockchain by creating and sending
-   * an operation containing byte code
+   * an operation containing byte code.
    *
    * @remarks
    * If no executor is provided, the default wallet account from the provided {@link WalletClient}
@@ -146,7 +152,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Calls a smart contract method
+   * Calls a smart contract method.
    *
    * @remarks
    * If no executor is provided, the default wallet account will be used.
@@ -214,7 +220,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Executes a read operation on a smart contract
+   * Executes a read operation on a smart contract.
    *
    * @param readData - The data required for the a read operation of a smart contract.
    *
@@ -270,7 +276,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Returns the balance of the smart contract
+   * Returns the balance of the smart contract.
    *
    * @param address - The address of the smart contract.
    *
@@ -288,11 +294,11 @@ export class SmartContractsClient
   }
 
   /**
-   * Get filtered smart contract output events
+   * Get filtered smart contract output events.
    *
    * @param eventFilterData - The filter data for the events.
    *
-   * @returns A promise that resolves to an array of IEvent objects containing the filtered events
+   * @returns A promise that resolves to an array of IEvent objects containing the filtered events.
    */
   public async getFilteredScOutputEvents(
     eventFilterData: IEventFilter,
@@ -385,7 +391,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Get the status of a specific operation
+   * Get the status of a specific operation.
    *
    * @param opId - The operation id.
    *
@@ -411,7 +417,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Get the status of a specific operation and wait until it reaches the required status
+   * Get the status of a specific operation and wait until it reaches the required status.
    *
    * @param opId - The required operation id.
    * @param requiredStatus - The required status.
@@ -451,6 +457,53 @@ export class SmartContractsClient
       }
 
       await wait(TX_POLL_INTERVAL_MS);
+    }
+  }
+
+  /**
+   * Get the proto file of the contracts from the Massa Blockchain.
+   *
+   * @param contractAddresses - An array of contract addresses (as strings)
+   *
+   * @returns A promise that resolves to the array of IProtoFiles corresponding
+   * to the proto file associated with each contract or the values are null if the file is unavailable.
+   */
+  public async getProtoFiles(
+    contractAddresses: string[],
+  ): Promise<IProtoFile[]> {
+    // prepare request body
+    const requestProtoFiles: object[] = [];
+    for (let address of contractAddresses) {
+      requestProtoFiles.push({
+        address: address,
+        key: Array.from(strToBytes(MASSA_PROTOFILE_KEY)),
+      });
+    }
+    const body = {
+      jsonrpc: '2.0',
+      method: 'get_datastore_entries',
+      params: [requestProtoFiles],
+      id: 1,
+    };
+
+    // send request
+    let response = null;
+    try {
+      response = await fetch(this.clientConfig.providers[0].url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      // parse response
+      const json = await response.json();
+      return json.result;
+    } catch (ex) {
+      const msg = `Failed to retrieve the proto files.`;
+      console.error(msg, ex);
+      throw ex;
     }
   }
 }

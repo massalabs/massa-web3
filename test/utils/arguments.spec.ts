@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
-import { expect, it, describe } from '@jest/globals';
 import {
   IDeserializedResult,
   ISerializable,
-} from '../src/interfaces/ISerializable';
-import { Args, TypedArrayUnit } from '../src/utils/arguments';
+} from '../../src/interfaces/ISerializable';
+import { Args, TypedArrayUnit } from '../../src/utils/arguments';
 
 export class Divinity implements ISerializable<Divinity> {
   constructor(public age: number = 0, public name: string = '') {}
@@ -151,6 +150,21 @@ describe('Args class', () => {
     expect(args2.nextI64()).toEqual(BigInt(-97));
     expect(args2.nextString()).toEqual('hello');
     expect(args2.nextString()).toEqual('world');
+  });
+
+  it('should correctly serialize and deserialize an Args object containing a u128, an u256 and a string', () => {
+    const u128Val = 146738984765738234n;
+    const u256Val = 146738984765738234146738984765738234n;
+    const str = 'random string lolmao';
+    const args1 = new Args();
+    args1.addU128(u128Val);
+    args1.addU256(u256Val);
+    args1.addString(str);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextU128()).toEqual(u128Val);
+    expect(args2.nextU256()).toEqual(u256Val);
+    expect(args2.nextString()).toEqual(str);
   });
 
   it('should correctly serialize and deserialize an Args object containing a byteArray, an i64 and a string', () => {

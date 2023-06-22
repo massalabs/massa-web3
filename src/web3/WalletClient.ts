@@ -42,7 +42,7 @@ const getThreadNumber = (address: string): number => {
 };
 
 /**
- * A client class for interacting with wallets, which can seamlessly work with WebExtensions,
+ * A client class for interacting with wallets, which can seamlessly work with WebExtensions.
  *
  * @remarks
  * The WalletClient manages multiple accounts and handles operations such as transaction signing,
@@ -54,7 +54,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
   private baseAccount?: IAccount;
 
   /**
-   * Constructor of the {@link WalletClient} class
+   * Constructor of the {@link WalletClient} class.
    *
    * @param clientConfig - Configuration parameters for the client.
    * @param publicApiClient - A {@link PublicApiClient} instance used for making API calls.
@@ -102,7 +102,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     if (!baseAccount.createdInThread && baseAccount.address) {
       baseAccount.createdInThread = getThreadNumber(baseAccount.address);
     }
-    // see if base account is already added, if not, add it
+    // see if base account is already added, if not, add it, else change it
     let baseAccountAdded: Array<IAccount> = null;
     if (!this.getWalletAccountByAddress(baseAccount.address)) {
       baseAccountAdded = await this.addAccountsToWallet([baseAccount]);
@@ -135,6 +135,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public cleanWallet(): void {
     this.wallet.length = 0;
+    this.baseAccount = null;
   }
 
   /**
@@ -270,9 +271,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /**
-   * Remove a list of addresses from the wallet
+   * Remove a list of addresses from the wallet.
    *
-   * @param addresses - An array of addresses to remove from the wallet
+   * @param addresses - An array of addresses to remove from the wallet.
    */
   public removeAddressesFromWallet(addresses: Array<string>): void {
     for (const address of addresses) {
@@ -284,7 +285,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /**
-   * Retrieves detailed information about the wallet,
+   * Retrieves detailed information about the wallet.
    *
    * @throws Will throw an error if the number of retrieved wallets does not match the number of addresses in the wallet.
    *
@@ -350,7 +351,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @param secretKeyBase58 - A base58 encoded private key from which the account will be generated.
    *
-   * @returns A Promise that resolves to an {@link IAccount} object
+   * @returns A Promise that resolves to an {@link IAccount} object.
    */
   public static async getAccountFromSecretKey(
     secretKeyBase58: string,
@@ -444,12 +445,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
     data: string | Buffer,
     signer: IAccount,
   ): Promise<ISignature> {
-    // check private keys to sign the message with
+    // check private keys to sign the message with.
     if (!signer.secretKey) {
       throw new Error('No private key to sign the message with');
     }
 
-    // check public key to verify the message with
+    // check public key to verify the message with.
     if (!signer.publicKey) {
       throw new Error('No public key to verify the signed message with');
     }
@@ -499,9 +500,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
   /**
    * Verify a signature.
    *
-   * @param data - The signed data to verify
-   * @param signature - The signature to verify
-   * @param signerPubKey - The public key of the signer
+   * @param data - The signed data to verify.
+   * @param signature - The signature to verify.
+   * @param signerPubKey - The public key of the signer.
    *
    * @returns A Promise that resolves to `true` if the signature is valid, `false` otherwise.
    */
@@ -510,18 +511,18 @@ export class WalletClient extends BaseClient implements IWalletClient {
     signature: ISignature,
     signerPubKey: string,
   ): Promise<boolean> {
-    // setup the public key
+    // setup the public key.
     const publicKeyBase58Decoded: Uint8Array =
       WalletClient.getBytesPublicKey(signerPubKey);
 
-    // setup the message digest
+    // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
     const messageDigest: Uint8Array = hashBlake3(bytesCompact);
 
-    // setup the signature
+    // setup the signature.
     const signatureBytes: Buffer = base58Decode(signature.base58Encoded);
 
-    // verify signature
+    // verify signature.
     return (await ed.verify(
       signatureBytes,
       messageDigest,
@@ -547,30 +548,30 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const publicKeyVersionBase58Decoded: Buffer = base58Decode(
       publicKey.slice(1),
     );
-    // Version is little for now
+    // Version is little for now.
     const publicKeyBase58Decoded = publicKeyVersionBase58Decoded.slice(1);
     return publicKeyBase58Decoded;
   }
 
   /**
-   * Get the byte representation of a given secret key
+   * Get the byte representation of a given secret key.
    *
-   * @param secretKey - The secret key to get the bytes from
+   * @param secretKey - The secret key to get the bytes from.
    *
-   * @throws if the secret key is not valid
+   * @throws if the secret key is not valid.
    *
-   * @returns a Uint8Array containing the bytes of the secret key
+   * @returns a Uint8Array containing the bytes of the secret key.
    */
   public static getBytesSecretKey(secretKey: string): Uint8Array {
     if (!(secretKey[0] == SECRET_KEY_PREFIX)) {
       throw new Error(
-        `Invalid secret key prefix: ${secretKey[0]} should be ${SECRET_KEY_PREFIX}`,
+        `Invalid secret key prefix: "${secretKey[0]}". The secret key should start with "${SECRET_KEY_PREFIX}". Please verify your secret key and try again.`,
       );
     }
     const secretKeyVersionBase58Decoded: Buffer = base58Decode(
       secretKey.slice(1),
     );
-    // Version is little for now
+    // Version is little for now.
     const secretKeyBase58Decoded = secretKeyVersionBase58Decoded.slice(1);
     return secretKeyBase58Decoded;
   }
@@ -595,15 +596,15 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /**
-   * Sends native MAS from a wallet address to another
+   * Sends native MAS from a wallet address to another.
    *
-   * @param txData - The transaction data
+   * @param txData - The transaction data.
    * @param executor - (Optional) The account that will execute the transaction. If not
    * provided, the base account is used.
    *
    * @throws if no sender account is available for the transaction.
    *
-   * @returns a promise that resolves to an array of operations ids
+   * @returns a promise that resolves to an array of operations ids.
    */
   public async sendTransaction(
     txData: ITransactionData,
@@ -652,7 +653,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /**
-   * Buy rolls with wallet address
+   * Buy rolls with wallet address.
    *
    * @param txData - The transaction data
    * @param executor - (Optional) The account that will execute the transaction.
@@ -660,7 +661,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @throws if no sender account is available for the transaction.
    *
-   * @returns a promise that resolves to an array of operations ids
+   * @returns a promise that resolves to an array of operations ids.
    */
   public async buyRolls(
     txData: IRollsData,
@@ -708,15 +709,15 @@ export class WalletClient extends BaseClient implements IWalletClient {
   }
 
   /**
-   * Sell rolls with wallet address
+   * Sell rolls with wallet address.
    *
-   * @param txData - The transaction data
+   * @param txData - The transaction data.
    * @param executor - (Optional) The account that will execute the transaction.
    * If not specified, the base account is used by default.
    *
    * @throws if no sender account is available for the transaction.
    *
-   * @returns a promise that resolves to an array of operations ids
+   * @returns a promise that resolves to an array of operations ids.
    */
   public async sellRolls(
     txData: IRollsData,

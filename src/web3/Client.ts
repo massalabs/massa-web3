@@ -10,7 +10,7 @@ import { IClient } from '../interfaces/IClient';
 import { IWalletClient } from '../interfaces/IWalletClient';
 
 /**
- * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities
+ * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities.
  */
 export class Client implements IClient {
   private publicApiClient: PublicApiClient;
@@ -19,10 +19,10 @@ export class Client implements IClient {
   private smartContractsClient: SmartContractsClient;
 
   /**
-   * Constructor of the Client class
+   * Constructor of the Client class.
    *
-   * @param clientConfig - client configuration object
-   * @param baseAccount - base account to use for signing transactions (optional)
+   * @param clientConfig - client configuration object.
+   * @param baseAccount - base account to use for signing transactions (optional).
    */
   public constructor(
     private clientConfig: IClientConfig,
@@ -56,45 +56,45 @@ export class Client implements IClient {
   }
 
   /**
-   * Get the private api related RPC methods
+   * Get the private api related RPC methods.
    *
-   * @returns PrivateApiClient object
+   * @returns PrivateApiClient object.
    */
   public privateApi(): PrivateApiClient {
     return this.privateApiClient;
   }
 
   /**
-   * Get the public api related RPC methods
+   * Get the public api related RPC methods.
    *
-   * @returns PublicApiClient object
+   * @returns PublicApiClient object.
    */
   public publicApi(): PublicApiClient {
     return this.publicApiClient;
   }
 
   /**
-   * Get the Wallet related methods
+   * Get the Wallet related methods.
    *
-   * @returns WalletClient object
+   * @returns WalletClient object.
    */
   public wallet(): IWalletClient {
     return this.walletClient;
   }
 
   /**
-   * Get the smart Contracts related methods
+   * Get the smart Contracts related methods.
    *
-   * @returns SmartContractsClient object
+   * @returns SmartContractsClient object.
    */
   public smartContracts(): SmartContractsClient {
     return this.smartContractsClient;
   }
 
   /**
-   * Set new providers
+   * Set new providers.
    *
-   * @param providers - array of providers to set
+   * @param providers - array of providers to set.
    */
   public setCustomProviders(providers: Array<IProvider>): void {
     this.publicApiClient.setProviders(providers);
@@ -104,18 +104,18 @@ export class Client implements IClient {
   }
 
   /**
-   * Get the currently set providers
+   * Get the currently set providers.
    *
-   * @returns array of the known providers
+   * @returns array of the known providers.
    */
   public getProviders(): Array<IProvider> {
     return this.clientConfig.providers;
   }
 
   /**
-   * Get all private providers
+   * Get all private providers.
    *
-   * @returns all private providers
+   * @returns all private providers.
    */
   public getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
@@ -135,9 +135,9 @@ export class Client implements IClient {
   }
 
   /**
-   * Set a new default json rpc provider
+   * Set a new default json rpc provider.
    *
-   * @param provider - The new default provider to set
+   * @param provider - The new default provider to set.
    */
   public setNewDefaultProvider(provider: DefaultProviderUrls): void {
     const providers = [
