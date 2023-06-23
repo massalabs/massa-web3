@@ -127,4 +127,84 @@ describe('PrivateApiClient', () => {
       JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_IP,
     );
   });
+
+  describe('nodeUnbanById', () => {
+    generateAPITests(
+      'nodeUnbanById',
+      'nodeIdExample',
+      undefined,
+      JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_ID,
+      true,
+    );
+  });
+
+  describe('nodeBanByIpAddress', () => {
+    generateAPITests(
+      'nodeBanByIpAddress',
+      '127.0.0.1',
+      undefined,
+      JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_IP,
+      true,
+    );
+  });
+
+  describe('nodeBanById', () => {
+    generateAPITests(
+      'nodeBanById',
+      'nodeIdExample',
+      undefined,
+      JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_ID,
+      true,
+    );
+  });
+
+  describe('nodeStop', () => {
+    generateAPITests(
+      'nodeStop',
+      [],
+      undefined,
+      JSON_RPC_REQUEST_METHOD.STOP_NODE,
+      false,
+    );
+  });
+
+  describe('nodeSignMessage', () => {
+    generateAPITests(
+      'nodeSignMessage',
+      new Uint8Array([]),
+      { signature: 'mockSignature' },
+      JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE,
+      false,
+    );
+  });
+
+  describe('nodeGetStakingAddresses', () => {
+    generateAPITests(
+      'nodeGetStakingAddresses',
+      [],
+      ['address1', 'address2'],
+      JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES,
+      false,
+    );
+  });
+
+  describe('nodeRemoveStakingAddresses', () => {
+    generateAPITests(
+      'nodeRemoveStakingAddresses',
+      ['address1', 'address2'],
+      undefined,
+      JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES,
+      true,
+    );
+  });
+
+  describe('nodeAddStakingSecretKeys', () => {
+    generateAPITests(
+      'nodeAddStakingSecretKeys',
+      ['key1', 'key2'],
+      undefined,
+      JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS,
+      true,
+    );
+  });
 });
