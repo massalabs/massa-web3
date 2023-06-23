@@ -444,7 +444,7 @@ export class SmartContractsClient
         status = await this.getOperationStatus(opId);
       } catch (ex) {
         if (++errCounter > 100) {
-          const msg = `Failed to retrieve the tx status after 10 failed attempts for operation id: ${opId}.`;
+          const msg = `Failed to retrieve the tx status after 100 failed attempts for operation id: ${opId}.`;
           console.error(msg, ex);
           throw ex;
         }
