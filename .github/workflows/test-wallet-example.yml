@@ -28,7 +28,7 @@ jobs:
 
 
 
-      - name: Deploy
+      - name: Execute tests
         run: |
           if npm run test-wallet ; then
             echo "Successful execution!"
