@@ -12,6 +12,7 @@ import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
 import { IReadData } from '../../src/interfaces/IReadData';
 import { IContractReadOperationData } from '../../src/interfaces/IContractReadOperationData';
 import { IContractReadOperationResponse } from '../../src/interfaces/IContractReadOperationResponse';
+import { MassaProtoFile } from '../../src/interfaces/MassaProtoFile';
 
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
@@ -315,3 +316,22 @@ export const mockContractReadOperationResponse: IContractReadOperationResponse =
     returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
     info: mockContractReadOperationData[0],
   };
+
+export const mockContractAddresses = [
+  'AS12sRd6E6zKdBx3PGeZpCUzM8sE5oSA5mTa3VV4AoD1oqpoxwkmu',
+  'AS12sRd6E6zKdBx3PGeZpCUaM8sE5oSA5mTa3VV4AoDaoqpoxwlmv',
+  'AS12sRd6E6zKdBx3PGeZpCUrM8sE5oSA5mTa3VV4AoDCoqpoxwxmw',
+];
+
+export const mockProtoFiles: Array<MassaProtoFile> = [
+  {
+    data: 'mock data',
+    filePath: 'mock path',
+    protoFuncName: 'mock proto func name',
+  },
+  {
+    data: 'mock data 2',
+    filePath: 'mock path 2',
+    protoFuncName: 'mock proto func name 2',
+  },
+];

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import path from 'path';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import { strToBytes } from '../../src/utils/serializers/strings';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
 import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
@@ -13,6 +15,8 @@ import {
   mockContractReadOperationData,
   mockContractReadOperationResponse,
   mockReadData,
+  mockContractAddresses,
+  mockProtoFiles,
 } from './mockData';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
@@ -340,6 +344,90 @@ describe('SmartContractsClient', () => {
 
       (smartContractsClient as any).clientConfig.retryStrategyOn =
         originalRetryStrategy;
+    });
+  });
+
+  describe('getProtoFiles', () => {
+    const outputDirectory = '/path/to/output/directory';
+    const MASSA_PROTOFILE_KEY = 'protoMassa';
+
+    const fetchMock = jest.fn();
+
+    beforeEach(() => {
+      global.fetch = fetchMock;
+      fetchMock.mockResolvedValue({
+        json: () => mockProtoFiles,
+      });
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    test('should fetch the correct URL with correct body', async () => {
+      await smartContractsClient.getProtoFiles(
+        mockContractAddresses,
+        outputDirectory,
+      );
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledWith(
+        mockClientConfig.providers[0].url,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'get_datastore_entries',
+            params: [
+              mockContractAddresses.map((address) => ({
+                address,
+                key: Array.from(strToBytes(MASSA_PROTOFILE_KEY)),
+              })),
+            ],
+            id: 1,
+          }),
+        },
+      );
+    });
+
+    test.only('should return the correct proto files', async () => {
+      const protoFiles = await smartContractsClient.getProtoFiles(
+        mockContractAddresses,
+        outputDirectory,
+      );
+      console.log('protofiles result ', protoFiles);
+
+      expect(protoFiles).toEqual([
+        {
+          data: ' message TestRHelper {} ',
+          filePath: path.join(outputDirectory, 'message TestRHelper {} .proto'),
+          protoFuncName: 'message TestRHelper {} ',
+        },
+        {
+          data: ' message Test2RHelper {}',
+          filePath: path.join(
+            outputDirectory,
+            'message Test2RHelper {} .proto',
+          ),
+          protoFuncName: 'message Test2RHelper {} ',
+        },
+      ]);
+    });
+
+    it('should throw error when fetching fails', async () => {
+      const errorMessage = 'Network error';
+
+      fetchMock.mockRejectedValueOnce(new Error(errorMessage));
+
+      await expect(
+        smartContractsClient.getProtoFiles(
+          mockContractAddresses,
+          outputDirectory,
+        ),
+      ).rejects.toThrow(errorMessage);
     });
   });
 });
