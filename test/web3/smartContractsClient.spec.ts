@@ -427,6 +427,8 @@ describe('SmartContractsClient', () => {
       expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
         1001,
       );
+    });
+  });
 
   describe('getContractBalance', () => {
     const mockAddress = 'address';
