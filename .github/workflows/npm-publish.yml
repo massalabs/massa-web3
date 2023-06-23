@@ -13,18 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - uses: actions/setup-node@v3
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
-      - name: Extract branch from tag
-        id: branch-from-tag
-        run: |
-          branch=$(git branch --contains "${{ github.ref }}" --format="%(refname:lstrip=2)" | head -1)
-          echo "Branch from tag: $branch"
-      - run: ./scripts/publish.sh ${{ steps.branch-from-tag.outputs.branch }}
+
+      - name: Extract tag
+        id: get_tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
+      - run: ./scripts/publish.sh ${{ steps.get_tag.outputs.TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
       - uses: softprops/action-gh-release@v1
         with:
           files: |
