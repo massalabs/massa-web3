@@ -1,28 +1,32 @@
 name: NPM Publish
 
 on:
-    release:
-        types: [created]
+  release:
+    types: [created]
 
 jobs:
-    test:
-        uses: ./.github/workflows/node.js.yml
+  test:
+    uses: ./.github/workflows/node.js.yml
 
-    publish-npm:
-        needs: test
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 18
-                  registry-url: https://registry.npmjs.org/
-            - run: ./scripts/publish.sh
-              env:
-                  NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-            - uses: softprops/action-gh-release@v1
-              with:
-                files: |
-                    bundle.js
-                    bundle.min.js
-
+  publish-npm:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+      - name: Extract branch from tag
+        id: branch-from-tag
+        run: |
+          branch=$(git branch --contains "${{ github.ref }}" --format="%(refname:lstrip=2)" | head -1)
+          echo "Branch from tag: $branch"
+      - run: ./scripts/publish.sh ${{ steps.branch-from-tag.outputs.branch }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            bundle.js
+            bundle.min.js
