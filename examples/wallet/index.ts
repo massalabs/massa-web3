@@ -39,8 +39,6 @@ if (!receiverPrivateKey) {
 (async () => {
   const header = '='.repeat(process.stdout.columns - 1);
   console.log(header);
-  console.log('rpc used:', publicApi, privateApi);
-  console.log('deployer private key:', deployerPrivateKey);
   console.log(
     `${chalk.green.bold('Massa Smart Contract Interaction Example')}`,
   );
