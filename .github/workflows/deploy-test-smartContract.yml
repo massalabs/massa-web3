@@ -1,0 +1,47 @@
+name: Smart contract example Deploy
+
+on:
+  [push]
+
+
+jobs:
+  deploy-SC-example:
+    defaults:
+      run:
+        working-directory: ./examples/smartContracts/
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: ./examples/smartContracts/contracts/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy
+        run: |
+          echo ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          if npm run test-smart-contract-example ; then
+            echo "Contracts successfully deployed!"
+          else
+            echo "Failed to deploy contracts ..."
+            exit 1
+          fi
+        env:
+          JSON_RPC_URL_PUBLIC: https://buildnet.massa.net/api/v2
+
+          JSON_RPC_URL_PRIVATE: https://buildnet.massa.net/api/v2
+
+          DEPLOYER_PRIVATE_KEY: S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1
+          RECEIVER_PRIVATE_KEY: S1ykLaxXyMnJoaWLYds8UntqKTamZ4vcxrZ1fdToR8WpWEpk3FC
