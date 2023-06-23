@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
+import { IBalance } from '../../src/interfaces/IBalance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import { fromMAS } from '../../src/utils/converters';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
 import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
@@ -14,6 +16,9 @@ import {
   mockContractReadOperationData,
   mockContractReadOperationResponse,
   mockReadData,
+  mockAddressesInfo,
+  mockEventFilter,
+  mockedEvents,
 } from './mockData';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
@@ -422,6 +427,92 @@ describe('SmartContractsClient', () => {
       expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
         1001,
       );
+
+  describe('getContractBalance', () => {
+    const mockAddress = 'address';
+
+    const expectedBalance: IBalance = {
+      candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
+      final: fromMAS(mockAddressesInfo[0].final_balance),
+    };
+
+    test('should return the correct balance when the address exists', async () => {
+      mockPublicApiClient.getAddresses = jest
+        .fn()
+        .mockResolvedValue(mockAddressesInfo);
+
+      const balance = await smartContractsClient.getContractBalance(
+        mockAddress,
+      );
+
+      expect(balance).toEqual(expectedBalance);
+      expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
+        mockAddress,
+      ]);
+    });
+
+    test('should return null when the address does not exist', async () => {
+      mockPublicApiClient.getAddresses = jest.fn().mockResolvedValue([]);
+
+      const balance = await smartContractsClient.getContractBalance(
+        mockAddress,
+      );
+
+      expect(balance).toBeNull();
+      expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
+        mockAddress,
+      ]);
+    });
+  });
+
+  describe('getFilteredScOutputEvents', () => {
+    test('should send the correct JSON RPC request', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      await smartContractsClient.getFilteredScOutputEvents(mockEventFilter);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT,
+        [mockEventFilter],
+      );
+    });
+
+    test('should return the correct array of IEvent objects', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      const result = await smartContractsClient.getFilteredScOutputEvents(
+        mockEventFilter,
+      );
+
+      expect(result).toEqual(mockedEvents);
+    });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+        .retryStrategyOn;
+      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+
+      await smartContractsClient.getFilteredScOutputEvents(mockEventFilter);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT,
+        [mockEventFilter],
+      );
+
+      (smartContractsClient as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
     });
   });
 });
