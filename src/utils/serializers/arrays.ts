@@ -1,11 +1,11 @@
 /* eslint-disable no-case-declarations */
 
-import { Args, NativeType, TypedArrayUnit } from '../arguments';
+import { Args, NativeType, ArrayType } from '../arguments';
 import {
   IDeserializedResult,
   ISerializable,
 } from '../../interfaces/ISerializable';
-import { bytesToStr, strToBytes } from './strings';
+import { bytesToStr } from './strings';
 import { byteToBool } from './bool';
 import {
   byteToU8,
@@ -19,8 +19,6 @@ import {
   bytesToU64,
 } from './numbers';
 
-const MAX_STRING_CHARS = 100;
-
 /**
  * Get the byte size of a typed array unit.
  *
@@ -28,28 +26,25 @@ const MAX_STRING_CHARS = 100;
  *
  * @returns The size of the typed array unit.
  */
-const getDatatypeSize = (type: TypedArrayUnit): number => {
+const getDatatypeSize = (type: ArrayType): number => {
   switch (type) {
-    case TypedArrayUnit.STRING:
-      // this is very nasty :/
-      return MAX_STRING_CHARS;
-    case TypedArrayUnit.BOOL:
-    case TypedArrayUnit.U8:
+    case ArrayType.BOOL:
+    case ArrayType.U8:
       return 1;
-    case TypedArrayUnit.F32:
-    case TypedArrayUnit.I32:
-    case TypedArrayUnit.U32:
+    case ArrayType.F32:
+    case ArrayType.I32:
+    case ArrayType.U32:
       return 4;
-    case TypedArrayUnit.F64:
-    case TypedArrayUnit.I64:
-    case TypedArrayUnit.U64:
+    case ArrayType.F64:
+    case ArrayType.I64:
+    case ArrayType.U64:
       return 8;
-    case TypedArrayUnit.U128:
+    case ArrayType.U128:
       return 16;
-    case TypedArrayUnit.U256:
+    case ArrayType.U256:
       return 32;
     default:
-      throw new Error(`Unsupported type: ${Object.keys(TypedArrayUnit)[type]}`);
+      throw new Error(`Unsupported type: ${Object.keys(ArrayType)[type]}`);
   }
 };
 
@@ -140,55 +135,44 @@ export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
  *
  * @returns The converted Uint8Array.
  */
-export function nativeTypeArrayToBytes(
+export function arrayToBytes(
   source: NativeType[],
-  type: TypedArrayUnit,
+  type: ArrayType,
 ): Uint8Array {
   let args = new Args();
   source.forEach((value) => {
     switch (type) {
-      case TypedArrayUnit.STRING:
-        if ((value as string).length > MAX_STRING_CHARS) {
-          throw new Error(
-            `String length exceeds the maximum limit of ${MAX_STRING_CHARS} characters. Please limit your strings to ${MAX_STRING_CHARS} characters.`,
-          );
-        }
-        // init an array of MAX_STRING_CHARS length
-        const strElt = new Uint8Array(MAX_STRING_CHARS);
-        strElt.set(strToBytes(value as string));
-        // Create a new Args containing the previously serialized strings and the new string element
-        args = new Args(
-          Args.concatArrays(new Uint8Array(args.serialize()), strElt),
-        );
+      case ArrayType.STRING:
+        args.addString(value as string);
         break;
-      case TypedArrayUnit.BOOL:
+      case ArrayType.BOOL:
         args.addBool(value as boolean);
         break;
-      case TypedArrayUnit.U8:
+      case ArrayType.U8:
         args.addU8(value as number);
         break;
-      case TypedArrayUnit.F64:
+      case ArrayType.F64:
         args.addF64(value as number);
         break;
-      case TypedArrayUnit.F32:
+      case ArrayType.F32:
         args.addF32(value as number);
         break;
-      case TypedArrayUnit.I32:
+      case ArrayType.I32:
         args.addI32(value as number);
         break;
-      case TypedArrayUnit.I64:
+      case ArrayType.I64:
         args.addI64(value as bigint);
         break;
-      case TypedArrayUnit.U32:
+      case ArrayType.U32:
         args.addU32(value as number);
         break;
-      case TypedArrayUnit.U64:
+      case ArrayType.U64:
         args.addU64(value as bigint);
         break;
-      case TypedArrayUnit.U128:
+      case ArrayType.U128:
         args.addU128(value as bigint);
         break;
-      case TypedArrayUnit.U256:
+      case ArrayType.U256:
         args.addU256(value as bigint);
         break;
       default:
@@ -205,65 +189,62 @@ export function nativeTypeArrayToBytes(
  * This function is inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  *
  * @param source - The Uint8Array to convert.
- * @param typedArrayType - The typed array unit type.
+ * @param type - The typed array unit type.
  *
  * @returns An array of converted native types.
  */
-export function bytesToNativeTypeArray<T>(
-  source: Uint8Array,
-  typedArrayType: TypedArrayUnit,
-): T[] {
+export function bytesToArray<T>(source: Uint8Array, type: ArrayType): T[] {
   const sourceLength = source.length;
-  const eltSize = getDatatypeSize(typedArrayType);
 
-  // Calculate the total length of the array.
-  let targetLength = sourceLength / eltSize;
-  if (!(targetLength % 1 === 0)) {
-    throw new Error(`None-integer array length computation`);
+  let byteOffset = 0;
+  const result: T[] = [];
+  let eltSize: number;
+
+  if (type !== ArrayType.STRING) {
+    eltSize = getDatatypeSize(type);
   }
 
-  // Create a new typed array of type T and fill it with the converted values.
-  const result: T[] = [];
-  for (let i = 0; i < targetLength; i++) {
-    const byteOffset = i * eltSize;
-
+  while (byteOffset < sourceLength) {
+    if (type === ArrayType.STRING) {
+      eltSize = bytesToU32(source, byteOffset);
+      byteOffset += 4;
+    }
     const elt = source.slice(byteOffset, byteOffset + eltSize);
+    byteOffset += eltSize;
 
-    switch (typedArrayType) {
-      case TypedArrayUnit.STRING:
-        // for strings, the array is filled with zeros to MAX_STRING_CHARS length elements... so we remove it
-        const strElt = elt.filter((letter) => letter > 0);
-        result[i] = bytesToStr(strElt) as unknown as T;
+    switch (type) {
+      case ArrayType.STRING:
+        result.push(bytesToStr(elt) as T);
         break;
-      case TypedArrayUnit.BOOL:
-        result[i] = byteToBool(elt) as T;
+      case ArrayType.BOOL:
+        result.push(byteToBool(elt) as T);
         break;
-      case TypedArrayUnit.U8:
-        result[i] = byteToU8(elt) as T;
+      case ArrayType.U8:
+        result.push(byteToU8(elt) as T);
         break;
-      case TypedArrayUnit.F32:
-        result[i] = bytesToF32(elt) as T;
+      case ArrayType.F32:
+        result.push(bytesToF32(elt) as T);
         break;
-      case TypedArrayUnit.F64:
-        result[i] = bytesToF64(elt) as T;
+      case ArrayType.F64:
+        result.push(bytesToF64(elt) as T);
         break;
-      case TypedArrayUnit.I32:
-        result[i] = bytesToI32(elt) as T;
+      case ArrayType.I32:
+        result.push(bytesToI32(elt) as T);
         break;
-      case TypedArrayUnit.I64:
-        result[i] = bytesToI64(elt) as T;
+      case ArrayType.I64:
+        result.push(bytesToI64(elt) as T);
         break;
-      case TypedArrayUnit.U32:
-        result[i] = bytesToU32(elt) as T;
+      case ArrayType.U32:
+        result.push(bytesToU32(elt) as T);
         break;
-      case TypedArrayUnit.U64:
-        result[i] = bytesToU64(elt) as T;
+      case ArrayType.U64:
+        result.push(bytesToU64(elt) as T);
         break;
-      case TypedArrayUnit.U128:
-        result[i] = bytesToU128(elt) as T;
+      case ArrayType.U128:
+        result.push(bytesToU128(elt) as T);
         break;
-      case TypedArrayUnit.U256:
-        result[i] = bytesToU256(elt) as T;
+      case ArrayType.U256:
+        result.push(bytesToU256(elt) as T);
         break;
     }
   }
