@@ -9,6 +9,7 @@ export const PERIOD_OFFSET = 5;
 describe('PrivateApiClient', () => {
   let client: PrivateApiClient;
   let mockSendJsonRPCRequest: jest.SpyInstance;
+  let ipAddress = '192.168.0.1';
 
   // Function to generate tests for a set of similar operations to avoid code duplication
   function generateAPITests(
@@ -104,7 +105,7 @@ describe('PrivateApiClient', () => {
   describe('nodeAddToPeersWhitelist', () => {
     generateAPITests(
       'nodeAddToPeersWhitelist',
-      '192.168.0.1',
+      ipAddress,
       undefined,
       JSON_RPC_REQUEST_METHOD.NODE_ADD_TO_PEERS_WHITELIST,
     );
@@ -113,7 +114,7 @@ describe('PrivateApiClient', () => {
   describe('nodeRemoveFromWhitelist', () => {
     generateAPITests(
       'nodeRemoveFromWhitelist',
-      '192.168.0.1',
+      ipAddress,
       undefined,
       JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST,
     );
@@ -122,7 +123,7 @@ describe('PrivateApiClient', () => {
   describe('nodeUnbanByIpAddress', () => {
     generateAPITests(
       'nodeUnbanByIpAddress',
-      '192.168.0.1',
+      ipAddress,
       undefined,
       JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_IP,
     );
