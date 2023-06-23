@@ -8,9 +8,9 @@ PACKAGE_NAME=$(cat package.json | jq -r '.name')
 PUBLISH_VERSION=$(cat package.json | jq -r '.version')
 echo "Publishing ${PACKAGE_NAME}@$PUBLISH_VERSION"
 
-BRANCH=$1
+ref=$1
 TAG=""
-if [[ "$BRANCH" == "buildnet" ]]; then
+if [[ "$ref" == *"buildnet"* ]]; then
   TAG="--tag buildnet"
 fi
 
