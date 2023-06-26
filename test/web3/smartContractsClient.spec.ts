@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IBalance } from '../../src/interfaces/IBalance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
@@ -141,9 +142,9 @@ describe('SmartContractsClient', () => {
         max_block_size / 2 + 1,
       ); // value > max_block_size / 2
 
-      const consoleWarnSpy = jest.spyOn(console, 'warn');
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      consoleWarnSpy.mockImplementation(() => {});
+      const consoleWarnSpy = jest
+        .spyOn(console, 'warn')
+        .mockImplementation(() => {});
 
       await smartContractsClient.deploySmartContract(mockContractData);
 
@@ -444,6 +445,10 @@ describe('SmartContractsClient', () => {
         .fn()
         .mockRejectedValue(new Error(expectedErrorMessage));
 
+      const consoleErrorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
       const error = await smartContractsClient
         .awaitRequiredOperationStatus(opId, requiredStatus)
         .catch((e) => e);
@@ -453,6 +458,9 @@ describe('SmartContractsClient', () => {
       expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
         101,
       );
+
+      // Restore console.error
+      consoleErrorSpy.mockRestore();
     });
 
     test('fails after reaching the pending limit', async () => {
@@ -460,6 +468,10 @@ describe('SmartContractsClient', () => {
       smartContractsClient.getOperationStatus = jest
         .fn()
         .mockResolvedValue(EOperationStatus.NOT_FOUND);
+
+      const consoleWarnSpy = jest
+        .spyOn(console, 'warn')
+        .mockImplementation(() => {});
 
       await expect(
         smartContractsClient.awaitRequiredOperationStatus(opId, requiredStatus),
@@ -472,6 +484,9 @@ describe('SmartContractsClient', () => {
       expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
         1001,
       );
+
+      // Restore console.warn
+      consoleWarnSpy.mockRestore();
     });
   });
 
@@ -565,6 +580,10 @@ describe('SmartContractsClient', () => {
 
   describe('executeReadOnlySmartContract', () => {
     test('should throw error if contractDataBinary is missing', async () => {
+      const consoleErrorSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
       await expect(
         smartContractsClient.executeReadOnlySmartContract({
           ...mockContractData,
@@ -573,6 +592,9 @@ describe('SmartContractsClient', () => {
       ).rejects.toThrow(
         `Expected non-null contract bytecode, but received null.`,
       );
+
+      // Restore console.error
+      consoleErrorSpy.mockRestore();
     });
 
     test('should throw error if address is missing', async () => {
