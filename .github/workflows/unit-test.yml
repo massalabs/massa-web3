@@ -2,9 +2,6 @@ name: Unit tests
 
 on:
   push:
-    branches:
-      - main
-      - buildnet
   workflow_call:
 
 jobs:
@@ -64,7 +61,7 @@ jobs:
 
     - name: Commit changes
       uses: stefanzweifel/git-auto-commit-action@v4
-      if: steps.check_coverage_changed.outputs.coverage_changed != ''
+      if: ${{ github.ref == 'refs/heads/main' && steps.check_coverage_changed.outputs.coverage_changed != '' }}
       with:
         commit_message: "Generate coverage badge"
         file_pattern: "README.md"
