@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
+import { IBalance } from '../../src/interfaces/IBalance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import { fromMAS } from '../../src/utils/converters';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
 import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
@@ -13,9 +16,22 @@ import {
   mockContractReadOperationData,
   mockContractReadOperationResponse,
   mockReadData,
+  mockAddressesInfo,
+  mockEventFilter,
+  mockedEvents,
 } from './mockData';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
+const TX_POLL_INTERVAL_MS = 10000;
+const TX_STATUS_CHECK_RETRY_COUNT = 100;
+
+// Mock to not wait for the timeout to finish
+jest.mock('../../src/utils/time', () => {
+  return {
+    Timeout: jest.fn(),
+    wait: jest.fn(() => Promise.resolve()),
+  };
+});
 
 describe('SmartContractsClient', () => {
   let smartContractsClient: SmartContractsClient;
@@ -337,6 +353,165 @@ describe('SmartContractsClient', () => {
           },
         ],
       ]);
+
+      (smartContractsClient as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
+    });
+  });
+
+  describe.only('awaitRequiredOperationStatus', () => {
+    const opId = '1';
+    const requiredStatus = EOperationStatus.FINAL;
+
+    beforeEach(() => {
+      // Reset the getOperationStatus function
+      smartContractsClient.getOperationStatus = jest.fn();
+    });
+
+    test('waiting for NOT_FOUND status to become the required status', async () => {
+      let callCount = 0;
+      smartContractsClient.getOperationStatus = jest
+        .fn()
+        .mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve(EOperationStatus.NOT_FOUND);
+          } else {
+            return Promise.resolve(requiredStatus);
+          }
+        });
+
+      const promise = smartContractsClient.awaitRequiredOperationStatus(
+        opId,
+        requiredStatus,
+      );
+
+      const status = await promise;
+
+      expect(status).toBe(requiredStatus);
+      expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(2);
+    });
+
+    test('fails after reaching the error limit', async () => {
+      // Always throw an error
+      const expectedErrorMessage = 'Test error';
+      smartContractsClient.getOperationStatus = jest
+        .fn()
+        .mockRejectedValue(new Error(expectedErrorMessage));
+
+      const error = await smartContractsClient
+        .awaitRequiredOperationStatus(opId, requiredStatus)
+        .catch((e) => e);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toEqual(expectedErrorMessage);
+      expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
+        101,
+      );
+    });
+
+    test('fails after reaching the pending limit', async () => {
+      // Always return a status other than the requiredStatus
+      smartContractsClient.getOperationStatus = jest
+        .fn()
+        .mockResolvedValue(EOperationStatus.NOT_FOUND);
+
+      await expect(
+        smartContractsClient.awaitRequiredOperationStatus(opId, requiredStatus),
+      ).rejects.toThrow(
+        `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${
+          TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT
+        }ms.`,
+      );
+
+      expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
+        1001,
+      );
+    });
+  });
+
+  describe('getContractBalance', () => {
+    const mockAddress = 'address';
+
+    const expectedBalance: IBalance = {
+      candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
+      final: fromMAS(mockAddressesInfo[0].final_balance),
+    };
+
+    test('should return the correct balance when the address exists', async () => {
+      mockPublicApiClient.getAddresses = jest
+        .fn()
+        .mockResolvedValue(mockAddressesInfo);
+
+      const balance = await smartContractsClient.getContractBalance(
+        mockAddress,
+      );
+
+      expect(balance).toEqual(expectedBalance);
+      expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
+        mockAddress,
+      ]);
+    });
+
+    test('should return null when the address does not exist', async () => {
+      mockPublicApiClient.getAddresses = jest.fn().mockResolvedValue([]);
+
+      const balance = await smartContractsClient.getContractBalance(
+        mockAddress,
+      );
+
+      expect(balance).toBeNull();
+      expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
+        mockAddress,
+      ]);
+    });
+  });
+
+  describe('getFilteredScOutputEvents', () => {
+    test('should send the correct JSON RPC request', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      await smartContractsClient.getFilteredScOutputEvents(mockEventFilter);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT,
+        [mockEventFilter],
+      );
+    });
+
+    test('should return the correct array of IEvent objects', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      const result = await smartContractsClient.getFilteredScOutputEvents(
+        mockEventFilter,
+      );
+
+      expect(result).toEqual(mockedEvents);
+    });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockedEvents);
+
+      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+        .retryStrategyOn;
+      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+
+      await smartContractsClient.getFilteredScOutputEvents(mockEventFilter);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT,
+        [mockEventFilter],
+      );
 
       (smartContractsClient as any).clientConfig.retryStrategyOn =
         originalRetryStrategy;
