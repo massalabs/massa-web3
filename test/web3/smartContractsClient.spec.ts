@@ -359,7 +359,7 @@ describe('SmartContractsClient', () => {
     });
   });
 
-  describe.only('awaitRequiredOperationStatus', () => {
+  describe('awaitRequiredOperationStatus', () => {
     const opId = '1';
     const requiredStatus = EOperationStatus.FINAL;
 
