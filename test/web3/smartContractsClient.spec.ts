@@ -399,6 +399,9 @@ describe('SmartContractsClient', () => {
       const opId = '0x005'; // Doesn't exist
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.NOT_FOUND);
+    });
+  });
+
   describe('awaitRequiredOperationStatus', () => {
     const opId = '1';
     const requiredStatus = EOperationStatus.FINAL;
