@@ -608,7 +608,8 @@ describe('SmartContractsClient', () => {
     });
 
     test('should return correct result', async () => {
-      const expectedResponse: IExecuteReadOnlyResponse = mockContractReadOnlyOperationResponse;
+      const expectedResponse: IExecuteReadOnlyResponse =
+        mockContractReadOnlyOperationResponse;
 
       (smartContractsClient as any).sendJsonRPCRequest = jest
         .fn()
