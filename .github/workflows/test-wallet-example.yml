@@ -37,7 +37,7 @@ jobs:
             exit 1
           fi
         env:
-          JSON_RPC_URL_PUBLIC: https://buildnet.massa.net/api/v2
-          JSON_RPC_URL_PRIVATE: https://buildnet.massa.net/api/v2
-          DEPLOYER_PRIVATE_KEY: S1ykLaxXyMnJoaWLYds8UntqKTamZ4vcxrZ1fdToR8WpWEpk3FC
-          RECEIVER_PRIVATE_KEY: S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1
+          JSON_RPC_URL_PUBLIC: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PRIVATE }}
+          DEPLOYER_SECRET_KEY: ${{ secrets.DEPLOYER_SECRET_KEY }}
+          RECEIVER_SECRET_KEY: ${{ secrets.RECEIVER_SECRET_KEY }}
