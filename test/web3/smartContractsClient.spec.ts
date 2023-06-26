@@ -16,7 +16,7 @@ import {
   mockContractReadOperationResponse,
   mockReadData,
   mockContractAddresses,
-  mockProtoFiles,
+  mockProtoFileFetch,
 } from './mockData';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
@@ -348,7 +348,7 @@ describe('SmartContractsClient', () => {
   });
 
   describe('getProtoFiles', () => {
-    const outputDirectory = '/path/to/output/directory';
+    const outputDirectory = './test/web3/';
     const MASSA_PROTOFILE_KEY = 'protoMassa';
 
     const fetchMock = jest.fn();
@@ -356,7 +356,7 @@ describe('SmartContractsClient', () => {
     beforeEach(() => {
       global.fetch = fetchMock;
       fetchMock.mockResolvedValue({
-        json: () => mockProtoFiles,
+        json: () => mockProtoFileFetch,
       });
     });
 

@@ -520,14 +520,15 @@ export class SmartContractsClient
         let protos = content.split('syntax = "proto3";'); // splitting all the proto functions to make separate proto file for each functions
         for (let func of protos) {
           const rName = /message (.+)RHelper /gm;
-          const fNameMatch = rName.exec(func)[0]; // retrieving the proto function name
+          const fNameMatch = rName.exec(func);
 
-          if (!fNameMatch) {
+          if (!fNameMatch || !fNameMatch[0]) {
             console.log('No match found for regex /message (.+)RHelper /gm');
             continue;
           }
 
-          const fName = fNameMatch[0];
+          const fName = fNameMatch[0]; // retrieving the proto function name
+
           const filepath = path.join(outputDirectory, fName + '.proto');
           writeFileSync(filepath, func); // writing the proto file
           protoFiles.push({
