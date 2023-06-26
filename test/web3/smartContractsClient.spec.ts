@@ -20,7 +20,9 @@ import {
   mockAddressesInfo,
   mockEventFilter,
   mockedEvents,
+  mockContractReadOnlyOperationResponse,
 } from './mockData';
+import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -558,6 +560,88 @@ describe('SmartContractsClient', () => {
 
       (smartContractsClient as any).clientConfig.retryStrategyOn =
         originalRetryStrategy;
+    });
+  });
+
+  describe('executeReadOnlySmartContract', () => {
+    test('should throw error if contractDataBinary is missing', async () => {
+      await expect(
+        smartContractsClient.executeReadOnlySmartContract({
+          ...mockContractData,
+          contractDataBinary: undefined,
+        }),
+      ).rejects.toThrow(
+        `Expected non-null contract bytecode, but received null.`,
+      );
+    });
+
+    test('should throw error if address is missing', async () => {
+      await expect(
+        smartContractsClient.executeReadOnlySmartContract({
+          ...mockContractData,
+          address: undefined,
+        }),
+      ).rejects.toThrow(`Expected contract address, but received null.`);
+    });
+
+    test('should send correct request', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue([{ result: { Ok: new Uint8Array([11, 22, 33]) } }]);
+
+      await smartContractsClient.executeReadOnlySmartContract(mockContractData);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE,
+        [
+          [
+            {
+              max_gas: Number(mockContractData.maxGas),
+              bytecode: Array.from(mockContractData.contractDataBinary),
+              address: mockContractData.address,
+            },
+          ],
+        ],
+      );
+    });
+
+    test('should return correct result', async () => {
+      const expectedResponse: IExecuteReadOnlyResponse = mockContractReadOnlyOperationResponse;
+
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationData);
+
+      const result = await smartContractsClient.executeReadOnlySmartContract(
+        mockContractData,
+      );
+
+      expect(result).toEqual(expectedResponse);
+    });
+
+    test('should throw error if no result is returned', async () => {
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue([]);
+
+      await expect(
+        smartContractsClient.executeReadOnlySmartContract(mockContractData),
+      ).rejects.toThrow(
+        `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
+      );
+    });
+
+    test('should throw error if result contains an error', async () => {
+      const error = 'Some error';
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue([{ result: { Error: error } }]);
+
+      await expect(
+        smartContractsClient.executeReadOnlySmartContract(mockContractData),
+      ).rejects.toThrow(`Execute read-only smart contract error`);
     });
   });
 });
