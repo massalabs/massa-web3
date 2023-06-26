@@ -85,6 +85,11 @@ describe('SmartContractsClient', () => {
   });
 
   describe('deploySmartContract', () => {
+    let consoleWarnSpy: jest.SpyInstance;
+    beforeEach(() => {
+      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
     test('should call sendJsonRPCRequest with correct arguments', async () => {
       await smartContractsClient.deploySmartContract(
         mockContractData,
@@ -137,14 +142,12 @@ describe('SmartContractsClient', () => {
     });
 
     test('should warn when contractDataBinary size exceeded half of the maximum size of a block', async () => {
+      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
       const max_block_size = mockNodeStatusInfo.config.max_block_size;
       mockContractData.contractDataBinary = new Uint8Array(
         max_block_size / 2 + 1,
       ); // value > max_block_size / 2
-
-      const consoleWarnSpy = jest
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {});
 
       await smartContractsClient.deploySmartContract(mockContractData);
 
@@ -179,6 +182,7 @@ describe('SmartContractsClient', () => {
       );
     });
   });
+
   describe('callSmartContract', () => {
     test('should call sendJsonRPCRequest with correct arguments', async () => {
       await smartContractsClient.callSmartContract(
