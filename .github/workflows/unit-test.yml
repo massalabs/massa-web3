@@ -2,6 +2,9 @@ name: Unit tests
 
 on:
   push:
+    branches:
+      - main
+      - buildnet
   workflow_call:
 
 jobs:
