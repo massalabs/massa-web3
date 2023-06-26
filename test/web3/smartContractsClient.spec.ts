@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { IBalance } from '../../src/interfaces/IBalance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
+import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { fromMAS } from '../../src/utils/converters';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
 import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
@@ -16,6 +16,7 @@ import {
   mockContractReadOperationData,
   mockContractReadOperationResponse,
   mockReadData,
+  mockOperationDataDetailed,
   mockAddressesInfo,
   mockEventFilter,
   mockedEvents,
@@ -52,7 +53,17 @@ describe('SmartContractsClient', () => {
       mockWalletClient,
     );
 
-    // Mock returned values
+    // Mock getOperations
+    mockPublicApiClient.getOperations = jest
+      .fn()
+      .mockImplementation((operationIds: string[]) => {
+        return Promise.resolve(
+          mockOperationDataDetailed.filter((operation) =>
+            operationIds.includes(operation.id),
+          ),
+        );
+      });
+
     mockPublicApiClient.getNodeStatus = jest
       .fn()
       .mockResolvedValue(mockNodeStatusInfo);
@@ -356,6 +367,38 @@ describe('SmartContractsClient', () => {
 
       (smartContractsClient as any).clientConfig.retryStrategyOn =
         originalRetryStrategy;
+    });
+  });
+
+  describe('getOperationStatus', () => {
+    test('should return EOperationStatus.INCLUDED_PENDING when operation is included in blocks', async () => {
+      const opId = '0x000';
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.INCLUDED_PENDING);
+    });
+
+    test('should return EOperationStatus.FINAL when operation is final', async () => {
+      const opId = '0x001';
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.FINAL);
+    });
+
+    test('should return EOperationStatus.AWAITING_INCLUSION when operation is in the pool', async () => {
+      const opId = '0x002';
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
+    });
+
+    test('should return EOperationStatus.INCONSISTENT when operation is neither in blocks nor in the pool', async () => {
+      const opId = '0x003';
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.INCONSISTENT);
+    });
+
+    test('should return EOperationStatus.NOT_FOUND when operation does not exist', async () => {
+      const opId = '0x005'; // Doesn't exist
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.NOT_FOUND);
     });
   });
 

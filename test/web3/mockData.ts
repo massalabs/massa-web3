@@ -207,6 +207,109 @@ export const mockOperationData = [
   },
 ];
 
+export const mockOperationDataDetailed = [
+  {
+    id: '0x000',
+    in_blocks: ['0x000'],
+    in_pool: false,
+    is_operation_final: false,
+    thread: 0,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address: 'recipient_address',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address: 'address',
+      id: 'id',
+    },
+    op_exec_status: 'status',
+  },
+  {
+    id: '0x001',
+    in_blocks: ['0x000'],
+    in_pool: false,
+    is_operation_final: true,
+    thread: 0,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address: 'recipient_address',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address: 'address',
+      id: 'id',
+    },
+    op_exec_status: 'status',
+  },
+  {
+    id: '0x002',
+    in_blocks: [],
+    in_pool: true,
+    is_operation_final: false,
+    thread: 0,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address: 'recipient_address',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address: 'address',
+      id: 'id',
+    },
+    op_exec_status: 'status',
+  },
+  {
+    id: '0x003',
+    in_blocks: [],
+    in_pool: false,
+    is_operation_final: false,
+    thread: 0,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address: 'recipient_address',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address: 'address',
+      id: 'id',
+    },
+    op_exec_status: 'status',
+  },
+];
+
 export const mockStackersData = [
   {
     tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb: 1,
