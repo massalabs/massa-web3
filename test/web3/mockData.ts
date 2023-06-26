@@ -12,6 +12,33 @@ import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
 import { IReadData } from '../../src/interfaces/IReadData';
 import { IContractReadOperationData } from '../../src/interfaces/IContractReadOperationData';
 import { IContractReadOperationResponse } from '../../src/interfaces/IContractReadOperationResponse';
+import { IEvent } from '../../src/interfaces/IEvent';
+import { ISlot } from '../../src/interfaces/ISlot';
+import { IEventFilter } from '../../src/interfaces/IEventFilter';
+import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
+
+// util function to create an event, only for that test file to avoid code duplication
+function createEvent(
+  id: string,
+  data: string,
+  slot: ISlot,
+  callStack: string[],
+): IEvent {
+  return {
+    id,
+    data: JSON.stringify(data),
+    context: {
+      slot,
+      block: null,
+      read_only: false,
+      call_stack: callStack,
+      index_in_slot: 0,
+      origin_operation_id: null,
+      is_final: true,
+      is_error: false,
+    },
+  };
+}
 
 export const mockNodeStatusInfo = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
@@ -88,19 +115,22 @@ export const mockAddresses = [
 
 export const mockAddressesInfo = [
   {
-    address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+    address: 'AU1qx8SWRBX3EaLLWmcviYiQqS7zb4jV4QykHt2TskjTPJbQAHF7',
     candidate_balance: '0',
-    thread: 0,
+    final_balance: '0',
+    thread: 1,
   },
   {
-    address: 'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
-    candidate_balance: '0',
-    thread: 0,
+    address: 'AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp',
+    candidate_balance: '1',
+    final_balance: '1',
+    thread: 2,
   },
   {
-    address: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
-    candidate_balance: '0',
-    thread: 0,
+    address: 'AU12WVAJoH2giHAjSxk9R1XK3YhpCw2QxmkCbtXxcr4T3XCUG55nr',
+    candidate_balance: '50',
+    final_balance: '50',
+    thread: 3,
   },
 ];
 
@@ -372,6 +402,23 @@ export const mockCallData: ICallData = {
   parameter: [1, 2, 3, 4],
 };
 
+export const mockedEvents: IEvent[] = [
+  createEvent('event1', 'value1', { period: 1, thread: 1 }, ['address1']), // n°1
+  createEvent('event2', 'value2', { period: 2, thread: 1 }, ['address2']), // n°3
+  createEvent('event3', 'value3', { period: 1, thread: 2 }, ['address3']), // n°2
+  createEvent('event5', 'value5', { period: 2, thread: 2 }, ['address4']), // n°4
+  createEvent('event4', 'value4', { period: 1, thread: 2 }, ['address4']), // n°2
+  createEvent('event6', 'value6', { period: 3, thread: 2 }, ['address4']), // n°5
+];
+
+export const mockEventFilter: IEventFilter | IEventRegexFilter = {
+  start: { period: 2, thread: 1 },
+  end: { period: 3, thread: 2 },
+  emitter_address: 'address4',
+  original_caller_address: null,
+  original_operation_id: null,
+  is_final: null,
+};
 export const mockReadData: IReadData = {
   maxGas: 100000n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
