@@ -2,6 +2,15 @@ import { expect, it, describe } from '@jest/globals';
 import * as ser from '../../src/utils/serializers';
 import { asTests } from './fixtures/as-serializer';
 import { Args, ArrayType } from '../../src/utils/arguments';
+import {
+  deserializeObj,
+  getDatatypeSize,
+  serializableObjectsArrayToBytes,
+} from '../../src/utils/serializers';
+import {
+  IDeserializedResult,
+  ISerializable,
+} from '../../src/interfaces/ISerializable';
 
 describe('Serialization tests', () => {
   it('ser/deser with emojis', () => {
@@ -96,5 +105,100 @@ describe('Test against assemblyscript serializer', () => {
       serialized,
     );
     expect(new Args(serialized).nextArray(ArrayType.STRING)).toEqual(input);
+  });
+});
+
+describe('array.ts functions', () => {
+  describe('getDatatypeSize tests', () => {
+    it('returns the correct size for BOOL', () => {
+      expect(getDatatypeSize(ArrayType.BOOL)).toEqual(1);
+    });
+
+    it('returns the correct size for U8', () => {
+      expect(getDatatypeSize(ArrayType.U8)).toEqual(1);
+    });
+
+    it('returns the correct size for F32', () => {
+      expect(getDatatypeSize(ArrayType.F32)).toEqual(4);
+    });
+
+    it('returns the correct size for I32', () => {
+      expect(getDatatypeSize(ArrayType.I32)).toEqual(4);
+    });
+
+    it('returns the correct size for U32', () => {
+      expect(getDatatypeSize(ArrayType.U32)).toEqual(4);
+    });
+
+    it('returns the correct size for F64', () => {
+      expect(getDatatypeSize(ArrayType.F64)).toEqual(8);
+    });
+
+    it('returns the correct size for I64', () => {
+      expect(getDatatypeSize(ArrayType.I64)).toEqual(8);
+    });
+
+    it('returns the correct size for U64', () => {
+      expect(getDatatypeSize(ArrayType.U64)).toEqual(8);
+    });
+
+    it('returns the correct size for U128', () => {
+      expect(getDatatypeSize(ArrayType.U128)).toEqual(16);
+    });
+
+    it('returns the correct size for U256', () => {
+      expect(getDatatypeSize(ArrayType.U256)).toEqual(32);
+    });
+
+    it('throws an error for unsupported types', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(() => getDatatypeSize((ArrayType as any).BadType)).toThrow(
+        'Unsupported type',
+      );
+    });
+  });
+
+  // Implement a simple serializable class for testing.
+  class TestSerializable implements ISerializable<TestSerializable> {
+    value: number;
+
+    constructor(value = 0) {
+      this.value = value;
+    }
+
+    serialize(): Uint8Array {
+      return new Uint8Array([this.value]);
+    }
+
+    deserialize(
+      data: Uint8Array,
+      offset: number,
+    ): IDeserializedResult<TestSerializable> {
+      this.value = data[offset];
+      return { instance: this, offset: offset + 1 };
+    }
+  }
+
+  describe('serializableObjectsArrayToBytes tests', () => {
+    it('serializes an array of serializable objects to bytes', () => {
+      const obj1 = new TestSerializable(1);
+      const obj2 = new TestSerializable(2);
+      const obj3 = new TestSerializable(3);
+
+      const serialized = serializableObjectsArrayToBytes([obj1, obj2, obj3]);
+
+      expect(serialized).toEqual(new Uint8Array([1, 2, 3]));
+    });
+  });
+
+  describe('deserializeObj tests', () => {
+    it('deserializes a bytes array into an instance of the given class', () => {
+      const data = new Uint8Array([1, 2, 3]);
+      const result = deserializeObj(data, 0, TestSerializable);
+
+      expect(result.instance).toBeInstanceOf(TestSerializable);
+      expect(result.instance.value).toEqual(1);
+      expect(result.offset).toEqual(1);
+    });
   });
 });
