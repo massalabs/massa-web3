@@ -19,6 +19,8 @@ import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 import { ISignature } from '../../src/interfaces/ISignature';
 import { IOperationData } from '../../src/interfaces/IOperationData';
+import { INodeStatus } from '../../src/interfaces/INodeStatus';
+import { IEndorsement } from '../../src/interfaces/IEndorsement';
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
@@ -43,38 +45,31 @@ function createEvent(
   };
 }
 
-export const mockNodeStatusInfo = {
+export const mockNodeStatusInfo: INodeStatus = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   node_ip: null,
   version: 'SAND.23.0',
   current_time: 1687275917301,
   current_cycle: 6,
-  current_cycle_time: 1687274924363,
-  next_cycle_time: 1687276972363,
   connected_nodes: {},
   last_slot: { period: 830, thread: 1 },
   next_slot: { period: 830, thread: 2 },
   consensus_stats: {
-    start_timespan: 1687275857301,
-    end_timespan: 1687275917301,
+    start_timestamp: 1687275857301,
+    end_timestamp: 1687275917301,
     final_block_count: 120,
+    final_operation_count: 1296,
+    staker_count: 1,
     stale_block_count: 0,
     clique_count: 1,
   },
-  pool_stats: [0, 1296],
+  pool_stats: { endorsement_count: 0, operation_count: 1296 },
   network_stats: {
     in_connection_count: 0,
     out_connection_count: 0,
     known_peer_count: 0,
     banned_peer_count: 0,
     active_node_count: 0,
-  },
-  execution_stats: {
-    time_window_start: 1687275857301,
-    time_window_end: 1687275917301,
-    final_block_count: 120,
-    final_executed_operations_count: 0,
-    active_cursor: { period: 829, thread: 29 },
   },
   config: {
     genesis_timestamp: 1687262636363,
@@ -87,6 +82,8 @@ export const mockNodeStatusInfo = {
     block_reward: '0.30',
     roll_price: '100',
     max_block_size: 1000000,
+    pos_lock_cycles: 64,
+    pos_lookback_cycles: 64,
   },
 };
 
@@ -110,7 +107,7 @@ export const mockBlock = {
   },
 };
 
-export const mockAddresses = [
+export const mockAddresses: string[] = [
   'AU1qx8SWRBX3EaLLWmcviYiQqS7zb4jV4QykHt2TskjTPJbQAHF7',
   'AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp',
   'AU12WVAJoH2giHAjSxk9R1XK3YhpCw2QxmkCbtXxcr4T3XCUG55nr',
@@ -141,14 +138,14 @@ export const mockBlockIds = ['0x000', '0x001'];
 
 export const mockBlockData = [
   {
-    id: '0x000',
+    id: mockBlockIds[0],
     content: null,
     is_final: false,
     is_in_blockclique: false,
     is_stale: false,
   },
   {
-    id: '0x001',
+    id: mockBlockIds[1],
     content: null,
     is_final: true,
     is_in_blockclique: false,
@@ -158,9 +155,9 @@ export const mockBlockData = [
 
 export const mockEndorsementIds = ['0x000', '0x001'];
 
-export const mockEndorsementData = [
+export const mockEndorsementData: Array<IEndorsement> = [
   {
-    id: '0x000',
+    id: mockEndorsementIds[0],
     in_pool: false,
     in_blocks: ['0x000'],
     is_final: false,
@@ -175,7 +172,7 @@ export const mockEndorsementData = [
     },
   },
   {
-    id: '0x001',
+    id: mockEndorsementIds[1],
     in_pool: false,
     in_blocks: ['0x001'],
     is_final: true,
@@ -346,19 +343,19 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
 
 export const mockStackersData = [
   {
-    tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb: 1,
-    tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6: 2,
-    tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx: 3,
+    AU1qx8SWRBX3EaLLWmcviYiQqS7zb4jV4QykHt2TskjTPJbQAHF7: 1,
+    AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp: 2,
+    AU12WVAJoH2giHAjSxk9R1XK3YhpCw2QxmkCbtXxcr4T3XCUG55nr: 3,
   },
 ];
 
 export const mockDatastoreEntryInput = [
   {
-    address: 'tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb',
+    address: 'AU1qx8SWRBX3EaLLWmcviYiQqS7zb4jV4QykHt2TskjTPJbQAHF7',
     key: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]),
   },
   {
-    address: 'tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6',
+    address: 'AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp',
     key: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
   },
 ];
