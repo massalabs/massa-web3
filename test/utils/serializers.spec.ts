@@ -2,6 +2,35 @@ import { expect, it, describe } from '@jest/globals';
 import * as ser from '../../src/utils/serializers';
 import { asTests } from './fixtures/as-serializer';
 import { Args, ArrayType } from '../../src/utils/arguments';
+import {
+  arrayToBytes,
+  bytesToArray,
+  bytesToSerializableObjectArray,
+} from '../../src/utils/serializers';
+import {
+  IDeserializedResult,
+  ISerializable,
+} from '../../src/interfaces/ISerializable';
+
+class TestSerializable implements ISerializable<TestSerializable> {
+  value: number;
+
+  constructor(value = 0) {
+    this.value = value;
+  }
+
+  serialize(): Uint8Array {
+    return new Uint8Array([this.value]);
+  }
+
+  deserialize(
+    data: Uint8Array,
+    offset: number,
+  ): IDeserializedResult<TestSerializable> {
+    this.value = data[offset];
+    return { instance: this, offset: offset + 1 };
+  }
+}
 
 describe('Serialization tests', () => {
   it('ser/deser with emojis', () => {
@@ -96,5 +125,138 @@ describe('Test against assemblyscript serializer', () => {
       serialized,
     );
     expect(new Args(serialized).nextArray(ArrayType.STRING)).toEqual(input);
+  });
+});
+
+describe('array.ts functions', () => {
+  describe('bytesToSerializableObjectArray', () => {
+    it('deserializes a bytes array into an array of instances of the given class', () => {
+      const data = new Uint8Array([1, 2, 3, 4, 5]);
+      const result = bytesToSerializableObjectArray(data, TestSerializable);
+
+      expect(result.length).toEqual(5);
+      // Check that each element in the array is an instance of the TestSerializable class
+      for (let i = 0; i < result.length; i++) {
+        expect(result[i]).toBeInstanceOf(TestSerializable);
+        // Check that the value of each TestSerializable instance is correct
+        expect(result[i].value).toEqual(i + 1);
+      }
+    });
+  });
+
+  describe('arrayToBytes and bytesToArray tests', () => {
+    it('converts a bool array to bytes and back correctly', () => {
+      const dataArray = [true, false, true, true, false];
+      const byteArray = arrayToBytes(dataArray, ArrayType.BOOL);
+      const arrayBack = bytesToArray(byteArray, ArrayType.BOOL);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a string array to bytes and back correctly', () => {
+      const dataArray = ['hello', 'world'];
+      const byteArray = arrayToBytes(dataArray, ArrayType.STRING);
+      const arrayBack = bytesToArray(byteArray, ArrayType.STRING);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a U8 array to bytes and back correctly', () => {
+      const dataArray = [1, 2, 3, 4, 5];
+      const byteArray = arrayToBytes(dataArray, ArrayType.U8);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U8);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a U32 array to bytes and back correctly', () => {
+      const dataArray = [10, 20, 30, 40, 50];
+      const byteArray = arrayToBytes(dataArray, ArrayType.U32);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U32);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a U64 array to bytes and back correctly', () => {
+      const dataArray = [
+        BigInt(10),
+        BigInt(20),
+        BigInt(30),
+        BigInt(40),
+        BigInt(50),
+      ];
+      const byteArray = arrayToBytes(dataArray, ArrayType.U64);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U64);
+      expect(arrayBack).toEqual(dataArray);
+    });
+    it('converts a U128 array to bytes and back correctly', () => {
+      const dataArray = [
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+      ];
+
+      const byteArray = arrayToBytes(dataArray, ArrayType.U128);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U128);
+      expect(arrayBack).toEqual(dataArray);
+    });
+    it('converts a U256 array to bytes and back correctly', () => {
+      const dataArray = [
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+      ];
+
+      const byteArray = arrayToBytes(dataArray, ArrayType.U256);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U256);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a I32 array to bytes and back correctly', () => {
+      const dataArray = [-10, -20, -30, -40, -50];
+      const byteArray = arrayToBytes(dataArray, ArrayType.I32);
+      const arrayBack = bytesToArray(byteArray, ArrayType.I32);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a I64 array to bytes and back correctly', () => {
+      const dataArray = [
+        BigInt(-10),
+        BigInt(-20),
+        BigInt(-30),
+        BigInt(-40),
+        BigInt(-50),
+      ];
+      const byteArray = arrayToBytes(dataArray, ArrayType.I64);
+      const arrayBack = bytesToArray(byteArray, ArrayType.I64);
+      expect(arrayBack).toEqual(dataArray);
+    });
+    it('converts a F32 array to bytes and back correctly', () => {
+      const dataArray = [1.1, 2.2, 3.3, 4.4, 5.5];
+      const byteArray = arrayToBytes(dataArray, ArrayType.F32);
+      const arrayBack = bytesToArray(byteArray, ArrayType.F32);
+
+      arrayBack.forEach((value, index) => {
+        expect(value).toBeCloseTo(dataArray[index], 5); // 5 is the precision (number of digits after the decimal point)
+      });
+    });
+    it('converts a F64 array to bytes and back correctly', () => {
+      const dataArray = [1.1, 2.2, 3.3, 4.4, 5.5];
+      const byteArray = arrayToBytes(dataArray, ArrayType.F64);
+      const arrayBack = bytesToArray(byteArray, ArrayType.F64);
+
+      arrayBack.forEach((value, index) => {
+        expect(value).toBeCloseTo(dataArray[index], 5); // 5 is the precision (number of digits after the decimal point)
+      });
+    });
+    it('throws an error when an unsupported type is used', () => {
+      const dataArray = [1, 2, 3, 4, 5];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const unsupportedType = 'someUnsupportedType' as any;
+
+      expect(() => arrayToBytes(dataArray, unsupportedType)).toThrow(
+        `Unsupported type: ${unsupportedType}`,
+      );
+    });
   });
 });
