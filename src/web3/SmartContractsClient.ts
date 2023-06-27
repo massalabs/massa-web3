@@ -23,7 +23,7 @@ import { NodeStatus } from '../interfaces/NodeStatus';
 import { OperationData } from '../interfaces/OperationData';
 import { ReadData } from '../interfaces/ReadData';
 import { Signature } from '../interfaces/Signature';
-import { SmartContractsClient } from '../interfaces/SmartContractsClient';
+import { SmartContractsClient as ISmartContractsClient } from '../interfaces/SmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
 import { ProtoFile } from '../interfaces/ProtoFile';
@@ -34,6 +34,7 @@ import { strToBytes } from '../utils/serializers/strings';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
+import { WalletClient as IWalletClient } from '../interfaces/WalletClient';
 import { getBytesPublicKey } from '../utils/bytes';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
@@ -49,7 +50,7 @@ const MASSA_PROTOFILE_KEY = 'protoMassa';
  */
 export class SmartContractsClient
   extends BaseClient
-  implements SmartContractsClient
+  implements ISmartContractsClient
 {
   /**
    * Constructor for {@link SmartContractsClient} objects.
@@ -57,7 +58,7 @@ export class SmartContractsClient
   public constructor(
     clientConfig: ClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    private readonly walletClient: WalletClient,
+    private readonly walletClient: IWalletClient,
   ) {
     super(clientConfig);
 

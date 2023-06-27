@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { IAccount } from '../../src/interfaces/IAccount';
+import { Account } from '../../src/interfaces/Account';
 import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { Client } from '../../src/web3/Client';
-import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
+import { Provider, ProviderType } from '../../src/interfaces/Provider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
-import { ISignature } from '../../src/interfaces/ISignature';
-import { ITransactionData } from '../../src/interfaces/ITransactionData';
+import { Signature } from '../../src/interfaces/Signature';
+import { TransactionData } from '../../src/interfaces/TransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { mockNodeStatusInfo } from './mockData';
@@ -29,13 +29,13 @@ const privateApi = 'https://mock-private-api.com';
 const MAX_WALLET_ACCOUNTS = 256;
 
 export async function initializeClient() {
-  const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
+  const deployerAccount: Account = await WalletClient.getAccountFromSecretKey(
     deployerPrivateKey,
   );
   const web3Client: Client = await ClientFactory.createCustomClient(
     [
-      { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-      { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+      { url: publicApi, type: ProviderType.PUBLIC } as Provider,
+      { url: privateApi, type: ProviderType.PRIVATE } as Provider,
     ],
     true,
     deployerAccount, // setting deployer account as base account
@@ -46,7 +46,7 @@ export async function initializeClient() {
 describe('WalletClient', () => {
   let web3Client: Client;
   // let walletClient: WalletClient;
-  let baseAccount: IAccount = {
+  let baseAccount: Account = {
     address: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
     secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
     publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
@@ -75,14 +75,14 @@ describe('WalletClient', () => {
     test('should throw error if account is not valid', async () => {
       await web3Client.wallet().cleanWallet();
       await expect(
-        web3Client.wallet().setBaseAccount({} as IAccount),
+        web3Client.wallet().setBaseAccount({} as Account),
       ).rejects.toThrow();
       const incorrectAccount = {
         address: 'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3',
         secretKey: 's1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6', // prefix is incorrect
         publicKey: 'P121uDTpo58d3SxQTENXKqSJTpB21ueSAy8RqQ2virGVeWs339ub',
         createdInThread: 23,
-      } as IAccount;
+      } as Account;
       await expect(
         web3Client.wallet().setBaseAccount(incorrectAccount),
       ).rejects.toThrow();
@@ -512,7 +512,7 @@ describe('WalletClient', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const signerPublicKey = baseAccount.publicKey!;
-      const validSignature: ISignature = {
+      const validSignature: Signature = {
         base58Encoded:
           '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
       };
@@ -531,7 +531,7 @@ describe('WalletClient', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const signerPublicKey = baseAccount.publicKey!;
-      const invalidSignature: ISignature = {
+      const invalidSignature: Signature = {
         base58Encoded:
           '2TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE', // starts with 2 and not 1
       };
@@ -595,8 +595,8 @@ describe('WalletClient', () => {
   });
 
   describe('sendTransaction', () => {
-    let receiverAccount: IAccount;
-    let mockTxData: ITransactionData;
+    let receiverAccount: Account;
+    let mockTxData: TransactionData;
 
     beforeEach(async () => {
       receiverAccount = await WalletClient.walletGenerateNewAccount();

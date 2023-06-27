@@ -3,17 +3,17 @@ import {
   ON_MASSA_EVENT_DATA,
   ON_MASSA_EVENT_ERROR,
 } from '../../src/web3/EventPoller';
-import { IEventFilter } from '../../src/interfaces/IEventFilter';
-import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
-import { IEvent } from '../../src/interfaces/IEvent';
-import { ISlot } from '../../src/interfaces/ISlot';
+import { EventFilter } from '../../src/interfaces/EventFilter';
+import { EventRegexFilter } from '../../src/interfaces/EventRegexFilter';
+import { Event } from '../../src/interfaces/Event';
+import { Slot } from '../../src/interfaces/Slot';
 import { Client } from '../../src/web3/Client';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
   ClientFactory,
   DefaultProviderUrls,
 } from '../../src/web3/ClientFactory';
-import { IAccount } from '../../src/interfaces/IAccount';
+import { Account } from '../../src/interfaces/Account';
 import { Timeout } from '../../src/utils/time';
 
 // Mock the Timeout class
@@ -40,7 +40,7 @@ jest.mock('../../src/utils/time', () => {
   };
 });
 
-const mockedEvents: IEvent[] = [
+const mockedEvents: Event[] = [
   {
     id: 'event1',
     data: '{"key1": "value1"}',
@@ -96,11 +96,11 @@ const mockedEvents: IEvent[] = [
 
 describe('EventPoller', () => {
   let eventPoller: EventPoller;
-  let baseAccount: IAccount;
+  let baseAccount: Account;
   let web3Client: Client;
 
   const pollIntervalMillis = 1000;
-  const eventFilter: IEventFilter | IEventRegexFilter = {
+  const eventFilter: EventFilter | EventRegexFilter = {
     start: null,
     end: null,
     emitter_address: null,
@@ -136,7 +136,7 @@ describe('EventPoller', () => {
     jest.spyOn(eventPoller, 'emit');
 
     // Set lastSlot to simulate an existing value
-    eventPoller['lastSlot'] = { period: 1, thread: 1 } as ISlot;
+    eventPoller['lastSlot'] = { period: 1, thread: 1 } as Slot;
 
     await eventPoller['callback']();
 
@@ -174,7 +174,7 @@ describe('EventPoller', () => {
     consoleSpy.mockImplementation(() => null);
 
     // Set lastSlot to simulate an existing value
-    eventPoller['lastSlot'] = { period: 1, thread: 1 } as ISlot;
+    eventPoller['lastSlot'] = { period: 1, thread: 1 } as Slot;
 
     // Replacing setTimeout with jest's fake timers
     jest.useFakeTimers();

@@ -1,6 +1,6 @@
 import { BaseClient } from '../../src/web3/BaseClient';
-import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
-import { IClientConfig } from '../../src/interfaces/IClientConfig';
+import { Provider, ProviderType } from '../../src/interfaces/Provider';
+import { ClientConfig } from '../../src/interfaces/ClientConfig';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import axios from 'axios';
 import { requestHeaders } from '../../src/web3/BaseClient';
@@ -13,7 +13,7 @@ const privateApi = 'https://mock-private-api.com';
 export const PERIOD_OFFSET = 5;
 
 class TestBaseClient extends BaseClient {
-  constructor(config: IClientConfig) {
+  constructor(config: ClientConfig) {
     super(config);
   }
 
@@ -36,29 +36,29 @@ class TestBaseClient extends BaseClient {
 describe('BaseClient', () => {
   describe('setProviders', () => {
     test('setProviders should correctly set the new providers', () => {
-      const clientConfig: IClientConfig = {
+      const clientConfig: ClientConfig = {
         providers: [
           {
             url: 'https://oldRpcUrlPublic/api',
             type: ProviderType.PUBLIC,
-          } as IProvider,
+          } as Provider,
           {
             url: 'https://oldRpcUrlPrivate/api',
             type: ProviderType.PRIVATE,
-          } as IProvider,
+          } as Provider,
         ],
         periodOffset: PERIOD_OFFSET,
       };
 
-      const newProviders: Array<IProvider> = [
+      const newProviders: Array<Provider> = [
         {
           url: publicApi,
           type: ProviderType.PUBLIC,
-        } as IProvider,
+        } as Provider,
         {
           url: privateApi,
           type: ProviderType.PRIVATE,
-        } as IProvider,
+        } as Provider,
       ];
 
       const baseClient = new TestBaseClient(clientConfig);
@@ -88,10 +88,10 @@ describe('BaseClient', () => {
     });
 
     test('setProviders should throw an error when passed an empty array', () => {
-      const clientConfig: IClientConfig = {
+      const clientConfig: ClientConfig = {
         providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+          { url: publicApi, type: ProviderType.PUBLIC } as Provider,
+          { url: privateApi, type: ProviderType.PRIVATE } as Provider,
         ],
         periodOffset: PERIOD_OFFSET,
       };
@@ -100,14 +100,14 @@ describe('BaseClient', () => {
 
       expect(() =>
         baseClient.setProviders([
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+          { url: privateApi, type: ProviderType.PRIVATE } as Provider,
         ]),
       ).toThrow(
         'Cannot set providers with no public providers. Need at least one',
       );
       expect(() =>
         baseClient.setProviders([
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+          { url: publicApi, type: ProviderType.PUBLIC } as Provider,
         ]),
       ).toThrow(
         'Cannot set providers with no private providers. Need at least one',
@@ -115,31 +115,31 @@ describe('BaseClient', () => {
     });
 
     test('setProviders should correctly set multiple providers of the same type', () => {
-      const clientConfig: IClientConfig = {
+      const clientConfig: ClientConfig = {
         providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+          { url: publicApi, type: ProviderType.PUBLIC } as Provider,
+          { url: privateApi, type: ProviderType.PRIVATE } as Provider,
         ],
         periodOffset: PERIOD_OFFSET,
       };
 
-      const newProviders: Array<IProvider> = [
+      const newProviders: Array<Provider> = [
         {
           url: 'https://new-public-api-1.com',
           type: ProviderType.PUBLIC,
-        } as IProvider,
+        } as Provider,
         {
           url: 'https://new-public-api-2.com',
           type: ProviderType.PUBLIC,
-        } as IProvider,
+        } as Provider,
         {
           url: 'https://new-private-api-1.com',
           type: ProviderType.PRIVATE,
-        } as IProvider,
+        } as Provider,
         {
           url: 'https://new-private-api-2.com',
           type: ProviderType.PRIVATE,
-        } as IProvider,
+        } as Provider,
       ];
 
       const baseClient = new TestBaseClient(clientConfig);
@@ -160,10 +160,10 @@ describe('BaseClient', () => {
 
   describe('getPrivateProviders', () => {
     test('getPrivateProviders should return an array of private providers', () => {
-      const clientConfig: IClientConfig = {
+      const clientConfig: ClientConfig = {
         providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+          { url: publicApi, type: ProviderType.PUBLIC } as Provider,
+          { url: privateApi, type: ProviderType.PRIVATE } as Provider,
         ],
         periodOffset: PERIOD_OFFSET,
       };
@@ -179,10 +179,10 @@ describe('BaseClient', () => {
 
   describe('getPublicProviders', () => {
     test('getPublicProviders should return an array of public providers', () => {
-      const clientConfig: IClientConfig = {
+      const clientConfig: ClientConfig = {
         providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+          { url: publicApi, type: ProviderType.PUBLIC } as Provider,
+          { url: privateApi, type: ProviderType.PRIVATE } as Provider,
         ],
         periodOffset: PERIOD_OFFSET,
       };
@@ -201,10 +201,10 @@ describe('BaseClient', () => {
     const mockAxios = axios as jest.Mocked<typeof axios>;
 
     beforeEach(() => {
-      const clientConfig: IClientConfig = {
+      const clientConfig: ClientConfig = {
         providers: [
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+          { url: publicApi, type: ProviderType.PUBLIC } as Provider,
+          { url: privateApi, type: ProviderType.PRIVATE } as Provider,
         ],
         periodOffset: PERIOD_OFFSET,
       };
@@ -306,8 +306,8 @@ describe('BaseClient', () => {
     });
 
     test('should throw an error if no private providers are configured', async () => {
-      const clientConfig: IClientConfig = {
-        providers: [{ url: publicApi, type: ProviderType.PUBLIC } as IProvider],
+      const clientConfig: ClientConfig = {
+        providers: [{ url: publicApi, type: ProviderType.PUBLIC } as Provider],
         periodOffset: PERIOD_OFFSET,
       };
 
@@ -321,9 +321,9 @@ describe('BaseClient', () => {
     });
 
     test('should throw an error if no public providers are configured', async () => {
-      const clientConfig: IClientConfig = {
+      const clientConfig: ClientConfig = {
         providers: [
-          { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+          { url: privateApi, type: ProviderType.PRIVATE } as Provider,
         ],
         periodOffset: PERIOD_OFFSET,
       };

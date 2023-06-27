@@ -19,7 +19,7 @@ import { RollsData } from '../interfaces/RollsData';
 import { NodeStatus } from '../interfaces/NodeStatus';
 import { Balance } from '../interfaces/Balance';
 import * as ed from '@noble/ed25519';
-import { WalletClient } from '../interfaces/WalletClient';
+import { WalletClient as IWalletClient } from '../interfaces/WalletClient';
 import { fromMAS } from '../utils/converters';
 import { getBytesPublicKey } from '../utils/bytes';
 
@@ -49,7 +49,7 @@ const getThreadNumber = (address: string): number => {
  * fetching account information, and interacting with the blockchain. It extends the BaseClient
  * class and implements the WalletClient interface.
  */
-export class WalletClient extends BaseClient implements WalletClient {
+export class WalletClient extends BaseClient implements IWalletClient {
   private wallet: Array<Account> = [];
   private baseAccount?: Account;
 

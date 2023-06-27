@@ -9,7 +9,7 @@ import { OperationData } from '../interfaces/OperationData';
 import { Clique } from '../interfaces/Clique';
 import { StakingAddresses } from '../interfaces/StakingAddresses';
 import { BaseClient } from './BaseClient';
-import { PublicApiClient } from '../interfaces/PublicApiClient';
+import { PublicApiClient as IPublicApiClient } from '../interfaces/PublicApiClient';
 import { DatastoreEntry } from '../interfaces/DatastoreEntry';
 import { DatastoreEntryInput } from '../interfaces/DatastoreEntryInput';
 import { Slot } from '../interfaces/Slot';
@@ -26,7 +26,7 @@ import { BlockcliqueBlockBySlot } from '../interfaces/BlockcliqueBlockBySlot';
  *
  * @module PublicApiClient
  */
-export class PublicApiClient extends BaseClient implements PublicApiClient {
+export class PublicApiClient extends BaseClient implements IPublicApiClient {
   /**
    * Constructor for the {@link PublicApiClient} object.
    *

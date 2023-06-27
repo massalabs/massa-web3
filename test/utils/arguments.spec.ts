@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { expect, it, describe } from '@jest/globals';
 import {
-  IDeserializedResult,
-  ISerializable,
-} from '../../src/interfaces/ISerializable';
+  DeserializedResult,
+  Serializable,
+} from '../../src/interfaces/Serializable';
 import { Args, TypedArrayUnit } from '../../src/utils/arguments';
 
-export class Divinity implements ISerializable<Divinity> {
+export class Divinity implements Serializable<Divinity> {
   constructor(public age: number = 0, public name: string = '') {}
 
   serialize(): Uint8Array {
@@ -15,7 +15,7 @@ export class Divinity implements ISerializable<Divinity> {
     );
   }
 
-  deserialize(data: Uint8Array, offset: number): IDeserializedResult<Divinity> {
+  deserialize(data: Uint8Array, offset: number): DeserializedResult<Divinity> {
     const args = new Args(data, offset);
     this.age = args.nextU32();
     this.name = args.nextString();

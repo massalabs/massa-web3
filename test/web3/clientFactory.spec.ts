@@ -3,9 +3,9 @@ import {
   DefaultProviderUrls,
 } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
-import { ProviderType } from '../../src/interfaces/IProvider';
+import { ProviderType } from '../../src/interfaces/Provider';
 import { Client } from '../../src/web3/Client';
-import { IAccount } from '../../src/interfaces/IAccount';
+import { Account } from '../../src/interfaces/Account';
 
 const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';
@@ -14,7 +14,7 @@ describe('ClientFactory', () => {
   describe('createDefaultClient', () => {
     test('should create a default client with the specified provider', async () => {
       const provider = DefaultProviderUrls.TESTNET;
-      const baseAccount: IAccount =
+      const baseAccount: Account =
         await WalletClient.walletGenerateNewAccount();
 
       const client = await ClientFactory.createDefaultClient(
@@ -50,7 +50,7 @@ describe('ClientFactory', () => {
         { url: publicApi, type: ProviderType.PUBLIC },
         { url: privateApi, type: ProviderType.PRIVATE },
       ];
-      const baseAccount: IAccount =
+      const baseAccount: Account =
         await WalletClient.walletGenerateNewAccount();
 
       const client = await ClientFactory.createCustomClient(

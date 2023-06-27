@@ -3,12 +3,12 @@ import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { SignedMessage } from '../interfaces/SignedMessage';
 import { BaseClient } from './BaseClient';
-import { PrivateApiClient } from '../interfaces/PrivateApiClient';
+import { PrivateApiClient as IPrivateApiClient } from '../interfaces/PrivateApiClient';
 
 /**
  * Private Api Client for interacting with a massa node.
  */
-export class PrivateApiClient extends BaseClient implements PrivateApiClient {
+export class PrivateApiClient extends BaseClient implements IPrivateApiClient {
   /**
    * Constructor for the {@link PrivateApiClient} object.
    *

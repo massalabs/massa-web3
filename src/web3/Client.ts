@@ -6,13 +6,13 @@ import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { Provider, ProviderType } from '../interfaces/Provider';
 import { DefaultProviderUrls } from './ClientFactory';
-import { Client } from '../interfaces/Client';
-import { WalletClient } from '../interfaces/WalletClient';
+import { Client as IClient } from '../interfaces/Client';
+import { WalletClient as IWalletClient } from '../interfaces/WalletClient';
 
 /**
  * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities.
  */
-export class Client implements Client {
+export class Client implements IClient {
   private publicApiClient: PublicApiClient;
   private privateApiClient: PrivateApiClient;
   private walletClient: WalletClient;
@@ -78,7 +78,7 @@ export class Client implements Client {
    *
    * @returns WalletClient object.
    */
-  public wallet(): WalletClient {
+  public wallet(): IWalletClient {
     return this.walletClient;
   }
 

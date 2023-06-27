@@ -3,17 +3,17 @@ import {
   ON_MASSA_EVENT_DATA,
   ON_MASSA_EVENT_ERROR,
 } from '../../src/web3/EventPoller';
-import { IEventFilter } from '../../src/interfaces/IEventFilter';
-import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
-import { IEvent } from '../../src/interfaces/IEvent';
+import { EventFilter } from '../../src/interfaces/EventFilter';
+import { EventRegexFilter } from '../../src/interfaces/EventRegexFilter';
+import { Event } from '../../src/interfaces/Event';
 import { Client } from '../../src/web3/Client';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
   ClientFactory,
   DefaultProviderUrls,
 } from '../../src/web3/ClientFactory';
-import { IAccount } from '../../src/interfaces/IAccount';
-import { ISlot } from '../../src/interfaces/ISlot';
+import { Account } from '../../src/interfaces/Account';
+import { Slot } from '../../src/interfaces/Slot';
 import { Timeout } from '../../src/utils/time';
 
 // mock axios to intercept any axios POST request and resolve it immediately with an empty object, so
@@ -48,9 +48,9 @@ jest.mock('../../src/utils/time', () => {
 function createEvent(
   id: string,
   data: string,
-  slot: ISlot,
+  slot: Slot,
   callStack: string[],
-): IEvent {
+): Event {
   return {
     id,
     data: JSON.stringify(data),
@@ -69,11 +69,11 @@ function createEvent(
 
 describe('EventPoller', () => {
   let eventPoller: EventPoller;
-  let baseAccount: IAccount;
+  let baseAccount: Account;
   let web3Client: Client;
 
   const pollIntervalMillis = 1000;
-  const eventFilter: IEventFilter | IEventRegexFilter = {
+  const eventFilter: EventFilter | EventRegexFilter = {
     start: { period: 2, thread: 1 },
     end: { period: 3, thread: 2 },
     emitter_address: 'address4',
@@ -103,7 +103,7 @@ describe('EventPoller', () => {
 
   describe('compareByThreadAndPeriod', () => {
     test('callback should sort events by thread and period correctly', async () => {
-      const mockedEvents: IEvent[] = [
+      const mockedEvents: Event[] = [
         createEvent('event1', 'value1', { period: 1, thread: 1 }, ['address1']), // n°1
         createEvent('event2', 'value2', { period: 2, thread: 1 }, ['address2']), // n°3
         createEvent('event3', 'value3', { period: 1, thread: 2 }, ['address3']), // n°2
@@ -212,7 +212,7 @@ describe('EventPoller', () => {
     });
 
     test('should return events when they match the filter', async () => {
-      const expectedEvents: Array<IEvent> = [
+      const expectedEvents: Array<Event> = [
         createEvent('1', 'data1', { period: 2, thread: 1 }, ['address1']),
         createEvent('2', 'data2', { period: 2, thread: 2 }, ['address2']),
         createEvent('3', 'data3', { period: 3, thread: 2 }, ['address3']),

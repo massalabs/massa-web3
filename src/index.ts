@@ -57,11 +57,6 @@ export {
   OperationTypeId,
   OpType,
 } from './interfaces/OperationTypes';
-export { Client } from './interfaces/Client';
-export { PublicApiClient } from './interfaces/PublicApiClient';
-export { PrivateApiClient } from './interfaces/PrivateApiClient';
-export { WalletClient } from './interfaces/WalletClient';
-export { SmartContractsClient } from './interfaces/SmartContractsClient';
 export { DatastoreEntryInput } from './interfaces/DatastoreEntryInput';
 export { GetGraphInterval } from './interfaces/GetGraphInterval';
 export { GraphInterval } from './interfaces/GraphInterval';
