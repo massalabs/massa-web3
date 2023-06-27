@@ -16,6 +16,7 @@ import { IEvent } from '../../src/interfaces/IEvent';
 import { ISlot } from '../../src/interfaces/ISlot';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
+import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
@@ -365,6 +366,7 @@ export const mockContractData: IContractData = {
   fee: 100000000000000000n,
   maxGas: 100000000000000000n,
   maxCoins: 100000000000000000n,
+  address: 'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
   contractDataText: 'Hello World!',
   contractDataBinary: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
   datastore: new Map<Uint8Array, Uint8Array>([
@@ -465,3 +467,8 @@ export const mockContractReadOperationResponse: IContractReadOperationResponse =
     returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
     info: mockContractReadOperationData[0],
   };
+
+export const mockContractReadOnlyOperationResponse: IExecuteReadOnlyResponse = {
+  returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
+  info: mockContractReadOperationData[0],
+};
