@@ -15,11 +15,7 @@ import { mockResultSendJsonRPCRequestWalletInfo } from '../../src/web3/mockData'
 import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import {
-  mockAddressesInfo,
-  mockNodeStatusInfo,
-  mockOpIds,
-} from './mockData';
+import { mockAddressesInfo, mockNodeStatusInfo, mockOpIds } from './mockData';
 import { IRollsData } from '../../src/interfaces/IRollsData';
 import { fromMAS } from '../../src/utils/converters';
 
