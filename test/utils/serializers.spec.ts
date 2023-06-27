@@ -52,15 +52,15 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU32(negativeValue)).toThrow(
-      `Unable to serialize invalid u32 value ${negativeValue}`,
+      `Unable to serialize invalid Uint32 value ${negativeValue}`,
     );
   });
-  it('throws an error when trying to serialize a u32 value greater than 4294967295', () => {
+  it('throws an error when trying to serialize a Uint32 value greater than 4294967295', () => {
     const largeValue = 4294967296;
     const args = new Args();
 
     expect(() => args.addU32(largeValue)).toThrow(
-      `Unable to serialize invalid u32 value ${largeValue}`,
+      `Unable to serialize invalid Uint32 value ${largeValue}`,
     );
   });
   it('ser/deser u64', () => {
@@ -72,7 +72,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU64(negativeValue)).toThrow(
-      `Unable to serialize invalid u64 value ${negativeValue}`,
+      `Unable to serialize invalid Uint64 value ${negativeValue}`,
     );
   });
   it('throws an error when trying to serialize a u64 value greater than 18446744073709551615', () => {
@@ -80,7 +80,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU64(largeValue)).toThrow(
-      `Unable to serialize invalid u64 value ${largeValue}`,
+      `Unable to serialize invalid Uint64 value ${largeValue}`,
     );
   });
   it('ser/deser u128', () => {
@@ -92,7 +92,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU128(negativeValue)).toThrow(
-      `Unable to serialize invalid u128 value ${negativeValue}`,
+      `Unable to serialize invalid Uint128 value ${negativeValue}`,
     );
   });
   it('throws an error when trying to serialize a u128 value greater than 340282366920938463463374607431768211455', () => {
@@ -100,7 +100,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU128(largeValue)).toThrow(
-      `Unable to serialize invalid u128 value ${largeValue}`,
+      `Unable to serialize invalid Uint128 value ${largeValue}`,
     );
   });
   it('ser/deser u256', () => {
@@ -112,7 +112,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU256(negativeValue)).toThrow(
-      `Unable to serialize invalid u256 value ${negativeValue}`,
+      `Unable to serialize invalid Uint256 value ${negativeValue}`,
     );
   });
   it('throws an error when trying to serialize a u256 value greater than 115792089237316195423570985008687907853269984665640564039457584007913129639935', () => {
@@ -122,7 +122,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU256(largeValue)).toThrow(
-      `Unable to serialize invalid u256 value ${largeValue}`,
+      `Unable to serialize invalid Uint256 value ${largeValue}`,
     );
   });
   it('ser/deser i32', () => {
