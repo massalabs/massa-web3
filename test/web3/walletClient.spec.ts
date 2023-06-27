@@ -518,6 +518,24 @@ describe('WalletClient', () => {
       expect(typeof signedMessage.base58Encoded).toBe('string');
       expect(signedMessage.base58Encoded).toEqual(modelSignedMessage);
     });
+
+    test('should throw an error if the signature could not be verified with the public key', async () => {
+      const data = 'Test message';
+      const signer = baseAccount;
+
+      // Create a spy on the 'verify' function to provide an incorrect mock implementation for this test
+      const verifySpy = jest.spyOn(ed, 'verify');
+      verifySpy.mockImplementation(() => Promise.resolve(false)); // always return false
+
+      await expect(
+        WalletClient.walletSignMessage(data, signer),
+      ).rejects.toThrow(
+        'Signature could not be verified with public key. Please inspect',
+      );
+
+      // Restore the original 'verify' function after the test
+      verifySpy.mockRestore();
+    });
   });
 
   describe('signMessage', () => {
