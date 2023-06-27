@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { IAccount } from '../../src/interfaces/IAccount';
@@ -14,8 +15,13 @@ import { mockResultSendJsonRPCRequestWalletInfo } from '../../src/web3/mockData'
 import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import { mockNodeStatusInfo, mockOpIds } from './mockData';
+import {
+  mockAddressesInfo,
+  mockNodeStatusInfo,
+  mockOpIds,
+} from './mockData';
 import { IRollsData } from '../../src/interfaces/IRollsData';
+import { fromMAS } from '../../src/utils/converters';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -681,11 +687,20 @@ describe('WalletClient', () => {
     });
   });
 
-  describe.skip('getAccountBalance', () => {
+  describe('getAccountBalance', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     test('should return balance for a valid address', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).publicApiClient.getAddresses = jest
+        .fn()
+        .mockResolvedValue([mockAddressesInfo[2]]);
+
       const ACCOUNT_ADDRESS =
-        'AU1ELsdabgHd7qqYdHLPW4eN6jnaxF6egNZVpyx5B4MYjR7XiUVZ';
-      const expectedBalance = 500000000000n;
+        'AU12WVAJoH2giHAjSxk9R1XK3YhpCw2QxmkCbtXxcr4T3XCUG55nr';
+      const expectedBalance = fromMAS(50);
 
       const balance = await web3Client
         .wallet()
@@ -698,26 +713,14 @@ describe('WalletClient', () => {
       expect(balance?.final).toEqual(expectedBalance);
     });
 
-    test('should return 0 balance for a fresh account', async () => {
-      const consoleSpy = jest.spyOn(console, 'error');
-      consoleSpy.mockImplementation(() => null);
-
-      const freshAccount = await WalletClient.walletGenerateNewAccount();
-
-      const balance = await web3Client
-        .wallet()
-        .getAccountBalance(freshAccount.address!);
-
-      expect(balance).not.toBeNull();
-      expect(balance).toHaveProperty('candidate');
-      expect(balance).toHaveProperty('final');
-      expect(balance?.candidate).toEqual(0n);
-      expect(balance?.final).toEqual(0n);
-
-      consoleSpy.mockRestore();
-    });
-
     test('should return null for an invalid address', async () => {
+      const consoleSpy = jest.spyOn(console, 'error');
+      consoleSpy.mockImplementation(() => {});
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (web3Client.wallet() as any).publicApiClient.getAddresses = jest
+        .fn()
+        .mockRejectedValue(new Error('Invalid address'));
       const invalidAddress = 'invalid address';
 
       const balance = await web3Client
@@ -725,6 +728,14 @@ describe('WalletClient', () => {
         .getAccountBalance(invalidAddress);
 
       expect(balance).toBeNull();
+
+      // Verify that console.error was called
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to get account balance:',
+        expect.any(Error),
+      );
+
+      consoleSpy.mockRestore();
     });
   });
 
