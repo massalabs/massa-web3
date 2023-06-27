@@ -22,6 +22,7 @@ import {
   mockedEvents,
   mockContractReadOnlyOperationResponse,
   validSignature,
+  mockContractReadOperationDataWithError,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 
@@ -332,15 +333,6 @@ describe('SmartContractsClient', () => {
     });
 
     test('should throw error when json rpc response has error', async () => {
-      const mockContractReadOperationDataWithError = [
-        {
-          result: {
-            Error:
-              'Some error message. Inspect smart contract for more details',
-          },
-        },
-      ];
-
       (smartContractsClient as any).sendJsonRPCRequest = jest
         .fn()
         .mockResolvedValue(mockContractReadOperationDataWithError);
@@ -382,25 +374,25 @@ describe('SmartContractsClient', () => {
 
   describe('getOperationStatus', () => {
     test('should return EOperationStatus.INCLUDED_PENDING when operation is included in blocks', async () => {
-      const opId = '0x000';
+      const opId = mockOpIds[0];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.INCLUDED_PENDING);
     });
 
     test('should return EOperationStatus.FINAL when operation is final', async () => {
-      const opId = '0x001';
+      const opId = mockOpIds[1];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.FINAL);
     });
 
     test('should return EOperationStatus.AWAITING_INCLUSION when operation is in the pool', async () => {
-      const opId = '0x002';
+      const opId = mockOpIds[2];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
     });
 
     test('should return EOperationStatus.INCONSISTENT when operation is neither in blocks nor in the pool', async () => {
-      const opId = '0x003';
+      const opId = mockOpIds[3];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.INCONSISTENT);
     });
@@ -413,7 +405,7 @@ describe('SmartContractsClient', () => {
   });
 
   describe('awaitRequiredOperationStatus', () => {
-    const opId = '1';
+    const opId = mockOpIds[0];
     const requiredStatus = EOperationStatus.FINAL;
 
     beforeEach(() => {
