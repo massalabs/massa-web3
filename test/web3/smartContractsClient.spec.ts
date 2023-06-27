@@ -21,6 +21,7 @@ import {
   mockEventFilter,
   mockedEvents,
   mockContractReadOnlyOperationResponse,
+  validSignature,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 
@@ -76,7 +77,7 @@ describe('SmartContractsClient', () => {
     // Mock the walletSignMessage function
     WalletClient.walletSignMessage = jest
       .fn()
-      .mockResolvedValue({ base58Encoded: 'signature' });
+      .mockResolvedValue(validSignature);
     // Mock the sendJsonRPCRequest function
     (smartContractsClient as any).sendJsonRPCRequest = jest
       .fn()
@@ -86,7 +87,13 @@ describe('SmartContractsClient', () => {
   describe('deploySmartContract', () => {
     let consoleWarnSpy: jest.SpyInstance;
     beforeEach(() => {
-      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      consoleWarnSpy = jest.spyOn(console, 'warn');
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      consoleWarnSpy.mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleWarnSpy.mockRestore();
     });
 
     test('should call sendJsonRPCRequest with correct arguments', async () => {
@@ -153,9 +160,6 @@ describe('SmartContractsClient', () => {
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
       );
-
-      // Restore console.warn
-      consoleWarnSpy.mockRestore();
     });
 
     test('should throw error when contractDataBinary does not exist', async () => {
@@ -442,6 +446,8 @@ describe('SmartContractsClient', () => {
     });
 
     test('fails after reaching the error limit', async () => {
+      console.error = jest.fn();
+
       // Always throw an error
       const expectedErrorMessage = 'Test error';
       smartContractsClient.getOperationStatus = jest
@@ -467,6 +473,7 @@ describe('SmartContractsClient', () => {
     });
 
     test('fails after reaching the pending limit', async () => {
+      console.warn = jest.fn();
       // Always return a status other than the requiredStatus
       smartContractsClient.getOperationStatus = jest
         .fn()

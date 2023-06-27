@@ -17,6 +17,7 @@ import { ISlot } from '../../src/interfaces/ISlot';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
+import { ISignature } from '../../src/interfaces/ISignature';
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
@@ -471,4 +472,9 @@ export const mockContractReadOperationResponse: IContractReadOperationResponse =
 export const mockContractReadOnlyOperationResponse: IExecuteReadOnlyResponse = {
   returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
   info: mockContractReadOperationData[0],
+};
+
+export const validSignature: ISignature = {
+  base58Encoded:
+    '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
 };
