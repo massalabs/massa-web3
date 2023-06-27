@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-explicit-any */
 import { IBalance } from '../../src/interfaces/IBalance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
