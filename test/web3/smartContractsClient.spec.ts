@@ -23,6 +23,7 @@ import {
   mockContractReadOnlyOperationResponse,
   validSignature,
   mockContractReadOperationDataWithError,
+  mockAddresses,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 
@@ -493,8 +494,6 @@ describe('SmartContractsClient', () => {
   });
 
   describe('getContractBalance', () => {
-    const mockAddress = 'address';
-
     const expectedBalance: IBalance = {
       candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
       final: fromMAS(mockAddressesInfo[0].final_balance),
@@ -506,12 +505,12 @@ describe('SmartContractsClient', () => {
         .mockResolvedValue(mockAddressesInfo);
 
       const balance = await smartContractsClient.getContractBalance(
-        mockAddress,
+        mockAddresses[0],
       );
 
       expect(balance).toEqual(expectedBalance);
       expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
-        mockAddress,
+        mockAddresses[0],
       ]);
     });
 
@@ -519,12 +518,12 @@ describe('SmartContractsClient', () => {
       mockPublicApiClient.getAddresses = jest.fn().mockResolvedValue([]);
 
       const balance = await smartContractsClient.getContractBalance(
-        mockAddress,
+        mockAddresses[0],
       );
 
       expect(balance).toBeNull();
       expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
-        mockAddress,
+        mockAddresses[0],
       ]);
     });
   });
@@ -623,7 +622,9 @@ describe('SmartContractsClient', () => {
           [
             {
               max_gas: Number(mockContractData.maxGas),
-              bytecode: Array.from(mockContractData.contractDataBinary),
+              bytecode: mockContractData.contractDataBinary
+                ? Array.from(mockContractData.contractDataBinary)
+                : [],
               address: mockContractData.address,
             },
           ],
