@@ -23,10 +23,10 @@ import { NodeStatus } from '../interfaces/NodeStatus';
 import { OperationData } from '../interfaces/OperationData';
 import { ReadData } from '../interfaces/ReadData';
 import { Signature } from '../interfaces/Signature';
-import { SmartContractsClient } from '../interfaces/SmartContractsClient';
+import { SmartContractsClient as ISmartContractsClient } from '../interfaces/SmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { OperationTypeId } from '../interfaces/OperationTypes';
-import { ProtoFile } from '../interfaces/ProtoFile';
+import { MassaProtoFile } from '../interfaces/MassaProtoFile';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
@@ -35,6 +35,8 @@ import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { getBytesPublicKey } from '../utils/bytes';
+import { writeFileSync } from 'fs';
+import path from 'path';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -49,7 +51,7 @@ const MASSA_PROTOFILE_KEY = 'protoMassa';
  */
 export class SmartContractsClient
   extends BaseClient
-  implements SmartContractsClient
+  implements ISmartContractsClient
 {
   /**
    * Constructor for {@link SmartContractsClient} objects.
@@ -97,6 +99,13 @@ export class SmartContractsClient
     const expiryPeriod: number =
       nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
+    // Check if SC data exists
+    if (!contractData.contractDataBinary) {
+      throw new Error(
+        `Expected non-null contract bytecode, but received null.`,
+      );
+    }
+
     // get the block size
     if (
       contractData.contractDataBinary.length >
@@ -126,11 +135,6 @@ export class SmartContractsClient
       Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
-
-    // Check if SC data exists
-    if (!contractData.contractDataBinary) {
-      throw new Error(`Contract data required. Got null`);
-    }
 
     const data = {
       serialized_content: Array.prototype.slice.call(bytesCompact),
@@ -348,11 +352,13 @@ export class SmartContractsClient
     contractData: ContractData,
   ): Promise<ExecuteReadOnlyResponse> {
     if (!contractData.contractDataBinary) {
-      throw new Error(`Contract binary data required. Got null`);
+      throw new Error(
+        `Expected non-null contract bytecode, but received null.`,
+      );
     }
 
     if (!contractData.address) {
-      throw new Error(`Contract address required. Got null`);
+      throw new Error(`Expected contract address, but received null.`);
     }
 
     const data = {
@@ -437,7 +443,7 @@ export class SmartContractsClient
         status = await this.getOperationStatus(opId);
       } catch (ex) {
         if (++errCounter > 100) {
-          const msg = `Failed to retrieve the tx status after 10 failed attempts for operation id: ${opId}.`;
+          const msg = `Failed to retrieve the tx status after 100 failed attempts for operation id: ${opId}.`;
           console.error(msg, ex);
           throw ex;
         }
@@ -471,7 +477,8 @@ export class SmartContractsClient
    */
   public async getProtoFiles(
     contractAddresses: string[],
-  ): Promise<ProtoFile[]> {
+    outputDirectory: string,
+  ): Promise<MassaProtoFile[]> {
     // prepare request body
     const requestProtoFiles: object[] = [];
     for (let address of contractAddresses) {
@@ -497,10 +504,25 @@ export class SmartContractsClient
         },
         body: JSON.stringify(body),
       });
-
+      let protoFiles: MassaProtoFile[];
       // parse response
       const json = await response.json();
-      return json.result;
+      for (let proto of json) {
+        let content = proto['final_value'].toString();
+        let protos = content.split('syntax = "proto3";'); // splitting all the proto functions to make separate proto file for each functions
+        for (let func of protos) {
+          const rName = /message (.+)RHelper /gm;
+          const fName = rName.exec(func)[0]; // retrieving the proto function name
+          const filepath = path.join(outputDirectory, fName + '.proto');
+          writeFileSync(filepath, func); // writing the proto file
+          protoFiles.push({
+            data: func,
+            filePath: filepath,
+            protoFuncName: fName,
+          });
+        }
+      }
+      return protoFiles;
     } catch (ex) {
       const msg = `Failed to retrieve the proto files.`;
       console.error(msg, ex);

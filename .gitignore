@@ -71,3 +71,6 @@ docs
 
 #.env files
 .env
+
+# Misc
+.DS_Store

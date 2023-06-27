@@ -1,34 +1,36 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
-
-name: Node.js Package
+name: NPM Publish
 
 on:
-    release:
-        types: [created]
+  release:
+    types: [created]
 
 jobs:
-    test:
-        uses: ./.github/workflows/node.js.yml
+  test:
+    uses: ./.github/workflows/node.js.yml
 
-    publish-npm:
-        needs: test
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 18
-                  registry-url: https://registry.npmjs.org/
-            - run: |
-                  npm ci
-                  npm run build
-                  npm publish --access public
-              env:
-                  NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-            - uses: softprops/action-gh-release@v1
-              with:
-                files: |
-                    bundle.js
-                    bundle.min.js
+  publish-npm:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
 
+      - name: Extract tag
+        id: get_tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
+      - run: ./scripts/publish.sh ${{ steps.get_tag.outputs.TAG }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            bundle.js
+            bundle.min.js
