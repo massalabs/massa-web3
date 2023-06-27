@@ -21,6 +21,9 @@ import {
   mockEventFilter,
   mockedEvents,
   mockContractReadOnlyOperationResponse,
+  validSignature,
+  mockContractReadOperationDataWithError,
+  mockAddresses,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 
@@ -76,7 +79,7 @@ describe('SmartContractsClient', () => {
     // Mock the walletSignMessage function
     WalletClient.walletSignMessage = jest
       .fn()
-      .mockResolvedValue({ base58Encoded: 'signature' });
+      .mockResolvedValue(validSignature);
     // Mock the sendJsonRPCRequest function
     (smartContractsClient as any).sendJsonRPCRequest = jest
       .fn()
@@ -86,7 +89,12 @@ describe('SmartContractsClient', () => {
   describe('deploySmartContract', () => {
     let consoleWarnSpy: jest.SpyInstance;
     beforeEach(() => {
-      consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      consoleWarnSpy = jest.spyOn(console, 'warn');
+      consoleWarnSpy.mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleWarnSpy.mockRestore();
     });
 
     test('should call sendJsonRPCRequest with correct arguments', async () => {
@@ -102,7 +110,7 @@ describe('SmartContractsClient', () => {
           {
             serialized_content: expect.any(Array),
             creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            signature: validSignature.base58Encoded,
           },
         ],
       ]);
@@ -153,9 +161,6 @@ describe('SmartContractsClient', () => {
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
       );
-
-      // Restore console.warn
-      consoleWarnSpy.mockRestore();
     });
 
     test('should throw error when contractDataBinary does not exist', async () => {
@@ -196,7 +201,7 @@ describe('SmartContractsClient', () => {
           {
             serialized_content: expect.any(Array),
             creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            signature: validSignature.base58Encoded,
           },
         ],
       ]);
@@ -248,7 +253,7 @@ describe('SmartContractsClient', () => {
           {
             serialized_content: expect.any(Array),
             creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            signature: validSignature.base58Encoded,
           },
         ],
       ]);
@@ -328,15 +333,6 @@ describe('SmartContractsClient', () => {
     });
 
     test('should throw error when json rpc response has error', async () => {
-      const mockContractReadOperationDataWithError = [
-        {
-          result: {
-            Error:
-              'Some error message. Inspect smart contract for more details',
-          },
-        },
-      ];
-
       (smartContractsClient as any).sendJsonRPCRequest = jest
         .fn()
         .mockResolvedValue(mockContractReadOperationDataWithError);
@@ -378,25 +374,25 @@ describe('SmartContractsClient', () => {
 
   describe('getOperationStatus', () => {
     test('should return EOperationStatus.INCLUDED_PENDING when operation is included in blocks', async () => {
-      const opId = '0x000';
+      const opId = mockOpIds[0];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.INCLUDED_PENDING);
     });
 
     test('should return EOperationStatus.FINAL when operation is final', async () => {
-      const opId = '0x001';
+      const opId = mockOpIds[1];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.FINAL);
     });
 
     test('should return EOperationStatus.AWAITING_INCLUSION when operation is in the pool', async () => {
-      const opId = '0x002';
+      const opId = mockOpIds[2];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
     });
 
     test('should return EOperationStatus.INCONSISTENT when operation is neither in blocks nor in the pool', async () => {
-      const opId = '0x003';
+      const opId = mockOpIds[3];
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.INCONSISTENT);
     });
@@ -409,7 +405,7 @@ describe('SmartContractsClient', () => {
   });
 
   describe('awaitRequiredOperationStatus', () => {
-    const opId = '1';
+    const opId = mockOpIds[0];
     const requiredStatus = EOperationStatus.FINAL;
 
     beforeEach(() => {
@@ -442,6 +438,8 @@ describe('SmartContractsClient', () => {
     });
 
     test('fails after reaching the error limit', async () => {
+      console.error = jest.fn();
+
       // Always throw an error
       const expectedErrorMessage = 'Test error';
       smartContractsClient.getOperationStatus = jest
@@ -467,6 +465,7 @@ describe('SmartContractsClient', () => {
     });
 
     test('fails after reaching the pending limit', async () => {
+      console.warn = jest.fn();
       // Always return a status other than the requiredStatus
       smartContractsClient.getOperationStatus = jest
         .fn()
@@ -494,8 +493,6 @@ describe('SmartContractsClient', () => {
   });
 
   describe('getContractBalance', () => {
-    const mockAddress = 'address';
-
     const expectedBalance: IBalance = {
       candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
       final: fromMAS(mockAddressesInfo[0].final_balance),
@@ -507,12 +504,12 @@ describe('SmartContractsClient', () => {
         .mockResolvedValue(mockAddressesInfo);
 
       const balance = await smartContractsClient.getContractBalance(
-        mockAddress,
+        mockAddresses[0],
       );
 
       expect(balance).toEqual(expectedBalance);
       expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
-        mockAddress,
+        mockAddresses[0],
       ]);
     });
 
@@ -520,12 +517,12 @@ describe('SmartContractsClient', () => {
       mockPublicApiClient.getAddresses = jest.fn().mockResolvedValue([]);
 
       const balance = await smartContractsClient.getContractBalance(
-        mockAddress,
+        mockAddresses[0],
       );
 
       expect(balance).toBeNull();
       expect(mockPublicApiClient.getAddresses).toHaveBeenCalledWith([
-        mockAddress,
+        mockAddresses[0],
       ]);
     });
   });
@@ -624,7 +621,9 @@ describe('SmartContractsClient', () => {
           [
             {
               max_gas: Number(mockContractData.maxGas),
-              bytecode: Array.from(mockContractData.contractDataBinary),
+              bytecode: mockContractData.contractDataBinary
+                ? Array.from(mockContractData.contractDataBinary)
+                : [],
               address: mockContractData.address,
             },
           ],
@@ -668,6 +667,38 @@ describe('SmartContractsClient', () => {
       await expect(
         smartContractsClient.executeReadOnlySmartContract(mockContractData),
       ).rejects.toThrow(`Execute read-only smart contract error`);
+    });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+        .retryStrategyOn;
+      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationData);
+
+      await smartContractsClient.executeReadOnlySmartContract(mockContractData);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE,
+        [
+          [
+            {
+              max_gas: Number(mockContractData.maxGas),
+              bytecode: mockContractData.contractDataBinary
+                ? Array.from(mockContractData.contractDataBinary)
+                : [],
+              address: mockContractData.address,
+            },
+          ],
+        ],
+      );
+
+      (smartContractsClient as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
     });
   });
 });
