@@ -316,7 +316,7 @@ describe('WalletClient', () => {
       );
     });
 
-    test('should return IFullAddressInfo objects that include information from the corresponding IAddressInfo', async () => {
+    test('should return FullAddressInfo objects that include information from the corresponding AddressInfo', async () => {
       const accounts = [
         baseAccount,
         await WalletClient.walletGenerateNewAccount(),
@@ -344,7 +344,7 @@ describe('WalletClient', () => {
         });
 
       const walletInfo = await web3Client.wallet().walletInfo();
-      // check that the returned walletInfo is an array of IFullAddressInfo with correct information
+      // check that the returned walletInfo is an array of FullAddressInfo with correct information
       walletInfo.forEach((info, index) => {
         expect(info.address).toBe(mockAddressInfo[index].address);
         expect(info.publicKey).toBe(accounts[index].publicKey);

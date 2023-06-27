@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-explicit-any */
-import { IBalance } from '../../src/interfaces/IBalance';
+import { Balance } from '../../src/interfaces/Balance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { fromMAS } from '../../src/utils/converters';
@@ -25,7 +25,7 @@ import {
   mockContractReadOperationDataWithError,
   mockAddresses,
 } from './mockData';
-import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
+import { ExecuteReadOnlyResponse } from '../../src/interfaces/ExecuteReadOnlyResponse';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -391,10 +391,10 @@ describe('SmartContractsClient', () => {
       expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
     });
 
-    test('should return EOperationStatus.INCONSISTENT when operation is neither in blocks nor in the pool', async () => {
+    test('should return EOperationStatus.NCONSISTENT when operation is neither in blocks nor in the pool', async () => {
       const opId = mockOpIds[3];
       const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.INCONSISTENT);
+      expect(status).toBe(EOperationStatus.NCONSISTENT);
     });
 
     test('should return EOperationStatus.NOT_FOUND when operation does not exist', async () => {
@@ -493,7 +493,7 @@ describe('SmartContractsClient', () => {
   });
 
   describe('getContractBalance', () => {
-    const expectedBalance: IBalance = {
+    const expectedBalance: Balance = {
       candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
       final: fromMAS(mockAddressesInfo[0].final_balance),
     };
@@ -543,7 +543,7 @@ describe('SmartContractsClient', () => {
       );
     });
 
-    test('should return the correct array of IEvent objects', async () => {
+    test('should return the correct array of Event objects', async () => {
       (smartContractsClient as any).sendJsonRPCRequest = jest
         .fn()
         .mockResolvedValue(mockedEvents);
@@ -632,7 +632,7 @@ describe('SmartContractsClient', () => {
     });
 
     test('should return correct result', async () => {
-      const expectedResponse: IExecuteReadOnlyResponse =
+      const expectedResponse: ExecuteReadOnlyResponse =
         mockContractReadOnlyOperationResponse;
 
       (smartContractsClient as any).sendJsonRPCRequest = jest

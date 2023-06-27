@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import { IClientConfig } from '../../src/interfaces/IClientConfig';
-import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
+import { ClientConfig } from '../../src/interfaces/ClientConfig';
+import { ProviderType, Provider } from '../../src/interfaces/Provider';
 import { PrivateApiClient } from '../../src';
 
 export const PERIOD_OFFSET = 5;
@@ -85,16 +85,16 @@ describe('PrivateApiClient', () => {
   }
 
   beforeEach(() => {
-    const clientConfig: IClientConfig = {
+    const clientConfig: ClientConfig = {
       providers: [
         {
           url: 'https://mock-public-api.com',
           type: ProviderType.PUBLIC,
-        } as IProvider,
+        } as Provider,
         {
           url: 'https://mock-private-api.com',
           type: ProviderType.PRIVATE,
-        } as IProvider,
+        } as Provider,
       ],
       periodOffset: PERIOD_OFFSET,
     };

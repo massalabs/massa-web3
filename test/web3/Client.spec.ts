@@ -1,11 +1,11 @@
 import { Client } from '../../src/web3/Client';
-import { IClientConfig } from '../../src/interfaces/IClientConfig';
-import { IProvider } from '../../src/interfaces/IProvider';
-import { ProviderType } from '../../src/interfaces/IProvider';
+import { ClientConfig } from '../../src/interfaces/ClientConfig';
+import { Provider } from '../../src/interfaces/Provider';
+import { ProviderType } from '../../src/interfaces/Provider';
 import { DefaultProviderUrls } from '../../src/web3/ClientFactory';
 
 describe('Client Class', () => {
-  let clientConfig: IClientConfig;
+  let clientConfig: ClientConfig;
   let client: Client;
 
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('Client Class', () => {
   });
 
   test('should set custom providers', () => {
-    const newProviders: Array<IProvider> = [
+    const newProviders: Array<Provider> = [
       { url: 'https://mock-public-api', type: ProviderType.PUBLIC },
       { url: 'https://mock-private-api', type: ProviderType.PRIVATE },
     ];

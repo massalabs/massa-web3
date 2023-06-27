@@ -2,33 +2,33 @@
     This file contains mock data for testing purposes.
 */
 
-import { IClientConfig } from '../../src/interfaces/IClientConfig';
-import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
+import { ClientConfig } from '../../src/interfaces/ClientConfig';
+import { ProviderType, Provider } from '../../src/interfaces/Provider';
 import { PERIOD_OFFSET } from '../../src/web3/BaseClient';
-import { IAccount } from '../../src/interfaces/IAccount';
-import { IContractData } from '../../src/interfaces/IContractData';
-import { ICallData } from '../../src/interfaces/ICallData';
-import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
-import { IReadData } from '../../src/interfaces/IReadData';
-import { IContractReadOperationData } from '../../src/interfaces/IContractReadOperationData';
-import { IContractReadOperationResponse } from '../../src/interfaces/IContractReadOperationResponse';
-import { IEvent } from '../../src/interfaces/IEvent';
-import { ISlot } from '../../src/interfaces/ISlot';
-import { IEventFilter } from '../../src/interfaces/IEventFilter';
-import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
-import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
-import { ISignature } from '../../src/interfaces/ISignature';
-import { IOperationData } from '../../src/interfaces/IOperationData';
-import { INodeStatus } from '../../src/interfaces/INodeStatus';
-import { IEndorsement } from '../../src/interfaces/IEndorsement';
+import { Account } from '../../src/interfaces/Account';
+import { ContractData } from '../../src/interfaces/ContractData';
+import { CallData } from '../../src/interfaces/CallData';
+import { GetGraphInterval } from '../../src/interfaces/GetGraphInterval';
+import { ReadData } from '../../src/interfaces/ReadData';
+import { ContractReadOperationData } from '../../src/interfaces/ContractReadOperationData';
+import { ContractReadOperationResponse } from '../../src/interfaces/ContractReadOperationResponse';
+import { Event } from '../../src/interfaces/Event';
+import { Slot } from '../../src/interfaces/Slot';
+import { EventFilter } from '../../src/interfaces/EventFilter';
+import { EventRegexFilter } from '../../src/interfaces/EventRegexFilter';
+import { ExecuteReadOnlyResponse } from '../../src/interfaces/ExecuteReadOnlyResponse';
+import { Signature } from '../../src/interfaces/Signature';
+import { OperationData } from '../../src/interfaces/OperationData';
+import { NodeStatus } from '../../src/interfaces/NodeStatus';
+import { Endorsement } from '../../src/interfaces/Endorsement';
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
   id: string,
   data: string,
-  slot: ISlot,
+  slot: Slot,
   callStack: string[],
-): IEvent {
+): Event {
   return {
     id,
     data: JSON.stringify(data),
@@ -45,7 +45,7 @@ function createEvent(
   };
 }
 
-export const mockNodeStatusInfo: INodeStatus = {
+export const mockNodeStatusInfo: NodeStatus = {
   node_id: 'N129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   node_ip: null,
   version: 'SAND.23.0',
@@ -87,7 +87,7 @@ export const mockNodeStatusInfo: INodeStatus = {
   },
 };
 
-export const mockGraphInterval: IGetGraphInterval = {
+export const mockGraphInterval: GetGraphInterval = {
   start: 1624153200000,
   end: 1624156800000,
 };
@@ -155,7 +155,7 @@ export const mockBlockData = [
 
 export const mockEndorsementIds = ['0x000', '0x001'];
 
-export const mockEndorsementData: Array<IEndorsement> = [
+export const mockEndorsementData: Array<Endorsement> = [
   {
     id: mockEndorsementIds[0],
     in_pool: false,
@@ -230,7 +230,7 @@ export const mockOperationData = [
   },
 ];
 
-export const mockOperationDataDetailed: Array<IOperationData> = [
+export const mockOperationDataDetailed: Array<OperationData> = [
   {
     id: mockOperationData[0].id,
     in_blocks: ['0x000'],
@@ -371,28 +371,28 @@ export const mockDatastoreEntries = [
   },
 ];
 
-export const mockClientConfig: IClientConfig = {
+export const mockClientConfig: ClientConfig = {
   providers: [
     {
       url: 'https://mock-public-api.com',
       type: ProviderType.PUBLIC,
-    } as IProvider,
+    } as Provider,
     {
       url: 'https://mock-private-api.com',
       type: ProviderType.PRIVATE,
-    } as IProvider,
+    } as Provider,
   ],
   periodOffset: PERIOD_OFFSET,
 };
 
-export const mockDeployerAccount: IAccount = {
+export const mockDeployerAccount: Account = {
   address: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
   publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
   createdInThread: 0,
 };
 
-export const mockContractData: IContractData = {
+export const mockContractData: ContractData = {
   fee: 100000000000000000n,
   maxGas: 100000000000000000n,
   maxCoins: 100000000000000000n,
@@ -419,7 +419,7 @@ export const mockContractData: IContractData = {
   ]),
 };
 
-export const mockCallData: ICallData = {
+export const mockCallData: CallData = {
   fee: 100000000000000000n,
   maxGas: 100000000000000000n,
   coins: 100000000000000000n,
@@ -428,7 +428,7 @@ export const mockCallData: ICallData = {
   parameter: [1, 2, 3, 4],
 };
 
-export const mockedEvents: IEvent[] = [
+export const mockedEvents: Event[] = [
   createEvent('event1', 'value1', { period: 1, thread: 1 }, ['address1']), // n°1
   createEvent('event2', 'value2', { period: 2, thread: 1 }, ['address2']), // n°3
   createEvent('event3', 'value3', { period: 1, thread: 2 }, ['address3']), // n°2
@@ -437,7 +437,7 @@ export const mockedEvents: IEvent[] = [
   createEvent('event6', 'value6', { period: 3, thread: 2 }, ['address4']), // n°5
 ];
 
-export const mockEventFilter: IEventFilter | IEventRegexFilter = {
+export const mockEventFilter: EventFilter | EventRegexFilter = {
   start: { period: 2, thread: 1 },
   end: { period: 3, thread: 2 },
   emitter_address: 'address4',
@@ -445,7 +445,7 @@ export const mockEventFilter: IEventFilter | IEventRegexFilter = {
   original_operation_id: null,
   is_final: null,
 };
-export const mockReadData: IReadData = {
+export const mockReadData: ReadData = {
   maxGas: 100000n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   targetFunction: 'test',
@@ -453,51 +453,50 @@ export const mockReadData: IReadData = {
   callerAddress: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
 };
 
-export const mockContractReadOperationData: Array<IContractReadOperationData> =
-  [
-    {
-      executed_at: {
-        period: 1,
-        thread: 0,
-      },
-      result: {
-        Ok: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
-      },
-      output_events: [
-        {
-          id: 'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9f',
-          data: 'Hello World!',
-          context: {
-            slot: {
-              period: 1,
-              thread: 0,
-            },
-            block: null,
-            read_only: true,
-            call_stack: [],
-            index_in_slot: 0,
-            origin_operation_id: null,
-            is_final: true,
-            is_error: false,
-          },
-        },
-      ],
-      gas_cost: 1000000,
+export const mockContractReadOperationData: Array<ContractReadOperationData> = [
+  {
+    executed_at: {
+      period: 1,
+      thread: 0,
     },
-  ];
+    result: {
+      Ok: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
+    },
+    output_events: [
+      {
+        id: 'O1z2xVtwFsKP3po3vkPmpELZiJvwEdkvyhpK7iT8P3rk9zCEs9f',
+        data: 'Hello World!',
+        context: {
+          slot: {
+            period: 1,
+            thread: 0,
+          },
+          block: null,
+          read_only: true,
+          call_stack: [],
+          index_in_slot: 0,
+          origin_operation_id: null,
+          is_final: true,
+          is_error: false,
+        },
+      },
+    ],
+    gas_cost: 1000000,
+  },
+];
 
-export const mockContractReadOperationResponse: IContractReadOperationResponse =
+export const mockContractReadOperationResponse: ContractReadOperationResponse =
   {
     returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
     info: mockContractReadOperationData[0],
   };
 
-export const mockContractReadOnlyOperationResponse: IExecuteReadOnlyResponse = {
+export const mockContractReadOnlyOperationResponse: ExecuteReadOnlyResponse = {
   returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
   info: mockContractReadOperationData[0],
 };
 
-export const validSignature: ISignature = {
+export const validSignature: Signature = {
   base58Encoded:
     '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
 };
