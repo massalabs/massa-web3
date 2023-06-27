@@ -63,6 +63,14 @@ describe('Serialization tests', () => {
     const val = Number.MAX_VALUE;
     expect(ser.bytesToF64(ser.f64ToBytes(val))).toEqual(val);
   });
+  it('ser/deser empty string', () => {
+    const str = '';
+    expect(ser.bytesToStr(ser.strToBytes(str))).toEqual(str);
+  });
+  it('ser/deser empty Uint8Array', () => {
+    const arr = new Uint8Array(0);
+    expect(ser.bytesToStr(arr)).toEqual('');
+  });
 });
 
 describe('Test against assemblyscript serializer', () => {
