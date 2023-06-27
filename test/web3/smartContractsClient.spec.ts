@@ -90,7 +90,6 @@ describe('SmartContractsClient', () => {
     let consoleWarnSpy: jest.SpyInstance;
     beforeEach(() => {
       consoleWarnSpy = jest.spyOn(console, 'warn');
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       consoleWarnSpy.mockImplementation(() => {});
     });
 
@@ -668,6 +667,38 @@ describe('SmartContractsClient', () => {
       await expect(
         smartContractsClient.executeReadOnlySmartContract(mockContractData),
       ).rejects.toThrow(`Execute read-only smart contract error`);
+    });
+
+    test('should call trySafeExecute if retryStrategyOn is true', async () => {
+      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+        .retryStrategyOn;
+      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+
+      (smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationData);
+
+      await smartContractsClient.executeReadOnlySmartContract(mockContractData);
+
+      expect(
+        (smartContractsClient as any).sendJsonRPCRequest,
+      ).toHaveBeenCalledWith(
+        JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE,
+        [
+          [
+            {
+              max_gas: Number(mockContractData.maxGas),
+              bytecode: mockContractData.contractDataBinary
+                ? Array.from(mockContractData.contractDataBinary)
+                : [],
+              address: mockContractData.address,
+            },
+          ],
+        ],
+      );
+
+      (smartContractsClient as any).clientConfig.retryStrategyOn =
+        originalRetryStrategy;
     });
   });
 });
