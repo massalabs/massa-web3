@@ -274,7 +274,7 @@ export class SmartContractsClient
     }
     return {
       returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,
-      info: jsonRpcCallResult[0] as ContractReadOperationData,
+      info: jsonRpcCallResult[0],
     } as ContractReadOperationResponse;
   }
 

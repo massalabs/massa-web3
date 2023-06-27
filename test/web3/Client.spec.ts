@@ -1,7 +1,6 @@
 import { Client } from '../../src/web3/Client';
 import { ClientConfig } from '../../src/interfaces/ClientConfig';
-import { Provider } from '../../src/interfaces/Provider';
-import { ProviderType } from '../../src/interfaces/Provider';
+import { Provider, ProviderType } from '../../src/interfaces/Provider';
 import { DefaultProviderUrls } from '../../src/web3/ClientFactory';
 
 describe('Client Class', () => {
