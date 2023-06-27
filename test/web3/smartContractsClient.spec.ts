@@ -109,7 +109,7 @@ describe('SmartContractsClient', () => {
           {
             serialized_content: expect.any(Array),
             creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            signature: validSignature.base58Encoded,
           },
         ],
       ]);
@@ -200,7 +200,7 @@ describe('SmartContractsClient', () => {
           {
             serialized_content: expect.any(Array),
             creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            signature: validSignature.base58Encoded,
           },
         ],
       ]);
@@ -252,7 +252,7 @@ describe('SmartContractsClient', () => {
           {
             serialized_content: expect.any(Array),
             creator_public_key: mockDeployerAccount.publicKey,
-            signature: 'signature',
+            signature: validSignature.base58Encoded,
           },
         ],
       ]);
