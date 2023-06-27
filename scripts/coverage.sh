@@ -21,7 +21,7 @@ else
     echo "No coverage found"
 fi
 
-if [ "$oldCoverage" != "$COVERAGE" ] || [ -z "$oldCoverage" ]; then
+if [ -z "$oldCoverage" ] || [ "$(echo "$COVERAGE - $oldCoverage >= 1" | bc -l)" -eq 1 ] || [ "$(echo "$oldCoverage - $COVERAGE >= 1" | bc -l)" -eq 1 ]; then
     echo "Updating badge"
     newLine="![check-code-coverage](https://img.shields.io/badge/coverage-$COVERAGE%25-$color)"
     sed -i "3s#.*#${newLine}#" $filename
