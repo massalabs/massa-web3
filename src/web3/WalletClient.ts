@@ -549,6 +549,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
       const addresses: Array<IAddressInfo> =
         await this.publicApiClient.getAddresses([address]);
       if (addresses.length === 0) return null;
+
       const addressInfo: IAddressInfo = addresses.at(0);
       return {
         candidate: fromMAS(addressInfo.candidate_balance),
