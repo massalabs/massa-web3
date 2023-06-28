@@ -1,8 +1,8 @@
 name: Wallet example
 
 on:
-  [push]
-
+  push:
+    branches: [main, buildnet]
 
 jobs:
   run-wallet-example:
