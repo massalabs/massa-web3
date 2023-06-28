@@ -3,10 +3,11 @@ import { IAccount } from '../interfaces/IAccount';
 import { Client } from './Client';
 import { IClientConfig } from '../interfaces/IClientConfig';
 
-/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
+/** Global connection urls, for Massa's MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET */
 export enum DefaultProviderUrls {
   MAINNET = 'https://massa.net/api/v2',
   TESTNET = 'https://test.massa.net/api/v2',
+  BUILDNET = 'https://buildnet.massa.net/api/v2',
   LABNET = 'https://labnet.massa.net/api/v2',
   LOCALNET = 'http://127.0.0.1',
 }
@@ -16,12 +17,12 @@ export enum DefaultProviderUrls {
  * connect to the massa blockchain.
  *
  * @remarks
- * The client can be initialized using a default provider (MAINNET, TESTNET, LABNET, LOCALNET)
+ * The client can be initialized using a default provider (MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET)
  * or a custom set of providers.
  */
 export class ClientFactory {
   /**
-   * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET).
+   * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET).
    *
    * @param provider - Default provider to be used by the client.
    * @param retryStrategyOn - Whether to retry failed requests.
