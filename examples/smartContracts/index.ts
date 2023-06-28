@@ -93,10 +93,6 @@ const deployerSecretKey = process.env.DEPLOYER_SECRET_KEY;
 if (!deployerSecretKey) {
   throw new Error('Missing DEPLOYER_SECRET_KEY in .env file');
 }
-const receiverSecretKey = process.env.RECEIVER_SECRET_KEY;
-if (!receiverSecretKey) {
-  throw new Error('Missing RECEIVER_SECRET_KEY in .env file');
-}
 
 const MASSA_EXEC_ERROR = 'massa_execution_error';
 

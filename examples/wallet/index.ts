@@ -31,9 +31,9 @@ const deployerSecretKey = process.env.DEPLOYER_SECRET_KEY;
 if (!deployerSecretKey) {
   throw new Error('Missing DEPLOYER_SECRET_KEY in .env file');
 }
-const receiverSecretKey = process.env.RECEIVER_SECRET_KEY;
-if (!receiverSecretKey) {
-  throw new Error('Missing RECEIVER_SECRET_KEY in .env file');
+const otherAccSecretKey = process.env.OTHER_ACC_SECRET_KEY;
+if (!otherAccSecretKey) {
+  throw new Error('Missing OTHER_ACC_SECRET_KEY in .env file');
 }
 
 (async () => {
@@ -79,9 +79,9 @@ if (!receiverSecretKey) {
     const walletInfo = await web3Client.wallet().walletInfo();
     console.log('Wallet Info ', walletInfo);
 
-    // add a new wallet
+    // add a new account to the wallet
     console.log('Adding a new Account ...');
-    await web3Client.wallet().addSecretKeysToWallet([receiverSecretKey]);
+    await web3Client.wallet().addSecretKeysToWallet([otherAccSecretKey]);
 
     // get wallet accounts
     walletAccounts = await web3Client.wallet().getWalletAccounts();
