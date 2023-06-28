@@ -3,10 +3,11 @@ import { IAccount } from '../interfaces/IAccount';
 import { Client } from './Client';
 import { IClientConfig } from '../interfaces/IClientConfig';
 
-/** Global connection urls, for Massa's MAINNET, TESTNET and LABNET */
+/** Global connection urls, for Massa's MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET */
 export enum DefaultProviderUrls {
   MAINNET = 'https://massa.net/api/v2',
   TESTNET = 'https://test.massa.net/api/v2',
+  BUILDNET = 'https://buildnet.massa.net/api/v2',
   LABNET = 'https://labnet.massa.net/api/v2',
   LOCALNET = 'http://127.0.0.1',
 }
