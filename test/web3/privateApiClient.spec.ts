@@ -11,6 +11,12 @@ describe('PrivateApiClient', () => {
   let mockSendJsonRPCRequest: jest.SpyInstance;
   let ipAddress = '192.168.0.1';
 
+  const getRpcArgs = (wrapArgsInArray, mockData) => {
+    const argsInArray = Array.isArray(mockData) ? mockData : [mockData];
+    const rpcArgs = wrapArgsInArray ? [argsInArray] : argsInArray;
+    return rpcArgs;
+  };
+
   // Function to generate tests for a set of similar operations to avoid code duplication
   function generateAPITests(
     operation: string,
@@ -24,13 +30,7 @@ describe('PrivateApiClient', () => {
 
       await (client as any)[operation](mockData);
 
-      let rpcArgs;
-
-      if (wrapArgsInArray) {
-        rpcArgs = [Array.isArray(mockData) ? mockData : [mockData]];
-      } else {
-        rpcArgs = Array.isArray(mockData) ? mockData : [mockData];
-      }
+      const rpcArgs = getRpcArgs(wrapArgsInArray, mockData);
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,
@@ -65,12 +65,7 @@ describe('PrivateApiClient', () => {
 
       const result = await (client as any)[operation](mockData);
 
-      let rpcArgs;
-      if (wrapArgsInArray) {
-        rpcArgs = [Array.isArray(mockData) ? mockData : [mockData]];
-      } else {
-        rpcArgs = Array.isArray(mockData) ? mockData : [mockData];
-      }
+      const rpcArgs = getRpcArgs(wrapArgsInArray, mockData);
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,

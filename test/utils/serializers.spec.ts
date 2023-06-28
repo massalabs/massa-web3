@@ -6,11 +6,35 @@ import {
   deserializeObj,
   getDatatypeSize,
   serializableObjectsArrayToBytes,
+  arrayToBytes,
+  bytesToArray,
+  bytesToSerializableObjectArray,
 } from '../../src/utils/serializers';
 import {
   IDeserializedResult,
   ISerializable,
 } from '../../src/interfaces/ISerializable';
+
+// Implement a simple serializable class for testing.
+class TestSerializable implements ISerializable<TestSerializable> {
+  value: number;
+
+  constructor(value = 0) {
+    this.value = value;
+  }
+
+  serialize(): Uint8Array {
+    return new Uint8Array([this.value]);
+  }
+
+  deserialize(
+    data: Uint8Array,
+    offset: number,
+  ): IDeserializedResult<TestSerializable> {
+    this.value = data[offset];
+    return { instance: this, offset: offset + 1 };
+  }
+}
 
 describe('Serialization tests', () => {
   it('ser/deser with emojis', () => {
@@ -36,29 +60,127 @@ describe('Serialization tests', () => {
     const val = 123;
     expect(ser.byteToU8(ser.u8toByte(val))).toEqual(val);
   });
+  it('throws an error when trying to serialize a negative Uint8 value', () => {
+    const negativeValue = -1;
+    const args = new Args();
+
+    expect(() => args.addU8(negativeValue)).toThrow(
+      `Unable to serialize invalid Uint8 value ${negativeValue}`,
+    );
+  });
+  it('throws an error when trying to serialize a Uint8 value greater than 255', () => {
+    const largeValue = 256;
+    const args = new Args();
+
+    expect(() => args.addU8(largeValue)).toThrow(
+      `Unable to serialize invalid Uint8 value ${largeValue}`,
+    );
+  });
   it('ser/deser u32', () => {
     const val = 666;
     expect(ser.bytesToU32(ser.u32ToBytes(val))).toEqual(val);
+  });
+  it('throws an error when trying to serialize a negative u32 value', () => {
+    const negativeValue = -1;
+    const args = new Args();
+
+    expect(() => args.addU32(negativeValue)).toThrow(
+      `Unable to serialize invalid Uint32 value ${negativeValue}`,
+    );
+  });
+  it('throws an error when trying to serialize a Uint32 value greater than 4294967295', () => {
+    const largeValue = 4294967296;
+    const args = new Args();
+
+    expect(() => args.addU32(largeValue)).toThrow(
+      `Unable to serialize invalid Uint32 value ${largeValue}`,
+    );
   });
   it('ser/deser u64', () => {
     const val = BigInt(666);
     expect(ser.bytesToU64(ser.u64ToBytes(val))).toEqual(val);
   });
+  it('throws an error when trying to serialize a negative u64 value', () => {
+    const negativeValue = BigInt(-1);
+    const args = new Args();
+
+    expect(() => args.addU64(negativeValue)).toThrow(
+      `Unable to serialize invalid Uint64 value ${negativeValue}`,
+    );
+  });
+  it('throws an error when trying to serialize a u64 value greater than 18446744073709551615', () => {
+    const largeValue = BigInt('18446744073709551616');
+    const args = new Args();
+
+    expect(() => args.addU64(largeValue)).toThrow(
+      `Unable to serialize invalid Uint64 value ${largeValue}`,
+    );
+  });
   it('ser/deser u128', () => {
     const val = 123456789123456789n;
     expect(ser.bytesToU128(ser.u128ToBytes(val))).toEqual(val);
+  });
+  it('throws an error when trying to serialize a negative u128 value', () => {
+    const negativeValue = BigInt(-1);
+    const args = new Args();
+
+    expect(() => args.addU128(negativeValue)).toThrow(
+      `Unable to serialize invalid Uint128 value ${negativeValue}`,
+    );
+  });
+  it('throws an error when trying to serialize a u128 value greater than 340282366920938463463374607431768211455', () => {
+    const largeValue = BigInt('340282366920938463463374607431768211456');
+    const args = new Args();
+
+    expect(() => args.addU128(largeValue)).toThrow(
+      `Unable to serialize invalid Uint128 value ${largeValue}`,
+    );
   });
   it('ser/deser u256', () => {
     const val = 123456789012345678901234567890n;
     expect(ser.bytesToU256(ser.u256ToBytes(val))).toEqual(val);
   });
+  it('throws an error when trying to serialize a negative u256 value', () => {
+    const negativeValue = BigInt(-1);
+    const args = new Args();
+
+    expect(() => args.addU256(negativeValue)).toThrow(
+      `Unable to serialize invalid Uint256 value ${negativeValue}`,
+    );
+  });
+  it('throws an error when trying to serialize a u256 value greater than 115792089237316195423570985008687907853269984665640564039457584007913129639935', () => {
+    const largeValue = BigInt(
+      '115792089237316195423570985008687907853269984665640564039457584007913129639936',
+    );
+    const args = new Args();
+
+    expect(() => args.addU256(largeValue)).toThrow(
+      `Unable to serialize invalid Uint256 value ${largeValue}`,
+    );
+  });
   it('ser/deser i32', () => {
     const val = -666;
     expect(ser.bytesToI32(ser.i32ToBytes(val))).toEqual(val);
   });
+  it('throws an error when trying to serialize an invalid int32 value', () => {
+    const invalidValue = Math.pow(2, 31);
+    const args = new Args();
+
+    expect(() => args.addI32(invalidValue)).toThrow(
+      `Unable to serialize invalid int32 value ${invalidValue}`,
+    );
+  });
   it('ser/deser i64', () => {
     const val = BigInt(-666);
     expect(ser.bytesToI64(ser.i64ToBytes(val))).toEqual(val);
+  });
+  it('throws an error when trying to serialize an invalid int64 value', () => {
+    const invalidValue = BigInt('9223372036854775808');
+    const args = new Args();
+
+    expect(() => args.addI64(invalidValue)).toThrow(
+      `Unable to serialize invalid int64 value ${invalidValue.toString()}`,
+    );
   });
   it('ser/deser f32', () => {
     const val = -666.666;
@@ -71,6 +193,14 @@ describe('Serialization tests', () => {
   it('ser/deser f64 max val', () => {
     const val = Number.MAX_VALUE;
     expect(ser.bytesToF64(ser.f64ToBytes(val))).toEqual(val);
+  });
+  it('ser/deser empty string', () => {
+    const str = '';
+    expect(ser.bytesToStr(ser.strToBytes(str))).toEqual(str);
+  });
+  it('ser/deser empty Uint8Array', () => {
+    const arr = new Uint8Array(0);
+    expect(ser.bytesToStr(arr)).toEqual('');
   });
 });
 
@@ -158,27 +288,6 @@ describe('array.ts functions', () => {
     });
   });
 
-  // Implement a simple serializable class for testing.
-  class TestSerializable implements ISerializable<TestSerializable> {
-    value: number;
-
-    constructor(value = 0) {
-      this.value = value;
-    }
-
-    serialize(): Uint8Array {
-      return new Uint8Array([this.value]);
-    }
-
-    deserialize(
-      data: Uint8Array,
-      offset: number,
-    ): IDeserializedResult<TestSerializable> {
-      this.value = data[offset];
-      return { instance: this, offset: offset + 1 };
-    }
-  }
-
   describe('serializableObjectsArrayToBytes tests', () => {
     it('serializes an array of serializable objects to bytes', () => {
       const obj1 = new TestSerializable(1);
@@ -199,6 +308,137 @@ describe('array.ts functions', () => {
       expect(result.instance).toBeInstanceOf(TestSerializable);
       expect(result.instance.value).toEqual(1);
       expect(result.offset).toEqual(1);
+    });
+  });
+
+  describe('bytesToSerializableObjectArray', () => {
+    it('deserializes a bytes array into an array of instances of the given class', () => {
+      const data = new Uint8Array([1, 2, 3, 4, 5]);
+      const result = bytesToSerializableObjectArray(data, TestSerializable);
+
+      expect(result.length).toEqual(5);
+      // Check that each element in the array is an instance of the TestSerializable class
+      for (let i = 0; i < result.length; i++) {
+        expect(result[i]).toBeInstanceOf(TestSerializable);
+        // Check that the value of each TestSerializable instance is correct
+        expect(result[i].value).toEqual(i + 1);
+      }
+    });
+  });
+
+  describe('arrayToBytes and bytesToArray tests', () => {
+    it('converts a bool array to bytes and back correctly', () => {
+      const dataArray = [true, false, true, true, false];
+      const byteArray = arrayToBytes(dataArray, ArrayType.BOOL);
+      const arrayBack = bytesToArray(byteArray, ArrayType.BOOL);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a string array to bytes and back correctly', () => {
+      const dataArray = ['hello', 'world'];
+      const byteArray = arrayToBytes(dataArray, ArrayType.STRING);
+      const arrayBack = bytesToArray(byteArray, ArrayType.STRING);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a U8 array to bytes and back correctly', () => {
+      const dataArray = [1, 2, 3, 4, 5];
+      const byteArray = arrayToBytes(dataArray, ArrayType.U8);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U8);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a U32 array to bytes and back correctly', () => {
+      const dataArray = [10, 20, 30, 40, 50];
+      const byteArray = arrayToBytes(dataArray, ArrayType.U32);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U32);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a U64 array to bytes and back correctly', () => {
+      const dataArray = [
+        BigInt(10),
+        BigInt(20),
+        BigInt(30),
+        BigInt(40),
+        BigInt(50),
+      ];
+      const byteArray = arrayToBytes(dataArray, ArrayType.U64);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U64);
+      expect(arrayBack).toEqual(dataArray);
+    });
+    it('converts a U128 array to bytes and back correctly', () => {
+      const dataArray = [
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+      ];
+
+      const byteArray = arrayToBytes(dataArray, ArrayType.U128);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U128);
+      expect(arrayBack).toEqual(dataArray);
+    });
+    it('converts a U256 array to bytes and back correctly', () => {
+      const dataArray = [
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+        123456789123456789n,
+      ];
+
+      const byteArray = arrayToBytes(dataArray, ArrayType.U256);
+      const arrayBack = bytesToArray(byteArray, ArrayType.U256);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a I32 array to bytes and back correctly', () => {
+      const dataArray = [-10, -20, -30, -40, -50];
+      const byteArray = arrayToBytes(dataArray, ArrayType.I32);
+      const arrayBack = bytesToArray(byteArray, ArrayType.I32);
+      expect(arrayBack).toEqual(dataArray);
+    });
+
+    it('converts a I64 array to bytes and back correctly', () => {
+      const dataArray = [
+        BigInt(-10),
+        BigInt(-20),
+        BigInt(-30),
+        BigInt(-40),
+        BigInt(-50),
+      ];
+      const byteArray = arrayToBytes(dataArray, ArrayType.I64);
+      const arrayBack = bytesToArray(byteArray, ArrayType.I64);
+      expect(arrayBack).toEqual(dataArray);
+    });
+    it('converts a F32 array to bytes and back correctly', () => {
+      const dataArray = [1.1, 2.2, 3.3, 4.4, 5.5];
+      const byteArray = arrayToBytes(dataArray, ArrayType.F32);
+      const arrayBack = bytesToArray(byteArray, ArrayType.F32);
+
+      arrayBack.forEach((value, index) => {
+        expect(value).toBeCloseTo(dataArray[index], 5); // 5 is the precision (number of digits after the decimal point)
+      });
+    });
+    it('converts a F64 array to bytes and back correctly', () => {
+      const dataArray = [1.1, 2.2, 3.3, 4.4, 5.5];
+      const byteArray = arrayToBytes(dataArray, ArrayType.F64);
+      const arrayBack = bytesToArray(byteArray, ArrayType.F64);
+
+      arrayBack.forEach((value, index) => {
+        expect(value).toBeCloseTo(dataArray[index], 5); // 5 is the precision (number of digits after the decimal point)
+      });
+    });
+    it('throws an error when an unsupported type is used', () => {
+      const dataArray = [1, 2, 3, 4, 5];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const unsupportedType = 'someUnsupportedType' as any;
+
+      expect(() => arrayToBytes(dataArray, unsupportedType)).toThrow(
+        `Unsupported type: ${unsupportedType}`,
+      );
     });
   });
 });
