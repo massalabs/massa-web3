@@ -17,12 +17,12 @@ export enum DefaultProviderUrls {
  * connect to the massa blockchain.
  *
  * @remarks
- * The client can be initialized using a default provider (MAINNET, TESTNET, LABNET, LOCALNET)
+ * The client can be initialized using a default provider (MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET)
  * or a custom set of providers.
  */
 export class ClientFactory {
   /**
-   * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET).
+   * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET).
    *
    * @param provider - Default provider to be used by the client.
    * @param retryStrategyOn - Whether to retry failed requests.
