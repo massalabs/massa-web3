@@ -167,7 +167,7 @@ if (!receiverPrivateKey) {
       .getAccountBalance(senderAccount.address as string);
     console.log(
       `Sender Wallet Balance (After): ${
-        receiverAccount.address
+        senderAccount.address
       } with balance (candidate, final) = (${senderAccountBalanceAfter?.candidate.toString()}, ${senderAccountBalanceAfter?.final.toString()})`,
     );
 
