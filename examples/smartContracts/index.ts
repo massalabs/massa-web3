@@ -89,13 +89,13 @@ const privateApi = process.env.JSON_RPC_URL_PRIVATE;
 if (!privateApi) {
   throw new Error('Missing JSON_RPC_URL_PRIVATE in .env file');
 }
-const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
-if (!deployerPrivateKey) {
-  throw new Error('Missing DEPLOYER_PRIVATE_KEY in .env file');
+const deployerSecretKey = process.env.DEPLOYER_SECRET_KEY;
+if (!deployerSecretKey) {
+  throw new Error('Missing DEPLOYER_SECRET_KEY in .env file');
 }
-const receiverPrivateKey = process.env.RECEIVER_PRIVATE_KEY;
-if (!receiverPrivateKey) {
-  throw new Error('Missing RECEIVER_PRIVATE_KEY in .env file');
+const receiverSecretKey = process.env.RECEIVER_SECRET_KEY;
+if (!receiverSecretKey) {
+  throw new Error('Missing RECEIVER_SECRET_KEY in .env file');
 }
 
 const MASSA_EXEC_ERROR = 'massa_execution_error';
@@ -174,7 +174,7 @@ const pollAsyncEvents = async (
   try {
     // init client
     const deployerAccount: IAccount =
-      await WalletClient.getAccountFromSecretKey(deployerPrivateKey);
+      await WalletClient.getAccountFromSecretKey(deployerSecretKey);
 
     const web3Client: Client = await ClientFactory.createCustomClient(
       [

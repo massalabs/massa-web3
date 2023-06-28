@@ -27,13 +27,13 @@ const privateApi = process.env.JSON_RPC_URL_PRIVATE;
 if (!privateApi) {
   throw new Error('Missing JSON_RPC_URL_PRIVATE in .env file');
 }
-const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
-if (!deployerPrivateKey) {
-  throw new Error('Missing DEPLOYER_PRIVATE_KEY in .env file');
+const deployerSecretKey = process.env.DEPLOYER_SECRET_KEY;
+if (!deployerSecretKey) {
+  throw new Error('Missing DEPLOYER_SECRET_KEY in .env file');
 }
-const receiverPrivateKey = process.env.RECEIVER_PRIVATE_KEY;
-if (!receiverPrivateKey) {
-  throw new Error('Missing RECEIVER_PRIVATE_KEY in .env file');
+const receiverSecretKey = process.env.RECEIVER_SECRET_KEY;
+if (!receiverSecretKey) {
+  throw new Error('Missing RECEIVER_SECRET_KEY in .env file');
 }
 
 (async () => {
@@ -47,7 +47,7 @@ if (!receiverPrivateKey) {
   try {
     // init account
     const deployerAccount: IAccount =
-      await WalletClient.getAccountFromSecretKey(deployerPrivateKey);
+      await WalletClient.getAccountFromSecretKey(deployerSecretKey);
 
     console.log('Deployer Wallet ', deployerAccount);
 
@@ -81,7 +81,7 @@ if (!receiverPrivateKey) {
 
     // add a new wallet
     console.log('Adding a new Account ...');
-    await web3Client.wallet().addSecretKeysToWallet([receiverPrivateKey]);
+    await web3Client.wallet().addSecretKeysToWallet([receiverSecretKey]);
 
     // get wallet accounts
     walletAccounts = await web3Client.wallet().getWalletAccounts();

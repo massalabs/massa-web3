@@ -6,10 +6,9 @@ import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
-const deployerPrivateKey =
+const deployerSecretKey =
   'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
-const receiverPrivateKey =
-  'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
+const receiverSecretKey = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
 const publicApi = 'http://127.0.0.1:33035';
 const privateApi = 'http://127.0.0.1:33034';
@@ -17,7 +16,7 @@ const MAX_WALLET_ACCOUNTS = 256;
 
 export async function initializeClient() {
   const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
-    deployerPrivateKey,
+    deployerSecretKey,
   );
   const web3Client: Client = await ClientFactory.createCustomClient(
     [
@@ -51,7 +50,7 @@ describe.skip('WalletClient', () => {
   describe('setBaseAccount', () => {
     test('should set base account', async () => {
       const account = await WalletClient.getAccountFromSecretKey(
-        receiverPrivateKey,
+        receiverSecretKey,
       );
       await web3Client.wallet().setBaseAccount(account);
       const baseAccount = await web3Client.wallet().getBaseAccount();
@@ -77,12 +76,12 @@ describe.skip('WalletClient', () => {
 
     test('should change base account if already set', async () => {
       const firstAccount = await WalletClient.getAccountFromSecretKey(
-        receiverPrivateKey,
+        receiverSecretKey,
       );
       await web3Client.wallet().setBaseAccount(firstAccount);
 
       const secondAccount = await WalletClient.getAccountFromSecretKey(
-        deployerPrivateKey,
+        deployerSecretKey,
       );
       await web3Client.wallet().setBaseAccount(secondAccount);
 
@@ -154,7 +153,7 @@ describe.skip('WalletClient', () => {
   describe('addSecretKeysToWallet', () => {
     test('should throw an error when the number of accounts exceeds the maximum limit', async () => {
       const secretKeys = new Array(MAX_WALLET_ACCOUNTS + 1).fill(
-        receiverPrivateKey,
+        receiverSecretKey,
       );
 
       await expect(
@@ -167,8 +166,8 @@ describe.skip('WalletClient', () => {
     });
 
     test('should not add duplicate accounts to the wallet (duplicate in arguments)', async () => {
-      // Add receiverPrivateKey's secret key twice
-      const secretKeys: string[] = [receiverPrivateKey, receiverPrivateKey];
+      // Add receiverSecretKey's secret key twice
+      const secretKeys: string[] = [receiverSecretKey, receiverSecretKey];
 
       const addedAccounts = await web3Client
         .wallet()
@@ -182,11 +181,11 @@ describe.skip('WalletClient', () => {
     test('should not add duplicate accounts to the wallet (account already in wallet)', async () => {
       const addedAccounts = await web3Client
         .wallet()
-        .addSecretKeysToWallet([deployerPrivateKey, receiverPrivateKey]);
+        .addSecretKeysToWallet([deployerSecretKey, receiverSecretKey]);
       const walletAccounts = await web3Client.wallet().getWalletAccounts();
 
       // only receiver account should be added
-      expect(addedAccounts[0].secretKey).toBe(receiverPrivateKey);
+      expect(addedAccounts[0].secretKey).toBe(receiverSecretKey);
       expect([baseAccount, addedAccounts[0]]).toStrictEqual(walletAccounts);
       expect(addedAccounts.length).toBe(1);
       expect(web3Client.wallet().getWalletAccounts().length).toBe(2);
@@ -239,18 +238,18 @@ describe.skip('WalletClient', () => {
       const secretKey1 = 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd';
       const secretKey2 = 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6';
 
-      const accountFromPrivateKey1 = await WalletClient.getAccountFromSecretKey(
+      const accountFromSecretKey1 = await WalletClient.getAccountFromSecretKey(
         secretKey1,
       );
-      const accountFromPrivateKey2 = await WalletClient.getAccountFromSecretKey(
+      const accountFromSecretKey2 = await WalletClient.getAccountFromSecretKey(
         secretKey2,
       );
 
-      expect(accountFromPrivateKey1.address).not.toEqual(
-        accountFromPrivateKey2.address,
+      expect(accountFromSecretKey1.address).not.toEqual(
+        accountFromSecretKey2.address,
       );
-      expect(accountFromPrivateKey1.publicKey).not.toEqual(
-        accountFromPrivateKey2.publicKey,
+      expect(accountFromSecretKey1.publicKey).not.toEqual(
+        accountFromSecretKey2.publicKey,
       );
     });
   });
