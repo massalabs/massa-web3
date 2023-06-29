@@ -67,7 +67,7 @@ const baseAccount = {
 // initialize a testnet client
 const testnetClient: Client = await ClientFactory.createDefaultClient(
     DefaultProviderUrls.TESTNET,
-    true,
+    true,   // retry on failed requests
     baseAccount
 );
 ```
@@ -93,18 +93,18 @@ const baseAccount = {
 // initialize a custom client using an own provider
 const providers: Array<IProvider> = [
     {
-        url: "http://127.0.0.1:33035",
+        url: "https://custom-public-provider.com",
         type: ProviderType.PUBLIC,
     } as IProvider,
     {
-        url: "http://127.0.0.1:33034",
+        url: "https://custom-private-provider.com",
         type: ProviderType.PRIVATE,
     } as IProvider,
 ];
 
 const customClient: Client = await ClientFactory.createCustomClient(
     providers,
-    true,
+    true,   // retry on failed requests
     baseAccount
 );
 ```
@@ -119,14 +119,14 @@ const testnetClient: Client = await ClientFactory.createDefaultClient(
 );
 ```
 
-Once there is an initialized client instance, it is straightforward to call methods on it:
+Once there is an initialized client instance, it is straightforward to call methods on it.
 
 ```ts
-import { IStatus, IAddressInfo } from "@massalabs/massa-web3";
-
-const addressesResp: Array<IAddressInfo> = await web3Client
-    .publicApi()
-    .getAddresses(["some_address"]);
+const balanceResp: IBalance | null = await web3Client
+          .wallet()
+          .getAccountBalance(
+            'some_address',
+          );
 ```
 
 ### Client exposed APIs
@@ -148,82 +148,13 @@ Client public API operations are accessible under the public sub-client, which i
 Example:
 
 ```ts
-// get block info
-const blocks: Array<IBlockInfo> = await web3Client
+// get node status info
+const nodeStatusResp: INodeStatus = await web3Client
     .publicApi()
-    .getBlocks(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
+    .getNodeStatus();
 ```
 
-Available methods are:
-
--   `getNodeStatus`
-    ```ts
-    const nodeStatus: INodeStatus = await web3Client
-        .publicApi()
-        .getNodeStatus();
-    ```
--   `getAddresses`
-    ```ts
-    const addressesResp: Array<IAddressInfo> = await web3Client
-        .publicApi()
-        .getAddresses(["AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"]);
-    ```
--   `getBlocks`
-    ```ts
-    const blocks: Array<IBlockInfo> = await web3Client
-        .publicApi()
-        .getBlocks(["nKifcnGbd9zu8nu1hb94XEmMGwgoWbjj3DutzrobeHDdUtEuM"]);
-    ```
--   `getEndorsements`
-    ```ts
-    const endorsements: Array<IEndorsement> = await web3Client
-        .publicApi()
-        .getEndorsements(["q2XVw4HrRfwtX8FGXak2VwtTNkBvYtLVW67s8pTCVPdEEeG6J"]);
-    ```
--   `getOperations`
-    ```ts
-    const operations: Array<IOperationData> = await web3Client
-        .publicApi()
-        .getOperations(["z1cNsWAdgvoASq5RnN6MRbqqo634RRJbgwV9n3jNx3rQrQKTt"]);
-    ```
--   `getCliques`
-    ```ts
-    const cliques: Array<IClique> = await web3Client.publicApi().getCliques();
-    ```
--   `getStakers`
-    ```ts
-    const stakers: Array<IStakingAddresses> = await web3Client
-        .publicApi()
-        .getStakers();
-    ```
--   `getDatastoreEntries`
-    ```ts
-    const scStorageValue: IDatastoreEntry[] = await web3Client.publicApi().getDatastoreEntries([
-      {
-        address: "AS12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
-        key: strToBytes("key"),
-      } as IDatastoreEntryInput,
-    ]);
-
-    // NOTE: returned values could be easily converted into string if needed using e.g.: bytesToStr(scStorageValue[0].final_value)
-    ```
--   `getBlockcliqueBlockBySlot`
-
-```ts
-const blockcliqueBlockBySlot: IBlockcliqueBlockBySlot = await web3Client
-    .publicApi()
-    .getBlockcliqueBlockBySlot([{ period: 12345, thread: 20 } as ISlot]);
-```
-
--   `getGraphInterval`
-
-```ts
-const graphInterval: IGraphInterval = await web3Client
-    .publicApi()
-    .getGraphInterval([
-        { start: Date.now() - 2000, end: Date.now() } as IGetGraphInterval,
-    ]);
-```
+More information about the public API operations can be found in the [PublicApiClient documentation](https://web3.docs.massa.net/classes/PublicApiClient.html).
 
 ### Client private API
 
@@ -232,72 +163,14 @@ Client private API operations are accessible under the private sub-client, which
 Example:
 
 ```ts
-// stop the node
+// get staking addresses of the wallet
+const stakingAddresses: string[] = await web3Client
+    .privateApi()
+    .nodeGetStakingAddresses();
 await web3Client.privateApi().nodeStop();
 ```
 
-Available methods are:
-
--   `stopNode`
-    ```ts
-    await web3Client.privateApi().nodeStop();
-    ```
--   `nodeBanById`
-    ```ts
-    await web3Client
-        .privateApi()
-        .nodeBanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
-    ```
--   `nodeBanByIpAddress`
-    ```ts
-    await web3Client.privateApi().nodeBanByIpAddress("90.110.239.231");
-    ```
--   `nodeUnbanById`
-    ```ts
-    await web3Client
-        .privateApi()
-        .nodeUnbanById("P1bZhWZQ2KW8DoaEqXyRXoy198wjhCsTFxSP53mLgdvx5C4WMDE");
-    ```
--   `nodeUnbanByIpAddress`
-    ```ts
-    await web3Client.privateApi().nodeUnbanByIpAddress("90.110.239.231");
-    ```
--   `nodeGetStakingAddresses`
-    ```ts
-    const stakingAddresses = await web3Client
-        .privateApi()
-        .nodeGetStakingAddresses();
-    ```
--   `nodeRemoveStakingAddresses`
-    ```ts
-    await web3Client
-        .privateApi()
-        .nodeRemoveStakingAddresses([
-            "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
-        ]);
-    ```
--   `nodeAddStakingPrivateKeys`
-    ```ts
-    await web3Client
-        .privateApi()
-        .nodeAddStakingSecretKeys([
-            "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
-        ]);
-    ```
--   `nodeSignMessage`
-    ```ts
-    const message = "hello world";
-    const msgBuf = new TextEncoder().encode(message);
-    const signedMessage = await web3Client.privateApi().nodeSignMessage(msgBuf);
-    ```
--   `nodeAddToPeersWhitelist`
-    ```ts
-    await web3Client.privateApi().nodeAddToPeersWhitelist("90.110.239.231");
-    ```
--   `nodeRemoveFromWhitelist`
-    ```ts
-    await web3Client.privateApi().nodeRemoveFromWhitelist("90.110.239.231");
-    ```
+More information about the private API operations can be found in the [PrivateApiClient documentation](https://web3.docs.massa.net/classes/PrivateApiClient.html).
 
 ### Wallet operations
 
@@ -306,122 +179,23 @@ Wallet operations are accessible under the wallet sub-client which is accessible
 Example:
 
 ```ts
-// generate new wallet
-const newWalletAccount = await WalletClient.walletGenerateNewAccount();
+// add accounts to the wallet via secret keys
+const addedAccounts: IAccount[] = await web3Client.wallet().addSecretKeysToWallet(["secret_key"]);
+
 ```
 
-Available class methods are:
+In addition to the class methods, there are also static methods for direct use, for example:
 
--   `addPrivateKeysToWallet`
-    ```ts
-    const addedAccounts: Array<IAccount> = await web3Client
-        .wallet()
-        .addSecretKeysToWallet([
-            "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
-        ]);
-    ```
--   `removeAddressesFromWallet`
-    ```ts
-    web3Client
-        .wallet()
-        .removeAddressesFromWallet([
-            "AU12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
-        ]);
-    ```
--   `getWalletAccounts`
-    ```ts
-    const walletAccounts: Array<IAccount> = web3Client
-        .wallet()
-        .getWalletAccounts();
-    ```
--   `getWalletAccountByAddress`
-    ```ts
-    const walletAccount: IAccount | undefined = web3Client
-        .wallet()
-        .getWalletAccountByAddress(
-            "AU12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB"
-        );
-    ```
--   `addAccountsToWallet`
-    ```ts
-    await web3Client.wallet().addAccountsToWallet([
-        {
-            address: "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
-            secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
-            publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
-        },
-    ]);
-    ```
--   `walletInfo`
-    ```ts
-    const walletInfo: Array<IFullAddressInfo> = await web3Client
-        .wallet()
-        .walletInfo();
-    ```
--   `sendTransaction`
-    ```ts
-    const sendTxIds: Array<string> = await web3Client.wallet().sendTransaction(
-        {
-            fee: 0n,
-            amount: fromMAS("1"),
-            recipientAddress:
-                "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
-        } as ITransactionData,
-        baseAccount
-    );
-    ```
--   `buyRolls`
-    ```ts
-    const buyRollsIds: Array<string> = await web3Client.wallet().buyRolls(
-        {
-            fee: 0n,
-            amount: 1n,
-        } as IRollsData,
-        baseAccount
-    );
-    ```
--   `sellRolls`
-    ```ts
-    const sellRollsIds: Array<string> = await web3Client.wallet().sellRolls(
-        {
-            fee: 0n,
-            amount: 1n,
-        } as IRollsData,
-        baseAccount
-    );
-    ```
--   `getAccountBalance`
-    ```ts
-    const balance: IBalance = await web3Client
-        .wallet()
-        .getAccountBalance(
-            "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1"
-        );
-    ```
+```ts
+// generate new wallet
+const newWalletAccount: IAccount = await WalletClient.walletGenerateNewAccount();
+```
 
-In addition to the class methods, there are also static methods for direct use:
+More information about the wallet operations can be found in the [WalletClient documentation](https://web3.docs.massa.net/classes/WalletClient.html).
 
--   `getAccountFromPrivateKey`
-    ```ts
-    const account: IAccount = await WalletClient.getAccountFromSecretKey(
-        "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L"
-    );
-    ```
--   `walletGenerateNewAccount`
-    ```ts
-    const newWalletAccount: IAccount =
-        await WalletClient.walletGenerateNewAccount();
-    ```
--   `walletSignMessage`
-    ```ts
-    const sig: ISignature = await WalletClient.walletSignMessage(
-        "hello",
-        baseAccount
-    );
-    ```
+### Smart contract interaction
 
-### Smart contract deployment
-
+#### Deployment
 Once the smart contract WASM is available, it becomes quite straightforward to deploy a smart contract operation (a state changing operation):
 
 ```ts
@@ -430,14 +204,71 @@ const opId: string = await web3Client.smartContracts().deploySmartContract(
     {
         fee: 0n,
         maxGas: 2000000n,
-        contractDataBinary: compiledScFromSource.binary,
+        maxCoins: 10000000n,
+        contractDataBinary: compiledScFile.binary,
         datastore: new Map<Uint8Array, Uint8Array>(),
     } as IContractData,
     baseAccount
 );
 ```
 
-The compiledScFromSource is the compiled smart contract code in binary form. The returned value is the resulting operation id.
+#### Read and call operations
+Smart contract data could be read via `readSmartContract` method:
+
+```ts
+const data: IContractReadOperationResponse = await web3Client
+    .smartContracts()
+    .readSmartContract({
+        fee: 0n,
+        maxGas: 200000n,
+        targetAddress: scAddress,
+        targetFunction: "getGameState",
+        parameter: new Args().serialize(), // this is based on input arguments
+    } as IReadData);
+```
+
+The returned data is contained in an object of type IContractReadOperationResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
+
+
+Smart contracts could also be constructed in order to read data from another contract. In that case one could use the code below to read the data via a proxy contract:
+
+```ts
+// read smart contract data
+const data: IExecuteReadOnlyResponse = await web3Client
+    .smartContracts()
+    .executeReadOnlySmartContract(
+        {
+            fee: 0n,
+            maxGas: 2000000n,
+            coins: fromMAS("0.1"),
+            contractDataBinary: compiledScFromSource.binary,
+        } as IContractData,
+        baseAccount
+    );
+```
+
+The returned data is contained in an object of type IExecuteReadOnlyResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
+
+#### Call operations
+Smart contract state-changing operations could be executed via `callSmartContract` method:
+
+```ts
+const data: string = await web3Client.smartContracts().callSmartContract(
+    {
+        fee: 0n,
+        maxGas: 200000n,
+        coins: fromMAS("0.1"),
+        targetAddress: scAddress,
+        functionName: "play",
+        parameter: new Args().serialize(), // this is based on input arguments
+    } as ICallData,
+    baseAccount
+);
+```
+
+The returned value is the operation id.
+
+More information about the smart contract operations can be found in the [SmartContractsClient documentation](https://web3.docs.massa.net/classes/SmartContractsClient.html).
 
 ### Smart contract event fetching and polling
 
@@ -561,71 +392,6 @@ const status: EOperationStatus = await web3Client
         EOperationStatus.INCLUDED_PENDING
     );
 ```
-
-### Smart contract balance
-
-Smart contract balances could be easily obtained via using the `getContractBalance` method:
-
-```ts
-const balance: IBalance | null = await web3Client
-    .smartContracts()
-    .getContractBalance(contractAddress);
-```
-
-### Smart contract read and write calls
-
-Smart contract data could be read via `readSmartContract` method:
-
-```ts
-const data: IContractReadOperationResponse = await web3Client
-    .smartContracts()
-    .readSmartContract({
-        fee: 0n,
-        maxGas: 200000n,
-        targetAddress: scAddress,
-        targetFunction: "getGameState",
-        parameter: new Args().serialize(), // this is based on input arguments
-    } as IReadData);
-```
-
-The returned data is contained in an object of type IContractReadOperationResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
-
-Smart contract state-changing operations could be executed via `callSmartContract` method:
-
-```ts
-const data: string = await web3Client.smartContracts().callSmartContract(
-    {
-        fee: 0n,
-        maxGas: 200000n,
-        coins: fromMAS("0.1"),
-        targetAddress: scAddress,
-        functionName: "play",
-        parameter: new Args().serialize(), // this is based on input arguments
-    } as ICallData,
-    baseAccount
-);
-```
-
-The returned value is the operation id.
-
-Smart contracts could also be constructed in order to read data from another contract. In that case one could use the code below to read the data via a proxy contract:
-
-```ts
-// read smart contract data
-const data: IExecuteReadOnlyResponse = await web3Client
-    .smartContracts()
-    .executeReadOnlySmartContract(
-        {
-            fee: 0n,
-            maxGas: 2000000n,
-            coins: fromMAS("0.1"),
-            contractDataBinary: compiledScFromSource.binary,
-        } as IContractData,
-        baseAccount
-    );
-```
-
-The returned data is contained in an object of type IExecuteReadOnlyResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
 
 ### Massa Units
 
