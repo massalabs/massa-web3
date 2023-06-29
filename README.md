@@ -2,11 +2,18 @@
 
 ![check-code-coverage](https://img.shields.io/badge/coverage-96.66%25-green)
 
-`Massa-web3` is a TypeScript library that allow you to interact with the `Massa` blockchain through a
-local or remote Massa node. In particular the massa-web3 library will allow you to call the JSON-RPC API,
-but also to fetch and poll events from smart contracts on the Massa blockchain, deploy smart contracts and much more.
+> **PREREQUISITES:**
+> 
+>    - NodeJS 14+
+>    - npm / yarn (see package.json)
 
-## Usage
+
+This repository is a monorepo for blockchain development in TypeScript for the Massa blockchain. It provides an interface to interact with the Massa blockchain, including deploying smart contracts, interacting with smart contracts, querying blockchain status and more.
+
+Massa-web3 is a TypeScript library that allows you to interact with the Massa blockchain. It enables the use of the JSON-RPC API, fetch and poll events from smart contracts on the Massa blockchain, deploy smart contracts, and more.
+
+
+## Installation
 
 `Massa-web3` could be used as a library for frameworks or as a stand-alone bundled js file which can be easily loaded into the browser.
 
@@ -16,7 +23,7 @@ but also to fetch and poll events from smart contracts on the Massa blockchain, 
 
 ### Browser usage
 
-Add the following script to your html file:
+If you want to use `massa-web3` in the browser directly, you can add the following script to your html file:
 
 ```ts
 <script
@@ -40,11 +47,7 @@ Complete documentation of all available web3 entities can be found here:
 
 -   [`massa-web3 documentation`](https://web3.docs.massa.net)
 
-### Requirements
-
--   NodeJS 14+
--   npm / yarn (see package.json)
-
+## Usage
 ### Web3 Client initialization
 
 There are two types of client initialization. The first one is connecting to Massa's public rpc node using a so-called default client. Please note that specifying a base account is only optional at this point. The code below illustrates how to do that:
@@ -270,7 +273,7 @@ The returned value is the operation id.
 
 More information about the smart contract operations can be found in the [SmartContractsClient documentation](https://web3.docs.massa.net/classes/SmartContractsClient.html).
 
-### Smart contract event fetching and polling
+#### Event fetching and polling
 
 Emitted smart contract events could directly be fetched via:
 
@@ -360,40 +363,7 @@ export function main(_args: string): i32 {
 }
 ```
 
-### Smart contract blockchain status
-
-Smart contracts undergo various transaction statuses before they reach block finality on chain. The public enum describing these statuses is:
-
-```ts
-EOperationStatus {
-	INCLUDED_PENDING,
-	AWAITING_INCLUSION,
-	FINAL,
-	INCONSISTENT,
-	NOT_FOUND
-}
-```
-
-The current smart contract status could be easily obtained via:
-
-```ts
-const status: EOperationStatus = await web3Client
-    .smartContracts()
-    .getOperationStatus(deploymentOperationId);
-```
-
-There are however cases when one would require to await a given status and that could be done via. It is important to note here that the algorithm will giv up after a certain amount of time or a limited error count. These values have proven to be sufficient for most standard cases.
-
-```ts
-const status: EOperationStatus = await web3Client
-    .smartContracts()
-    .awaitRequiredOperationStatus(
-        deploymentOperationId,
-        EOperationStatus.INCLUDED_PENDING
-    );
-```
-
-### Massa Units
+#### Massa Units
 
 All Massa values that are being used or returned by web3 (gas, fees, coins and rolls) are expressed via BigInt's. Massa-web3 has however a few convenience methods and converters that might come handy. Below is a summary and some examples of the latter:
 
@@ -422,20 +392,19 @@ const coinsToTransfer = fromMAS("0.5"); // half a massa
 const coinsToTransfer = 500n * MassaUnits.mMassa; // half a massa
 ```
 
-```ts
-const coinsToTransfer = fromMAS("1"); // one massa
-// or. ...
-const coinsToTransfer = 1n * MassaUnits.oneMassa; // one massa
-```
-
 Web3 exposes a collection `MassaUnits` which has three convenience `BigInt` constants that could be used for amount scaling:
 
 - `MassaUnits.oneMassa` = 10**9
 - `MassaUnits.mMassa` = 10**6
 - `MassaUnits.uMassa` = 10**3
 
-## Contributing and testing
+## Contributing
+We welcome contributions from the community!
 
-1. Run `npm run install` to install all deps
-2. Run `npm run build` to build distribution content
-3. Run `npm run test` to run integration and unit tests
+If you would like to contribute to `massa-web3`, please read the [CONTRIBUTING file](CONTRIBUTING.md).
+
+## License
+`massa-web3` is released under the [MIT License](LICENSE).
+
+## Powered By
+`massa-web3` is developed with love by MassaLabs and powered by a variety of [open-source projects](powered-by.md).
