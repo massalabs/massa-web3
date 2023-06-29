@@ -460,14 +460,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
     // verify signature
     if (signer.publicKey) {
-      // get public key
-      const versionAndPublicKeyBytes = getBytesPublicKey(signer.publicKey);
-      const publicKeyBytes = versionAndPublicKeyBytes.slice(1);
+      const publicKey: PublicKey = await secretKey.getPublicKey();
 
       const isVerified = await ed.verify(
         sig,
         messageHashDigest,
-        publicKeyBytes,
+        publicKey.bytes,
       );
 
       if (!isVerified) {
@@ -501,9 +499,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     signerPubKey: string,
   ): Promise<boolean> {
     // setup the public key.
-    const versionAndPublicKeyBytes: Uint8Array =
-      getBytesPublicKey(signerPubKey);
-    const publicKeyBytes = versionAndPublicKeyBytes.slice(1);
+    const publicKey: PublicKey = PublicKey.fromBase58Encode(signerPubKey);
 
     // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
@@ -527,7 +523,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
       const isVerified = await ed.verify(
         signatureBytes,
         messageDigest,
-        publicKeyBytes,
+        publicKey.bytes,
       );
       return isVerified;
     } catch (err) {

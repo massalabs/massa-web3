@@ -6,7 +6,7 @@ import {
 } from './Xbqcrypto';
 
 import * as ed from '@noble/ed25519';
-import { getBytesSecretKey } from './bytes';
+import { getBytesPublicKey, getBytesSecretKey } from './bytes';
 
 /**
  * Prefixes for secret keys, public keys, and addresses.
@@ -68,6 +68,17 @@ export class PublicKey {
     this.base58Encode =
       PUBLIC_KEY_PREFIX +
       base58Encode(Buffer.concat([versionBuffer, Buffer.from(this.bytes)]));
+  }
+
+  /* Static method to create a public key from a base58 encoded string, and decoding the version number */
+  static fromBase58Encode(publicKeyBase58Encoded: string): PublicKey {
+    const versionAndKeyBytes = getBytesPublicKey(publicKeyBase58Encoded);
+
+    // Slice off the version byte
+    const keyBytes = versionAndKeyBytes.slice(1);
+    const version = varintDecode(versionAndKeyBytes.slice(0, 1)).value;
+
+    return new PublicKey(keyBytes, version);
   }
 }
 
