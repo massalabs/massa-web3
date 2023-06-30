@@ -481,9 +481,10 @@ export class SmartContractsClient
    * @returns A promise that resolves to the array of IProtoFiles corresponding
    * to the proto file associated with each contract or the values are null if the file is unavailable.
    */
-  public async getProtoFiles(
+  public static async getProtoFiles(
     contractAddresses: string[],
     outputDirectory: string,
+    providerUrl: string,
   ): Promise<MassaProtoFile[]> {
     // prepare request body
     const requestProtoFiles: object[] = [];
@@ -495,7 +496,7 @@ export class SmartContractsClient
     }
     const body = {
       jsonrpc: '2.0',
-      method: 'get_datastore_entries',
+      method: JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES,
       params: [requestProtoFiles],
       id: 1,
     };
@@ -503,7 +504,7 @@ export class SmartContractsClient
     // send request
     let response = null;
     try {
-      response = await fetch(this.clientConfig.providers[0].url, {
+      response = await fetch(providerUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -512,40 +513,40 @@ export class SmartContractsClient
       });
       // parse response
       const json = await response.json();
-
-      if (!json.result[0].final_value) {
-        throw new Error('No proto file found');
-      }
-
-      const retrievedProtoFiles = bytesArrayToString(
-        json.result[0].final_value,
-      ); // converting the Uint8Array to string
-      // splitting all the proto functions to make separate proto file for each functions
-      const protos = retrievedProtoFiles.split(protoFileSeparator);
-
       let protoFiles: MassaProtoFile[] = [];
 
-      for (let protoContent of protos) {
-        // remove all the text before the first appearance of the 'syntax' keyword
-        protoContent = protoContent.substring(protoContent.indexOf('syntax'));
+      // for each contract, get the proto files
+      for (let contract of Object.keys(json.result)) {
+        if (!json.result[contract].final_value) {
+          throw new Error('No proto file found');
+        }
 
-        // get the function name from the proto file
-        const functionName = protoContent
-          .substring(
-            protoContent.indexOf('message '),
-            protoContent.indexOf('Helper'),
-          )
-          .replace('message ', '')
-          .trim();
-        // save the proto file
-        const filepath = path.join(outputDirectory, functionName + '.proto');
-        writeFileSync(filepath, protoContent);
-        const extractedProto: MassaProtoFile = {
-          data: protoContent,
-          filePath: filepath,
-          protoFuncName: functionName,
-        };
-        protoFiles.push(extractedProto);
+        const retrievedProtoFiles = bytesArrayToString(
+          json.result[contract].final_value,
+        ); // converting the Uint8Array to string
+        // splitting all the proto functions to make separate proto file for each functions
+        const protos = retrievedProtoFiles.split(protoFileSeparator);
+
+        // for proto file, save it and get the function name
+        for (let protoContent of protos) {
+          // remove all the text before the first appearance of the 'syntax' keyword
+          const proto = protoContent.substring(protoContent.indexOf('syntax'));
+
+          // get the function name from the proto file
+          const functionName = proto
+            .substring(proto.indexOf('message '), proto.indexOf('Helper'))
+            .replace('message ', '')
+            .trim();
+          // save the proto file
+          const filepath = path.join(outputDirectory, functionName + '.proto');
+          writeFileSync(filepath, proto);
+          const extractedProto: MassaProtoFile = {
+            data: proto,
+            filePath: filepath,
+            protoFuncName: functionName,
+          };
+          protoFiles.push(extractedProto);
+        }
       }
       return protoFiles;
     } catch (ex) {

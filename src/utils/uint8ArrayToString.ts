@@ -7,8 +7,9 @@
  */
 export function bytesArrayToString(bytesArray: Uint8Array): string {
   let str = '';
-  for (let i = 0; i < bytesArray.length; i++) {
-    str += String.fromCharCode(bytesArray[i]);
+  // use a for-of loop
+  for (const byte of bytesArray) {
+    str += String.fromCharCode(byte);
   }
   return str;
 }
