@@ -481,9 +481,10 @@ export class SmartContractsClient
    * @returns A promise that resolves to the array of IProtoFiles corresponding
    * to the proto file associated with each contract or the values are null if the file is unavailable.
    */
-  public async getProtoFiles(
+  public static async getProtoFiles(
     contractAddresses: string[],
     outputDirectory: string,
+    providerUrl: string,
   ): Promise<MassaProtoFile[]> {
     // prepare request body
     const requestProtoFiles: object[] = [];
@@ -495,7 +496,7 @@ export class SmartContractsClient
     }
     const body = {
       jsonrpc: '2.0',
-      method: 'get_datastore_entries',
+      method: JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES,
       params: [requestProtoFiles],
       id: 1,
     };
@@ -503,7 +504,7 @@ export class SmartContractsClient
     // send request
     let response = null;
     try {
-      response = await fetch(this.clientConfig.providers[0].url, {
+      response = await fetch(providerUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
