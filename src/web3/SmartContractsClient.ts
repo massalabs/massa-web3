@@ -527,21 +527,18 @@ export class SmartContractsClient
 
       for (let protoContent of protos) {
         // remove all the text before the first appearance of the 'syntax' keyword
-        protoContent = protoContent.substring(protoContent.indexOf('syntax'));
+        const proto = protoContent.substring(protoContent.indexOf('syntax'));
 
         // get the function name from the proto file
-        const functionName = protoContent
-          .substring(
-            protoContent.indexOf('message '),
-            protoContent.indexOf('Helper'),
-          )
+        const functionName = proto
+          .substring(proto.indexOf('message '), proto.indexOf('Helper'))
           .replace('message ', '')
           .trim();
         // save the proto file
         const filepath = path.join(outputDirectory, functionName + '.proto');
-        writeFileSync(filepath, protoContent);
+        writeFileSync(filepath, proto);
         const extractedProto: MassaProtoFile = {
-          data: protoContent,
+          data: proto,
           filePath: filepath,
           protoFuncName: functionName,
         };
