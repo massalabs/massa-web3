@@ -72,12 +72,12 @@ export class PublicKey {
   }
 
   /* Static method to create a public key from a base58 encoded string, and decoding the version number */
-  static fromBase58Encode(publicKeyBase58Encoded: string): PublicKey {
+  static fromString(publicKeyBase58Encoded: string): PublicKey {
     const versionAndKeyBytes = getBytesPublicKey(publicKeyBase58Encoded);
 
     // Slice off the version byte
-    const keyBytes = versionAndKeyBytes.slice(1);
     const version = varintDecode(versionAndKeyBytes.slice(0, 1)).value;
+    const keyBytes = versionAndKeyBytes.slice(1);
 
     return new PublicKey(keyBytes, version);
   }
