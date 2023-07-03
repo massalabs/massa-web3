@@ -509,3 +509,35 @@ export const mockContractReadOperationDataWithError = [
     },
   },
 ];
+
+export const mockSecretKeyOject = {
+  base58Encoded: 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6',
+  bytes: Buffer.from(
+    '54b8270c454be4dd5adb9f75eea6492c0d9a61d23d839c9924100622110f5a2f',
+    'hex',
+  ),
+  version: 0,
+};
+
+export const mockPublicKeyObject = {
+  base58Encoded: 'P121uDTpo58d3SxQTENXKqSJTpB21ueSAy8RqQ2virGVeWs339ub',
+  bytes: Uint8Array.from([
+    133, 189, 128, 53, 164, 216, 224, 156, 184, 1, 149, 251, 189, 7, 11, 151,
+    51, 176, 124, 204, 229, 184, 245, 144, 208, 126, 241, 70, 210, 29, 122, 105,
+  ]),
+  version: 0,
+};
+
+export const mockSignatureResult = {
+  bytes: Uint8Array.from([
+    226, 197, 65, 223, 9, 206, 158, 120, 130, 222, 17, 217, 123, 27, 195, 26,
+    237, 44, 219, 157, 85, 238, 191, 144, 250, 133, 142, 70, 170, 207, 92, 157,
+    211, 42, 128, 159, 61, 214, 186, 133, 154, 100, 82, 251, 44, 56, 232, 24,
+    203, 7, 121, 84, 78, 50, 205, 62, 146, 193, 4, 221, 73, 223, 226, 0,
+  ]),
+};
+
+export const mockAddressResult = {
+  version: 0,
+  base58Encoded: 'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3',
+};
