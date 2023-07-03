@@ -46,11 +46,11 @@ const TX_STATUS_CHECK_RETRY_COUNT = 100;
 /**
  * The key name (as a string) to look for when we are retrieving the proto file from a contract
  */
-const MASSA_PROTOFILE_KEY = 'protoMassa';
+export const MASSA_PROTOFILE_KEY = 'protoMassa';
 /**
  * The separator used to split the proto file content into separate proto files
  */
-const protoFileSeparator = '|||||';
+export const PROTO_FILE_SEPARATOR = '|||||';
 /**
  * Smart Contracts Client object enables smart contract deployment, calls and streaming of events.
  */
@@ -525,7 +525,7 @@ export class SmartContractsClient
           json.result[contract].final_value,
         ); // converting the Uint8Array to string
         // splitting all the proto functions to make separate proto file for each functions
-        const protos = retrievedProtoFiles.split(protoFileSeparator);
+        const protos = retrievedProtoFiles.split(PROTO_FILE_SEPARATOR);
 
         // for proto file, save it and get the function name
         for (let protoContent of protos) {
