@@ -41,25 +41,18 @@ In your code, once the script is fully loaded, just use `window.massa` to access
 <script>console.log("Massa Web3 ", window.massa);</script>
 ```
 
-### Documentation
+## Documentation
 
-Complete documentation of all available web3 entities can be found here:
 
--   [`massa-web3 documentation`](https://web3.docs.massa.net)
-
+- Read the [`Massa-web3 documentation`](https://web3.docs.massa.net) to learn how to use Massa-web3.
+- [`TypeDoc API`](https://web3.docs.massa.net) is available for all exported classes, interfaces and methods.
+- [Massa Frontend tutorial](https://web3.docs.massa.net) is available to build your first Massa dApp.
 ## Usage
 ### Web3 Client initialization
 
 There are two types of client initialization. The first one is connecting to Massa's public rpc node using a so-called default client. Please note that specifying a base account is only optional at this point. The code below illustrates how to do that:
 
 ```ts
-import {
-    ClientFactory,
-    Client,
-    DefaultProviderUrls,
-    IAccount,
-} from "@massalabs/massa-web3";
-
 // create a base account for signing transactions
 const baseAccount = {
     address: "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
@@ -75,53 +68,6 @@ const testnetClient: Client = await ClientFactory.createDefaultClient(
 );
 ```
 
-The second way is to create a custom client connecting to a node whose ip and ports are to be specified by the user.
-
-```ts
-import {
-    ClientFactory,
-    Client,
-    IAccount,
-    IProvider,
-    ProviderType,
-} from "@massalabs/massa-web3";
-
-// create a base account for signing transactions
-const baseAccount = {
-    address: "AU12PWTzCKkkE9P5Supt3Fkb4QVZ3cdfB281TGaup7Nv1DY12a6F1",
-    secretKey: "S12tw4YShWtjWfy7YBQ9Erbcg6DYgWnMgb5hGjn9hAKGtgrLNa7L",
-    publicKey: "P1hG8zRRJF2v3qkwyZ2fnHJeaVw9uT4huCkwcWJVvgypEz6D2aR",
-} as IAccount;
-
-// initialize a custom client using an own provider
-const providers: Array<IProvider> = [
-    {
-        url: "https://custom-public-provider.com",
-        type: ProviderType.PUBLIC,
-    } as IProvider,
-    {
-        url: "https://custom-private-provider.com",
-        type: ProviderType.PRIVATE,
-    } as IProvider,
-];
-
-const customClient: Client = await ClientFactory.createCustomClient(
-    providers,
-    true,   // retry on failed requests
-    baseAccount
-);
-```
-
-Please note that connecting to a locally running node could be easily done using the factory method:
-
-```ts
-const testnetClient: Client = await ClientFactory.createDefaultClient(
-    DefaultProviderUrls.LOCALNET,
-    true,
-    baseAccount
-);
-```
-
 Once there is an initialized client instance, it is straightforward to call methods on it.
 
 ```ts
@@ -131,6 +77,8 @@ const balanceResp: IBalance | null = await web3Client
             'some_address',
           );
 ```
+
+To learn more about initializing a client, connecting to a local node, and more, please refer to the [Client Documentation](https://web3.docs.massa.net/classes/ClientFactory.html).
 
 ### Client exposed APIs
 
@@ -196,208 +144,24 @@ const newWalletAccount: IAccount = await WalletClient.walletGenerateNewAccount()
 
 More information about the wallet operations can be found in the [WalletClient documentation](https://web3.docs.massa.net/classes/WalletClient.html).
 
-### Smart contract interaction
+#### Smart contract interaction
+After building your smart contract, you will get a WASM file which is the compiled version of your smart contract.
+- You can use the [`deploySmartContract`](https://web3.docs.massa.net/interfaces/ISmartContractsClient.html#deploySmartContract) method to deploy your smart contract to the network.
 
-#### Deployment
-Once the smart contract WASM is available, it becomes quite straightforward to deploy a smart contract operation (a state changing operation):
-
-```ts
-// deploy smart contract
-const opId: string = await web3Client.smartContracts().deploySmartContract(
-    {
-        fee: 0n,
-        maxGas: 2000000n,
-        maxCoins: 10000000n,
-        contractDataBinary: compiledScFile.binary,
-        datastore: new Map<Uint8Array, Uint8Array>(),
-    } as IContractData,
-    baseAccount
-);
-```
-
-#### Read and call operations
-Smart contract data could be read via `readSmartContract` method:
-
-```ts
-const data: IContractReadOperationResponse = await web3Client
-    .smartContracts()
-    .readSmartContract({
-        fee: 0n,
-        maxGas: 200000n,
-        targetAddress: scAddress,
-        targetFunction: "getGameState",
-        parameter: new Args().serialize(), // this is based on input arguments
-    } as IReadData);
-```
-
-The returned data is contained in an object of type IContractReadOperationResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
-
-
-Smart contracts could also be constructed in order to read data from another contract. In that case one could use the code below to read the data via a proxy contract:
-
-```ts
-// read smart contract data
-const data: IExecuteReadOnlyResponse = await web3Client
-    .smartContracts()
-    .executeReadOnlySmartContract(
-        {
-            fee: 0n,
-            maxGas: 2000000n,
-            coins: fromMAS("0.1"),
-            contractDataBinary: compiledScFromSource.binary,
-        } as IContractData,
-        baseAccount
-    );
-```
-
-The returned data is contained in an object of type IExecuteReadOnlyResponse under the key `returnedValue` which is of type Uint8Array. Depending on the smart contract function implementation, the user is to convert the latter into the expected data type.
-
-#### Call operations
-Smart contract state-changing operations could be executed via `callSmartContract` method:
-
-```ts
-const data: string = await web3Client.smartContracts().callSmartContract(
-    {
-        fee: 0n,
-        maxGas: 200000n,
-        coins: fromMAS("0.1"),
-        targetAddress: scAddress,
-        functionName: "play",
-        parameter: new Args().serialize(), // this is based on input arguments
-    } as ICallData,
-    baseAccount
-);
-```
-
-The returned value is the operation id.
+- To read smart contract data, [`readSmartContract`](https://web3.docs.massa.net/interfaces/ISmartContractsClient.html#readSmartContract) method can be used.
+- In the same way, to write data to the smart contract, [`writeSmartContract`](https://web3.docs.massa.net/interfaces/ISmartContractsClient.html#writeSmartContract) method can be used.
 
 More information about the smart contract operations can be found in the [SmartContractsClient documentation](https://web3.docs.massa.net/classes/SmartContractsClient.html).
 
 #### Event fetching and polling
 
-Emitted smart contract events could directly be fetched via:
-
-```ts
-const eventsFilter = {
-    start: null,
-    end: null,
-    original_caller_address:
-        "AS12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
-    original_operation_id: null,
-    emitter_address: null,
-} as IEventFilter;
-
-const filteredEvents: Array<IEvent> = await web3Client
-    .smartContracts()
-    .getFilteredScOutputEvents(eventFilterData);
-```
-
-Events could also be polled. The js sdk has two methods for doing this as shown below. In both, a filter, a web3 client and a poll interval which we can set in order to poll the events needs to be provided:
-
-```ts
-const onEventData = (events: Array<IEvent>) => {
-    console.log("Event Data Received:", events);
-};
-const onEventDataError = (error: Error) => {
-    console.log("Event Data Error:", error);
-};
-
-// poll smart contract events
-const eventsFilter = {
-    start: null,
-    end: null,
-    original_caller_address:
-        "AS12rr1neHvp7uzGepfPRPguZX5JWC3EFW6H7ZQRazzNjBRMNvQB",
-    original_operation_id: null,
-    emitter_address: null,
-    is_final: true,
-} as IEventFilter;
-
-const eventPoller = EventPoller.startEventsPolling(
-    eventsFilter,
-    1000,
-    web3Client
-);
-eventPoller.on(ON_MASSA_EVENT_DATA, onEventData);
-eventPoller.on(ON_MASSA_EVENT_ERROR, onEventDataError);
-
-//...do some work...
-
-// cleanup and finish
-eventPoller.stopPolling();
-```
-
-Alternatively, one could make direct use of callback functions as function arguments which would fire on event data received or generated errors:
-
-```ts
-const onEventData = (events: Array<IEvent>) => {
-    console.log("Event Data Received:", events);
-};
-const onEventDataError = (error: Error) => {
-    console.log("Event Data Error:", error);
-};
-
-const eventPoller: EventPoller = EventPoller.startEventsPolling(
-    eventsFilter,
-    1000,
-    web3Client,
-    onEventData,
-    onEventDataError
-);
-
-//...do some work...
-
-// cleanup and finish
-eventPoller.stopPolling();
-```
-
-The latter could easily be employed in smart contracts where we need to e.g. get the contract address. For example, this contract would emit the address at creation:
-
-```ts
-import { call, print, create_sc, generate_event } from "massa-sc-std";
-
-export function main(_args: string): i32 {
-    ... deploy the smart contract ...
-    generateEvent(`Address:${sc_address}`); //emit an event with the address
-    ...
-}
-```
+It is possible to fetch, filter and poll smart contract events with methods provided by the smart contracts sub-client. Available methods and their usage are described in the [Event Section](https://web3.docs.massa.net/classes/EventPoller.html) of the documentation.
 
 #### Massa Units
 
-All Massa values that are being used or returned by web3 (gas, fees, coins and rolls) are expressed via BigInt's. Massa-web3 has however a few convenience methods and converters that might come handy. Below is a summary and some examples of the latter:
+All Massa values that are being used or returned by web3 (gas, fees, coins and rolls) are expressed via BigInt's. Massa-web3 has however a few convenience methods and converters that might come handy, like the `fromMAS` and `toMAS` methods. Check the [MassaUnits documentation](https://web3.docs.massa.net/functions/fromMAS.html) for more information.
 
-- **Rolls**: expressed in BigInt's. For Rolls there is no metric system as rolls are unit-less. 10 rolls is to be represented by a BigInt containing 10. Example:
 ```ts
-const rolls = BigInt(10);
-// or. ...
-const rolls = 10n;
-```
-- **Gas/MaxGas**: expressed in BigInt's. For Gas/MaxGas there is no metric system as gas is unit-less. The gas represents the computational units required for a given operation to be executed by the network. Example:
-```ts
-const gas = BigInt(2000000);
-// or. ...
-const gas = 2000000n;
-```
-- **Coins/Fees**: expressed in BigInt's. Coins/fees do however have a metric system behind them. The smallest unit is 10**-9 `Massa`. All coins/fees are to be expressed as integers scaled by 10**9 and this way consumed by the network json-rpc protocol. Since gas/fees are to be used as BigInt's web3 adds in a few convenience utils allowing smaller units (e.g. 0.5 `Massa`) to be expressed.
-
-The util function `fromMAS` and `toMAS` are used exactly for the latter purpose.
-`fromMAS` receives any amount of type `number | string | BigNumber | bigint` and returns a scaled `bigint` for ready use.
-`toMAS` on the contrary converts any amount from `nanoMassa` to `Massa` and returns a `BigNumber` representing the amount as a decimal.
-
-Examples:
-```ts
-const coinsToTransfer = fromMAS("0.5"); // half a massa
-// or. ...
-const coinsToTransfer = 500n * MassaUnits.mMassa; // half a massa
-```
-
-Web3 exposes a collection `MassaUnits` which has three convenience `BigInt` constants that could be used for amount scaling:
-
-- `MassaUnits.oneMassa` = 10**9
-- `MassaUnits.mMassa` = 10**6
-- `MassaUnits.uMassa` = 10**3
-
 ## Contributing
 We welcome contributions from the community!
 
