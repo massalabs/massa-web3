@@ -38,6 +38,6 @@ jobs:
           fi
         env:
           JSON_RPC_URL_PUBLIC: ${{ secrets.JSON_RPC_URL_PUBLIC }}
-          JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PRIVATE }}
-          DEPLOYER_SECRET_KEY: ${{ secrets.DEPLOYER_SECRET_KEY }}
+          JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PUBLIC }}
+          DEPLOYER_SECRET_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
           OTHER_ACC_SECRET_KEY: ${{ secrets.OTHER_ACC_SECRET_KEY }}

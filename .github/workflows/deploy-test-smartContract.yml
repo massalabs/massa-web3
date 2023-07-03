@@ -1,7 +1,8 @@
 name: Smart contract example Deploy
 
 on:
-  [push]
+  push:
+    branches: [main, buildnet]
 
 
 jobs:
@@ -41,4 +42,4 @@ jobs:
           env:
             JSON_RPC_URL_PUBLIC: ${{ secrets.JSON_RPC_URL_PUBLIC }}
             JSON_RPC_URL_PRIVATE: ${{ secrets.JSON_RPC_URL_PUBLIC }} # this API is not used
-            DEPLOYER_SECRET_KEY: ${{ secrets.DEPLOYER_SECRET_KEY }}
+            DEPLOYER_SECRET_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
