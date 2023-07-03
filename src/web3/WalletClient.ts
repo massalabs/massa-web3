@@ -499,7 +499,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     signerPubKey: string,
   ): Promise<boolean> {
     // setup the public key.
-    const publicKey: PublicKey = PublicKey.fromBase58Encode(signerPubKey);
+    const publicKey: PublicKey = PublicKey.fromString(signerPubKey);
 
     // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
