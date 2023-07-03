@@ -19,6 +19,7 @@ const ADDRESS_PREFIX = 'AU';
  * A secret key.
  * The secret key object is created from a base58 encoded string representing the secret key.
  *
+ * @remarks String representation is S + base58Check(version_bytes + secret_key_hash_bytes)
  * @remarks bytes attribute is the Uint8Array representation of the secret key.
  */
 export class SecretKey {
@@ -51,7 +52,7 @@ export class SecretKey {
  *
  * @remarks The public key is derived from the secret key and got the same version as the secret key.
  *
- * @remarks base58Encode attribute is the readable string representation of the public key.
+ * @remarks String representation is P + base58Check(version_bytes + public_key_hash_bytes)
  * @remarks bytes attribute is the Uint8Array representation of the public key.
  */
 export class PublicKey {
@@ -87,6 +88,7 @@ export class PublicKey {
  *
  * @remarks the address object is created from a public key and got the same version as the public key.
  *
+ * @remarks String representation is A + U/S + base58Check(version_bytes + hashBlake3(version_bytes + public_key_bytes))
  * @remarks the address bytes representation is `version + hashBlake3(version + publicKey)`.
  */
 export class Address {
