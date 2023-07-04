@@ -516,8 +516,8 @@ export class SmartContractsClient
       let protoFiles: MassaProtoFile[] = [];
 
       // for each contract, get the proto files
-      for (let contract of Object.keys(json.result)) {
-        if (!json.result[contract].final_value) {
+      for (let contract of json.result) {
+        if (!contract.final_value) {
           throw new Error('No proto file found');
         }
 
