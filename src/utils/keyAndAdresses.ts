@@ -71,7 +71,7 @@ export class PublicKey {
       base58Encode(Buffer.concat([versionBuffer, Buffer.from(this.bytes)]));
   }
 
-  /* Static method to create a public key from a base58 encoded string, and decoding the version number */
+  // Create a new PublicKy object from a base58 encoded string
   static fromString(publicKeyBase58Encoded: string): PublicKey {
     const versionAndKeyBytes = getBytesPublicKey(publicKeyBase58Encoded);
 
