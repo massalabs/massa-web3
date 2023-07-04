@@ -90,6 +90,7 @@ export class PublicKey {
  *
  * @remarks String representation is A + U/S + base58Check(version_bytes + hashBlake3(version_bytes + public_key_bytes))
  * @remarks the address bytes representation is `version + hashBlake3(version + publicKey)`.
+ * @remarks bytes is not an attribute of the address object because it is not needed.
  */
 export class Address {
   version: number;
