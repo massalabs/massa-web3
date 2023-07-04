@@ -521,9 +521,7 @@ export class SmartContractsClient
           throw new Error('No proto file found');
         }
 
-        const retrievedProtoFiles = bytesArrayToString(
-          json.result[contract].final_value,
-        ); // converting the Uint8Array to string
+        const retrievedProtoFiles = bytesArrayToString(contract.final_value); // converting the Uint8Array to string
         // splitting all the proto functions to make separate proto file for each functions
         const protos = retrievedProtoFiles.split(PROTO_FILE_SEPARATOR);
 
