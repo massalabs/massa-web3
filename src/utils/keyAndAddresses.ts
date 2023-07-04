@@ -77,6 +77,7 @@ export class PublicKey {
  * @remarks the address object is created from a public key and got the same version as the public key.
  *
  * @remarks the address bytes representation is `version + hashBlake3(version + publicKey)`.
+ * @remarks publicKey bytes is not an attribute of the address object because it is not needed.
  */
 export class Address {
   version: number;

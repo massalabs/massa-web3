@@ -23,7 +23,7 @@ import { IWalletClient } from '../interfaces/IWalletClient';
 import { fromMAS } from '../utils/converters';
 import { getBytesPublicKey } from '../utils/bytes';
 
-import { Address, SecretKey, PublicKey } from '../utils/keyAndAdresses';
+import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
 const SECRET_KEY_PREFIX = 'S';
 const VERSION_NUMBER = 0;
 const MAX_WALLET_ACCOUNTS = 256;
