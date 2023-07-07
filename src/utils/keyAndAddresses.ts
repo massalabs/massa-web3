@@ -6,7 +6,7 @@ import {
 } from './Xbqcrypto';
 
 import * as ed from '@noble/ed25519';
-import { getBytesSecretKey } from './bytes';
+import { getBytesPublicKey, getBytesSecretKey } from './bytes';
 
 /**
  * Prefixes for secret keys, public keys, and addresses.
@@ -19,7 +19,9 @@ const ADDRESS_PREFIX = 'AU';
  * A secret key.
  * The secret key object is created from a base58 encoded string representing the secret key.
  *
- * @remarks bytes attribute is the Uint8Array representation of the secret key.
+ * @remarks
+ * - String representation is S + base58Check(version_bytes + secret_key_hash_bytes)
+ * - bytes attribute is the Uint8Array representation of the secret key.
  */
 export class SecretKey {
   version: number;
@@ -49,10 +51,10 @@ export class SecretKey {
 /**
  * The PublicKey class represents a cryptographic public key.
  *
- * @remarks The public key is derived from the secret key and got the same version as the secret key.
- *
- * @remarks base58Encode attribute is the readable string representation of the public key.
- * @remarks bytes attribute is the Uint8Array representation of the public key.
+ * @remarks
+ * - The public key is derived from the secret key and got the same version as the secret key.
+ * - String representation is P + base58Check(version_bytes + public_key_hash_bytes)
+ * - bytes attribute is the Uint8Array representation of the public key.
  */
 export class PublicKey {
   version: number;
@@ -69,6 +71,17 @@ export class PublicKey {
       PUBLIC_KEY_PREFIX +
       base58Encode(Buffer.concat([versionBuffer, Buffer.from(this.bytes)]));
   }
+
+  // Create a new PublicKey object from a base58 encoded string
+  static fromString(base58Encoded: string): PublicKey {
+    const versionAndKeyBytes = getBytesPublicKey(base58Encoded);
+
+    // Slice off the version byte
+    const version = varintDecode(versionAndKeyBytes.slice(0, 1)).value;
+    const keyBytes = versionAndKeyBytes.slice(1);
+
+    return new PublicKey(keyBytes, version);
+  }
 }
 
 /**
@@ -76,8 +89,10 @@ export class PublicKey {
  *
  * @remarks the address object is created from a public key and got the same version as the public key.
  *
- * @remarks the address bytes representation is `version + hashBlake3(version + publicKey)`.
- * @remarks publicKey bytes is not an attribute of the address object because it is not needed.
+ * @remarks
+ * - String representation is A + U/S + base58Check(version_bytes + hashBlake3(version_bytes + public_key_bytes))
+ * - The address bytes representation is `version + hashBlake3(version + publicKey)`.
+ * - bytes is not an attribute of the address object because it is not needed.
  */
 export class Address {
   version: number;
