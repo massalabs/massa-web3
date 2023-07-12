@@ -277,9 +277,9 @@ export class SmartContractsClient
       throw new Error(jsonRpcCallResult[0].result.Error);
     }
     return {
-      returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,
-      info: jsonRpcCallResult[0] as IContractReadOperationData,
-    } as IContractReadOperationResponse;
+      returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
+      info: jsonRpcCallResult[0],
+    };
   }
 
   /**
