@@ -394,7 +394,7 @@ export const mockDeployerAccount: IAccount = {
 
 export const mockContractData: IContractData = {
   fee: 100000000000000000n,
-  maxGas: 1000000n,
+  maxGas: 100000000000000000n,
   maxCoins: 100000000000000000n,
   address: 'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
   contractDataText: 'Hello World!',
@@ -421,7 +421,7 @@ export const mockContractData: IContractData = {
 
 export const mockCallData: ICallData = {
   fee: 100000000000000000n,
-  maxGas: 1000000n,
+  maxGas: 100000000000000000n,
   coins: 100000000000000000n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   functionName: 'test',

@@ -86,6 +86,11 @@ describe('SmartContractsClient', () => {
     (smartContractsClient as any).sendJsonRPCRequest = jest
       .fn()
       .mockResolvedValue(mockOpIds);
+
+    smartContractsClient.getContractBalance = jest.fn().mockResolvedValue({
+      candidate: fromMAS(mockAddressesInfo[2].candidate_balance),
+      final: fromMAS(mockAddressesInfo[2].final_balance),
+    });
   });
 
   describe('deploySmartContract', () => {
