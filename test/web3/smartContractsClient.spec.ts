@@ -4,7 +4,10 @@ import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { fromMAS } from '../../src/utils/converters';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
-import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
+import {
+  SmartContractsClient,
+  MAX_READ_BLOCK_GAS,
+} from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
   mockClientConfig,
@@ -27,7 +30,6 @@ import {
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 
-const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 
@@ -270,7 +272,7 @@ describe('SmartContractsClient', () => {
       await expect(
         smartContractsClient.callSmartContract(mockCallData),
       ).rejects.toThrow(
-        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
+        `The gas submitted 100000000000000000 exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS}`,
       );
     });
   });

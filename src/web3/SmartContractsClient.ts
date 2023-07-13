@@ -39,7 +39,7 @@ import { getBytesPublicKey } from '../utils/bytes';
 import { writeFileSync } from 'fs';
 import path from 'path';
 
-const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
+export const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
 const WAIT_STATUS_TIMEOUT = 60000;
