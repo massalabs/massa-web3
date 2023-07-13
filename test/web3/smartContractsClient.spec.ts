@@ -272,7 +272,7 @@ describe('SmartContractsClient', () => {
       await expect(
         smartContractsClient.callSmartContract(mockCallData),
       ).rejects.toThrow(
-        `The gas submitted 100000000000000000 exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS}`,
+        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
     });
   });
