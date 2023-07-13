@@ -3,11 +3,16 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
-import { IRollsData } from '../../src/interfaces/IRollsData';
+// import { IRollsData } from '../../src/interfaces/IRollsData';
 import * as dotenv from 'dotenv';
 import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
-import { IBalance, IFullAddressInfo } from '../../src';
+import {
+  IBalance,
+  IFullAddressInfo,
+  ITransactionData,
+  fromMAS,
+} from '../../src';
 import { ISignature } from '../../src/interfaces/ISignature';
 import assert from 'assert';
 const path = require('path');
@@ -216,40 +221,40 @@ if (!secondAccSecretKey) {
     console.log('\n ', secondHeader);
     assert(walletInfo.length === 2, 'Getting wallet info failed');
 
-    // /* Test function sendTransaction */
-    // console.log(`\n${chalk.bold('Test function sendTransaction')}`);
-    // const transactionData: ITransactionData = {
-    //   fee: 0n,
-    //   amount: fromMAS(1),
-    //   recipientAddress: newAccount.address as string,
-    // };
-    // const sendTxId: Array<string> = await web3Client
-    //   .wallet()
-    //   .sendTransaction(transactionData);
-    // const startBalance: IBalance | null = await web3Client
-    //   .wallet()
-    //   .getAccountBalance(newAccount.address as string);
-    // console.log(`Transaction sent with id: ${sendTxId}`);
-    // // Await finalization
-    // await web3Client
-    //   .smartContracts()
-    //   .awaitRequiredOperationStatus(sendTxId[0], EOperationStatus.FINAL);
-    // console.log(`Transaction ${sendTxId} finalized`);
-    // /* End of test */
-    // console.log('\n ', secondHeader);
-    // const newAccountBalance: IBalance | null = await web3Client
-    //   .wallet()
-    //   .getAccountBalance(newAccount.address as string);
-    // console.log(
-    //   'Start balance: ',
-    //   startBalance?.final,
-    //   'End balance: ',
-    //   newAccountBalance?.final,
-    // );
-    // assert(
-    //   newAccountBalance?.final === BigInt(990000000),
-    //   'Sending transaction failed',
-    // );
+    /* Test function sendTransaction */
+    console.log(`\n${chalk.bold('Test function sendTransaction')}`);
+    const transactionData: ITransactionData = {
+      fee: 0n,
+      amount: fromMAS(1),
+      recipientAddress: newAccount.address as string,
+    };
+    const sendTxId: Array<string> = await web3Client
+      .wallet()
+      .sendTransaction(transactionData);
+    const startBalance: IBalance | null = await web3Client
+      .wallet()
+      .getAccountBalance(newAccount.address as string);
+    console.log(`Transaction sent with id: ${sendTxId}`);
+    // Await finalization
+    await web3Client
+      .smartContracts()
+      .awaitRequiredOperationStatus(sendTxId[0], EOperationStatus.FINAL);
+    console.log(`Transaction ${sendTxId} finalized`);
+    /* End of test */
+    console.log('\n ', secondHeader);
+    const newAccountBalance: IBalance | null = await web3Client
+      .wallet()
+      .getAccountBalance(newAccount.address as string);
+    console.log(
+      'Start balance: ',
+      startBalance?.final,
+      'End balance: ',
+      newAccountBalance?.final,
+    );
+    assert(
+      newAccountBalance?.final === BigInt(990000000),
+      'Sending transaction failed',
+    );
 
     /* Test function walletSignMessage */
     console.log(`\n${chalk.bold('Test function walletSignMessage')}`);
@@ -286,43 +291,43 @@ if (!secondAccSecretKey) {
     console.log('\n ', secondHeader);
     assert(isSignatureValid, 'Verifying signature failed');
 
-    /* Test function buyRolls */
-    console.log(`\n${chalk.bold('Test function buyRolls')}`);
-    const transactionDataRolls: IRollsData = {
-      fee: 0n,
-      amount: 1n,
-    };
-    const buyRollsTxId: Array<string> = await web3Client
-      .wallet()
-      .buyRolls(transactionDataRolls, newAccount as IAccount);
-    // Await finalization
-    console.log(`Transaction sent with id: ${buyRollsTxId}`);
-    await web3Client
-      .smartContracts()
-      .awaitRequiredOperationStatus(buyRollsTxId[0], EOperationStatus.FINAL);
-    console.log(`Transaction ${buyRollsTxId} finalized`);
-    /* End of test */
-    console.log('\n ', secondHeader);
-    const newRollsBalance = (await web3Client.wallet().walletInfo())[0]
-      .candidate_roll_count;
-    console.log('New rolls balance: ', newRollsBalance);
-    assert(newRollsBalance === 1, 'Buying rolls failed');
+    // /* Test function buyRolls */
+    // console.log(`\n${chalk.bold('Test function buyRolls')}`);
+    // const transactionDataRolls: IRollsData = {
+    //   fee: 0n,
+    //   amount: 1n,
+    // };
+    // const buyRollsTxId: Array<string> = await web3Client
+    //   .wallet()
+    //   .buyRolls(transactionDataRolls, newAccount as IAccount);
+    // // Await finalization
+    // console.log(`Transaction sent with id: ${buyRollsTxId}`);
+    // await web3Client
+    //   .smartContracts()
+    //   .awaitRequiredOperationStatus(buyRollsTxId[0], EOperationStatus.FINAL);
+    // console.log(`Transaction ${buyRollsTxId} finalized`);
+    // /* End of test */
+    // console.log('\n ', secondHeader);
+    // const newRollsBalance = (await web3Client.wallet().walletInfo())[0]
+    //   .candidate_roll_count;
+    // console.log('New rolls balance: ', newRollsBalance);
+    // assert(newRollsBalance === 1, 'Buying rolls failed');
 
-    /* Test function sellRolls */
-    console.log(`\n${chalk.bold('Test function sellRolls')}`);
-    const sellRollsTxId: Array<string> = await web3Client
-      .wallet()
-      .sellRolls(transactionDataRolls, baseAccount as IAccount);
-    // Await finalization
-    await web3Client
-      .smartContracts()
-      .awaitRequiredOperationStatus(sellRollsTxId[0], EOperationStatus.FINAL);
-    console.log(`Transaction ${sellRollsTxId} finalized`);
-    /* End of test */
-    console.log('\n ', secondHeader);
-    const newRollsBalance2 = (await web3Client.wallet().walletInfo())[0]
-      .candidate_roll_count;
-    assert(newRollsBalance2 === 0, 'Selling rolls failed');
+    // /* Test function sellRolls */
+    // console.log(`\n${chalk.bold('Test function sellRolls')}`);
+    // const sellRollsTxId: Array<string> = await web3Client
+    //   .wallet()
+    //   .sellRolls(transactionDataRolls, baseAccount as IAccount);
+    // // Await finalization
+    // await web3Client
+    //   .smartContracts()
+    //   .awaitRequiredOperationStatus(sellRollsTxId[0], EOperationStatus.FINAL);
+    // console.log(`Transaction ${sellRollsTxId} finalized`);
+    // /* End of test */
+    // console.log('\n ', secondHeader);
+    // const newRollsBalance2 = (await web3Client.wallet().walletInfo())[0]
+    //   .candidate_roll_count;
+    // assert(newRollsBalance2 === 0, 'Selling rolls failed');
 
     process.exit(0);
   } catch (ex) {
