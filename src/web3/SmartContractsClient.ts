@@ -38,10 +38,12 @@ import { WalletClient } from './WalletClient';
 import { getBytesPublicKey } from '../utils/bytes';
 import { writeFileSync } from 'fs';
 import path from 'path';
+import { scheduler } from 'node:timers/promises';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
 const TX_STATUS_CHECK_RETRY_COUNT = 100;
+const WAIT_STATUS_TIMEOUT = 60000;
 
 /**
  * The key name (as a string) to look for when we are retrieving the proto file from a contract
@@ -175,6 +177,19 @@ export class SmartContractsClient
     callData: ICallData,
     executor?: IAccount,
   ): Promise<string> {
+    // check the max. allowed gas
+    if (callData.maxGas > MAX_READ_BLOCK_GAS) {
+      throw new Error(
+        `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+      );
+    }
+    // check if the address has a balance > 0
+    const balance = await this.getContractBalance(callData.targetAddress);
+    if (!balance || balance.final === BigInt(0)) {
+      throw new Error(
+        `The target address ${callData.targetAddress} has no balance`,
+      );
+    }
     // get next period info
     const nodeStatusInfo: INodeStatus =
       await this.publicApiClient.getNodeStatus();
@@ -222,7 +237,40 @@ export class SmartContractsClient
         `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
       );
     }
+    await this.waitFinalOperation(opIds[0]);
     return opIds[0];
+  }
+
+  public async waitFinalOperation(opId: string): Promise<void> {
+    let status;
+    const start = Date.now();
+    let counterMs = 0;
+    while (counterMs < WAIT_STATUS_TIMEOUT) {
+      if (await this.isOperationFinal(opId)) {
+        const events = await this.getFilteredScOutputEvents({
+          emitter_address: null,
+          start: null,
+          end: null,
+          original_caller_address: null,
+          original_operation_id: opId,
+          is_final: true,
+        });
+        if (events.some((e) => e.context.is_error)) {
+          events.map((l) => console.log(`>>>> ${l.data}`));
+          throw new Error(`Waiting for operation ${opId} ended with error:`);
+        }
+        return;
+      }
+      await scheduler.wait(2000);
+      counterMs = Date.now() - start;
+    }
+    const msg = `Fail to wait operation finality for ${opId}: Timeout reached. status: ${status}`;
+    throw new Error(msg);
+  }
+
+  public async isOperationFinal(opId: string): Promise<boolean> {
+    const status = await this.getOperationStatus(opId);
+    return status === EOperationStatus.FINAL;
   }
 
   /**
