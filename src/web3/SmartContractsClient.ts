@@ -256,7 +256,7 @@ export class SmartContractsClient
           is_final: true,
         });
         if (events.some((e) => e.context.is_error)) {
-          events.map((l) => console.log(`>>>> ${l.data}`));
+          events.forEach((l) => console.log(`>>>> ${l.data}`));
           throw new Error(`Waiting for operation ${opId} ended with error:`);
         }
         return;
@@ -325,9 +325,9 @@ export class SmartContractsClient
       throw new Error(jsonRpcCallResult[0].result.Error);
     }
     return {
-      returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
+      returnValue: jsonRpcCallResult[0].result.Ok,
       info: jsonRpcCallResult[0],
-    };
+    } as IContractReadOperationResponse;
   }
 
   /**
