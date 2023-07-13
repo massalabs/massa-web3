@@ -300,7 +300,7 @@ if (!secondAccSecretKey) {
     };
     const buyRollsTxId: Array<string> = await web3Client
       .wallet()
-      .buyRolls(transactionDataRolls, newAccount as IAccount);
+      .buyRolls(transactionDataRolls, deployerAccount as IAccount);
     // Await finalization
     console.log(`Transaction sent with id: ${buyRollsTxId}`);
     await web3Client
