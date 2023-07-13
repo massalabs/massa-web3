@@ -38,7 +38,6 @@ import { WalletClient } from './WalletClient';
 import { getBytesPublicKey } from '../utils/bytes';
 import { writeFileSync } from 'fs';
 import path from 'path';
-import { scheduler } from 'node:timers/promises';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -261,7 +260,7 @@ export class SmartContractsClient
         }
         return;
       }
-      await scheduler.wait(2000);
+      await wait(2000);
       counterMs = Date.now() - start;
     }
     const msg = `Fail to wait operation finality for ${opId}: Timeout reached. status: ${status}`;
