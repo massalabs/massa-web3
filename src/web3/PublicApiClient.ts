@@ -154,6 +154,12 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   /**
    * Show data about a block (content, finality ...).
    *
+   * @remarks
+   * The blocks are stored in the node cache. After a certain time (depending of the network activity),
+   * the blocks are removed from the cache and the node will not be able to return the block data.
+   * The corresponding api parameter is 'max_discarded_blocks'.
+   * More information can be found here: https://docs.massa.net/en/latest/testnet/all-config.html
+   *
    * @param blockIds - The block ids as an array of strings.
    *
    * @returns A promise which resolves in the block data.
