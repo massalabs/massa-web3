@@ -241,7 +241,6 @@ export class SmartContractsClient
   }
 
   public async waitFinalOperation(opId: string): Promise<void> {
-    let status;
     const start = Date.now();
     let counterMs = 0;
     while (counterMs < WAIT_STATUS_TIMEOUT) {
