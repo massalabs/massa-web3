@@ -164,6 +164,8 @@ const pollAsyncEvents = async (
 
 (async () => {
   const header = '='.repeat(process.stdout.columns - 1);
+  // const secondHeader = '-'.repeat(process.stdout.columns - 2);
+
   console.log(header);
   console.log(
     `${chalk.green.bold('Massa Smart Contract Interaction Example')}`,
@@ -172,7 +174,7 @@ const pollAsyncEvents = async (
 
   let spinner;
   try {
-    // init client
+    /* Set up before test */
     const deployerAccount: IAccount =
       await WalletClient.getAccountFromSecretKey(deployerSecretKey);
 
