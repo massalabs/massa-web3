@@ -89,14 +89,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [esmify](git://github.com/mattdesl/esmify.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 2.1.1
-
-**Many thanks to:** Matt DesLauriers dave.des@gmail.com https://github.com/mattdesl
-
 ## [jest-environment-jsdom](git+https://github.com/facebook/jest.git)
 
 **License:** MIT - perpetual

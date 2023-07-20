@@ -12,6 +12,8 @@ const baseConfig = {
     fallback: {
       // Fallback for the buffer module, using the buffer module
       buffer: require.resolve('buffer/'),
+      fs: false,
+      path: false,
     },
     // Extensions that are used to resolve modules
     extensions: ['.ts', '.js'],
