@@ -20,10 +20,9 @@ jobs:
         mv docs/documentation/html massa-web3
     - name: Deploy files
       uses: appleboy/scp-action@master
-      env:
-        HOST: ${{ secrets.MASSANET_HOST }}
-        USERNAME: ${{ secrets.MASSANET_USERNAME }}
-        KEY: ${{ secrets.MASSANET_SSHKEY }}
       with:
+        host: ${{ secrets.MASSANET_HOST }}
+        username: ${{ secrets.MASSANET_USERNAME }}
+        key: ${{ secrets.MASSANET_SSHKEY }}
         source: "./massa-web3"
         target: "/var/www/type-doc"

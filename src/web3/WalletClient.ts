@@ -21,11 +21,11 @@ import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
 import { fromMAS } from '../utils/converters';
+import { getBytesPublicKey } from '../utils/bytes';
 
-const VERSION_NUMBER = 0;
-const ADDRESS_PREFIX = 'AU';
-const PUBLIC_KEY_PREFIX = 'P';
+import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
 const SECRET_KEY_PREFIX = 'S';
+const VERSION_NUMBER = 0;
 const MAX_WALLET_ACCOUNTS = 256;
 
 /**
@@ -171,25 +171,21 @@ export class WalletClient extends BaseClient implements IWalletClient {
     }
     const accountsToCreate: IAccount[] = [];
 
-    for (const secretKey of secretKeys) {
-      const secretKeyBase58Decoded = WalletClient.getBytesSecretKey(secretKey);
-      const publicKey: Uint8Array = await ed.getPublicKey(
-        secretKeyBase58Decoded,
-      );
+    const uniqueSecretKeys = secretKeys.filter(
+      (value, index, self) => self.indexOf(value) === index,
+    );
 
-      const version = Buffer.from(varintEncode(VERSION_NUMBER));
-      const publicKeyBase58Encoded: string =
-        PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
-      const addressBase58Encoded =
-        ADDRESS_PREFIX +
-        base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
+    for (const secretKeyBase58Encoded of uniqueSecretKeys) {
+      const secretKey = new SecretKey(secretKeyBase58Encoded);
+      const publicKey: PublicKey = await secretKey.getPublicKey();
+      const address: Address = new Address(publicKey);
 
-      if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
+      if (!this.getWalletAccountByAddress(address.base58Encode)) {
         accountsToCreate.push({
-          secretKey: secretKey, // submitted in base58
-          publicKey: publicKeyBase58Encoded,
-          address: addressBase58Encoded,
-          createdInThread: getThreadNumber(addressBase58Encoded),
+          secretKey: secretKeyBase58Encoded,
+          publicKey: publicKey.base58Encode,
+          address: address.base58Encode,
+          createdInThread: getThreadNumber(address.base58Encode),
         } as IAccount);
       }
     }
@@ -229,39 +225,32 @@ export class WalletClient extends BaseClient implements IWalletClient {
         throw new Error('Missing account private key');
       }
 
+      // Create the secret key object
       const secretKeyBase58Encoded: string = account.secretKey;
-      const secretKeyBase58Decoded = WalletClient.getBytesSecretKey(
-        secretKeyBase58Encoded,
-      );
-      // get public key
-      const publicKey: Uint8Array = await ed.getPublicKey(
-        secretKeyBase58Decoded,
-      );
-      const version = Buffer.from(varintEncode(VERSION_NUMBER));
-      const publicKeyBase58Encoded: string =
-        PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
-      if (account.publicKey && account.publicKey !== publicKeyBase58Encoded) {
+      const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
+
+      // create the public key object
+      const publicKey: PublicKey = await secretKey.getPublicKey();
+      if (account.publicKey && account.publicKey !== publicKey.base58Encode) {
         throw new Error(
           'Public key does not correspond the the private key submitted',
         );
       }
 
       // get wallet account address
-      const addressBase58Encoded =
-        ADDRESS_PREFIX +
-        base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
-      if (account.address && account.address !== addressBase58Encoded) {
+      const address: Address = new Address(publicKey);
+      if (account.address && account.address !== address.base58Encode) {
         throw new Error(
           'Account address not correspond the the address submitted',
         );
       }
 
-      if (!this.getWalletAccountByAddress(addressBase58Encoded)) {
+      if (!this.getWalletAccountByAddress(address.base58Encode)) {
         accountsAdded.push({
-          address: addressBase58Encoded,
+          address: address.base58Encode,
           secretKey: secretKeyBase58Encoded,
-          publicKey: publicKeyBase58Encoded,
-          createdInThread: getThreadNumber(addressBase58Encoded),
+          publicKey: publicKey.base58Encode,
+          createdInThread: getThreadNumber(address.base58Encode),
         } as IAccount);
       }
     }
@@ -318,31 +307,31 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
   /**
    * Generates a new wallet account.
+   * @param version_number - The version number of the secret key to be generated, to create a new account.
    *
    * @returns A Promise that resolves to an {@link IAccount} object, which represents the newly created account.
    */
   public static async walletGenerateNewAccount(): Promise<IAccount> {
     // generate private key
-    const secretKey: Uint8Array = ed.utils.randomPrivateKey();
+    const secretKeyArray: Uint8Array = ed.utils.randomPrivateKey();
+
     const version = Buffer.from(varintEncode(VERSION_NUMBER));
     const secretKeyBase58Encoded: string =
-      SECRET_KEY_PREFIX + base58Encode(Buffer.concat([version, secretKey]));
+      SECRET_KEY_PREFIX +
+      base58Encode(Buffer.concat([version, secretKeyArray]));
+    const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
 
     // get public key
-    const publicKey: Uint8Array = await ed.getPublicKey(secretKey);
-    const publicKeyBase58Encoded: string =
-      PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
+    const publicKey: PublicKey = await secretKey.getPublicKey();
 
     // get wallet account address
-    const addressBase58Encoded =
-      ADDRESS_PREFIX +
-      base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
+    const address: Address = new Address(publicKey);
 
     return {
-      address: addressBase58Encoded,
+      address: address.base58Encode,
       secretKey: secretKeyBase58Encoded,
-      publicKey: publicKeyBase58Encoded,
-      createdInThread: getThreadNumber(addressBase58Encoded),
+      publicKey: publicKey.base58Encode,
+      createdInThread: getThreadNumber(address.base58Encode),
     } as IAccount;
   }
 
@@ -356,23 +345,19 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public static async getAccountFromSecretKey(
     secretKeyBase58: string,
   ): Promise<IAccount> {
-    const version = Buffer.from(varintEncode(VERSION_NUMBER));
     // get private key
-    const secretKeyBase58Decoded = this.getBytesSecretKey(secretKeyBase58);
+    const secretKey: SecretKey = new SecretKey(secretKeyBase58);
     // get public key
-    const publicKey: Uint8Array = await ed.getPublicKey(secretKeyBase58Decoded);
-    const publicKeyBase58Encoded: string =
-      PUBLIC_KEY_PREFIX + base58Encode(Buffer.concat([version, publicKey]));
+    const publicKey: PublicKey = await secretKey.getPublicKey();
 
     // get wallet account address
-    const addressBase58Encoded =
-      ADDRESS_PREFIX +
-      base58Encode(Buffer.concat([version, hashBlake3(publicKey)]));
+    const address: Address = new Address(publicKey);
+
     return {
-      address: addressBase58Encoded,
+      address: address.base58Encode,
       secretKey: secretKeyBase58,
-      publicKey: publicKeyBase58Encoded,
-      createdInThread: getThreadNumber(addressBase58Encoded),
+      publicKey: publicKey.base58Encode,
+      createdInThread: getThreadNumber(address.base58Encode),
     } as IAccount;
   }
 
@@ -456,7 +441,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     }
 
     // get private key
-    const secretKeyBase58Decoded = this.getBytesSecretKey(signer.secretKey);
+    const secretKey: SecretKey = new SecretKey(signer.secretKey);
 
     // bytes compaction
     const bytesCompact: Buffer = Buffer.from(data);
@@ -464,7 +449,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
 
     // sign the digest
-    const sig = await ed.sign(messageHashDigest, secretKeyBase58Decoded);
+    const sig = await secretKey.signDigest(messageHashDigest);
 
     // check sig length
     if (sig.length != 64) {
@@ -475,13 +460,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
     // verify signature
     if (signer.publicKey) {
-      // get public key
-      const publicKeyBase58Decoded = this.getBytesPublicKey(signer.publicKey);
+      const publicKey: PublicKey = await secretKey.getPublicKey();
+
       const isVerified = await ed.verify(
         sig,
         messageHashDigest,
-        publicKeyBase58Decoded,
+        publicKey.bytes,
       );
+
       if (!isVerified) {
         throw new Error(
           `Signature could not be verified with public key. Please inspect`,
@@ -489,8 +475,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
       }
     }
 
-    // convert sig
-    const base58Encoded = base58Encode(sig);
+    // convert signature to base58
+    const version = Buffer.from(varintEncode(secretKey.version));
+    const base58Encoded = base58Encode(Buffer.concat([version, sig]));
 
     return {
       base58Encoded,
@@ -512,68 +499,37 @@ export class WalletClient extends BaseClient implements IWalletClient {
     signerPubKey: string,
   ): Promise<boolean> {
     // setup the public key.
-    const publicKeyBase58Decoded: Uint8Array =
-      WalletClient.getBytesPublicKey(signerPubKey);
+    const publicKey: PublicKey = PublicKey.fromString(signerPubKey);
 
     // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
     const messageDigest: Uint8Array = hashBlake3(bytesCompact);
 
-    // setup the signature.
-    const signatureBytes: Buffer = base58Decode(signature.base58Encoded);
-
-    // verify signature.
-    return (await ed.verify(
-      signatureBytes,
-      messageDigest,
-      publicKeyBase58Decoded,
-    )) as boolean;
-  }
-
-  /**
-   * Retrieves the byte representation of a given public key.
-   *
-   * @param publicKey - The public key to obtain the bytes from.
-   *
-   * @throws If the public key has an incorrect {@link PUBLIC_KEY_PREFIX}.
-   *
-   * @returns A Uint8Array containing the bytes of the public key.
-   */
-  public static getBytesPublicKey(publicKey: string): Uint8Array {
-    if (!(publicKey[0] == PUBLIC_KEY_PREFIX)) {
-      throw new Error(
-        `Invalid public key prefix: ${publicKey[0]} should be ${PUBLIC_KEY_PREFIX}`,
+    try {
+      // setup the signature.
+      const versionAndSignatureBytes: Buffer = base58Decode(
+        signature.base58Encoded,
       );
-    }
-    const publicKeyVersionBase58Decoded: Buffer = base58Decode(
-      publicKey.slice(1),
-    );
-    // Version is little for now.
-    const publicKeyBase58Decoded = publicKeyVersionBase58Decoded.slice(1);
-    return publicKeyBase58Decoded;
-  }
 
-  /**
-   * Get the byte representation of a given secret key.
-   *
-   * @param secretKey - The secret key to get the bytes from.
-   *
-   * @throws if the secret key is not valid.
-   *
-   * @returns a Uint8Array containing the bytes of the secret key.
-   */
-  public static getBytesSecretKey(secretKey: string): Uint8Array {
-    if (!(secretKey[0] == SECRET_KEY_PREFIX)) {
-      throw new Error(
-        `Invalid secret key prefix: "${secretKey[0]}". The secret key should start with "${SECRET_KEY_PREFIX}". Please verify your secret key and try again.`,
+      // removing the version byte
+      const signatureBytes: Uint8Array = versionAndSignatureBytes.slice(1);
+      // check sig length
+      if (signatureBytes.length != 64) {
+        throw new Error(
+          `Invalid signature length. Expected 64, got ${signatureBytes.length}`,
+        );
+      }
+      // verify signature.
+      const isVerified = await ed.verify(
+        signatureBytes,
+        messageDigest,
+        publicKey.bytes,
       );
+      return isVerified;
+    } catch (err) {
+      console.error('Failed to verify signature:', err);
+      return false;
     }
-    const secretKeyVersionBase58Decoded: Buffer = base58Decode(
-      secretKey.slice(1),
-    );
-    // Version is little for now.
-    const secretKeyBase58Decoded = secretKeyVersionBase58Decoded.slice(1);
-    return secretKeyBase58Decoded;
   }
 
   /**
@@ -585,14 +541,20 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * it returns `null`.
    */
   public async getAccountBalance(address: string): Promise<IBalance | null> {
-    const addresses: Array<IAddressInfo> =
-      await this.publicApiClient.getAddresses([address]);
-    if (addresses.length === 0) return null;
-    const addressInfo: IAddressInfo = addresses.at(0);
-    return {
-      candidate: fromMAS(addressInfo.candidate_balance),
-      final: fromMAS(addressInfo.final_balance),
-    } as IBalance;
+    try {
+      const addresses: Array<IAddressInfo> =
+        await this.publicApiClient.getAddresses([address]);
+      if (addresses.length === 0) return null;
+
+      const addressInfo: IAddressInfo = addresses.at(0);
+      return {
+        candidate: fromMAS(addressInfo.candidate_balance),
+        final: fromMAS(addressInfo.final_balance),
+      } as IBalance;
+    } catch (err) {
+      console.error('Failed to get account balance:', err);
+      return null;
+    }
   }
 
   /**
@@ -630,11 +592,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
     );
 
     // sign payload
+    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
     const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
-        bytesCompact,
-      ]),
+      Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
 
@@ -688,10 +648,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
     // sign payload
     const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
-        bytesCompact,
-      ]),
+      Buffer.concat([getBytesPublicKey(sender.publicKey), bytesCompact]),
       sender,
     );
 
@@ -744,10 +701,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
     // sign payload
     const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
-        bytesCompact,
-      ]),
+      Buffer.concat([getBytesPublicKey(sender.publicKey), bytesCompact]),
       sender,
     );
 

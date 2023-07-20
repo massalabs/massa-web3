@@ -6,6 +6,7 @@ import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
 import { u64ToBytes, u8toByte } from '../../src/utils/serializers';
+import { fromMAS } from '../../src';
 const path = require('path');
 const chalk = require('chalk');
 
@@ -72,6 +73,7 @@ export const deploySmartContracts = async (
   web3Client: Client,
   fee = 0n,
   maxGas = 1_000_000n,
+  maxCoins = fromMAS(0.1),
   deployerAccount?: IAccount,
 ): Promise<string> => {
   let deploymentOperationId: string;
@@ -150,6 +152,7 @@ export const deploySmartContracts = async (
             datastore,
             fee,
             maxGas,
+            maxCoins,
           } as IContractData,
           deployerAccount,
         );

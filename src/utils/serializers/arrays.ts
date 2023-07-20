@@ -26,7 +26,7 @@ import {
  *
  * @returns The size of the typed array unit.
  */
-const getDatatypeSize = (type: ArrayType): number => {
+export const getDatatypeSize = (type: ArrayType): number => {
   switch (type) {
     case ArrayType.BOOL:
     case ArrayType.U8:

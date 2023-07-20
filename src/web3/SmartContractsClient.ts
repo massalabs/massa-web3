@@ -34,6 +34,7 @@ import { strToBytes } from '../utils/serializers/strings';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
+import { getBytesPublicKey } from '../utils/bytes';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -42,7 +43,11 @@ const TX_STATUS_CHECK_RETRY_COUNT = 100;
 /**
  * The key name (as a string) to look for when we are retrieving the proto file from a contract
  */
-const MASSA_PROTOFILE_KEY = 'protoMassa';
+export const MASSA_PROTOFILE_KEY = 'protoMassa';
+/**
+ * The separator used to split the proto file content into separate proto files
+ */
+export const PROTO_FILE_SEPARATOR = '|||||';
 /**
  * Smart Contracts Client object enables smart contract deployment, calls and streaming of events.
  */
@@ -96,6 +101,13 @@ export class SmartContractsClient
     const expiryPeriod: number =
       nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
+    // Check if SC data exists
+    if (!contractData.contractDataBinary) {
+      throw new Error(
+        `Expected non-null contract bytecode, but received null.`,
+      );
+    }
+
     // get the block size
     if (
       contractData.contractDataBinary.length >
@@ -120,18 +132,11 @@ export class SmartContractsClient
     );
 
     // sign payload
+    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
     const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
-        bytesCompact,
-      ]),
+      Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
-
-    // Check if SC data exists
-    if (!contractData.contractDataBinary) {
-      throw new Error(`Contract data required. Got null`);
-    }
 
     const data = {
       serialized_content: Array.prototype.slice.call(bytesCompact),
@@ -187,11 +192,9 @@ export class SmartContractsClient
     );
 
     // sign payload
+    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
     const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([
-        WalletClient.getBytesPublicKey(sender.publicKey),
-        bytesCompact,
-      ]),
+      Buffer.concat([bytesPublicKey, bytesCompact]),
       sender,
     );
     // request data
@@ -220,11 +223,12 @@ export class SmartContractsClient
   }
 
   /**
-   * Executes a read operation on a smart contract.
+   * Execute a dry run Smart contract call and returns some data regarding its execution
+   * such as the changes of in the states that would have happen if the transaction was really executed on chain.
    *
    * @param readData - The data required for the a read operation of a smart contract.
    *
-   * @returns A promise that resolves to object the result of the read operation.
+   * @returns A promise that resolves to an object which represents the result of the operation and contains data about its execution.
    */
   public async readSmartContract(
     readData: IReadData,
@@ -330,12 +334,16 @@ export class SmartContractsClient
   }
 
   /**
-   * Execute a read-only smart contract.
+   * Send a read-only smart contract execution request.
    *
-   * @param contractData - The data required for the read-only smart contract.
+   * @remarks
+   * This method is used to dry-run a smart contract execution and get the changes of the states that would
+   * have happen if the transaction was really executed on chain.
+   * This operation does not modify the blockchain state.
    *
-   * @returns A promise which resolves to an object containing the result
-   * of the operation.
+   * @param contractData - The data required for the operation.
+   *
+   * @returns A promise which resolves to an object containing data about the operation.
    *
    * @throws
    * - If the contract binary data is missing.
@@ -347,11 +355,13 @@ export class SmartContractsClient
     contractData: IContractData,
   ): Promise<IExecuteReadOnlyResponse> {
     if (!contractData.contractDataBinary) {
-      throw new Error(`Contract binary data required. Got null`);
+      throw new Error(
+        `Expected non-null contract bytecode, but received null.`,
+      );
     }
 
     if (!contractData.address) {
-      throw new Error(`Contract address required. Got null`);
+      throw new Error(`Expected contract address, but received null.`);
     }
 
     const data = {
@@ -436,7 +446,7 @@ export class SmartContractsClient
         status = await this.getOperationStatus(opId);
       } catch (ex) {
         if (++errCounter > 100) {
-          const msg = `Failed to retrieve the tx status after 10 failed attempts for operation id: ${opId}.`;
+          const msg = `Failed to retrieve the tx status after 100 failed attempts for operation id: ${opId}.`;
           console.error(msg, ex);
           throw ex;
         }

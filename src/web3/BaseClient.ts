@@ -16,11 +16,12 @@ const encodeAddressToBytes = (
   address: string,
   isSmartContract = false,
 ): Buffer => {
-  let targetAddressEncoded = base58Decode(address.slice(2)).slice(1);
+  let targetAddressEncoded = base58Decode(address.slice(2));
   targetAddressEncoded = Buffer.concat([
     isSmartContract ? Buffer.from([1]) : Buffer.from([0]),
     targetAddressEncoded,
   ]);
+
   return targetAddressEncoded;
 };
 
@@ -302,6 +303,11 @@ export class BaseClient {
           varintEncode((data as IContractData).maxGas),
         );
 
+        // max coins amount
+        const maxCoinEncoded = Buffer.from(
+          varintEncode((data as IContractData).maxCoins),
+        );
+
         // contract data
         const contractDataEncoded = Buffer.from(scBinaryCode);
         const dataLengthEncoded = Buffer.from(
@@ -339,6 +345,7 @@ export class BaseClient {
             expirePeriodEncoded,
             typeIdEncoded,
             maxGasEncoded,
+            maxCoinEncoded,
             dataLengthEncoded,
             contractDataEncoded,
             datastoreSerializedBufferLen,
@@ -350,6 +357,7 @@ export class BaseClient {
           expirePeriodEncoded,
           typeIdEncoded,
           maxGasEncoded,
+          maxCoinEncoded,
           dataLengthEncoded,
           contractDataEncoded,
           datastoreSerializedBufferLen,
