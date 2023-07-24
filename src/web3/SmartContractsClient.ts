@@ -393,9 +393,9 @@ export class SmartContractsClient
       });
     }
     return {
-      returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,
-      info: jsonRpcCallResult[0] as IExecuteReadOnlyData,
-    } as IExecuteReadOnlyResponse;
+      returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
+      info: jsonRpcCallResult[0],
+    };
   }
 
   /**
