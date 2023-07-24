@@ -413,6 +413,27 @@ describe('array.ts functions', () => {
       const arrayBack = bytesToArray(byteArray, ArrayType.I64);
       expect(arrayBack).toEqual(dataArray);
     });
+
+    it('test I64 array serialization against AS serialization', () => {
+      const input = [
+        BigInt(-3),
+        BigInt(-2),
+        BigInt(-1),
+        BigInt(0),
+        BigInt(1),
+        BigInt(2),
+        BigInt(3),
+      ];
+      const serialized = new Uint8Array([
+        253, 255, 255, 255, 255, 255, 255, 255, 254, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0,
+        0,
+      ]);
+      expect(arrayToBytes(input, ArrayType.I64)).toEqual(serialized);
+      expect(bytesToArray<bigint>(serialized, ArrayType.I64)).toEqual(input);
+    });
+
     it('converts a F32 array to bytes and back correctly', () => {
       const dataArray = [1.1, 2.2, 3.3, 4.4, 5.5];
       const byteArray = arrayToBytes(dataArray, ArrayType.F32);

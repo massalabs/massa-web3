@@ -352,13 +352,10 @@ describe('Args class', () => {
   });
 
   it('should correctly serialize and deserialize an Args object containing an array of I64s', () => {
-    const arrayI64s = [BigInt(-2300345435), BigInt(97607665667)];
-    const serialized = new Args()
-      .addArray(arrayI64s, ArrayType.I64)
-      .serialize();
-    const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.I64);
-    expect(deserialized).toEqual(arrayI64s);
+    const input = [BigInt(-2300345435), BigInt(97607665667)];
+    const serialized = new Args().addArray(input, ArrayType.I64).serialize();
+    const deserialized = new Args(serialized).nextArray<bigint>(ArrayType.I64);
+    expect(deserialized).toEqual(input);
   });
 
   it('should correctly serialize and deserialize an Args object containing a byteArray, an i64, a string and a native array', () => {
