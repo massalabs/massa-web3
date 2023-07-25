@@ -299,10 +299,10 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
         [data],
       );
     }
-    return datastoreEntries.map((entry) => {
+    return datastoreEntries.map((e) => {
       return {
-        final_value: new Uint8Array(entry.final_value),
-        candidate_value: new Uint8Array(entry.candidate_value),
+        final_value: new Uint8Array(e.final_value),
+        candidate_value: new Uint8Array(e.candidate_value),
       } as IDatastoreEntry;
     });
   }
