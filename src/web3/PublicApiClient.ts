@@ -273,6 +273,8 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    * @param addressesKeys - An array of objects containing address and key data.
    *
    * @returns A promise that resolves to an array of datastore entries.
+   *
+   * @remarks returned values could be easily converted into string if needed using e.g.: bytesToStr(scStorageValue[0].final_value)
    */
   public async getDatastoreEntries(
     addressesKeys: Array<IDatastoreEntryInput>,
