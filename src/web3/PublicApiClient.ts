@@ -303,7 +303,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
       return {
         final_value: new Uint8Array(e.final_value),
         candidate_value: new Uint8Array(e.candidate_value),
-      } as IDatastoreEntry;
+      };
     });
   }
 }
