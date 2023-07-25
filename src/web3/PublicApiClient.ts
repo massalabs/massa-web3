@@ -299,6 +299,10 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
         [data],
       );
     }
+    for (let entry of datastoreEntries) {
+      entry.final_value = new Uint8Array(entry.final_value);
+      entry.candidate_value = new Uint8Array(entry.candidate_value);
+    }
     return datastoreEntries;
   }
 }
