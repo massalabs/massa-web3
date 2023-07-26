@@ -64,11 +64,6 @@ export class BaseClient {
     this.clientConfig = clientConfig;
     this.clientConfig.periodOffset =
       this.clientConfig.periodOffset | PERIOD_OFFSET;
-    if (this.getPrivateProviders().length === 0) {
-      throw new Error(
-        'Cannot initialize web3 with no private providers. Need at least one',
-      );
-    }
     if (this.getPublicProviders().length === 0) {
       throw new Error(
         'Cannot initialize web3 with no public providers. Need at least one',
@@ -100,19 +95,10 @@ export class BaseClient {
     const hasPublicProvider = providers.some(
       (provider) => provider.type === ProviderType.PUBLIC,
     );
-    const hasPrivateProvider = providers.some(
-      (provider) => provider.type === ProviderType.PRIVATE,
-    );
 
     if (!hasPublicProvider) {
       throw new Error(
         'Cannot set providers with no public providers. Need at least one',
-      );
-    }
-
-    if (!hasPrivateProvider) {
-      throw new Error(
-        'Cannot set providers with no private providers. Need at least one',
       );
     }
 
