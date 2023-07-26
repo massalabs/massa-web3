@@ -543,7 +543,7 @@ async function sendJsonRPCRequest<T>(
   resp = await promisifyJsonRpcCall(resource, params, rpcUrl);
 
   // in case of rpc error, rethrow the error.
-  if (resp.error && resp.error) {
+  if (resp.error) {
     throw resp.error;
   }
 
