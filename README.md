@@ -41,7 +41,7 @@ In your code, once the script is fully loaded, just use `window.massa` to access
 
 ## Documentation
 
-- Read the [`Massa-web3 documentation`](docs.massa.net) to learn how to use Massa-web3.
+- Read the [`Massa-web3 documentation`](https://docs.massa.net) to learn how to use Massa-web3.
 - [`TypeDoc API`](https://web3.docs.massa.net) is available for all exported classes, interfaces and methods.
 - dApp examples with associated frontend can be found at [massa-sc-examples](https://github.com/massalabs/massa-sc-examples) repository.
 
