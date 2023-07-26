@@ -79,7 +79,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Deploy a smart contract on th massa blockchain by creating and sending
+   * Deploy a smart contract on the massa blockchain by creating and sending
    * an operation containing byte code.
    *
    * @remarks
