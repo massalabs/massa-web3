@@ -599,7 +599,7 @@ async function promisifyJsonRpcCall<T>(
 
   return {
     isError: false,
-    result: responseData.result as T,
+    result: responseData.result,
     error: null,
   } as JsonRpcResponseData<T>;
 }
