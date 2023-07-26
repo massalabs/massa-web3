@@ -1,6 +1,6 @@
 # massa-web3 ![Node CI](https://github.com/massalabs/massa-web3/workflows/Node.js%20CI/badge.svg)
 
-![check-code-coverage](https://img.shields.io/badge/coverage-98.35%25-green)
+![check-code-coverage](https://img.shields.io/badge/coverage-96.33%25-green)
 
 > **PREREQUISITES:**
 > 
