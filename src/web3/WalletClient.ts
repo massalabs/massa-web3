@@ -13,33 +13,19 @@ import {
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { ITransactionData } from '../interfaces/ITransactionData';
-import { OperationTypeId } from '../interfaces/OperationTypes';
 import { PublicApiClient } from './PublicApiClient';
 import { IRollsData } from '../interfaces/IRollsData';
-import { INodeStatus } from '../interfaces/INodeStatus';
 import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
 import { fromMAS } from '../utils/converters';
-import { getBytesPublicKey } from '../utils/bytes';
 
 import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
+import { IBaseAccount } from '../interfaces/IBaseAccount';
+import { Web3Account } from './accounts/Web3Account';
 const SECRET_KEY_PREFIX = 'S';
 const VERSION_NUMBER = 0;
 const MAX_WALLET_ACCOUNTS = 256;
-
-/**
- * Retrieves the thread number associated with a given address.
- *
- * @param address - The address from which to extract the thread number.
- *
- * @returns The thread number associated with the address.
- */
-const getThreadNumber = (address: string): number => {
-  const pubKeyHash = base58Decode(address.slice(2));
-  const threadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
-  return threadNumber;
-};
 
 /**
  * A client class for interacting with wallets, which can seamlessly work with WebExtensions.
@@ -51,7 +37,7 @@ const getThreadNumber = (address: string): number => {
  */
 export class WalletClient extends BaseClient implements IWalletClient {
   private wallet: Array<IAccount> = [];
-  private baseAccount?: IAccount;
+  private baseAccount?: IBaseAccount;
 
   /**
    * Constructor of the {@link WalletClient} class.
@@ -63,7 +49,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    baseAccount?: IAccount,
+    baseAccount?: IBaseAccount,
   ) {
     super(clientConfig);
     if (baseAccount) {
@@ -97,19 +83,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @returns A Promise that resolves to `void` when the base account has been set successfully.
    */
-  public async setBaseAccount(baseAccount: IAccount): Promise<void> {
-    // in case of not set thread number, compute the value
-    if (!baseAccount.createdInThread && baseAccount.address) {
-      baseAccount.createdInThread = getThreadNumber(baseAccount.address);
+  public async setBaseAccount(baseAccount: IBaseAccount): Promise<void> {
+    if (!baseAccount.address()) {
+      throw new Error('Invalid base account address');
     }
-    // see if base account is already added, if not, add it, else change it
-    let baseAccountAdded: Array<IAccount> = null;
-    if (!this.getWalletAccountByAddress(baseAccount.address)) {
-      baseAccountAdded = await this.addAccountsToWallet([baseAccount]);
-      this.baseAccount = baseAccountAdded[0];
-    } else {
-      this.baseAccount = baseAccount;
-    }
+    await baseAccount.verify();
+    this.baseAccount = baseAccount;
   }
 
   /**
@@ -117,7 +96,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    *
    * @returns The default {@link IAccount} of the wallet. If no default account is set, it returns `null`.
    */
-  public getBaseAccount(): IAccount | null {
+  public getBaseAccount(): IBaseAccount | null {
     return this.baseAccount;
   }
 
@@ -185,7 +164,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
           secretKey: secretKeyBase58Encoded,
           publicKey: publicKey.base58Encode,
           address: address.base58Encode,
-          createdInThread: getThreadNumber(address.base58Encode),
         } as IAccount);
       }
     }
@@ -250,7 +228,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
           address: address.base58Encode,
           secretKey: secretKeyBase58Encoded,
           publicKey: publicKey.base58Encode,
-          createdInThread: getThreadNumber(address.base58Encode),
         } as IAccount);
       }
     }
@@ -331,7 +308,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
       address: address.base58Encode,
       secretKey: secretKeyBase58Encoded,
       publicKey: publicKey.base58Encode,
-      createdInThread: getThreadNumber(address.base58Encode),
     } as IAccount;
   }
 
@@ -357,7 +333,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
       address: address.base58Encode,
       secretKey: secretKeyBase58,
       publicKey: publicKey.base58Encode,
-      createdInThread: getThreadNumber(address.base58Encode),
     } as IAccount;
   }
 
@@ -375,13 +350,20 @@ export class WalletClient extends BaseClient implements IWalletClient {
     data: string | Buffer,
     accountSignerAddress: string,
   ): Promise<ISignature> {
-    const signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
+    let signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
+    let account: IBaseAccount;
     if (!signerAccount) {
-      throw new Error(
-        `No signer account ${accountSignerAddress} found in wallet`,
-      );
+      if (this.baseAccount.address() === accountSignerAddress) {
+        account = this.baseAccount;
+      } else {
+        throw new Error(
+          `No signer account ${accountSignerAddress} found in wallet`,
+        );
+      }
+    } else {
+      account = new Web3Account(signerAccount, this.publicApiClient);
     }
-    return WalletClient.walletSignMessage(data, signerAccount);
+    return account.sign(Buffer.from(data));
   }
 
   /**
@@ -428,60 +410,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public static async walletSignMessage(
     data: string | Buffer,
-    signer: IAccount,
+    signer: IBaseAccount,
   ): Promise<ISignature> {
-    // check private keys to sign the message with.
-    if (!signer.secretKey) {
-      throw new Error('No private key to sign the message with');
-    }
-
-    // check public key to verify the message with.
-    if (!signer.publicKey) {
-      throw new Error('No public key to verify the signed message with');
-    }
-
-    // get private key
-    const secretKey: SecretKey = new SecretKey(signer.secretKey);
-
-    // bytes compaction
-    const bytesCompact: Buffer = Buffer.from(data);
-    // Hash byte compact
-    const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
-
-    // sign the digest
-    const sig = await secretKey.signDigest(messageHashDigest);
-
-    // check sig length
-    if (sig.length != 64) {
-      throw new Error(
-        `Invalid signature length. Expected 64, got ${sig.length}`,
-      );
-    }
-
-    // verify signature
-    if (signer.publicKey) {
-      const publicKey: PublicKey = await secretKey.getPublicKey();
-
-      const isVerified = await ed.verify(
-        sig,
-        messageHashDigest,
-        publicKey.bytes,
-      );
-
-      if (!isVerified) {
-        throw new Error(
-          `Signature could not be verified with public key. Please inspect`,
-        );
-      }
-    }
-
-    // convert signature to base58
-    const version = Buffer.from(varintEncode(secretKey.version));
-    const base58Encoded = base58Encode(Buffer.concat([version, sig]));
-
-    return {
-      base58Encoded,
-    } as ISignature;
+    return signer.sign(Buffer.from(data));
   }
 
   /**
@@ -570,46 +501,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async sendTransaction(
     txData: ITransactionData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<Array<string>> {
     // check sender account
-    const sender: IAccount = executor || this.getBaseAccount();
+    const sender: IBaseAccount = executor || this.getBaseAccount();
     if (!sender) {
-      throw new Error(`No tx sender available`);
+      throw new Error('No tx sender available');
     }
-
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.Transaction,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
-    const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-      sender,
-    );
-
-    // prepare tx data
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: sender.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds;
+    return [await sender.sendTransaction(txData)];
   }
 
   /**
@@ -625,44 +524,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async buyRolls(
     txData: IRollsData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<Array<string>> {
     // check sender account
-    const sender: IAccount = executor || this.getBaseAccount();
+    const sender: IBaseAccount = executor || this.getBaseAccount();
     if (!sender) {
-      throw new Error(`No tx sender available`);
+      throw new Error('No tx sender available');
     }
-
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.RollBuy,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([getBytesPublicKey(sender.publicKey), bytesCompact]),
-      sender,
-    );
-
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: sender.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds;
+    return [await sender.buyRolls(txData)];
   }
 
   /**
@@ -678,43 +547,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async sellRolls(
     txData: IRollsData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<Array<string>> {
     // check sender account
-    const sender: IAccount = executor || this.getBaseAccount();
+    const sender: IBaseAccount = executor || this.getBaseAccount();
     if (!sender) {
-      throw new Error(`No tx sender available`);
+      throw new Error('No tx sender available');
     }
-
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.RollSell,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([getBytesPublicKey(sender.publicKey), bytesCompact]),
-      sender,
-    );
-
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: sender.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds;
+    return [await sender.sellRolls(txData)];
   }
 }

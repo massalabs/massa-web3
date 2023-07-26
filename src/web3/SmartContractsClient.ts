@@ -7,7 +7,6 @@
  * @module SmartContractsClient
  */
 import { EOperationStatus } from '../interfaces/EOperationStatus';
-import { IAccount } from '../interfaces/IAccount';
 import { IAddressInfo } from '../interfaces/IAddressInfo';
 import { IBalance } from '../interfaces/IBalance';
 import { ICallData } from '../interfaces/ICallData';
@@ -19,22 +18,19 @@ import { IEvent } from '../interfaces/IEvent';
 import { IEventFilter } from '../interfaces/IEventFilter';
 import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData';
 import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse';
-import { INodeStatus } from '../interfaces/INodeStatus';
 import { IOperationData } from '../interfaces/IOperationData';
 import { IReadData } from '../interfaces/IReadData';
-import { ISignature } from '../interfaces/ISignature';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { OperationTypeId } from '../interfaces/OperationTypes';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
 import { BaseClient, requestHeaders } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
-import { WalletClient } from './WalletClient';
-import { getBytesPublicKey } from '../utils/bytes';
 import axios, { AxiosResponse } from 'axios';
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
+import { IWalletClient } from '../interfaces/IWalletClient';
+import { IBaseAccount } from '../interfaces/IBaseAccount';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -61,7 +57,7 @@ export class SmartContractsClient
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    private readonly walletClient: WalletClient,
+    private readonly walletClient: IWalletClient,
   ) {
     super(clientConfig);
 
@@ -93,67 +89,13 @@ export class SmartContractsClient
    */
   public async deploySmartContract(
     contractData: IContractData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // Check if SC data exists
-    if (!contractData.contractDataBinary) {
-      throw new Error(
-        `Expected non-null contract bytecode, but received null.`,
-      );
-    }
-
-    // get the block size
-    if (
-      contractData.contractDataBinary.length >
-      nodeStatusInfo.config.max_block_size / 2
-    ) {
-      console.warn(
-        'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
-      );
-    }
-
-    // check sender account
-    const sender: IAccount = executor || this.walletClient.getBaseAccount();
+    const sender = executor || this.walletClient.getBaseAccount();
     if (!sender) {
       throw new Error(`No tx sender available`);
     }
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      contractData,
-      OperationTypeId.ExecuteSC,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
-    const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-      sender,
-    );
-
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: sender.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    if (opIds.length <= 0) {
-      throw new Error(
-        `Deploy smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
-    }
-    return opIds[0];
+    return await sender.deploySmartContract(contractData);
   }
 
   /**
@@ -170,56 +112,13 @@ export class SmartContractsClient
    */
   public async callSmartContract(
     callData: ICallData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // check sender account
     const sender = executor || this.walletClient.getBaseAccount();
     if (!sender) {
       throw new Error(`No tx sender available`);
     }
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      callData,
-      OperationTypeId.CallSC,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
-    const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-      sender,
-    );
-    // request data
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: sender.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    let opIds: Array<string> = [];
-    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
-    if (this.clientConfig.retryStrategyOn) {
-      opIds = await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [
-        jsonRpcRequestMethod,
-        [[data]],
-      ]);
-    } else {
-      opIds = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
-    }
-    if (opIds.length <= 0) {
-      throw new Error(
-        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
-    }
-    return opIds[0];
+    return await sender.callSmartContract(callData);
   }
 
   /**
@@ -243,7 +142,7 @@ export class SmartContractsClient
     // request data
     let baseAccountSignerAddress: string | null = null;
     if (this.walletClient.getBaseAccount()) {
-      baseAccountSignerAddress = this.walletClient.getBaseAccount().address;
+      baseAccountSignerAddress = this.walletClient.getBaseAccount().address();
     }
     const data = {
       max_gas: Number(readData.maxGas),

@@ -1,6 +1,6 @@
 import { EOperationStatus } from './EOperationStatus';
-import { IAccount } from './IAccount';
 import { IBalance } from './IBalance';
+import { IBaseAccount } from './IBaseAccount';
 import { ICallData } from './ICallData';
 import { IContractData } from './IContractData';
 import { IContractReadOperationResponse } from './IContractReadOperationResponse';
@@ -32,7 +32,7 @@ export interface ISmartContractsClient {
    */
   deploySmartContract(
     contractData: IContractData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<string>;
 
   /**
@@ -43,7 +43,10 @@ export interface ISmartContractsClient {
    *
    * @returns The operation id
    */
-  callSmartContract(callData: ICallData, executor?: IAccount): Promise<string>;
+  callSmartContract(
+    callData: ICallData,
+    executor?: IBaseAccount,
+  ): Promise<string>;
 
   /**
    * Read a smart contract.

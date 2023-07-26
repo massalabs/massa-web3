@@ -2,6 +2,7 @@ import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { IAccount } from '../interfaces/IAccount';
 import { Client } from './Client';
 import { IClientConfig } from '../interfaces/IClientConfig';
+import { IAccount as IAccountWalletProvider } from '@massalabs/wallet-provider';
 
 /** Global connection urls, for Massa's MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET */
 export enum DefaultProviderUrls {
@@ -68,9 +69,6 @@ export class ClientFactory {
       } as IClientConfig,
       baseAccount,
     );
-
-    if (baseAccount) await client.wallet().setBaseAccount(baseAccount);
-
     return client;
   }
 
@@ -98,8 +96,27 @@ export class ClientFactory {
       } as IClientConfig,
       baseAccount,
     );
+    return client;
+  }
 
-    if (baseAccount) await client.wallet().setBaseAccount(baseAccount);
+  public static async createClientFromWalletProvider(
+    nodeUrls: string[],
+    account: IAccountWalletProvider,
+    retryStrategyOn = true,
+  ): Promise<Client> {
+    const providers = nodeUrls.map((url) => {
+      return {
+        url,
+        type: ProviderType.PUBLIC,
+      };
+    });
+    const client: Client = new Client(
+      {
+        retryStrategyOn,
+        providers,
+      } as IClientConfig,
+      account,
+    );
 
     return client;
   }

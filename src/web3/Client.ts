@@ -7,7 +7,14 @@ import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { DefaultProviderUrls } from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
-import { IWalletClient } from '../interfaces/IWalletClient';
+import { IAccount as IAccountWalletProvider } from '@massalabs/wallet-provider';
+import { Web3Account } from './accounts/Web3Account';
+import { WalletProviderAccount } from './accounts/WalletProviderAccount';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isWeb3Account(item: any): item is IAccount {
+  return 'secretKey' in item;
+}
 
 /**
  * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities.
@@ -26,15 +33,30 @@ export class Client implements IClient {
    */
   public constructor(
     private clientConfig: IClientConfig,
-    baseAccount?: IAccount,
+    baseAccount?: IAccount | IAccountWalletProvider,
   ) {
     this.publicApiClient = new PublicApiClient(clientConfig);
     this.privateApiClient = new PrivateApiClient(clientConfig);
-    this.walletClient = new WalletClient(
-      clientConfig,
-      this.publicApiClient,
-      baseAccount,
-    );
+    // From: https://stackoverflow.com/a/73162923/10419533
+    if (!baseAccount) {
+      this.walletClient = new WalletClient(
+        clientConfig,
+        this.publicApiClient,
+        undefined,
+      );
+    } else if (isWeb3Account(baseAccount)) {
+      this.walletClient = new WalletClient(
+        clientConfig,
+        this.publicApiClient,
+        new Web3Account(baseAccount, this.publicApiClient),
+      );
+    } else {
+      this.walletClient = new WalletClient(
+        clientConfig,
+        this.publicApiClient,
+        new WalletProviderAccount(baseAccount),
+      );
+    }
     this.smartContractsClient = new SmartContractsClient(
       clientConfig,
       this.publicApiClient,
@@ -78,7 +100,7 @@ export class Client implements IClient {
    *
    * @returns WalletClient object.
    */
-  public wallet(): IWalletClient {
+  public wallet(): WalletClient {
     return this.walletClient;
   }
 

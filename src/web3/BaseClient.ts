@@ -53,7 +53,7 @@ export const PERIOD_OFFSET = 5;
  * @throws Will throw an error if no private providers are included in client configuration.
  */
 export class BaseClient {
-  protected clientConfig: IClientConfig;
+  public clientConfig: IClientConfig;
 
   /**
    * Constructor of the BaseClient class
@@ -173,7 +173,9 @@ export class BaseClient {
       case JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES:
       case JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT:
       case JSON_RPC_REQUEST_METHOD.GET_GRAPH_INTERVAL: {
-        return this.getPublicProviders()[0]; // TODO: choose the first available public provider ?
+        let providers = this.getPublicProviders();
+        let idx = Math.floor(Math.random() * providers.length);
+        return providers[idx];
       }
       case JSON_RPC_REQUEST_METHOD.STOP_NODE:
       case JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_ID:
@@ -185,7 +187,9 @@ export class BaseClient {
       case JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS:
       case JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE:
       case JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST: {
-        return this.getPrivateProviders()[0]; // TODO: choose the first available private provider ?
+        let providers = this.getPrivateProviders();
+        let idx = Math.floor(Math.random() * providers.length);
+        return providers[idx];
       }
       default:
         throw new Error(`Unknown Json rpc method: ${requestMethod}`);
