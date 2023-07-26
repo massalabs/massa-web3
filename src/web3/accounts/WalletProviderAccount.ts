@@ -48,7 +48,7 @@ export class WalletProviderAccount implements IBaseAccount {
     let res = await this.account.callSC(
       callData.targetAddress,
       callData.functionName,
-      callData.parameter,
+      new Uint8Array(callData.parameter),
       callData.coins,
       { maxGas: callData.maxGas, isNPE: false },
     );
