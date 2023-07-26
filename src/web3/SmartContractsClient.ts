@@ -29,10 +29,12 @@ import { OperationTypeId } from '../interfaces/OperationTypes';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
-import { BaseClient } from './BaseClient';
+import { BaseClient, requestHeaders } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { getBytesPublicKey } from '../utils/bytes';
+import axios, { AxiosResponse } from 'axios';
+import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -467,4 +469,137 @@ export class SmartContractsClient
       await wait(TX_POLL_INTERVAL_MS);
     }
   }
+}
+
+/**
+ * Execute a dry run Smart contract call and returns some data regarding its execution
+ * such as the changes of in the states that would have happen if the transaction was really executed on chain.
+ *
+ * @param readData - The data required for the a read operation of a smart contract.
+ *
+ * @returns A promise that resolves to an object which represents the result of the operation and contains data about its execution.
+ */
+export async function readSmartContract(
+  readData: IReadData,
+  rpcUrl: string,
+): Promise<IContractReadOperationResponse> {
+  // check the max. allowed gas
+  if (readData.maxGas > MAX_READ_BLOCK_GAS) {
+    throw new Error(
+      `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+    );
+  }
+  if (!readData.callerAddress) {
+    throw new Error(`The caller address is required`);
+  }
+
+  // request data
+  const data = {
+    max_gas: Number(readData.maxGas),
+    target_address: readData.targetAddress,
+    target_function: readData.targetFunction,
+    parameter: readData.parameter,
+    caller_address: readData.callerAddress,
+  };
+  // returns operation ids
+  const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
+  let jsonRpcCallResult: Array<IContractReadOperationData> = [];
+  jsonRpcCallResult = await sendJsonRPCRequest(
+    jsonRpcRequestMethod,
+    [[data]],
+    rpcUrl,
+  );
+
+  if (jsonRpcCallResult.length <= 0) {
+    throw new Error(
+      `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
+    );
+  }
+  if (jsonRpcCallResult[0].result.Error) {
+    throw new Error(jsonRpcCallResult[0].result.Error);
+  }
+  return {
+    returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
+    info: jsonRpcCallResult[0],
+  };
+}
+
+/**
+ * Sends a post JSON rpc request to the node.
+ *
+ * @param resource - The rpc method to call.
+ * @param params - The parameters to pass to the rpc method.
+ *
+ * @throws An error if the rpc method returns an error.
+ *
+ * @returns A promise that resolves as the result of the rpc method.
+ */
+async function sendJsonRPCRequest<T>(
+  resource: JSON_RPC_REQUEST_METHOD,
+  params: object,
+  rpcUrl: string,
+): Promise<T> {
+  let resp: JsonRpcResponseData<T> = null;
+  resp = await promisifyJsonRpcCall(resource, params, rpcUrl);
+
+  // in case of rpc error, rethrow the error.
+  if (resp.error && resp.error) {
+    throw resp.error;
+  }
+
+  return resp.result;
+}
+
+/**
+ * Converts a json rpc call to a promise that resolves as a JsonRpcResponseData
+ *
+ * @privateRemarks
+ * If there is an error while sending the request, the function catches the error, the isError
+ * property is set to true, the result property set to null, and the error property set to a
+ * new Error object with a message indicating that there was an error.
+ *
+ * @param resource - The rpc method to call.
+ * @param params - The parameters to pass to the rpc method.
+ *
+ * @returns A promise that resolves as a JsonRpcResponseData.
+ */
+async function promisifyJsonRpcCall<T>(
+  resource: JSON_RPC_REQUEST_METHOD,
+  params: object,
+  rpcUrl: string,
+): Promise<JsonRpcResponseData<T>> {
+  let resp: AxiosResponse<JsonRpcResponseData<T>> = null;
+
+  const body = {
+    jsonrpc: '2.0',
+    method: resource,
+    params: params,
+    id: 0,
+  };
+
+  try {
+    resp = await axios.post(rpcUrl, body, requestHeaders);
+  } catch (ex) {
+    return {
+      isError: true,
+      result: null,
+      error: new Error('JSON.parse error: ' + String(ex)),
+    } as JsonRpcResponseData<T>;
+  }
+
+  const responseData: JsonRpcResponseData<T> = resp.data;
+
+  if (responseData.error) {
+    return {
+      isError: true,
+      result: null,
+      error: new Error(responseData.error.message),
+    } as JsonRpcResponseData<T>;
+  }
+
+  return {
+    isError: false,
+    result: responseData.result as T,
+    error: null,
+  } as JsonRpcResponseData<T>;
 }
