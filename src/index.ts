@@ -93,6 +93,6 @@ export * from './utils/arguments';
 export { fromMAS, toMAS, MassaUnits } from './utils/converters';
 export * from './utils/serializers';
 
-/** Exposed utils */
-export * as utils from './utils/Xbqcrypto';
-export * as time from './utils/time';
+/* Exposed utils */
+export * from './utils/Xbqcrypto';
+export * from './utils/time';
