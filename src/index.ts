@@ -93,6 +93,7 @@ export * from './utils/arguments';
 export { fromMAS, toMAS, MassaUnits } from './utils/converters';
 export * from './utils/serializers';
 
-/* Exposed utils */
-export * from './utils/Xbqcrypto';
-export * from './utils/time';
+/**
+ * This namespace provides utility functions, such as unit conversion, serialization, encoding, etc.
+ */
+export * as utils from './utils';
