@@ -1,0 +1,12 @@
+{
+    "sidebarLinks": {
+        "Wallet operations": "WalletClient.html",
+        "Smart contracts operations": "SmartContractsClient.html",
+        "Events": "EventPoller.html",
+        "Public API": "PublicApiClient.html",
+        "Private API": "PrivateApiClient.html",
+    },
+    "navigationLinks": {
+        "Main documentation": "https://docs.massa.net/"
+    }
+}
