@@ -90,6 +90,7 @@ export {
 export * from '@massalabs/web3-utils';
 export { fromMAS, toMAS, MassaUnits } from './utils/converters';
 
-/** Exposed utils */
-export * as utils from './utils/Xbqcrypto';
-export * as time from './utils/time';
+/**
+ * This namespace provides utility functions, such as unit conversion, serialization, encoding, etc.
+ */
+export * as utils from './utils';
