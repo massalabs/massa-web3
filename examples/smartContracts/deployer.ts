@@ -3,10 +3,10 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { Client } from '../../src/web3/Client';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
-import { Args } from '../../src/utils/arguments';
+
 import { readFileSync } from 'fs';
-import { u64ToBytes, u8toByte } from '../../src/utils/serializers';
-import { fromMAS } from '../../src';
+
+import { Args, fromMAS, u64ToBytes, u8toByte } from '../../src';
 const path = require('path');
 const chalk = require('chalk');
 
@@ -74,19 +74,19 @@ export const deploySmartContracts = async (
   fee = 0n,
   maxGas = 1_000_000n,
   maxCoins = fromMAS(0.1),
-  deployerAccount?: IAccount,
+  deployerAccount: IAccount,
 ): Promise<string> => {
   let deploymentOperationId: string;
   try {
     // do checks
-    if (!deployerAccount) {
-      const baseAccount = web3Client.wallet().getBaseAccount();
-      if (baseAccount === null) {
-        throw new Error('Failed to get base account');
-      } else {
-        deployerAccount = baseAccount;
-      }
-    }
+    // if (!deployerAccount) {
+    //   const baseAccount = web3Client.wallet().getBaseAccount();
+    //   if (baseAccount === null) {
+    //     throw new Error('Failed to get base account');
+    //   } else {
+    //     deployerAccount = baseAccount;
+    //   }
+    // }
 
     // check deployer account balance
     const coinsRequired = contractsToDeploy.reduce(

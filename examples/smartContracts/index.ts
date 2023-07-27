@@ -6,7 +6,6 @@ import { IEvent } from '../../src/interfaces/IEvent';
 import { IReadData } from '../../src/interfaces/IReadData';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { awaitTxConfirmation, deploySmartContracts } from './deployer';
-import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
 import { Client } from '../../src/web3/Client';
 import {
@@ -16,16 +15,19 @@ import {
 } from '../../src/web3/EventPoller';
 import { INodeStatus } from '../../src/interfaces/INodeStatus';
 import { withTimeoutRejection } from '../../src/utils/time';
-import { strToBytes } from '../../src/utils/serializers';
 import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput';
 import { ICallData } from '../../src/interfaces/ICallData';
 import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
-import { fromMAS, toMAS } from '../../src';
 import {
+  Args,
   IDeserializedResult,
   ISerializable,
-} from '../../src/interfaces/ISerializable';
+  fromMAS,
+  strToBytes,
+  toMAS,
+} from '../../src';
+
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
