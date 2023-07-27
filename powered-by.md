@@ -1,6 +1,14 @@
 # Dependencies Report
 
 The following is a list of all the dependencies of this project:
+## [@massalabs/wallet-provider](git+https://github.com/massalabs/massa-wallet-provider.git)
+
+**License:** (MIT AND Apache-2.0) - perpetual
+
+**Used version:** 1.2.0
+
+**Many thanks to:** [Massa Labs](info@massa.net)
+
 ## [@noble/ed25519](git+https://github.com/paulmillr/noble-ed25519.git)
 
 **License:** MIT - perpetual
@@ -13,7 +21,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 1.3.0
+**Used version:** 1.3.1
 
 **Many thanks to:** Paul Miller (https://paulmillr.com)
 
@@ -21,7 +29,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 8.5.4
+**Used version:** 8.5.5
 
 **Many thanks to:** n/a
 
@@ -85,7 +93,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** BSD-2-Clause - perpetual
 
-**Used version:** 16.0.3
+**Used version:** 16.3.1
 
 **Many thanks to:** n/a
 
@@ -93,7 +101,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.5.0
+**Used version:** 29.6.2
 
 **Many thanks to:** n/a
 
@@ -117,7 +125,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** 0BSD - perpetual
 
-**Used version:** 2.5.2
+**Used version:** 2.6.1
 
 **Many thanks to:** Microsoft Corp.
 
@@ -153,13 +161,13 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Nathan SEVA](ns@massa.net)
 
-## [@massalabs/wallet-provider](git+https://github.com/massalabs/massa-wallet-provider.git)
+## [@massalabs/web3-utils](git+https://github.com/massalabs/web3-utils.git)
 
-**License:** (MIT AND Apache-2.0) - perpetual
+**License:** ISC - perpetual
 
-**Used version:** 1.0.0
+**Used version:** 1.1.0
 
-**Many thanks to:** [Massa Labs](info@massa.net)
+**Many thanks to:** 
 
 ## [@types/bn.js](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
 
@@ -173,7 +181,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.5.1
+**Used version:** 29.5.3
 
 **Many thanks to:** n/a
 
@@ -181,7 +189,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 18.16.6
+**Used version:** 18.17.1
 
 **Many thanks to:** n/a
 
@@ -197,7 +205,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 5.59.5
+**Used version:** 5.62.0
 
 **Many thanks to:** n/a
 
@@ -205,7 +213,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** BSD-2-Clause - perpetual
 
-**Used version:** 5.59.5
+**Used version:** 5.62.0
 
 **Many thanks to:** n/a
 
@@ -221,7 +229,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 8.40.0
+**Used version:** 8.45.0
 
 **Many thanks to:** [Nicholas C. Zakas](nicholas+npm@nczconsulting.com)
 
@@ -237,7 +245,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 17.0.0
+**Used version:** 17.1.0
 
 **Many thanks to:** Feross Aboukhadijeh feross@feross.org https://feross.org
 
@@ -285,7 +293,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.5.0
+**Used version:** 29.6.2
 
 **Many thanks to:** n/a
 
@@ -349,7 +357,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.1.0
+**Used version:** 29.1.1
 
 **Many thanks to:** [Kulshekhar Kabra](kulshekhar@users.noreply.github.com> (https://github.com/kulshekhar)
 
@@ -357,9 +365,9 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 9.4.2
+**Used version:** 9.4.4
 
-**Many thanks to:** [John Reilly](johnny_reilly@hotmail.com> (https://blog.johnnyreilly.com)
+**Many thanks to:** [John Reilly](johnny_reilly@hotmail.com> (https://johnnyreilly.com)
 
 ## [ts-node](git://github.com/TypeStrong/ts-node.git)
 
@@ -389,7 +397,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 5.83.1
+**Used version:** 5.88.2
 
 **Many thanks to:** Tobias Koppers @sokra
 
@@ -397,7 +405,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 5.1.1
+**Used version:** 5.1.4
 
 **Many thanks to:** n/a
 
