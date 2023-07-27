@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
-import {
-  IDeserializedResult,
-  ISerializable,
-} from '../../src/interfaces/ISerializable';
-import { Args, ArrayType } from '../../src/utils/arguments';
+import { expect, it, describe } from '@jest/globals';
+import { IDeserializedResult, ISerializable } from '@massalabs/web3-utils';
+import { Args, ArrayType } from '@massalabs/web3-utils';
 
 export class Divinity implements ISerializable<Divinity> {
   constructor(public age: number = 0, public name: string = '') {}
