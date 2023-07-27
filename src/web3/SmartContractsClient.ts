@@ -7,7 +7,6 @@
  * @module SmartContractsClient
  */
 import { EOperationStatus } from '../interfaces/EOperationStatus';
-import { IAccount } from '../interfaces/IAccount';
 import { IAddressInfo } from '../interfaces/IAddressInfo';
 import { IBalance } from '../interfaces/IBalance';
 import { ICallData } from '../interfaces/ICallData';
@@ -19,22 +18,17 @@ import { IEvent } from '../interfaces/IEvent';
 import { IEventFilter } from '../interfaces/IEventFilter';
 import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData';
 import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse';
-import { INodeStatus } from '../interfaces/INodeStatus';
 import { IOperationData } from '../interfaces/IOperationData';
 import { IReadData } from '../interfaces/IReadData';
-import { ISignature } from '../interfaces/ISignature';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { OperationTypeId } from '../interfaces/OperationTypes';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { wait } from '../utils/time';
-import { BaseClient, requestHeaders } from './BaseClient';
+import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
-import { WalletClient } from './WalletClient';
-import { getBytesPublicKey } from '../utils/bytes';
-import axios, { AxiosResponse } from 'axios';
-import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
+import { IWalletClient } from '../interfaces/IWalletClient';
+import { IBaseAccount } from '../interfaces/IBaseAccount';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -61,7 +55,7 @@ export class SmartContractsClient
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    private readonly walletClient: WalletClient,
+    private readonly walletClient: IWalletClient,
   ) {
     super(clientConfig);
 
@@ -93,67 +87,13 @@ export class SmartContractsClient
    */
   public async deploySmartContract(
     contractData: IContractData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // Check if SC data exists
-    if (!contractData.contractDataBinary) {
-      throw new Error(
-        `Expected non-null contract bytecode, but received null.`,
-      );
-    }
-
-    // get the block size
-    if (
-      contractData.contractDataBinary.length >
-      nodeStatusInfo.config.max_block_size / 2
-    ) {
-      console.warn(
-        'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
-      );
-    }
-
-    // check sender account
-    const sender: IAccount = executor || this.walletClient.getBaseAccount();
+    const sender = executor || this.walletClient.getBaseAccount();
     if (!sender) {
       throw new Error(`No tx sender available`);
     }
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      contractData,
-      OperationTypeId.ExecuteSC,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
-    const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-      sender,
-    );
-
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: sender.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    if (opIds.length <= 0) {
-      throw new Error(
-        `Deploy smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
-    }
-    return opIds[0];
+    return await sender.deploySmartContract(contractData);
   }
 
   /**
@@ -170,56 +110,13 @@ export class SmartContractsClient
    */
   public async callSmartContract(
     callData: ICallData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // check sender account
     const sender = executor || this.walletClient.getBaseAccount();
     if (!sender) {
       throw new Error(`No tx sender available`);
     }
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      callData,
-      OperationTypeId.CallSC,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(sender.publicKey);
-    const signature: ISignature = await WalletClient.walletSignMessage(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-      sender,
-    );
-    // request data
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: sender.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    let opIds: Array<string> = [];
-    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
-    if (this.clientConfig.retryStrategyOn) {
-      opIds = await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [
-        jsonRpcRequestMethod,
-        [[data]],
-      ]);
-    } else {
-      opIds = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
-    }
-    if (opIds.length <= 0) {
-      throw new Error(
-        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
-    }
-    return opIds[0];
+    return await sender.callSmartContract(callData);
   }
 
   /**
@@ -243,7 +140,7 @@ export class SmartContractsClient
     // request data
     let baseAccountSignerAddress: string | null = null;
     if (this.walletClient.getBaseAccount()) {
-      baseAccountSignerAddress = this.walletClient.getBaseAccount().address;
+      baseAccountSignerAddress = this.walletClient.getBaseAccount().address();
     }
     const data = {
       max_gas: Number(readData.maxGas),
@@ -469,137 +366,4 @@ export class SmartContractsClient
       await wait(TX_POLL_INTERVAL_MS);
     }
   }
-}
-
-/**
- * Execute a dry run Smart contract call and returns some data regarding its execution
- * such as the changes of in the states that would have happen if the transaction was really executed on chain.
- *
- * @param readData - The data required for the a read operation of a smart contract.
- *
- * @returns A promise that resolves to an object which represents the result of the operation and contains data about its execution.
- */
-export async function readSmartContract(
-  readData: IReadData,
-  rpcUrl: string,
-): Promise<IContractReadOperationResponse> {
-  // check the max. allowed gas
-  if (readData.maxGas > MAX_READ_BLOCK_GAS) {
-    throw new Error(
-      `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
-    );
-  }
-  if (!readData.callerAddress) {
-    throw new Error(`The caller address is required`);
-  }
-
-  // request data
-  const data = {
-    max_gas: Number(readData.maxGas),
-    target_address: readData.targetAddress,
-    target_function: readData.targetFunction,
-    parameter: readData.parameter,
-    caller_address: readData.callerAddress,
-  };
-  // returns operation ids
-  const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
-  let jsonRpcCallResult: Array<IContractReadOperationData> = [];
-  jsonRpcCallResult = await sendJsonRPCRequest(
-    jsonRpcRequestMethod,
-    [[data]],
-    rpcUrl,
-  );
-
-  if (jsonRpcCallResult.length <= 0) {
-    throw new Error(
-      `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
-    );
-  }
-  if (jsonRpcCallResult[0].result.Error) {
-    throw new Error(jsonRpcCallResult[0].result.Error);
-  }
-  return {
-    returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
-    info: jsonRpcCallResult[0],
-  };
-}
-
-/**
- * Sends a post JSON rpc request to the node.
- *
- * @param resource - The rpc method to call.
- * @param params - The parameters to pass to the rpc method.
- *
- * @throws An error if the rpc method returns an error.
- *
- * @returns A promise that resolves as the result of the rpc method.
- */
-async function sendJsonRPCRequest<T>(
-  resource: JSON_RPC_REQUEST_METHOD,
-  params: object,
-  rpcUrl: string,
-): Promise<T> {
-  let resp: JsonRpcResponseData<T> = null;
-  resp = await promisifyJsonRpcCall(resource, params, rpcUrl);
-
-  // in case of rpc error, rethrow the error.
-  if (resp.error) {
-    throw resp.error;
-  }
-
-  return resp.result;
-}
-
-/**
- * Converts a json rpc call to a promise that resolves as a JsonRpcResponseData
- *
- * @privateRemarks
- * If there is an error while sending the request, the function catches the error, the isError
- * property is set to true, the result property set to null, and the error property set to a
- * new Error object with a message indicating that there was an error.
- *
- * @param resource - The rpc method to call.
- * @param params - The parameters to pass to the rpc method.
- *
- * @returns A promise that resolves as a JsonRpcResponseData.
- */
-async function promisifyJsonRpcCall<T>(
-  resource: JSON_RPC_REQUEST_METHOD,
-  params: object,
-  rpcUrl: string,
-): Promise<JsonRpcResponseData<T>> {
-  let resp: AxiosResponse<JsonRpcResponseData<T>> = null;
-
-  const body = {
-    jsonrpc: '2.0',
-    method: resource,
-    params: params,
-    id: 0,
-  };
-
-  try {
-    resp = await axios.post(rpcUrl, body, requestHeaders);
-  } catch (ex) {
-    return {
-      isError: true,
-      result: null,
-      error: new Error('JSON.parse error: ' + String(ex)),
-    } as JsonRpcResponseData<T>;
-  }
-
-  const responseData: JsonRpcResponseData<T> = resp.data;
-
-  if (responseData.error) {
-    return {
-      isError: true,
-      result: null,
-      error: new Error(responseData.error.message),
-    } as JsonRpcResponseData<T>;
-  }
-
-  return {
-    isError: false,
-    result: responseData.result,
-    error: null,
-  } as JsonRpcResponseData<T>;
 }

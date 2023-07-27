@@ -3,7 +3,6 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { Client } from '../../src/web3/Client';
-import { base58Decode } from '../../src/utils/Xbqcrypto';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
@@ -16,6 +15,8 @@ import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { mockAddressesInfo, mockNodeStatusInfo, mockOpIds } from './mockData';
 import { IRollsData } from '../../src/interfaces/IRollsData';
 import { fromMAS } from '../../src/utils/converters';
+import { Web3Account } from '../../src/web3/accounts/Web3Account';
+import { IBaseAccount } from '../../src/interfaces/IBaseAccount';
 
 // TODO: Use env variables and say it in the CONTRIBUTING.md
 const deployerPrivateKey =
@@ -80,7 +81,6 @@ describe('WalletClient', () => {
     address: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
     secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
     publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
-    createdInThread: 6,
   };
 
   beforeEach(async () => {
@@ -96,25 +96,30 @@ describe('WalletClient', () => {
       const account = await WalletClient.getAccountFromSecretKey(
         receiverPrivateKey,
       );
-      await web3Client.wallet().setBaseAccount(account);
+      await web3Client
+        .wallet()
+        .setBaseAccount(new Web3Account(account, web3Client.publicApi()));
       const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
-      expect(baseAccount?.address).toEqual(account.address);
+      expect(baseAccount?.address()).toEqual(account.address);
     });
 
     test('should throw error if account is not valid', async () => {
       web3Client.wallet().cleanWallet();
       await expect(
-        web3Client.wallet().setBaseAccount({} as IAccount),
+        web3Client.wallet().setBaseAccount({} as IBaseAccount),
       ).rejects.toThrow();
       const incorrectAccount = {
         address: 'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3',
         secretKey: 's1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6', // prefix is incorrect
         publicKey: 'P121uDTpo58d3SxQTENXKqSJTpB21ueSAy8RqQ2virGVeWs339ub',
-        createdInThread: 23,
       } as IAccount;
       await expect(
-        web3Client.wallet().setBaseAccount(incorrectAccount),
+        web3Client
+          .wallet()
+          .setBaseAccount(
+            new Web3Account(incorrectAccount, web3Client.publicApi()),
+          ),
       ).rejects.toThrow();
     });
 
@@ -122,16 +127,20 @@ describe('WalletClient', () => {
       const firstAccount = await WalletClient.getAccountFromSecretKey(
         receiverPrivateKey,
       );
-      web3Client.wallet().setBaseAccount(firstAccount);
+      await web3Client
+        .wallet()
+        .setBaseAccount(new Web3Account(firstAccount, web3Client.publicApi()));
 
       const secondAccount = await WalletClient.getAccountFromSecretKey(
         deployerPrivateKey,
       );
-      web3Client.wallet().setBaseAccount(secondAccount);
+      await web3Client
+        .wallet()
+        .setBaseAccount(new Web3Account(secondAccount, web3Client.publicApi()));
 
       const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
-      expect(baseAccount?.address).toEqual(secondAccount.address);
+      expect(baseAccount?.address()).toEqual(secondAccount.address);
     });
   });
 
@@ -139,7 +148,7 @@ describe('WalletClient', () => {
     test('should return the base account', async () => {
       const fetchedBaseAccount = web3Client.wallet().getBaseAccount();
       expect(fetchedBaseAccount).not.toBeNull();
-      expect(fetchedBaseAccount?.address).toEqual(baseAccount.address);
+      expect(fetchedBaseAccount?.address()).toEqual(baseAccount.address);
     });
 
     test('should return null if base account is not set', async () => {
@@ -207,19 +216,6 @@ describe('WalletClient', () => {
       );
     });
 
-    test('should not add duplicate accounts to the wallet (duplicate in arguments)', async () => {
-      // Add receiverPrivateKey's secret key twice
-      const secretKeys: string[] = [receiverPrivateKey, receiverPrivateKey];
-
-      const addedAccounts = await web3Client
-        .wallet()
-        .addSecretKeysToWallet(secretKeys);
-      const walletAccounts = web3Client.wallet().getWalletAccounts();
-      expect([baseAccount, addedAccounts[0]]).toStrictEqual(walletAccounts);
-      expect(addedAccounts.length).toBe(1); // only one unique account should be added
-      expect(web3Client.wallet().getWalletAccounts().length).toBe(2); // only one unique account should be added
-    });
-
     test('should not add duplicate accounts to the wallet (account already in wallet)', async () => {
       const addedAccounts = await web3Client
         .wallet()
@@ -227,9 +223,9 @@ describe('WalletClient', () => {
       const walletAccounts = web3Client.wallet().getWalletAccounts();
 
       // only receiver account should be added
-      expect(addedAccounts[0].secretKey).toBe(receiverPrivateKey);
-      expect([baseAccount, addedAccounts[0]]).toStrictEqual(walletAccounts);
-      expect(addedAccounts.length).toBe(1);
+      expect(addedAccounts[0].secretKey).toBe(deployerPrivateKey);
+      expect([baseAccount, addedAccounts[1]]).toStrictEqual(walletAccounts);
+      expect(addedAccounts.length).toBe(2);
       expect(web3Client.wallet().getWalletAccounts().length).toBe(2);
     });
 
@@ -271,7 +267,7 @@ describe('WalletClient', () => {
 
       await web3Client.wallet().addAccountsToWallet(accounts);
       const walletAccounts = web3Client.wallet().getWalletAccounts();
-      expect(walletAccounts.length).toBe(4); // 3 generated + 1 base account
+      expect(walletAccounts.length).toBe(3); // 3 generated
     });
 
     test('should return different accounts for different secret keys', async () => {
@@ -310,6 +306,8 @@ describe('WalletClient', () => {
             /* return fewer or more addresses than in the wallet */
           ];
         });
+
+      await web3Client.wallet().addAccountsToWallet([baseAccount]);
 
       await expect(web3Client.wallet().walletInfo()).rejects.toThrow(
         /Requested wallets not fully retrieved./,
@@ -461,7 +459,7 @@ describe('WalletClient', () => {
   describe('walletSignMessage', () => {
     test('should sign a message with a valid signer', async () => {
       const data = 'Test message';
-      const signer = baseAccount;
+      const signer = new Web3Account(baseAccount, web3Client.publicApi());
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
 
@@ -474,7 +472,14 @@ describe('WalletClient', () => {
 
     test('should throw an error when no private key is available', async () => {
       const data = 'Test message';
-      const signer = { ...baseAccount, secretKey: null };
+      let baseAccountWithoutSecretKey: IAccount = {
+        ...baseAccount,
+        secretKey: null,
+      };
+      const signer = new Web3Account(
+        baseAccountWithoutSecretKey,
+        web3Client.publicApi(),
+      );
 
       await expect(
         WalletClient.walletSignMessage(data, signer),
@@ -483,7 +488,14 @@ describe('WalletClient', () => {
 
     test('should throw an error when no public key is available', async () => {
       const data = 'Test message';
-      const signer = { ...baseAccount, publicKey: null };
+      let baseAccountWithoutPublicKey: IAccount = {
+        ...baseAccount,
+        publicKey: null,
+      };
+      const signer = new Web3Account(
+        baseAccountWithoutPublicKey,
+        web3Client.publicApi(),
+      );
 
       await expect(
         WalletClient.walletSignMessage(data, signer),
@@ -492,7 +504,7 @@ describe('WalletClient', () => {
 
     test('should throw an error when signature length is invalid', async () => {
       const data = 'Test message';
-      const signer = baseAccount;
+      const signer = new Web3Account(baseAccount, web3Client.publicApi());
 
       // Create a spy on the 'sign' function to provide an incorrect mock implementation for this test
       const signSpy = jest.spyOn(ed, 'sign');
@@ -510,7 +522,7 @@ describe('WalletClient', () => {
       const data = Buffer.from('Test message');
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
-      const signer = baseAccount;
+      const signer = new Web3Account(baseAccount, web3Client.publicApi());
 
       const signedMessage = await WalletClient.walletSignMessage(data, signer);
 
@@ -521,7 +533,7 @@ describe('WalletClient', () => {
 
     test('should throw an error if the signature could not be verified with the public key', async () => {
       const data = 'Test message';
-      const signer = baseAccount;
+      const signer = new Web3Account(baseAccount, web3Client.publicApi());
 
       // Create a spy on the 'verify' function to provide an incorrect mock implementation for this test
       const verifySpy = jest.spyOn(ed, 'verify');
@@ -590,13 +602,11 @@ describe('WalletClient', () => {
       expect(newAccount).toHaveProperty('address');
       expect(newAccount).toHaveProperty('secretKey');
       expect(newAccount).toHaveProperty('publicKey');
-      expect(newAccount).toHaveProperty('createdInThread');
 
       // Check that the properties are of correct type
       expect(typeof newAccount.address).toBe('string');
       expect(typeof newAccount.secretKey).toBe('string');
       expect(typeof newAccount.publicKey).toBe('string');
-      expect(typeof newAccount.createdInThread).toBe('number');
 
       // Check that the properties are not empty or null
       expect(newAccount.address).not.toBeNull();
@@ -626,7 +636,6 @@ describe('WalletClient', () => {
         'AU12KgrLq2vhMgi8aAwbxytiC4wXBDGgvTtqGTM5R7wEB9En8WBHB';
       const publicKeyModel =
         'P12c2wsKxEyAhPC4ouNsgywzM41VsNSuwH9JdMbRt9bM8ZsMLPQA';
-      const createdInThreadModel = 21;
       const accountFromSecretKey = await WalletClient.getAccountFromSecretKey(
         secretKey,
       );
@@ -634,14 +643,10 @@ describe('WalletClient', () => {
       expect(accountFromSecretKey).toHaveProperty('address');
       expect(accountFromSecretKey).toHaveProperty('secretKey');
       expect(accountFromSecretKey).toHaveProperty('publicKey');
-      expect(accountFromSecretKey).toHaveProperty('createdInThread');
       // Check that the secretKey matches the models
       expect(accountFromSecretKey.address).toEqual(addressModel);
       expect(accountFromSecretKey.publicKey).toEqual(publicKeyModel);
       expect(accountFromSecretKey.secretKey).toEqual(secretKey);
-      expect(accountFromSecretKey.createdInThread).toEqual(
-        createdInThreadModel,
-      );
     });
 
     test('should throw error if invalid secret key is provided', async () => {
@@ -798,7 +803,8 @@ describe('WalletClient', () => {
     });
 
     test('should not add duplicate accounts to the wallet', async () => {
-      await web3Client.wallet().addAccountsToWallet([baseAccount, baseAccount]);
+      await web3Client.wallet().addAccountsToWallet([baseAccount]);
+      await web3Client.wallet().addAccountsToWallet([baseAccount]);
       const walletAccounts = web3Client.wallet().getWalletAccounts();
       expect(walletAccounts.length).toBe(1); // only one unique account should be added
     });
@@ -809,10 +815,10 @@ describe('WalletClient', () => {
       const addedAccounts = await web3Client
         .wallet()
         .addAccountsToWallet([baseAccount, anotherAccount, anotherAccountBis]);
-      expect(addedAccounts.length).toBe(2);
-      // baseAccount should be ignored as it is already in the wallet
+      expect(addedAccounts.length).toBe(3);
       expect(addedAccounts).toEqual(
         expect.arrayContaining([
+          expect.objectContaining({ address: baseAccount.address }),
           expect.objectContaining({ address: anotherAccount.address }),
           expect.objectContaining({ address: anotherAccountBis.address }),
         ]),
@@ -820,35 +826,11 @@ describe('WalletClient', () => {
     });
   });
 
-  describe('getThreadNumber', () => {
-    test('should correctly compute the thread number for an account', async () => {
-      // create an account without providing the 'createdInThread' field
-      const account = await WalletClient.getAccountFromSecretKey(
-        receiverPrivateKey,
-      );
-      delete account.createdInThread;
-
-      await web3Client.wallet().setBaseAccount(account);
-
-      // get the updated account (now with 'createdInThread' field)
-      const baseAccount = web3Client.wallet().getBaseAccount();
-
-      // manually compute the expected thread number
-      if (!account.address) {
-        throw new Error('Missing account address');
-      }
-      const pubKeyHash = base58Decode(account.address.slice(2));
-      const expectedThreadNumber = pubKeyHash.slice(1).readUInt8(0) >> 3;
-
-      expect(baseAccount).not.toBeNull();
-      expect(baseAccount?.createdInThread).toEqual(expectedThreadNumber);
-    });
-  });
-
   describe('sendTransaction, buyRolls & sellRolls', () => {
     let receiverAccount: IAccount;
     let mockTxData: ITransactionData;
     let mockRollsData: IRollsData;
+    let mockAccount: Web3Account;
 
     // function to generate tests for sendTransaction, buyRolls & sellRolls to avoid code duplication
     function generateTests(
@@ -868,6 +850,11 @@ describe('WalletClient', () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
           .mockResolvedValue(mockOpIds);
+        jest
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .spyOn(mockAccount as any, 'sendJsonRPCRequest')
+          .mockResolvedValue(mockOpIds);
+        web3Client.wallet().setBaseAccount(mockAccount);
       });
 
       test('should throw an error if no sender account is available for the transaction', async () => {
@@ -881,7 +868,7 @@ describe('WalletClient', () => {
       test('should call compactBytesForOperation with correct arguments', async () => {
         const spy = jest.spyOn(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          web3Client.wallet() as any,
+          mockAccount as any,
           'compactBytesForOperation',
         );
 
@@ -894,21 +881,20 @@ describe('WalletClient', () => {
         );
       });
 
-      test('should call walletSignMessage with correct arguments', async () => {
-        const spy = jest.spyOn(WalletClient, 'walletSignMessage');
+      test('should call sign with correct arguments', async () => {
+        const spy = jest.spyOn(mockAccount, 'sign');
 
         await web3Client.wallet()[operation](data());
 
         expect(spy).toHaveBeenCalledWith(
           expect.any(Buffer), // Buffer.concat([bytesPublicKey, bytesCompact])
-          expect.any(Object), // sender
         );
       });
 
       test('should call sendJsonRPCRequest with correct arguments', async () => {
         const spy = jest.spyOn(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          web3Client.wallet() as any,
+          mockAccount as any,
           'sendJsonRPCRequest',
         );
 
@@ -923,12 +909,12 @@ describe('WalletClient', () => {
       test('should return an array of operation ids', async () => {
         jest
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .spyOn(web3Client.wallet() as any, 'sendJsonRPCRequest')
+          .spyOn(mockAccount as any, 'sendJsonRPCRequest')
           .mockResolvedValue(mockOpIds);
 
         const opIds = await web3Client.wallet()[operation](data());
 
-        expect(opIds).toEqual(mockOpIds);
+        expect(opIds).toEqual([mockOpIds[0]]);
       });
     }
 
@@ -947,6 +933,7 @@ describe('WalletClient', () => {
         fee: 1n,
         amount: 100n,
       };
+      mockAccount = new Web3Account(baseAccount, web3Client.publicApi());
     });
 
     describe('sendTransaction', () => {

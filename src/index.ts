@@ -88,7 +88,6 @@ export {
   SmartContractsClient,
   MASSA_PROTOFILE_KEY,
   PROTO_FILE_SEPARATOR,
-  readSmartContract,
 } from './web3/SmartContractsClient';
 export * from './utils/arguments';
 export { fromMAS, toMAS, MassaUnits } from './utils/converters';

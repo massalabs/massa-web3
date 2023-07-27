@@ -4,6 +4,8 @@ import { IBalance } from './IBalance';
 import { IRollsData } from './IRollsData';
 import { ISignature } from './ISignature';
 import { ITransactionData } from './ITransactionData';
+import { BaseClient } from '../web3/BaseClient';
+import { IBaseAccount } from './IBaseAccount';
 
 /**
  * Interface for WalletClient objects
@@ -23,20 +25,20 @@ import { ITransactionData } from './ITransactionData';
  * @see buyRolls - buy rolls
  * @see sellRolls - sell rolls
  */
-export interface IWalletClient {
+export interface IWalletClient extends BaseClient {
   /**
    * Set the base account.
    *
    * @param baseAccount - The base account as an IAccount object.
    */
-  setBaseAccount(baseAccount: IAccount): void;
+  setBaseAccount(baseAccount: IBaseAccount): void;
 
   /**
    * Get the base account.
    *
    * @returns The base account (or null if the base account is not set).
    */
-  getBaseAccount(): IAccount | null;
+  getBaseAccount(): IBaseAccount | null;
 
   /**
    * Get all accounts in the wallet.
@@ -139,7 +141,7 @@ export interface IWalletClient {
    */
   sendTransaction(
     txData: ITransactionData,
-    executor?: IAccount,
+    executor?: IBaseAccount,
   ): Promise<Array<string>>;
 
   /**
@@ -150,7 +152,7 @@ export interface IWalletClient {
    *
    * @returns A promise that resolves to an array of operation ids as strings.
    */
-  buyRolls(txData: IRollsData, executor?: IAccount): Promise<Array<string>>;
+  buyRolls(txData: IRollsData, executor?: IBaseAccount): Promise<Array<string>>;
 
   /**
    * Sell rolls.
@@ -160,5 +162,5 @@ export interface IWalletClient {
    *
    * @returns A promise that resolves to an array of operation ids as strings.
    */
-  sellRolls(txData: IRollsData, executor: IAccount): Promise<Array<string>>;
+  sellRolls(txData: IRollsData, executor: IBaseAccount): Promise<Array<string>>;
 }
