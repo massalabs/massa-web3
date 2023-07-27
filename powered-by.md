@@ -153,6 +153,14 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Nathan SEVA](ns@massa.net)
 
+## [@massalabs/wallet-provider](git+https://github.com/massalabs/massa-wallet-provider.git)
+
+**License:** (MIT AND Apache-2.0) - perpetual
+
+**Used version:** 1.0.0
+
+**Many thanks to:** [Massa Labs](info@massa.net)
+
 ## [@types/bn.js](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
 
 **License:** MIT - perpetual
