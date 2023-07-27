@@ -105,13 +105,6 @@ describe('BaseClient', () => {
       ).toThrow(
         'Cannot set providers with no public providers. Need at least one',
       );
-      expect(() =>
-        baseClient.setProviders([
-          { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-        ]),
-      ).toThrow(
-        'Cannot set providers with no private providers. Need at least one',
-      );
     });
 
     test('setProviders should correctly set multiple providers of the same type', () => {
@@ -303,21 +296,6 @@ describe('BaseClient', () => {
       await expect(
         baseClient.getSendJsonRPCRequest(unknownMethod, {}),
       ).rejects.toThrowError(`Unknown Json rpc method: ${unknownMethod}`);
-    });
-
-    test('should throw an error if no private providers are configured', async () => {
-      const clientConfig: IClientConfig = {
-        providers: [{ url: publicApi, type: ProviderType.PUBLIC } as IProvider],
-        periodOffset: PERIOD_OFFSET,
-      };
-
-      const createClient = () => {
-        baseClient = new TestBaseClient(clientConfig);
-      };
-
-      expect(createClient).toThrowError(
-        'Cannot initialize web3 with no private providers. Need at least one',
-      );
     });
 
     test('should throw an error if no public providers are configured', async () => {

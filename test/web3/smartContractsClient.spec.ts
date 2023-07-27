@@ -8,7 +8,7 @@ import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
   mockClientConfig,
-  mockDeployerAccount,
+  mockDeployerAccount as importedMockDeployerAccount,
   mockCallData,
   mockContractData,
   mockNodeStatusInfo,
@@ -26,6 +26,7 @@ import {
   mockAddresses,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
+import { Web3Account } from '../../src/web3/accounts/Web3Account';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
@@ -43,10 +44,15 @@ describe('SmartContractsClient', () => {
   let smartContractsClient: SmartContractsClient;
   let mockPublicApiClient: PublicApiClient;
   let mockWalletClient: WalletClient;
+  let mockDeployerAccount: Web3Account;
 
   beforeEach(() => {
     // Initialize the mock objects
     mockPublicApiClient = new PublicApiClient(mockClientConfig);
+    mockDeployerAccount = new Web3Account(
+      importedMockDeployerAccount,
+      mockPublicApiClient,
+    );
     mockWalletClient = new WalletClient(
       mockClientConfig,
       mockPublicApiClient,
@@ -80,8 +86,11 @@ describe('SmartContractsClient', () => {
     WalletClient.walletSignMessage = jest
       .fn()
       .mockResolvedValue(validSignature);
+    (mockDeployerAccount as any).sign = jest
+      .fn()
+      .mockResolvedValue(validSignature);
     // Mock the sendJsonRPCRequest function
-    (smartContractsClient as any).sendJsonRPCRequest = jest
+    (mockDeployerAccount as any).sendJsonRPCRequest = jest
       .fn()
       .mockResolvedValue(mockOpIds);
   });
@@ -104,12 +113,12 @@ describe('SmartContractsClient', () => {
       );
 
       expect(
-        (smartContractsClient as any).sendJsonRPCRequest,
+        (mockDeployerAccount as any).sendJsonRPCRequest,
       ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [
         [
           {
             serialized_content: expect.any(Array),
-            creator_public_key: mockDeployerAccount.publicKey,
+            creator_public_key: importedMockDeployerAccount.publicKey,
             signature: validSignature.base58Encoded,
           },
         ],
@@ -127,7 +136,7 @@ describe('SmartContractsClient', () => {
     // Write additional tests to handle any edge cases or error scenarios
     test('should handle errors correctly', async () => {
       const mockError = new Error('Error message');
-      (smartContractsClient as any).sendJsonRPCRequest = jest
+      (mockDeployerAccount as any).sendJsonRPCRequest = jest
         .fn()
         .mockRejectedValue(mockError);
 
@@ -175,7 +184,7 @@ describe('SmartContractsClient', () => {
     });
 
     test('should throw error when no opId is returned', async () => {
-      (smartContractsClient as any).sendJsonRPCRequest = jest
+      (mockDeployerAccount as any).sendJsonRPCRequest = jest
         .fn()
         .mockResolvedValue([]);
 
@@ -195,12 +204,12 @@ describe('SmartContractsClient', () => {
       );
 
       expect(
-        (smartContractsClient as any).sendJsonRPCRequest,
+        (mockDeployerAccount as any).sendJsonRPCRequest,
       ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [
         [
           {
             serialized_content: expect.any(Array),
-            creator_public_key: mockDeployerAccount.publicKey,
+            creator_public_key: importedMockDeployerAccount.publicKey,
             signature: validSignature.base58Encoded,
           },
         ],
@@ -223,7 +232,7 @@ describe('SmartContractsClient', () => {
 
     test('should handle errors correctly', async () => {
       const mockError = new Error('Error message');
-      (smartContractsClient as any).sendJsonRPCRequest.mockRejectedValue(
+      (mockDeployerAccount as any).sendJsonRPCRequest.mockRejectedValue(
         mockError,
       );
 
@@ -240,19 +249,19 @@ describe('SmartContractsClient', () => {
     });
 
     test('should call trySafeExecute if retryStrategyOn is true', async () => {
-      const originalRetryStrategy = (smartContractsClient as any).clientConfig
+      const originalRetryStrategy = (mockDeployerAccount as any).clientConfig
         .retryStrategyOn;
-      (smartContractsClient as any).clientConfig.retryStrategyOn = true;
+      (mockDeployerAccount as any).clientConfig.retryStrategyOn = true;
 
       await smartContractsClient.callSmartContract(mockCallData);
 
       expect(
-        (smartContractsClient as any).sendJsonRPCRequest,
+        (mockDeployerAccount as any).sendJsonRPCRequest,
       ).toHaveBeenCalledWith(JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS, [
         [
           {
             serialized_content: expect.any(Array),
-            creator_public_key: mockDeployerAccount.publicKey,
+            creator_public_key: importedMockDeployerAccount.publicKey,
             signature: validSignature.base58Encoded,
           },
         ],
@@ -263,7 +272,7 @@ describe('SmartContractsClient', () => {
     });
 
     test('should throw error when no opId is returned', async () => {
-      (smartContractsClient as any).sendJsonRPCRequest = jest
+      (mockDeployerAccount as any).sendJsonRPCRequest = jest
         .fn()
         .mockResolvedValue([]);
 

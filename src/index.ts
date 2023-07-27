@@ -39,8 +39,6 @@ export { ISignedMessage } from './interfaces/ISignedMessage';
 export { IStakingAddresses } from './interfaces/IStakingAddresses';
 export { ITransactionData } from './interfaces/ITransactionData';
 export { IBalance } from './interfaces/IBalance';
-export { ISerializable } from './interfaces/ISerializable';
-export { IDeserializedResult } from './interfaces/ISerializable';
 export { IDatastoreEntry } from './interfaces/IDatastoreEntry';
 export { IContractReadOperationData } from './interfaces/IContractReadOperationData';
 export { IContractReadOperationResponse } from './interfaces/IContractReadOperationResponse';
@@ -89,9 +87,8 @@ export {
   MASSA_PROTOFILE_KEY,
   PROTO_FILE_SEPARATOR,
 } from './web3/SmartContractsClient';
-export * from './utils/arguments';
+export * from '@massalabs/web3-utils';
 export { fromMAS, toMAS, MassaUnits } from './utils/converters';
-export * from './utils/serializers';
 
 /** Exposed utils */
 export * as utils from './utils/Xbqcrypto';
