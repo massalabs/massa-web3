@@ -1,7 +1,7 @@
 import { expect, it, describe } from '@jest/globals';
-import * as ser from '../../src/utils/serializers';
+import * as ser from '@massalabs/web3-utils';
 import { asTests } from './fixtures/as-serializer';
-import { Args, ArrayType } from '../../src/utils/arguments';
+import { Args, ArrayType } from '@massalabs/web3-utils';
 import {
   deserializeObj,
   getDatatypeSize,
@@ -9,11 +9,8 @@ import {
   arrayToBytes,
   bytesToArray,
   bytesToSerializableObjectArray,
-} from '../../src/utils/serializers';
-import {
-  IDeserializedResult,
-  ISerializable,
-} from '../../src/interfaces/ISerializable';
+} from '@massalabs/web3-utils';
+import { IDeserializedResult, ISerializable } from '@massalabs/web3-utils';
 
 // Implement a simple serializable class for testing.
 class TestSerializable implements ISerializable<TestSerializable> {

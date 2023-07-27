@@ -50,7 +50,9 @@ export class WalletProviderAccount implements IBaseAccount {
       callData.functionName,
       new Uint8Array(callData.parameter),
       callData.coins,
-      { maxGas: callData.maxGas, isNPE: false },
+      callData.fee,
+      callData.maxGas,
+      false,
     );
     return res.operationId;
   }

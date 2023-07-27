@@ -1,4 +1,4 @@
-export * as arguments from './arguments';
+export * as arguments from '@massalabs/web3-utils';
 
 export * as bytes from './bytes';
 
