@@ -2,6 +2,13 @@ import { IProvider, ProviderType } from '../interfaces/IProvider';
 import { IAccount } from '../interfaces/IAccount';
 import { Client } from './Client';
 import { IClientConfig } from '../interfaces/IClientConfig';
+import {
+  IAccount as IAccountWalletProvider,
+  IProvider as IProviderWalletProvider,
+} from '@massalabs/wallet-provider';
+import { Web3Account } from './accounts/Web3Account';
+import { PublicApiClient } from './PublicApiClient';
+import { WalletProviderAccount } from './accounts/WalletProviderAccount';
 
 /** Global connection urls, for Massa's MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET */
 export enum DefaultProviderUrls {
@@ -61,16 +68,23 @@ export class ClientFactory {
       } as IProvider,
     ];
 
+    let clientConfig = {
+      retryStrategyOn,
+      providers,
+    } as IClientConfig;
+    let publicApi = new PublicApiClient(clientConfig);
+    let account: Web3Account = null;
+    if (baseAccount) {
+      account = new Web3Account(baseAccount, publicApi);
+    }
     const client: Client = new Client(
       {
         retryStrategyOn,
         providers,
       } as IClientConfig,
-      baseAccount,
+      account,
+      publicApi,
     );
-
-    if (baseAccount) await client.wallet().setBaseAccount(baseAccount);
-
     return client;
   }
 
@@ -91,15 +105,49 @@ export class ClientFactory {
     retryStrategyOn = true,
     baseAccount?: IAccount,
   ): Promise<Client> {
+    let clientConfig = {
+      retryStrategyOn,
+      providers,
+    } as IClientConfig;
+    let publicApi = new PublicApiClient(clientConfig);
+    let account: Web3Account = null;
+    if (baseAccount) {
+      account = new Web3Account(baseAccount, publicApi);
+    }
+    const client: Client = new Client(clientConfig, account, publicApi);
+    return client;
+  }
+
+  /**
+   * Initializes a new client using the wallet provider.
+   *
+   * @remarks
+   * Suitable for local node interactions.
+   *
+   * @param provider - Provider from wallet provider to be used by the client.
+   * @param baseAccount - Base account from the wallet provider to be used by the client.
+   * @param retryStrategyOn - Whether to retry failed requests.
+   *
+   * @returns A promise that resolves to a Client object.
+   */
+  public static async fromWalletProvider(
+    provider: IProviderWalletProvider,
+    baseAccount: IAccountWalletProvider,
+    retryStrategyOn = true,
+  ): Promise<Client> {
+    const providers = (await provider.getNodesUrls()).map((url) => {
+      return {
+        url,
+        type: ProviderType.PUBLIC,
+      };
+    });
     const client: Client = new Client(
       {
         retryStrategyOn,
         providers,
       } as IClientConfig,
-      baseAccount,
+      new WalletProviderAccount(baseAccount),
     );
-
-    if (baseAccount) await client.wallet().setBaseAccount(baseAccount);
 
     return client;
   }

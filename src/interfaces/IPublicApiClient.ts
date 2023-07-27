@@ -11,6 +11,7 @@ import { ISlot } from './ISlot';
 import { IGetGraphInterval } from './IGetGraphInterval';
 import { IBlockcliqueBlockBySlot } from './IBlockcliqueBlockBySlot';
 import { IGraphInterval } from './IGraphInterval';
+import { BaseClient } from '../web3/BaseClient';
 
 /**
  * Represents a PublicApiClient object.
@@ -26,7 +27,7 @@ import { IGraphInterval } from './IGraphInterval';
  * @see getBlockcliqueBlockBySlot - Get blockclique block by slot.
  * @see getGraphInterval - Get graph interval.
  */
-export interface IPublicApiClient {
+export interface IPublicApiClient extends BaseClient {
   /**
    * Get the node status.
    *
