@@ -443,7 +443,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
       );
 
       // removing the version byte
-      const signatureBytes: Uint8Array = versionAndSignatureBytes.slice(1);
+      const signatureBytes: Uint8Array = versionAndSignatureBytes;
       // check sig length
       if (signatureBytes.length != 64) {
         throw new Error(
