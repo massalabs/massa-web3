@@ -88,6 +88,7 @@ export {
   PROTO_FILE_SEPARATOR,
 } from './web3/SmartContractsClient';
 export * from '@massalabs/web3-utils';
+export { withTimeoutRejection } from './utils/time';
 export { fromMAS, toMAS, MassaUnits } from './utils/converters';
 
 /**
