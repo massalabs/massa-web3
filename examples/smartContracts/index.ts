@@ -187,13 +187,18 @@ const pollAsyncEvents = async (
       deployerAccount,
     );
 
+    const accountAddress = deployerAccount.address;
+
+    if (!accountAddress) {
+      throw new Error('Missing account address');
+    }
+
     const deployerAccountBalance = await web3Client
       .wallet()
-      .getAccountBalance(deployerAccount.address as string);
+      .getAccountBalance(accountAddress);
+
     console.log(
-      `Deployer Wallet Address: ${
-        deployerAccount.address
-      } with balance (candidate, final) = (${toMAS(
+      `Deployer Wallet Address: ${accountAddress} with balance (candidate, final) = (${toMAS(
         deployerAccountBalance?.candidate.toString() as string,
       )}, ${toMAS(deployerAccountBalance?.final.toString() as string)})`,
     );
@@ -202,6 +207,13 @@ const pollAsyncEvents = async (
     spinner = ora(
       `Running ${chalk.green('deployment')} of deployer smart contract....`,
     ).start();
+
+    const baseAccount = web3Client.wallet().getBaseAccount();
+
+    if (!baseAccount) {
+      throw new Error('Failed to get base account');
+    }
+
     const deploymentOperationId = await deploySmartContracts(
       [
         {
@@ -216,8 +228,9 @@ const pollAsyncEvents = async (
       0n,
       1_000_000n,
       fromMAS(0.2),
-      deployerAccount,
+      baseAccount,
     );
+
     spinner.succeed(
       `Deployed Smart Contract ${chalk.green(
         'successfully',

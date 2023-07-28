@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { IAccount } from '../../src/interfaces/IAccount';
 import { IContractData } from '../../src/interfaces/IContractData';
 import { Client } from '../../src/web3/Client';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
@@ -7,6 +6,7 @@ import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { readFileSync } from 'fs';
 
 import { Args, fromMAS, u64ToBytes, u8toByte } from '../../src';
+import { IBaseAccount } from '../../src/interfaces/IBaseAccount';
 const path = require('path');
 const chalk = require('chalk');
 
@@ -18,12 +18,12 @@ interface ISCData {
 
 async function checkBalance(
   web3Client: Client,
-  account: IAccount,
+  account: IBaseAccount,
   requiredBalance: bigint,
 ) {
   const balance = await web3Client
     .wallet()
-    .getAccountBalance(account.address as string);
+    .getAccountBalance(account.address() as string);
   if (!balance?.final || balance.final < requiredBalance) {
     throw new Error('Insufficient MAS balance.');
   }
@@ -74,19 +74,20 @@ export const deploySmartContracts = async (
   fee = 0n,
   maxGas = 1_000_000n,
   maxCoins = fromMAS(0.1),
-  deployerAccount: IAccount,
+  deployerAccount: IBaseAccount,
 ): Promise<string> => {
   let deploymentOperationId: string;
   try {
     // do checks
-    // if (!deployerAccount) {
-    //   const baseAccount = web3Client.wallet().getBaseAccount();
-    //   if (baseAccount === null) {
-    //     throw new Error('Failed to get base account');
-    //   } else {
-    //     deployerAccount = baseAccount;
-    //   }
-    // }
+    if (!deployerAccount) {
+      const baseAccount = web3Client.wallet().getBaseAccount();
+      console.log('baseAccount', baseAccount);
+      if (baseAccount === null) {
+        throw new Error('Failed to get base account');
+      } else {
+        deployerAccount = baseAccount;
+      }
+    }
 
     // check deployer account balance
     const coinsRequired = contractsToDeploy.reduce(
@@ -141,6 +142,11 @@ export const deploySmartContracts = async (
         0n,
       );
       console.log('Sending coins ... ', coins.toString());
+      const baseAccount = web3Client.wallet().getBaseAccount();
+
+      if (!baseAccount) {
+        throw new Error('Failed to get base account');
+      }
 
       deploymentOperationId = await web3Client
         .smartContracts()
@@ -154,7 +160,7 @@ export const deploySmartContracts = async (
             maxGas,
             maxCoins,
           } as IContractData,
-          deployerAccount,
+          baseAccount,
         );
       console.log(
         `Smart Contract ${chalk.green(
