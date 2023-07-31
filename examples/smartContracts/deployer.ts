@@ -81,7 +81,6 @@ export const deploySmartContracts = async (
     // do checks
     if (!deployerAccount) {
       const baseAccount = web3Client.wallet().getBaseAccount();
-      console.log('baseAccount', baseAccount);
       if (baseAccount === null) {
         throw new Error('Failed to get base account');
       } else {
