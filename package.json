@@ -80,7 +80,7 @@
     "devDependencies": {
         "@massalabs/eslint-config": "^0.0.9",
         "@massalabs/prettier-config-as": "^0.0.2",
-        "@massalabs/web3-utils": "^1.1.0",
+        "@massalabs/web3-utils": "^1.2.0",
         "@types/bn.js": "^5.1.1",
         "@types/jest": "^29.5.1",
         "@types/node": "^18.13.0",
