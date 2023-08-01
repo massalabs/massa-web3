@@ -165,7 +165,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** ISC - perpetual
 
-**Used version:** 1.1.0
+**Used version:** 1.2.0
 
 **Many thanks to:** 
 
@@ -352,6 +352,14 @@ The following is a list of all the dependencies of this project:
 **Used version:** 16.4.1
 
 **Many thanks to:** [Adam Stankiewicz](sheerun@sher.pl)
+
+## [rimraf](git://github.com/isaacs/rimraf.git)
+
+**License:** ISC - perpetual
+
+**Used version:** 5.0.1
+
+**Many thanks to:** [Isaac Z. Schlueter](i@izs.me> (http://blog.izs.me/)
 
 ## [ts-jest](git+https://github.com/kulshekhar/ts-jest.git)
 
