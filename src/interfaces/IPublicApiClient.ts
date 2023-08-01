@@ -7,11 +7,11 @@ import { IOperationData } from './IOperationData';
 import { IStakingAddresses } from './IStakingAddresses';
 import { IDatastoreEntryInput } from './IDatastoreEntryInput';
 import { IDatastoreEntry } from './IDatastoreEntry';
-import { ISlot } from './ISlot';
 import { IGetGraphInterval } from './IGetGraphInterval';
 import { IBlockcliqueBlockBySlot } from './IBlockcliqueBlockBySlot';
 import { IGraphInterval } from './IGraphInterval';
 import { BaseClient } from '../web3/BaseClient';
+import { ISlot } from '@massalabs/web3-utils';
 
 /**
  * Represents a PublicApiClient object.
