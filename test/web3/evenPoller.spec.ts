@@ -5,7 +5,6 @@ import {
 } from '../../src/web3/EventPoller';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
-import { IEvent } from '../../src/interfaces/IEvent';
 import { Client } from '../../src/web3/Client';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
@@ -13,8 +12,8 @@ import {
   DefaultProviderUrls,
 } from '../../src/web3/ClientFactory';
 import { IAccount } from '../../src/interfaces/IAccount';
-import { ISlot } from '../../src/interfaces/ISlot';
 import { Timeout } from '../../src/utils/time';
+import { IEvent, ISlot } from '@massalabs/web3-utils';
 
 // mock axios to intercept any axios POST request and resolve it immediately with an empty object, so
 // no request is pending before Jest finishes the test

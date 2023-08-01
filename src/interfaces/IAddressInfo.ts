@@ -1,4 +1,4 @@
-import { ISlot } from './ISlot';
+import { ISlot } from '@massalabs/web3-utils';
 
 /**
  * Represents the production statistics for a specific cycle.

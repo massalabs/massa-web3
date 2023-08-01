@@ -12,10 +12,10 @@ import { BaseClient } from './BaseClient';
 import { IPublicApiClient } from '../interfaces/IPublicApiClient';
 import { IDatastoreEntry } from '../interfaces/IDatastoreEntry';
 import { IDatastoreEntryInput } from '../interfaces/IDatastoreEntryInput';
-import { ISlot } from '../interfaces/ISlot';
 import { IGetGraphInterval } from '../interfaces/IGetGraphInterval';
 import { IGraphInterval } from '../interfaces/IGraphInterval';
 import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot';
+import { ISlot } from '@massalabs/web3-utils';
 
 /**
  * Public API client for interacting with a Massa node.

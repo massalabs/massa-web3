@@ -145,7 +145,7 @@ export class ClientFactory {
       {
         retryStrategyOn,
         providers,
-      } as IClientConfig,
+      },
       new WalletProviderAccount(baseAccount),
     );
 
