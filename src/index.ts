@@ -17,10 +17,8 @@ if (typeof window !== 'undefined') {
 
 /** Exposed interfaces */
 export { IAccount } from './interfaces/IAccount';
-export { IEvent } from './interfaces/IEvent';
 export { IEventFilter } from './interfaces/IEventFilter';
 export { IEventRegexFilter } from './interfaces/IEventRegexFilter';
-export { ISlot } from './interfaces/ISlot';
 export { IAddressInfo } from './interfaces/IAddressInfo';
 export { IBlockInfo } from './interfaces/IBlockInfo';
 export { IClientConfig } from './interfaces/IClientConfig';
@@ -40,9 +38,6 @@ export { IStakingAddresses } from './interfaces/IStakingAddresses';
 export { ITransactionData } from './interfaces/ITransactionData';
 export { IBalance } from './interfaces/IBalance';
 export { IDatastoreEntry } from './interfaces/IDatastoreEntry';
-export { IContractReadOperationData } from './interfaces/IContractReadOperationData';
-export { IContractReadOperationResponse } from './interfaces/IContractReadOperationResponse';
-export { IReadOperationResult } from './interfaces/IReadOperationResult';
 export { IExecuteReadOnlyData } from './interfaces/IExecuteReadOnlyData';
 export { IExecuteReadOnlyResponse } from './interfaces/IExecuteReadOnlyResponse';
 export { JsonRpcResponseData } from './interfaces/JsonRpcResponseData';
