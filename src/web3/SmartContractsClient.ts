@@ -262,6 +262,7 @@ export class SmartContractsClient
       await wait(2000);
       counterMs = Date.now() - start;
     }
+    const status = await this.getOperationStatus(opId);
     const msg = `Fail to wait operation finality for ${opId}: Timeout reached. status: ${status}`;
     throw new Error(msg);
   }
