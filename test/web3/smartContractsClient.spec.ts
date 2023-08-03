@@ -24,6 +24,7 @@ import {
   validSignature,
   mockContractReadOperationDataWithError,
   mockAddresses,
+  mockBalance,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 import { Web3Account } from '../../src/web3/accounts/Web3Account';
@@ -197,6 +198,16 @@ describe('SmartContractsClient', () => {
   });
 
   describe('callSmartContract', () => {
+    beforeEach(() => {
+      // mock getContractBalance
+      smartContractsClient.getContractBalance = jest
+        .fn()
+        .mockResolvedValue(mockBalance);
+    });
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     test('should call sendJsonRPCRequest with correct arguments', async () => {
       await smartContractsClient.callSmartContract(
         mockCallData,
@@ -280,6 +291,29 @@ describe('SmartContractsClient', () => {
         smartContractsClient.callSmartContract(mockCallData),
       ).rejects.toThrow(
         `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
+      );
+    });
+
+    test('should throw error when maxGas is superior to the maximum gas allowed', async () => {
+      const modifiedMockCallData = { ...mockCallData };
+      modifiedMockCallData.maxGas = MAX_READ_BLOCK_GAS + BigInt(1);
+
+      await expect(
+        smartContractsClient.callSmartContract(modifiedMockCallData),
+      ).rejects.toThrow(
+        `The gas submitted ${modifiedMockCallData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+      );
+    });
+
+    test('should throw error when coins is superior to coins possessed by sender', async () => {
+      const modifiedMockCallData = { ...mockCallData };
+      modifiedMockCallData.coins =
+        BigInt(mockAddressesInfo[2].final_balance) + BigInt(1);
+
+      await expect(
+        smartContractsClient.callSmartContract(modifiedMockCallData),
+      ).rejects.toThrow(
+        `The sender ${mockDeployerAccount.address()} does not have enough balance to pay for the coins`,
       );
     });
   });
