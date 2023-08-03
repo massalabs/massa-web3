@@ -15,6 +15,8 @@ import { ICallData } from '../../interfaces/ICallData';
 import { IContractData } from '../../interfaces/IContractData';
 import { trySafeExecute } from '../../utils/retryExecuteFunction';
 
+export const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
+
 export class Web3Account extends BaseClient implements IBaseAccount {
   private account: IAccount;
   private publicApiClient: IPublicApiClient;

@@ -119,6 +119,19 @@ export class SmartContractsClient
     if (!sender) {
       throw new Error(`No tx sender available`);
     }
+    // check the max. allowed gas
+    if (callData.maxGas > MAX_READ_BLOCK_GAS) {
+      throw new Error(
+        `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+      );
+    }
+    // check that the sender has enough balance to pay for coins
+    const senderBalance = await this.getContractBalance(sender.address());
+    if (senderBalance.final < callData.coins) {
+      throw new Error(
+        `The sender ${sender.address()} does not have enough balance to pay for the coins`,
+      );
+    }
     return await sender.callSmartContract(callData);
   }
 
