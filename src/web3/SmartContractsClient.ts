@@ -130,7 +130,6 @@ export class SmartContractsClient
       sender.address(),
     );
     if (senderBalance.final < callData.coins) {
-      console.log('WE SHOULD TRIGGER');
       throw new Error(
         `The sender ${sender.address()} does not have enough balance to pay for the coins`,
       );
