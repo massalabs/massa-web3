@@ -126,8 +126,11 @@ export class SmartContractsClient
       );
     }
     // check that the sender has enough balance to pay for coins
-    const senderBalance = await this.getContractBalance(sender.address());
+    const senderBalance: IBalance = await this.getContractBalance(
+      sender.address(),
+    );
     if (senderBalance.final < callData.coins) {
+      console.log('WE SHOULD TRIGGER');
       throw new Error(
         `The sender ${sender.address()} does not have enough balance to pay for the coins`,
       );
