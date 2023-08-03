@@ -23,6 +23,7 @@ import {
   IContractReadOperationData,
   IContractReadOperationResponse,
 } from '@massalabs/web3-utils';
+import { IBalance } from '../../src/interfaces/IBalance';
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
@@ -393,10 +394,15 @@ export const mockDeployerAccount: IAccount = {
   secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
 };
 
+export const mockBalance: IBalance = {
+  final: 50n,
+  candidate: 50n,
+};
+
 export const mockContractData: IContractData = {
-  fee: 100000000000000000n,
-  maxGas: 100000000000000000n,
-  maxCoins: 100000000000000000n,
+  fee: 1n,
+  maxGas: 10n,
+  maxCoins: 0n,
   address: 'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
   contractDataText: 'Hello World!',
   contractDataBinary: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
@@ -421,9 +427,9 @@ export const mockContractData: IContractData = {
 };
 
 export const mockCallData: ICallData = {
-  fee: 100000000000000000n,
-  maxGas: 100000000000000000n,
-  coins: 100000000000000000n,
+  fee: 1n,
+  maxGas: 10n,
+  coins: 0n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   functionName: 'test',
   parameter: [1, 2, 3, 4],
@@ -447,7 +453,7 @@ export const mockEventFilter: IEventFilter | IEventRegexFilter = {
   is_final: null,
 };
 export const mockReadData: IReadData = {
-  maxGas: 100000n,
+  maxGas: 10n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   targetFunction: 'test',
   parameter: [1, 2, 3, 4],
