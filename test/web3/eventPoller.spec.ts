@@ -5,8 +5,6 @@ import {
 } from '../../src/web3/EventPoller';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
-import { IEvent } from '../../src/interfaces/IEvent';
-import { ISlot } from '../../src/interfaces/ISlot';
 import { Client } from '../../src/web3/Client';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
@@ -15,6 +13,7 @@ import {
 } from '../../src/web3/ClientFactory';
 import { IAccount } from '../../src/interfaces/IAccount';
 import { Timeout } from '../../src/utils/time';
+import { IEvent, ISlot } from '@massalabs/web3-utils';
 
 // Mock the Timeout class
 jest.mock('../../src/utils/time', () => {

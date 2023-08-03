@@ -2,11 +2,9 @@
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { ClientFactory } from '../../src/web3/ClientFactory';
-import { IEvent } from '../../src/interfaces/IEvent';
 import { IReadData } from '../../src/interfaces/IReadData';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { awaitTxConfirmation, deploySmartContracts } from './deployer';
-import { Args } from '../../src/utils/arguments';
 import { readFileSync } from 'fs';
 import { Client } from '../../src/web3/Client';
 import {
@@ -16,16 +14,20 @@ import {
 } from '../../src/web3/EventPoller';
 import { INodeStatus } from '../../src/interfaces/INodeStatus';
 import { withTimeoutRejection } from '../../src/utils/time';
-import { strToBytes } from '../../src/utils/serializers';
 import { IDatastoreEntryInput } from '../../src/interfaces/IDatastoreEntryInput';
 import { ICallData } from '../../src/interfaces/ICallData';
 import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
-import { fromMAS, toMAS } from '../../src';
 import {
+  Args,
   IDeserializedResult,
+  IEvent,
   ISerializable,
-} from '../../src/interfaces/ISerializable';
+  fromMAS,
+  strToBytes,
+  toMAS,
+} from '../../src';
+
 const path = require('path');
 const chalk = require('chalk');
 const ora = require('ora');
@@ -185,13 +187,18 @@ const pollAsyncEvents = async (
       deployerAccount,
     );
 
+    const accountAddress = deployerAccount.address;
+
+    if (!accountAddress) {
+      throw new Error('Missing account address');
+    }
+
     const deployerAccountBalance = await web3Client
       .wallet()
-      .getAccountBalance(deployerAccount.address as string);
+      .getAccountBalance(accountAddress);
+
     console.log(
-      `Deployer Wallet Address: ${
-        deployerAccount.address
-      } with balance (candidate, final) = (${toMAS(
+      `Deployer Wallet Address: ${accountAddress} with balance (candidate, final) = (${toMAS(
         deployerAccountBalance?.candidate.toString() as string,
       )}, ${toMAS(deployerAccountBalance?.final.toString() as string)})`,
     );
@@ -200,6 +207,13 @@ const pollAsyncEvents = async (
     spinner = ora(
       `Running ${chalk.green('deployment')} of deployer smart contract....`,
     ).start();
+
+    const baseAccount = web3Client.wallet().getBaseAccount();
+
+    if (!baseAccount) {
+      throw new Error('Failed to get base account');
+    }
+
     const deploymentOperationId = await deploySmartContracts(
       [
         {
@@ -214,8 +228,9 @@ const pollAsyncEvents = async (
       0n,
       1_000_000n,
       fromMAS(0.2),
-      deployerAccount,
+      baseAccount,
     );
+
     spinner.succeed(
       `Deployed Smart Contract ${chalk.green(
         'successfully',

@@ -11,7 +11,6 @@ import * as dotenv from 'dotenv';
 import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { fromMAS } from '../../src';
-import { ISignature } from '../../src/interfaces/ISignature';
 const path = require('path');
 const chalk = require('chalk');
 
@@ -61,6 +60,8 @@ if (!receiverPrivateKey) {
       deployerAccount,
     );
 
+    await web3Client.wallet().addAccountsToWallet([deployerAccount]);
+
     // get wallet balance
     const deployerAccountBalance = await web3Client
       .wallet()
@@ -91,44 +92,43 @@ if (!receiverPrivateKey) {
     const senderAccount = walletAccounts[0];
     const receiverAccount = walletAccounts[1];
 
+    if (!receiverAccount?.address || !senderAccount?.address) {
+      throw new Error('Missing receiver account address');
+    }
+
     // get receiver's wallet balance
     const receiverAccountBalanceBefore = await web3Client
       .wallet()
-      .getAccountBalance(receiverAccount.address as string);
+      .getAccountBalance(receiverAccount.address);
+
     console.log(
       `Receiver Wallet Balance (Before): ${
         receiverAccount.address
       } with balance (candidate, final) = (${receiverAccountBalanceBefore?.candidate.toString()}, ${receiverAccountBalanceBefore?.final.toString()})`,
     );
 
+    const message = 'hello world';
+
     // sign a random wallet message using account2
     const signedMessage = await web3Client
       .wallet()
-      .signMessage('hello there', receiverAccount.address as string);
+      .signMessage(message, receiverAccount.address);
     console.log('Wallet sender signing a message... ', signedMessage);
 
-    // verify a signature
-    const signature: ISignature = {
-      base58Encoded:
-        'B1Gy7pAstdqzjghn8fdLDtn1qLUhsxWu4x1j8N4W9wxa3hTPNsFyPeFkSkfEjVCRnCAE9jrBjernGyoDL1yt2Wgafb8uu',
-    };
-
-    const message = 'hello world';
+    if (!deployerAccount?.publicKey || !signedMessage) {
+      throw new Error('Missing publicKey or signed message');
+    }
 
     const isVerified = await web3Client
       .wallet()
-      .verifySignature(
-        message,
-        signature,
-        'P1c6udwDMs6CY2YDUm7phdrv6S5ACjTV5jW4Kriio44yDpRWK8t',
-      );
+      .verifySignature(message, signedMessage, deployerAccount.publicKey);
     console.log('Signature verification: ', isVerified);
 
     // send from base account to receiver
     const txId = await web3Client.wallet().sendTransaction({
       amount: fromMAS(1),
       fee: 0n,
-      recipientAddress: receiverAccount.address as string,
+      recipientAddress: receiverAccount.address,
     } as ITransactionData);
     console.log('Money Transfer:: TxId ', txId[0]);
 
@@ -154,7 +154,7 @@ if (!receiverPrivateKey) {
     // get receiver's wallet after
     const receiverAccountBalanceAfter = await web3Client
       .wallet()
-      .getAccountBalance(receiverAccount.address as string);
+      .getAccountBalance(receiverAccount.address);
     console.log(
       `Receiver Wallet Balance (After): ${
         receiverAccount.address
@@ -164,7 +164,7 @@ if (!receiverPrivateKey) {
     // get sender's wallet after
     const senderAccountBalanceAfter = await web3Client
       .wallet()
-      .getAccountBalance(senderAccount.address as string);
+      .getAccountBalance(senderAccount.address);
     console.log(
       `Sender Wallet Balance (After): ${
         receiverAccount.address

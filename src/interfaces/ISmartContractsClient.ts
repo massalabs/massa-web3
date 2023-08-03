@@ -1,10 +1,9 @@
+import { IContractReadOperationResponse, IEvent } from '@massalabs/web3-utils';
 import { EOperationStatus } from './EOperationStatus';
 import { IBalance } from './IBalance';
 import { IBaseAccount } from './IBaseAccount';
 import { ICallData } from './ICallData';
 import { IContractData } from './IContractData';
-import { IContractReadOperationResponse } from './IContractReadOperationResponse';
-import { IEvent } from './IEvent';
 import { IEventFilter } from './IEventFilter';
 import { IExecuteReadOnlyResponse } from './IExecuteReadOnlyResponse';
 import { IReadData } from './IReadData';

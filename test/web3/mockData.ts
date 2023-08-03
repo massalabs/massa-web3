@@ -10,10 +10,6 @@ import { IContractData } from '../../src/interfaces/IContractData';
 import { ICallData } from '../../src/interfaces/ICallData';
 import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
 import { IReadData } from '../../src/interfaces/IReadData';
-import { IContractReadOperationData } from '../../src/interfaces/IContractReadOperationData';
-import { IContractReadOperationResponse } from '../../src/interfaces/IContractReadOperationResponse';
-import { IEvent } from '../../src/interfaces/IEvent';
-import { ISlot } from '../../src/interfaces/ISlot';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
@@ -21,6 +17,12 @@ import { ISignature } from '../../src/interfaces/ISignature';
 import { IOperationData } from '../../src/interfaces/IOperationData';
 import { INodeStatus } from '../../src/interfaces/INodeStatus';
 import { IEndorsement } from '../../src/interfaces/IEndorsement';
+import {
+  ISlot,
+  IEvent,
+  IContractReadOperationData,
+  IContractReadOperationResponse,
+} from '@massalabs/web3-utils';
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(

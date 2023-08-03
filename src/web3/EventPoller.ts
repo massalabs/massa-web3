@@ -1,10 +1,9 @@
 import { EventEmitter } from 'events';
-import { IEvent } from '../interfaces/IEvent';
 import { IEventFilter } from '../interfaces/IEventFilter';
 import { IEventRegexFilter } from '../interfaces/IEventRegexFilter';
-import { ISlot } from '../interfaces/ISlot';
 import { Timeout } from '../utils/time';
 import { Client } from './Client';
+import { ISlot, IEvent } from '@massalabs/web3-utils';
 
 /** Smart Contracts Event Poller */
 export const ON_MASSA_EVENT_DATA = 'ON_MASSA_EVENT';

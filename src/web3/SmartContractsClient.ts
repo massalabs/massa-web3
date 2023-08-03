@@ -12,9 +12,7 @@ import { IBalance } from '../interfaces/IBalance';
 import { ICallData } from '../interfaces/ICallData';
 import { IClientConfig } from '../interfaces/IClientConfig';
 import { IContractData } from '../interfaces/IContractData';
-import { IContractReadOperationData } from '../interfaces/IContractReadOperationData';
-import { IContractReadOperationResponse } from '../interfaces/IContractReadOperationResponse';
-import { IEvent } from '../interfaces/IEvent';
+
 import { IEventFilter } from '../interfaces/IEventFilter';
 import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData';
 import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse';
@@ -29,6 +27,11 @@ import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { IWalletClient } from '../interfaces/IWalletClient';
 import { IBaseAccount } from '../interfaces/IBaseAccount';
+import {
+  IContractReadOperationResponse,
+  IContractReadOperationData,
+  IEvent,
+} from '@massalabs/web3-utils';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 const TX_POLL_INTERVAL_MS = 10000;
