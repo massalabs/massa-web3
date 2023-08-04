@@ -199,8 +199,8 @@ describe('SmartContractsClient', () => {
 
   describe('callSmartContract', () => {
     beforeEach(() => {
-      // mock getContractBalance
-      smartContractsClient.getContractBalance = jest
+      // mock getAccountBalance
+      mockWalletClient.getAccountBalance = jest
         .fn()
         .mockResolvedValue(mockBalance);
     });

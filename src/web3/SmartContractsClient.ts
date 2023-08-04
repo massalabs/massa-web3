@@ -126,7 +126,7 @@ export class SmartContractsClient
       );
     }
     // check that the sender has enough balance to pay for coins
-    const senderBalance: IBalance = await this.getContractBalance(
+    const senderBalance: IBalance = await this.walletClient.getAccountBalance(
       sender.address(),
     );
     if (senderBalance.final < callData.coins) {
