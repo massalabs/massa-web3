@@ -134,6 +134,13 @@ export class SmartContractsClient
         `The sender ${sender.address()} does not have enough balance to pay for the coins`,
       );
     }
+
+    // check that the sender has enough balance to pay for max gas
+    if (senderBalance.final < callData.maxGas) {
+      throw new Error(
+        `The sender ${sender.address()} does not have enough balance to pay for the max gas`,
+      );
+    }
     return await sender.callSmartContract(callData);
   }
 
