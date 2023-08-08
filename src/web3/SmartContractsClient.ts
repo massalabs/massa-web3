@@ -125,6 +125,9 @@ export class SmartContractsClient
         `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
       );
     }
+
+    const coinsToTransfer = callData.coins || BigInt(0);
+
     // check that the sender has enough balance to pay for coins
     const senderBalance: IBalance = await this.walletClient.getAccountBalance(
       sender.address(),
@@ -134,7 +137,10 @@ export class SmartContractsClient
         `The sender ${sender.address()} does not have enough balance to pay for the coins`,
       );
     }
-    return await sender.callSmartContract(callData);
+    return await sender.callSmartContract({
+      ...callData,
+      coins: coinsToTransfer,
+    });
   }
 
   /**

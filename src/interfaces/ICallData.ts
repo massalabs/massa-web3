@@ -16,7 +16,7 @@
 export interface ICallData {
   fee: bigint;
   maxGas: bigint;
-  coins: bigint;
+  coins?: bigint;
   targetAddress: string;
   functionName: string;
   parameter: Array<number>;

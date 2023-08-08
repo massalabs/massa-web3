@@ -429,7 +429,7 @@ export const mockContractData: IContractData = {
 export const mockCallData: ICallData = {
   fee: 1n,
   maxGas: 10n,
-  coins: 0n,
+  coins: 1n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   functionName: 'test',
   parameter: [1, 2, 3, 4],
