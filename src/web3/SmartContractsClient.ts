@@ -126,7 +126,7 @@ export class SmartContractsClient
       );
     }
 
-    const coinsToTransfer = callData.coins || BigInt(0);
+    callData.coins = callData.coins || BigInt(0);
 
     // check that the sender has enough balance to pay for coins
     const senderBalance: IBalance = await this.walletClient.getAccountBalance(
@@ -137,10 +137,7 @@ export class SmartContractsClient
         `The sender ${sender.address()} does not have enough balance to pay for the coins`,
       );
     }
-    return await sender.callSmartContract({
-      ...callData,
-      coins: coinsToTransfer,
-    });
+    return await sender.callSmartContract(callData);
   }
 
   /**
