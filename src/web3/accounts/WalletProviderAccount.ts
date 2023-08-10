@@ -6,6 +6,7 @@ import { IRollsData } from '../../interfaces/IRollsData';
 import { ITransactionData } from '../../interfaces/ITransactionData';
 import { ICallData } from '../../interfaces/ICallData';
 import { IContractData } from '../../interfaces/IContractData';
+import { Args } from '@massalabs/web3-utils';
 
 export class WalletProviderAccount implements IBaseAccount {
   private account: IAccount;
@@ -45,16 +46,20 @@ export class WalletProviderAccount implements IBaseAccount {
   }
 
   public async callSmartContract(callData: ICallData): Promise<string> {
-    let serializedParam: number[]; // serialized parameter
-    if (callData.parameter instanceof Array) {
-      serializedParam = callData.parameter;
-    } else {
-      serializedParam = callData.parameter.serialize();
+    let params: number[] | Args = callData.parameter;
+    let paramToSend: Uint8Array | Args;
+
+    if (params instanceof Array) {
+      paramToSend = new Uint8Array(params);
     }
+    if (params instanceof Args) {
+      paramToSend = params;
+    }
+
     let res = await this.account.callSC(
       callData.targetAddress,
       callData.functionName,
-      new Uint8Array(serializedParam),
+      paramToSend,
       callData.coins,
       callData.fee,
       callData.maxGas,
