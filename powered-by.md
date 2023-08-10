@@ -165,7 +165,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** ISC - perpetual
 
-**Used version:** 1.2.0
+**Used version:** 1.3.0
 
 **Many thanks to:** 
 
