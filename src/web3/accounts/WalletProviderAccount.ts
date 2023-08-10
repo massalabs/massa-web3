@@ -45,10 +45,16 @@ export class WalletProviderAccount implements IBaseAccount {
   }
 
   public async callSmartContract(callData: ICallData): Promise<string> {
+    let serializedParam: number[]; // serialized parameter
+    if (callData.parameter instanceof Array) {
+      serializedParam = callData.parameter;
+    } else {
+      serializedParam = callData.parameter.serialize();
+    }
     let res = await this.account.callSC(
       callData.targetAddress,
       callData.functionName,
-      new Uint8Array(callData.parameter),
+      new Uint8Array(serializedParam),
       callData.coins,
       callData.fee,
       callData.maxGas,

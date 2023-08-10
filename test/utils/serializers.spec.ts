@@ -1,7 +1,7 @@
 import { expect, it, describe } from '@jest/globals';
 import * as ser from '@massalabs/web3-utils';
 import { asTests } from './fixtures/as-serializer';
-import { Args, ArrayType } from '@massalabs/web3-utils';
+import { Args, ArrayTypes } from '@massalabs/web3-utils';
 import {
   deserializeObj,
   getDatatypeSize,
@@ -228,58 +228,58 @@ describe('Test against assemblyscript serializer', () => {
       26, 0, 0, 0, 5, 0, 0, 0, 72, 101, 108, 108, 111, 5, 0, 0, 0, 87, 111, 114,
       108, 100, 4, 0, 0, 0, 240, 159, 153, 130,
     ];
-    expect(new Args().addArray(input, ArrayType.STRING).serialize()).toEqual(
+    expect(new Args().addArray(input, ArrayTypes.STRING).serialize()).toEqual(
       serialized,
     );
-    expect(new Args(serialized).nextArray(ArrayType.STRING)).toEqual(input);
+    expect(new Args(serialized).nextArray(ArrayTypes.STRING)).toEqual(input);
   });
 });
 
 describe('array.ts functions', () => {
   describe('getDatatypeSize tests', () => {
     it('returns the correct size for BOOL', () => {
-      expect(getDatatypeSize(ArrayType.BOOL)).toEqual(1);
+      expect(getDatatypeSize(ArrayTypes.BOOL)).toEqual(1);
     });
 
     it('returns the correct size for U8', () => {
-      expect(getDatatypeSize(ArrayType.U8)).toEqual(1);
+      expect(getDatatypeSize(ArrayTypes.U8)).toEqual(1);
     });
 
     it('returns the correct size for F32', () => {
-      expect(getDatatypeSize(ArrayType.F32)).toEqual(4);
+      expect(getDatatypeSize(ArrayTypes.F32)).toEqual(4);
     });
 
     it('returns the correct size for I32', () => {
-      expect(getDatatypeSize(ArrayType.I32)).toEqual(4);
+      expect(getDatatypeSize(ArrayTypes.I32)).toEqual(4);
     });
 
     it('returns the correct size for U32', () => {
-      expect(getDatatypeSize(ArrayType.U32)).toEqual(4);
+      expect(getDatatypeSize(ArrayTypes.U32)).toEqual(4);
     });
 
     it('returns the correct size for F64', () => {
-      expect(getDatatypeSize(ArrayType.F64)).toEqual(8);
+      expect(getDatatypeSize(ArrayTypes.F64)).toEqual(8);
     });
 
     it('returns the correct size for I64', () => {
-      expect(getDatatypeSize(ArrayType.I64)).toEqual(8);
+      expect(getDatatypeSize(ArrayTypes.I64)).toEqual(8);
     });
 
     it('returns the correct size for U64', () => {
-      expect(getDatatypeSize(ArrayType.U64)).toEqual(8);
+      expect(getDatatypeSize(ArrayTypes.U64)).toEqual(8);
     });
 
     it('returns the correct size for U128', () => {
-      expect(getDatatypeSize(ArrayType.U128)).toEqual(16);
+      expect(getDatatypeSize(ArrayTypes.U128)).toEqual(16);
     });
 
     it('returns the correct size for U256', () => {
-      expect(getDatatypeSize(ArrayType.U256)).toEqual(32);
+      expect(getDatatypeSize(ArrayTypes.U256)).toEqual(32);
     });
 
     it('throws an error for unsupported types', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(() => getDatatypeSize((ArrayType as any).BadType)).toThrow(
+      expect(() => getDatatypeSize((ArrayTypes as any).BadType)).toThrow(
         'Unsupported type',
       );
     });
@@ -326,29 +326,29 @@ describe('array.ts functions', () => {
   describe('arrayToBytes and bytesToArray tests', () => {
     it('converts a bool array to bytes and back correctly', () => {
       const dataArray = [true, false, true, true, false];
-      const byteArray = arrayToBytes(dataArray, ArrayType.BOOL);
-      const arrayBack = bytesToArray(byteArray, ArrayType.BOOL);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.BOOL);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.BOOL);
       expect(arrayBack).toEqual(dataArray);
     });
 
     it('converts a string array to bytes and back correctly', () => {
       const dataArray = ['hello', 'world'];
-      const byteArray = arrayToBytes(dataArray, ArrayType.STRING);
-      const arrayBack = bytesToArray(byteArray, ArrayType.STRING);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.STRING);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.STRING);
       expect(arrayBack).toEqual(dataArray);
     });
 
     it('converts a U8 array to bytes and back correctly', () => {
       const dataArray = [1, 2, 3, 4, 5];
-      const byteArray = arrayToBytes(dataArray, ArrayType.U8);
-      const arrayBack = bytesToArray(byteArray, ArrayType.U8);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.U8);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.U8);
       expect(arrayBack).toEqual(dataArray);
     });
 
     it('converts a U32 array to bytes and back correctly', () => {
       const dataArray = [10, 20, 30, 40, 50];
-      const byteArray = arrayToBytes(dataArray, ArrayType.U32);
-      const arrayBack = bytesToArray(byteArray, ArrayType.U32);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.U32);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.U32);
       expect(arrayBack).toEqual(dataArray);
     });
 
@@ -360,8 +360,8 @@ describe('array.ts functions', () => {
         BigInt(40),
         BigInt(50),
       ];
-      const byteArray = arrayToBytes(dataArray, ArrayType.U64);
-      const arrayBack = bytesToArray(byteArray, ArrayType.U64);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.U64);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.U64);
       expect(arrayBack).toEqual(dataArray);
     });
     it('converts a U128 array to bytes and back correctly', () => {
@@ -373,8 +373,8 @@ describe('array.ts functions', () => {
         123456789123456789n,
       ];
 
-      const byteArray = arrayToBytes(dataArray, ArrayType.U128);
-      const arrayBack = bytesToArray(byteArray, ArrayType.U128);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.U128);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.U128);
       expect(arrayBack).toEqual(dataArray);
     });
     it('converts a U256 array to bytes and back correctly', () => {
@@ -386,15 +386,15 @@ describe('array.ts functions', () => {
         123456789123456789n,
       ];
 
-      const byteArray = arrayToBytes(dataArray, ArrayType.U256);
-      const arrayBack = bytesToArray(byteArray, ArrayType.U256);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.U256);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.U256);
       expect(arrayBack).toEqual(dataArray);
     });
 
     it('converts a I32 array to bytes and back correctly', () => {
       const dataArray = [-10, -20, -30, -40, -50];
-      const byteArray = arrayToBytes(dataArray, ArrayType.I32);
-      const arrayBack = bytesToArray(byteArray, ArrayType.I32);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.I32);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.I32);
       expect(arrayBack).toEqual(dataArray);
     });
 
@@ -406,8 +406,8 @@ describe('array.ts functions', () => {
         BigInt(-40),
         BigInt(-50),
       ];
-      const byteArray = arrayToBytes(dataArray, ArrayType.I64);
-      const arrayBack = bytesToArray(byteArray, ArrayType.I64);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.I64);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.I64);
       expect(arrayBack).toEqual(dataArray);
     });
 
@@ -427,14 +427,14 @@ describe('array.ts functions', () => {
         0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0,
         0,
       ]);
-      expect(arrayToBytes(input, ArrayType.I64)).toEqual(serialized);
-      expect(bytesToArray<bigint>(serialized, ArrayType.I64)).toEqual(input);
+      expect(arrayToBytes(input, ArrayTypes.I64)).toEqual(serialized);
+      expect(bytesToArray<bigint>(serialized, ArrayTypes.I64)).toEqual(input);
     });
 
     it('converts a F32 array to bytes and back correctly', () => {
       const dataArray = [1.1, 2.2, 3.3, 4.4, 5.5];
-      const byteArray = arrayToBytes(dataArray, ArrayType.F32);
-      const arrayBack = bytesToArray(byteArray, ArrayType.F32);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.F32);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.F32);
 
       arrayBack.forEach((value, index) => {
         expect(value).toBeCloseTo(dataArray[index], 5); // 5 is the precision (number of digits after the decimal point)
@@ -442,8 +442,8 @@ describe('array.ts functions', () => {
     });
     it('converts a F64 array to bytes and back correctly', () => {
       const dataArray = [1.1, 2.2, 3.3, 4.4, 5.5];
-      const byteArray = arrayToBytes(dataArray, ArrayType.F64);
-      const arrayBack = bytesToArray(byteArray, ArrayType.F64);
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.F64);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.F64);
 
       arrayBack.forEach((value, index) => {
         expect(value).toBeCloseTo(dataArray[index], 5); // 5 is the precision (number of digits after the decimal point)

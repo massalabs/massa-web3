@@ -215,6 +215,20 @@ export class Web3Account extends BaseClient implements IBaseAccount {
   }
 
   public async callSmartContract(callData: ICallData): Promise<string> {
+    let serializedParam: number[]; // serialized parameter
+    if (callData.parameter instanceof Array) {
+      serializedParam = callData.parameter;
+    } else {
+      serializedParam = callData.parameter.serialize();
+    }
+    const call: ICallData = {
+      fee: callData.fee,
+      maxGas: callData.maxGas,
+      coins: callData.coins,
+      targetAddress: callData.targetAddress,
+      functionName: callData.functionName,
+      parameter: serializedParam,
+    };
     // get next period info
     const nodeStatusInfo: INodeStatus =
       await this.publicApiClient.getNodeStatus();
@@ -223,7 +237,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
     // bytes compaction
     const bytesCompact: Buffer = this.compactBytesForOperation(
-      callData,
+      call,
       OperationTypeId.CallSC,
       expiryPeriod,
     );
