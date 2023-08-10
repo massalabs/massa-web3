@@ -45,7 +45,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 1.4.0
+**Used version:** 0.26.1
 
 **Many thanks to:** Matt Zabriskie
 
