@@ -4,7 +4,7 @@ import { Buffer } from 'buffer';
 import { base58Decode, varintEncode } from '../utils/Xbqcrypto';
 import { IContractData } from '../interfaces/IContractData';
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { ITransactionData } from '../interfaces/ITransactionData';
 import { OperationTypeId } from '../interfaces/OperationTypes';
@@ -37,7 +37,7 @@ export const requestHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
   'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-};
+} as AxiosRequestHeaders;
 
 export const PERIOD_OFFSET = 5;
 
@@ -201,7 +201,7 @@ export class BaseClient {
   ): Promise<JsonRpcResponseData<T>> {
     let resp: AxiosResponse<JsonRpcResponseData<T>> = null;
 
-    const data = {
+    const body = {
       jsonrpc: '2.0',
       method: resource,
       params: params,
@@ -211,8 +211,8 @@ export class BaseClient {
     try {
       resp = await axios.post(
         this.getProviderForRpcMethod(resource).url,
-        data,
-        { headers: requestHeaders },
+        body,
+        requestHeaders,
       );
     } catch (ex) {
       return {
