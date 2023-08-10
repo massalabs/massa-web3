@@ -328,26 +328,27 @@ export class SmartContractsClient
     if (!operationData || operationData.length === 0)
       return EOperationStatus.NOT_FOUND;
     const opData = operationData[0];
-    if (opData.is_operation_final && opData.op_exec_status) {
-      return EOperationStatus.FINAL_SUCCESS;
-    }
-    if (opData.is_operation_final && !opData.op_exec_status) {
-      return EOperationStatus.FINAL_ERROR;
-    }
-    if (!opData.is_operation_final && opData.op_exec_status) {
-      return EOperationStatus.SPECULATIVE_SUCCESS;
-    }
-    if (!opData.is_operation_final && !opData.op_exec_status) {
-      return EOperationStatus.SPECULATIVE_ERROR;
-    }
     if (opData.is_operation_final === null && opData.op_exec_status === null) {
       return EOperationStatus.UNEXECUTED_OR_EXPIRED;
     }
-    if (opData.in_blocks.length > 0) {
-      return EOperationStatus.INCLUDED_PENDING;
-    }
     if (opData.in_pool) {
       return EOperationStatus.AWAITING_INCLUSION;
+    }
+    if (opData.is_operation_final && opData.op_exec_status) {
+      return EOperationStatus.FINAL_SUCCESS;
+    }
+    // since null is a falsy value, we need to check for false explicitly
+    if (opData.is_operation_final && opData.op_exec_status === false) {
+      return EOperationStatus.FINAL_ERROR;
+    }
+    if (opData.is_operation_final === false && opData.op_exec_status) {
+      return EOperationStatus.SPECULATIVE_SUCCESS;
+    }
+    if (!opData.is_operation_final && opData.op_exec_status === false) {
+      return EOperationStatus.SPECULATIVE_ERROR;
+    }
+    if (opData.in_blocks.length > 0) {
+      return EOperationStatus.INCLUDED_PENDING;
     }
 
     return EOperationStatus.INCONSISTENT;
