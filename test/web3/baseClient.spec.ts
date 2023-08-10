@@ -235,7 +235,7 @@ describe('BaseClient', () => {
           method: JSON_RPC_REQUEST_METHOD.GET_STATUS,
           params: {},
         },
-        { headers: requestHeaders },
+        requestHeaders,
       );
 
       expect(result).toEqual(mockResponse.data.result);
@@ -270,7 +270,7 @@ describe('BaseClient', () => {
           method: JSON_RPC_REQUEST_METHOD.STOP_NODE,
           params: {},
         },
-        { headers: requestHeaders },
+        requestHeaders,
       );
 
       expect(result).toEqual(mockResponse.data.result);
