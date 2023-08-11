@@ -344,7 +344,10 @@ export class SmartContractsClient
     if (opData.is_operation_final === false && opData.op_exec_status) {
       return EOperationStatus.SPECULATIVE_SUCCESS;
     }
-    if (!opData.is_operation_final && opData.op_exec_status === false) {
+    if (
+      opData.is_operation_final === false &&
+      opData.op_exec_status === false
+    ) {
       return EOperationStatus.SPECULATIVE_ERROR;
     }
     if (opData.in_blocks.length > 0) {
