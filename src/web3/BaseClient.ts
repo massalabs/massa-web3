@@ -380,7 +380,14 @@ export class BaseClient {
         );
 
         // parameter
-        const parametersEncoded = new Uint8Array((data as ICallData).parameter);
+        const param = (data as ICallData).parameter;
+        let serializedParam: number[]; // serialized parameter
+        if (param instanceof Array) {
+          serializedParam = param;
+        } else {
+          serializedParam = param.serialize();
+        }
+        const parametersEncoded = new Uint8Array(serializedParam);
         const parametersLengthEncoded = Buffer.from(
           varintEncode(parametersEncoded.length),
         );
