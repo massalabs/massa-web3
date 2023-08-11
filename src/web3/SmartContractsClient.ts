@@ -31,6 +31,7 @@ import {
   IContractReadOperationResponse,
   IContractReadOperationData,
   IEvent,
+  Args,
 } from '@massalabs/web3-utils';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
@@ -154,6 +155,9 @@ export class SmartContractsClient
         `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
       );
     }
+
+    if (readData.parameter instanceof Args)
+      readData.parameter = readData.parameter.serialize();
 
     // request data
     let baseAccountSignerAddress: string | null = null;
