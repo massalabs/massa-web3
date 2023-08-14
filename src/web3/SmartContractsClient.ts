@@ -126,6 +126,9 @@ export class SmartContractsClient
         `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
       );
     }
+
+    callData.coins = callData.coins || BigInt(0);
+
     // check that the sender has enough balance to pay for coins
     const senderBalance: IBalance = await this.walletClient.getAccountBalance(
       sender.address(),

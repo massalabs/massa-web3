@@ -227,6 +227,31 @@ describe('SmartContractsClient', () => {
       ]);
     });
 
+    test('should default coins to 0 if not provided', async () => {
+      const mockCallDataWithoutCoins = {
+        ...mockCallData,
+        coins: undefined,
+      };
+
+      const spy = jest.spyOn(smartContractsClient, 'callSmartContract');
+
+      const result = await smartContractsClient.callSmartContract(
+        mockCallDataWithoutCoins,
+        mockDeployerAccount,
+      );
+
+      expect(result).toBe(mockOpIds[0]);
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...mockCallDataWithoutCoins,
+          coins: BigInt(0),
+        }),
+        mockDeployerAccount,
+      );
+
+      spy.mockRestore();
+    });
+
     test('should return the correct result', async () => {
       const result = await smartContractsClient.callSmartContract(
         mockCallData,
