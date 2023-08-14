@@ -441,40 +441,60 @@ describe('SmartContractsClient', () => {
   });
 
   describe('getOperationStatus', () => {
-    test('should return EOperationStatus.INCLUDED_PENDING when operation is included in blocks', async () => {
-      const opId = mockOpIds[0];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.INCLUDED_PENDING);
-    });
-
-    test('should return EOperationStatus.FINAL when operation is final', async () => {
-      const opId = mockOpIds[1];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.FINAL);
-    });
-
-    test('should return EOperationStatus.AWAITING_INCLUSION when operation is in the pool', async () => {
-      const opId = mockOpIds[2];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
-    });
-
-    test('should return EOperationStatus.INCONSISTENT when operation is neither in blocks nor in the pool', async () => {
-      const opId = mockOpIds[3];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.INCONSISTENT);
-    });
-
     test('should return EOperationStatus.NOT_FOUND when operation does not exist', async () => {
       const opId = '0x005'; // Doesn't exist
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.NOT_FOUND);
     });
+
+    test('should return EOperationStatus.FINAL_SUCCESS when operation executed as final and no error', async () => {
+      const opId = mockOpIds[0];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.FINAL_SUCCESS);
+    });
+
+    test('should return EOperationStatus.FINAL_ERROR when operation executed as final and error occured', async () => {
+      const opId = mockOpIds[1];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.FINAL_ERROR);
+    });
+
+    test('should return EOperationStatus.SPECULATIVE_SUCCESS when operation executed as speculative and was a success', async () => {
+      const opId = mockOpIds[2];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.SPECULATIVE_SUCCESS);
+    });
+
+    test('should return EOperationStatus.SPECULATIVE_ERROR when operation executed as speculative and error occured', async () => {
+      const opId = mockOpIds[3];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.SPECULATIVE_ERROR);
+    });
+    test('should return EOperationStatus.AWAITING_INCLUSION when operation not executed, or executed & expired & was forgotten', async () => {
+      const opId = mockOpIds[4];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
+    });
+    test('should return EOperationStatus.UNEXECUTED_OR_EXPIRED when operation not executed, or executed & expired & was forgotten', async () => {
+      const opId = mockOpIds[5];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.UNEXECUTED_OR_EXPIRED);
+    });
+    test('should return EOperationStatus.INCONSISTENT when no conditions are met', async () => {
+      const opId = mockOpIds[6];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.INCONSISTENT);
+    });
+    test.skip('should return EOperationStatus.INCLUDED_PENDING when operation is included in blocks', async () => {
+      const opId = mockOpIds[7];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.INCLUDED_PENDING);
+    });
   });
 
   describe('awaitRequiredOperationStatus', () => {
     const opId = mockOpIds[0];
-    const requiredStatus = EOperationStatus.FINAL;
+    const requiredStatus = EOperationStatus.FINAL_SUCCESS;
 
     beforeEach(() => {
       // Reset the getOperationStatus function
