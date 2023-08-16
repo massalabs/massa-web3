@@ -14,7 +14,10 @@ export class WalletProviderAccount implements IBaseAccount {
     this.account = account;
   }
 
-  public async sign(data: Buffer): Promise<ISignature> {
+  public async sign(data: Buffer | Uint8Array | string): Promise<ISignature> {
+    if (data instanceof Uint8Array) {
+      data = Buffer.from(data);
+    }
     let bytes_signature = (await this.account.sign(data)).signature;
     const base58Encoded = base58Encode(bytes_signature);
     return {

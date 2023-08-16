@@ -51,7 +51,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     }
   }
 
-  public async sign(data: Buffer): Promise<ISignature> {
+  public async sign(data: Buffer | Uint8Array | string): Promise<ISignature> {
     // check private keys to sign the message with.
     if (!this.account.secretKey) {
       throw new Error('No private key to sign the message with');
@@ -60,6 +60,13 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     // check public key to verify the message with.
     if (!this.account.publicKey) {
       throw new Error('No public key to verify the signed message with');
+    }
+
+    if (data instanceof Uint8Array) {
+      data = Buffer.from(data);
+    }
+    if (typeof data === 'string') {
+      data = Buffer.from(data, 'utf-8');
     }
 
     // get private key
