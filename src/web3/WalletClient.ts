@@ -23,6 +23,7 @@ import { fromMAS } from '../utils/converters';
 import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
 import { IBaseAccount } from '../interfaces/IBaseAccount';
 import { Web3Account } from './accounts/Web3Account';
+import { type } from 'os';
 const SECRET_KEY_PREFIX = 'S';
 const VERSION_NUMBER = 0;
 const MAX_WALLET_ACCOUNTS = 256;
@@ -363,7 +364,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
     } else {
       account = new Web3Account(signerAccount, this.publicApiClient);
     }
-    return account.sign(Buffer.from(data));
+    if (typeof data === 'string') {
+      data = Buffer.from(data);
+    }
+    return account.sign(data);
   }
 
   /**
