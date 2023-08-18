@@ -679,7 +679,7 @@ describe('WalletClient', () => {
       };
       const result = await web3Client
         .wallet()
-        .verifySignature(message, validSignature, signerPublicKey);
+        .verifySignature(message, validSignature);
 
       expect(result).toBe(true);
     });
@@ -698,7 +698,7 @@ describe('WalletClient', () => {
       };
       const result = await web3Client
         .wallet()
-        .verifySignature(data, invalidSignature, signerPublicKey);
+        .verifySignature(data, invalidSignature);
 
       expect(result).toBe(false);
 
