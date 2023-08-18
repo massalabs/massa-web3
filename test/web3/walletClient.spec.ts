@@ -673,6 +673,7 @@ describe('WalletClient', () => {
 
       const signerPublicKey = baseAccount.publicKey!;
       const validSignature: ISignature = {
+        publicKey: signerPublicKey,
         base58Encoded:
           '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
       };
@@ -691,6 +692,7 @@ describe('WalletClient', () => {
 
       const signerPublicKey = baseAccount.publicKey!;
       const invalidSignature: ISignature = {
+        publicKey: signerPublicKey,
         base58Encoded:
           '2TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE', // starts with 2 and not 1
       };
