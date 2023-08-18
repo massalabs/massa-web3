@@ -658,6 +658,7 @@ export const mockContractReadOnlyOperationResponse: IExecuteReadOnlyResponse = {
 };
 
 export const validSignature: ISignature = {
+  publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   base58Encoded:
     '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
 };

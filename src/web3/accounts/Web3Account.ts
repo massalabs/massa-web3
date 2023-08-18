@@ -109,8 +109,9 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     const base58Encoded = base58Encode(Buffer.concat([version, sig]));
 
     return {
-      base58Encoded,
-    } as ISignature;
+      publicKey: this.account.publicKey,
+      base58Encoded: base58Encoded,
+    };
   }
 
   public address(): string {

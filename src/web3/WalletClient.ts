@@ -23,6 +23,7 @@ import { fromMAS } from '../utils/converters';
 import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
 import { IBaseAccount } from '../interfaces/IBaseAccount';
 import { Web3Account } from './accounts/Web3Account';
+
 const SECRET_KEY_PREFIX = 'S';
 const VERSION_NUMBER = 0;
 const MAX_WALLET_ACCOUNTS = 256;
@@ -363,7 +364,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
     } else {
       account = new Web3Account(signerAccount, this.publicApiClient);
     }
-    return account.sign(Buffer.from(data));
+    if (typeof data === 'string') {
+      data = Buffer.from(data);
+    }
+    return account.sign(data);
   }
 
   /**
@@ -427,10 +431,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public async verifySignature(
     data: string | Buffer,
     signature: ISignature,
-    signerPubKey: string,
   ): Promise<boolean> {
     // setup the public key.
-    const publicKey: PublicKey = PublicKey.fromString(signerPubKey);
+    const publicKey: PublicKey = PublicKey.fromString(signature.publicKey);
 
     // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
@@ -448,6 +451,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
       if (signatureBytes.length != 64) {
         throw new Error(
           `Invalid signature length. Expected 64, got ${signatureBytes.length}`,
+        );
+      }
+      if (publicKey.bytes.length != 32) {
+        throw new Error(
+          `Invalid public key length. Expected 32, got ${publicKey.bytes.length}`,
         );
       }
       // verify signature.
