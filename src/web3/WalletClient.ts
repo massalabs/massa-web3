@@ -454,6 +454,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
           `Invalid signature length. Expected 64, got ${signatureBytes.length}`,
         );
       }
+      if (publicKey.bytes.length != 32) {
+        throw new Error(
+          `Invalid public key length. Expected 32, got ${publicKey.bytes.length}`,
+        );
+      }
       // verify signature.
       const isVerified = await ed.verify(
         signatureBytes,
