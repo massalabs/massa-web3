@@ -431,10 +431,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public async verifySignature(
     data: string | Buffer,
     signature: ISignature,
-    signerPubKey: string,
   ): Promise<boolean> {
     // setup the public key.
-    const publicKey: PublicKey = PublicKey.fromString(signerPubKey);
+    const publicKey: PublicKey = PublicKey.fromString(signature.publicKey);
 
     // setup the message digest.
     const bytesCompact: Buffer = Buffer.from(data);
