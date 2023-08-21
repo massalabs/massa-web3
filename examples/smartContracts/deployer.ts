@@ -40,7 +40,7 @@ export async function awaitTxConfirmation(
       .smartContracts()
       .awaitRequiredOperationStatus(
         deploymentOperationId,
-        EOperationStatus.FINAL,
+        EOperationStatus.FINAL_SUCCESS,
       );
     console.log(
       `Transaction with Operation ID ${chalk.yellow(
@@ -57,7 +57,7 @@ export async function awaitTxConfirmation(
     throw new Error(ex);
   }
 
-  if (status !== EOperationStatus.FINAL) {
+  if (status !== EOperationStatus.FINAL_SUCCESS) {
     const msg = chalk.red(
       `Transaction ${chalk.yellow(
         deploymentOperationId,
