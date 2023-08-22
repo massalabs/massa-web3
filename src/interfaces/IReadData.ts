@@ -1,3 +1,5 @@
+import { Args } from '@massalabs/web3-utils';
+
 /**
  * Represents the data of a read operation.
  *
@@ -11,6 +13,6 @@ export interface IReadData {
   maxGas: bigint;
   targetAddress: string;
   targetFunction: string;
-  parameter: Array<number>;
+  parameter: Array<number> | Args;
   callerAddress?: string;
 }

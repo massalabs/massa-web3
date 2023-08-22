@@ -31,6 +31,7 @@ import {
   IContractReadOperationResponse,
   IContractReadOperationData,
   IEvent,
+  Args,
 } from '@massalabs/web3-utils';
 
 const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
@@ -76,7 +77,7 @@ export class SmartContractsClient
   }
 
   /**
-   * Deploy a smart contract on th massa blockchain by creating and sending
+   * Deploy a smart contract on the massa blockchain by creating and sending
    * an operation containing byte code.
    *
    * @remarks
@@ -119,6 +120,24 @@ export class SmartContractsClient
     if (!sender) {
       throw new Error(`No tx sender available`);
     }
+    // check the max. allowed gas
+    if (callData.maxGas > MAX_READ_BLOCK_GAS) {
+      throw new Error(
+        `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+      );
+    }
+
+    callData.coins = callData.coins || BigInt(0);
+
+    // check that the sender has enough balance to pay for coins
+    const senderBalance: IBalance = await this.walletClient.getAccountBalance(
+      sender.address(),
+    );
+    if (senderBalance.final < callData.coins) {
+      throw new Error(
+        `The sender ${sender.address()} does not have enough balance to pay for the coins`,
+      );
+    }
     return await sender.callSmartContract(callData);
   }
 
@@ -139,6 +158,9 @@ export class SmartContractsClient
         `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
       );
     }
+
+    if (readData.parameter instanceof Args)
+      readData.parameter = readData.parameter.serialize();
 
     // request data
     let baseAccountSignerAddress: string | null = null;
@@ -295,9 +317,9 @@ export class SmartContractsClient
       });
     }
     return {
-      returnValue: jsonRpcCallResult[0].result.Ok as Uint8Array,
-      info: jsonRpcCallResult[0] as IExecuteReadOnlyData,
-    } as IExecuteReadOnlyResponse;
+      returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
+      info: jsonRpcCallResult[0],
+    };
   }
 
   /**
@@ -313,14 +335,30 @@ export class SmartContractsClient
     if (!operationData || operationData.length === 0)
       return EOperationStatus.NOT_FOUND;
     const opData = operationData[0];
-    if (opData.is_operation_final) {
-      return EOperationStatus.FINAL;
-    }
-    if (opData.in_blocks.length > 0) {
-      return EOperationStatus.INCLUDED_PENDING;
+    if (opData.is_operation_final === null && opData.op_exec_status === null) {
+      return EOperationStatus.UNEXECUTED_OR_EXPIRED;
     }
     if (opData.in_pool) {
       return EOperationStatus.AWAITING_INCLUSION;
+    }
+    if (opData.is_operation_final && opData.op_exec_status) {
+      return EOperationStatus.FINAL_SUCCESS;
+    }
+    // since null is a falsy value, we need to check for false explicitly
+    if (opData.is_operation_final && opData.op_exec_status === false) {
+      return EOperationStatus.FINAL_ERROR;
+    }
+    if (opData.is_operation_final === false && opData.op_exec_status) {
+      return EOperationStatus.SPECULATIVE_SUCCESS;
+    }
+    if (
+      opData.is_operation_final === false &&
+      opData.op_exec_status === false
+    ) {
+      return EOperationStatus.SPECULATIVE_ERROR;
+    }
+    if (opData.in_blocks.length > 0) {
+      return EOperationStatus.INCLUDED_PENDING;
     }
 
     return EOperationStatus.INCONSISTENT;

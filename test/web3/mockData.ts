@@ -23,6 +23,7 @@ import {
   IContractReadOperationData,
   IContractReadOperationResponse,
 } from '@massalabs/web3-utils';
+import { IBalance } from '../../src/interfaces/IBalance';
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
@@ -195,6 +196,9 @@ export const mockOpIds: Array<string> = [
   'O1s1xVtwFsKP3po3vkPmpELsiJvwEdk0yhpK7iT8P3rk9zCEs9g',
   'O1b4xVtwFsKP3po3vkPmpEjZiJvwEdk6yhpK7iT8P3rk9zCEs9h',
   'O1t2xVtwFsKP3po3vkPmpELZiJvwEd2vy3pK7iT8P3rk9zCEs9i',
+  'O1t2xVtwFsKP3po3vkPmpELZiJvwEd2vy3pK7iT8P3rk9zCEs9j',
+  'O1t2xVtwFsKP3po3vkPmpELZiJvwEd2vy3pK7iT8P3rk9zCEs9k',
+  'O1t2xVtwFsKP3po3vkPmpELZiJvwEd2vy3pK7iT8P3rk9zCEs9l',
 ];
 
 export const mockOperationData = [
@@ -202,7 +206,7 @@ export const mockOperationData = [
     id: mockOpIds[0],
     in_blocks: ['0x000'],
     in_pool: false,
-    is_operation_final: false,
+    is_operation_final: true,
     thread: 1,
     operation: {},
   },
@@ -217,7 +221,7 @@ export const mockOperationData = [
   {
     id: mockOpIds[2],
     in_blocks: ['0x002'],
-    in_pool: true,
+    in_pool: false,
     is_operation_final: false,
     thread: 3,
     operation: {},
@@ -230,14 +234,47 @@ export const mockOperationData = [
     thread: 4,
     operation: {},
   },
+  {
+    id: mockOpIds[4],
+    in_blocks: ['0x004'],
+    in_pool: true,
+    is_operation_final: false,
+    thread: 4,
+    operation: {},
+  },
+  {
+    id: mockOpIds[5],
+    in_blocks: ['0x005'],
+    in_pool: false,
+    is_operation_final: null,
+    thread: 4,
+    operation: {},
+  },
+  {
+    id: mockOpIds[6],
+    in_blocks: ['0x006'],
+    in_pool: false,
+    is_operation_final: true,
+    thread: 4,
+    operation: {},
+  },
+  {
+    id: mockOpIds[7],
+    in_blocks: ['0x007'],
+    in_pool: false,
+    is_operation_final: false,
+    thread: 4,
+    operation: {},
+  },
 ];
 
 export const mockOperationDataDetailed: Array<IOperationData> = [
+  // EOperationStatus.FINAL_SUCCESS
   {
     id: mockOperationData[0].id,
     in_blocks: ['0x000'],
     in_pool: false,
-    is_operation_final: false,
+    is_operation_final: true,
     thread: 1,
     operation: {
       content: {
@@ -260,12 +297,13 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
     },
     op_exec_status: true,
   },
+  // EOperationStatus.FINAL_ERROR
   {
     id: mockOperationData[1].id,
-    in_blocks: ['2'],
+    in_blocks: ['0x000'],
     in_pool: false,
     is_operation_final: true,
-    thread: 2,
+    thread: 1,
     operation: {
       content: {
         expire_period: 0,
@@ -287,12 +325,13 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
     },
     op_exec_status: false,
   },
+  // EOperationStatus.SPECULATIVE_SUCCESS
   {
     id: mockOperationData[2].id,
-    in_blocks: [],
-    in_pool: true,
+    in_blocks: ['0x000'],
+    in_pool: false,
     is_operation_final: false,
-    thread: 3,
+    thread: 1,
     operation: {
       content: {
         expire_period: 0,
@@ -301,7 +340,7 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
           Transaction: {
             amount: '1000',
             recipient_address:
-              'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
+              'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
           },
         },
         sender_public_key: 'public_key',
@@ -309,17 +348,18 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
       signature: 'signature',
       content_creator_pub_key: 'pub_key',
       content_creator_address:
-        'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3',
+        'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
       id: 'id',
     },
     op_exec_status: true,
   },
+  // EOperationStatus.SPECULATIVE_ERROR
   {
     id: mockOperationData[3].id,
-    in_blocks: [],
+    in_blocks: ['0x000'],
     in_pool: false,
     is_operation_final: false,
-    thread: 4,
+    thread: 1,
     operation: {
       content: {
         expire_period: 0,
@@ -328,7 +368,7 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
           Transaction: {
             amount: '1000',
             recipient_address:
-              'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
+              'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
           },
         },
         sender_public_key: 'public_key',
@@ -336,7 +376,121 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
       signature: 'signature',
       content_creator_pub_key: 'pub_key',
       content_creator_address:
-        'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3',
+        'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
+      id: 'id',
+    },
+    op_exec_status: false,
+  },
+  // EOperationStatus.AWAITING_INCLUSION
+  {
+    id: mockOperationData[4].id,
+    in_blocks: ['0x000'],
+    in_pool: true,
+    is_operation_final: false,
+    thread: 1,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address:
+              'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address:
+        'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
+      id: 'id',
+    },
+    op_exec_status: false,
+  },
+  // EOperationStatus.UNEXECUTED_OR_EXPIRED
+  {
+    id: mockOperationData[5].id,
+    in_blocks: ['0x000'],
+    in_pool: false,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    is_operation_final: null as any,
+    thread: 1,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address:
+              'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address:
+        'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
+      id: 'id',
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    op_exec_status: null as any,
+  },
+  // EOperationStatus.INCONSISTENT
+  {
+    id: mockOperationData[6].id,
+    in_blocks: [], // empty array
+    in_pool: false, // not in pool
+    is_operation_final: true, // for the sake of inconsistency
+    thread: 1,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address:
+              'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address:
+        'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
+      id: 'id',
+    },
+    op_exec_status: null, // this is explicitly set to null to avoid matching other conditions
+  },
+  // EOperationStatus.INCLUDED_PENDING
+  {
+    id: mockOperationData[7].id,
+    in_blocks: ['0x000'],
+    in_pool: false,
+    is_operation_final: false,
+    thread: 1,
+    operation: {
+      content: {
+        expire_period: 0,
+        fee: '0',
+        op: {
+          Transaction: {
+            amount: '1000',
+            recipient_address:
+              'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+          },
+        },
+        sender_public_key: 'public_key',
+      },
+      signature: 'signature',
+      content_creator_pub_key: 'pub_key',
+      content_creator_address:
+        'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
       id: 'id',
     },
     op_exec_status: true,
@@ -393,10 +547,15 @@ export const mockDeployerAccount: IAccount = {
   secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
 };
 
+export const mockBalance: IBalance = {
+  final: 50n,
+  candidate: 50n,
+};
+
 export const mockContractData: IContractData = {
-  fee: 100000000000000000n,
-  maxGas: 100000000000000000n,
-  maxCoins: 100000000000000000n,
+  fee: 1n,
+  maxGas: 10n,
+  maxCoins: 0n,
   address: 'AU1fMUjzAR6Big9Woz3P3vTjAywLbb9KwSyC8btfK3KMDj8ffAHu',
   contractDataText: 'Hello World!',
   contractDataBinary: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
@@ -421,9 +580,9 @@ export const mockContractData: IContractData = {
 };
 
 export const mockCallData: ICallData = {
-  fee: 100000000000000000n,
-  maxGas: 100000000000000000n,
-  coins: 100000000000000000n,
+  fee: 1n,
+  maxGas: 10n,
+  coins: 1n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   functionName: 'test',
   parameter: [1, 2, 3, 4],
@@ -447,7 +606,7 @@ export const mockEventFilter: IEventFilter | IEventRegexFilter = {
   is_final: null,
 };
 export const mockReadData: IReadData = {
-  maxGas: 100000n,
+  maxGas: 10n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   targetFunction: 'test',
   parameter: [1, 2, 3, 4],
@@ -499,6 +658,7 @@ export const mockContractReadOnlyOperationResponse: IExecuteReadOnlyResponse = {
 };
 
 export const validSignature: ISignature = {
+  publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   base58Encoded:
     '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
 };
