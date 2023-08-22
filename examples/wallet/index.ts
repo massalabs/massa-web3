@@ -121,7 +121,7 @@ if (!receiverPrivateKey) {
 
     const isVerified = await web3Client
       .wallet()
-      .verifySignature(message, signedMessage, deployerAccount.publicKey);
+      .verifySignature(message, signedMessage);
     console.log('Signature verification: ', isVerified);
 
     // send from base account to receiver
@@ -136,7 +136,7 @@ if (!receiverPrivateKey) {
     console.log('Awaiting Finalization ...');
     await web3Client
       .smartContracts()
-      .awaitRequiredOperationStatus(txId[0], EOperationStatus.FINAL);
+      .awaitRequiredOperationStatus(txId[0], EOperationStatus.FINAL_SUCCESS);
 
     console.log('Polling events ... ');
     const events = await EventPoller.getEventsOnce(
