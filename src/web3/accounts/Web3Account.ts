@@ -15,6 +15,8 @@ import { ICallData } from '../../interfaces/ICallData';
 import { IContractData } from '../../interfaces/IContractData';
 import { trySafeExecute } from '../../utils/retryExecuteFunction';
 
+export const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
+
 export class Web3Account extends BaseClient implements IBaseAccount {
   private account: IAccount;
   private publicApiClient: IPublicApiClient;
@@ -49,7 +51,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     }
   }
 
-  public async sign(data: Buffer): Promise<ISignature> {
+  public async sign(data: Buffer | Uint8Array | string): Promise<ISignature> {
     // check private keys to sign the message with.
     if (!this.account.secretKey) {
       throw new Error('No private key to sign the message with');
@@ -58,6 +60,13 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     // check public key to verify the message with.
     if (!this.account.publicKey) {
       throw new Error('No public key to verify the signed message with');
+    }
+
+    if (data instanceof Uint8Array) {
+      data = Buffer.from(data);
+    }
+    if (typeof data === 'string') {
+      data = Buffer.from(data, 'utf-8');
     }
 
     // get private key
@@ -100,8 +109,9 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     const base58Encoded = base58Encode(Buffer.concat([version, sig]));
 
     return {
-      base58Encoded,
-    } as ISignature;
+      publicKey: this.account.publicKey,
+      base58Encoded: base58Encoded,
+    };
   }
 
   public address(): string {
@@ -213,6 +223,20 @@ export class Web3Account extends BaseClient implements IBaseAccount {
   }
 
   public async callSmartContract(callData: ICallData): Promise<string> {
+    let serializedParam: number[]; // serialized parameter
+    if (callData.parameter instanceof Array) {
+      serializedParam = callData.parameter;
+    } else {
+      serializedParam = callData.parameter.serialize();
+    }
+    const call: ICallData = {
+      fee: callData.fee,
+      maxGas: callData.maxGas,
+      coins: callData.coins,
+      targetAddress: callData.targetAddress,
+      functionName: callData.functionName,
+      parameter: serializedParam,
+    };
     // get next period info
     const nodeStatusInfo: INodeStatus =
       await this.publicApiClient.getNodeStatus();
@@ -221,7 +245,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
     // bytes compaction
     const bytesCompact: Buffer = this.compactBytesForOperation(
-      callData,
+      call,
       OperationTypeId.CallSC,
       expiryPeriod,
     );

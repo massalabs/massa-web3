@@ -6,6 +6,7 @@ import { IRollsData } from '../../interfaces/IRollsData';
 import { ITransactionData } from '../../interfaces/ITransactionData';
 import { ICallData } from '../../interfaces/ICallData';
 import { IContractData } from '../../interfaces/IContractData';
+import { Args } from '@massalabs/web3-utils';
 
 export class WalletProviderAccount implements IBaseAccount {
   private account: IAccount;
@@ -13,10 +14,15 @@ export class WalletProviderAccount implements IBaseAccount {
     this.account = account;
   }
 
-  public async sign(data: Buffer): Promise<ISignature> {
-    let bytes_signature = (await this.account.sign(data)).signature;
+  public async sign(data: Buffer | Uint8Array | string): Promise<ISignature> {
+    if (data instanceof Uint8Array) {
+      data = Buffer.from(data);
+    }
+    const signatureData = await this.account.sign(data);
+    let bytes_signature = signatureData.signature;
     const base58Encoded = base58Encode(bytes_signature);
     return {
+      publicKey: signatureData.publicKey,
       base58Encoded,
     };
   }
@@ -45,10 +51,20 @@ export class WalletProviderAccount implements IBaseAccount {
   }
 
   public async callSmartContract(callData: ICallData): Promise<string> {
+    let params: number[] | Args = callData.parameter;
+    let paramToSend: Uint8Array | Args;
+
+    if (params instanceof Array) {
+      paramToSend = new Uint8Array(params);
+    }
+    if (params instanceof Args) {
+      paramToSend = params;
+    }
+
     let res = await this.account.callSC(
       callData.targetAddress,
       callData.functionName,
-      new Uint8Array(callData.parameter),
+      paramToSend,
       callData.coins,
       callData.fee,
       callData.maxGas,

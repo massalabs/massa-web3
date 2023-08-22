@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { expect, it, describe } from '@jest/globals';
 import { IDeserializedResult, ISerializable } from '@massalabs/web3-utils';
-import { Args, ArrayType } from '@massalabs/web3-utils';
+import { Args, ArrayTypes } from '@massalabs/web3-utils';
 
 export class Divinity implements ISerializable<Divinity> {
   constructor(public age: number = 0, public name: string = '') {}
@@ -277,28 +277,28 @@ describe('Args class', () => {
   it('should correctly serialize and deserialize an Args object containing an array of booleans', () => {
     const arrayBooleans = [false, false, true, true, false];
     const serialized = new Args()
-      .addArray(arrayBooleans, ArrayType.BOOL)
+      .addArray(arrayBooleans, ArrayTypes.BOOL)
       .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.BOOL);
+    const deserialized = args.nextArray(ArrayTypes.BOOL);
     expect(deserialized).toEqual(arrayBooleans);
   });
 
   it('should correctly serialize and deserialize an Args object containing an array of U8s', () => {
     const arrayU8s = [10, 20, 30];
-    const serialized = new Args().addArray(arrayU8s, ArrayType.U8).serialize();
+    const serialized = new Args().addArray(arrayU8s, ArrayTypes.U8).serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.U8);
+    const deserialized = args.nextArray(ArrayTypes.U8);
     expect(deserialized).toEqual(arrayU8s);
   });
 
   it('should correctly serialize and deserialize an Args object containing an array of U32s', () => {
     const arrayU32s = [100000, 200000, 300000];
     const serialized = new Args()
-      .addArray(arrayU32s, ArrayType.U32)
+      .addArray(arrayU32s, ArrayTypes.U32)
       .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.U32);
+    const deserialized = args.nextArray(ArrayTypes.U32);
     expect(deserialized).toEqual(arrayU32s);
   });
 
@@ -309,20 +309,20 @@ describe('Args class', () => {
       BigInt(3000000000),
     ];
     const serialized = new Args()
-      .addArray(arrayU64s, ArrayType.U64)
+      .addArray(arrayU64s, ArrayTypes.U64)
       .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.U64);
+    const deserialized = args.nextArray(ArrayTypes.U64);
     expect(deserialized).toEqual(arrayU64s);
   });
 
   it('should correctly serialize and deserialize an Args object containing an array of F32s', () => {
     const arrayF32s = [8.4, -9.6];
     const serialized = new Args()
-      .addArray(arrayF32s, ArrayType.F32)
+      .addArray(arrayF32s, ArrayTypes.F32)
       .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.F32);
+    const deserialized = args.nextArray(ArrayTypes.F32);
     expect(deserialized[0]).toBeCloseTo(arrayF32s[0], 0.00001);
     expect(deserialized[1]).toBeCloseTo(arrayF32s[1], 0.00001);
   });
@@ -330,10 +330,10 @@ describe('Args class', () => {
   it('should correctly serialize and deserialize an Args object containing an array of F64s', () => {
     const arrayF64s = [17800.47444, -97234.65711];
     const serialized = new Args()
-      .addArray(arrayF64s, ArrayType.F64)
+      .addArray(arrayF64s, ArrayTypes.F64)
       .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.F64);
+    const deserialized = args.nextArray(ArrayTypes.F64);
     expect(deserialized[0]).toBeCloseTo(arrayF64s[0], 0.00001);
     expect(deserialized[1]).toBeCloseTo(arrayF64s[1], 0.00001);
   });
@@ -341,21 +341,18 @@ describe('Args class', () => {
   it('should correctly serialize and deserialize an Args object containing an array of I32s', () => {
     const arrayI32s = [-2300, 9760];
     const serialized = new Args()
-      .addArray(arrayI32s, ArrayType.I32)
+      .addArray(arrayI32s, ArrayTypes.I32)
       .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.I32);
+    const deserialized = args.nextArray(ArrayTypes.I32);
     expect(deserialized).toEqual(arrayI32s);
   });
 
   it('should correctly serialize and deserialize an Args object containing an array of I64s', () => {
-    const arrayI64s = [BigInt(-2300345435), BigInt(97607665667)];
-    const serialized = new Args()
-      .addArray(arrayI64s, ArrayType.I64)
-      .serialize();
-    const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.I64);
-    expect(deserialized).toEqual(arrayI64s);
+    const input = [BigInt(-2300345435), BigInt(97607665667)];
+    const serialized = new Args().addArray(input, ArrayTypes.I64).serialize();
+    const deserialized = new Args(serialized).nextArray<bigint>(ArrayTypes.I64);
+    expect(deserialized).toEqual(input);
   });
 
   it('should correctly serialize and deserialize an Args object containing a byteArray, an i64, a string and a native array', () => {
@@ -370,14 +367,14 @@ describe('Args class', () => {
     args1.addString('hello');
     args1.addString('world');
     const i32Array = [100, 200, 300];
-    args1.addArray(i32Array, ArrayType.I32);
+    args1.addArray(i32Array, ArrayTypes.I32);
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextUint8Array()).toEqual(byteArray);
     expect(args2.nextI64()).toEqual(BigInt(-97));
     expect(args2.nextString()).toEqual('hello');
     expect(args2.nextString()).toEqual('world');
-    expect(args2.nextArray(ArrayType.I32)).toEqual(i32Array);
+    expect(args2.nextArray(ArrayTypes.I32)).toEqual(i32Array);
   });
 
   it('should correctly serialize and deserialize an Args object containing a native serializable object', () => {
@@ -393,7 +390,7 @@ describe('Args class', () => {
         .addUint8Array(array)
         .addU32(age)
         .addString(name)
-        .addArray(i32Array, ArrayType.I32)
+        .addArray(i32Array, ArrayTypes.I32)
         .addSerializable(classObject)
         .serialize(),
     );
@@ -401,7 +398,7 @@ describe('Args class', () => {
     expect(args.nextUint8Array()).toEqual(array);
     expect(args.nextU32()).toEqual(age);
     expect(args.nextString()).toEqual(name);
-    expect(args.nextArray(ArrayType.I32)).toEqual(i32Array);
+    expect(args.nextArray(ArrayTypes.I32)).toEqual(i32Array);
     const deserialized = args.nextSerializable(Divinity);
     expect(deserialized.age).toEqual(14);
     expect(deserialized.name).toEqual('Poseidon');
@@ -410,18 +407,20 @@ describe('Args class', () => {
   it('should correctly serialize and deserialize an array of Strings', () => {
     const arrayStrings = ['hello there', 'evgeni', '🙂🙂'];
     const serialized = new Args()
-      .addArray(arrayStrings, ArrayType.STRING)
+      .addArray(arrayStrings, ArrayTypes.STRING)
       .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.STRING);
+    const deserialized = args.nextArray(ArrayTypes.STRING);
     expect(deserialized).toEqual(arrayStrings);
   });
 
   it('should correctly serialize and deserialize an empty string array', () => {
     const array = [];
-    const serialized = new Args().addArray(array, ArrayType.STRING).serialize();
+    const serialized = new Args()
+      .addArray(array, ArrayTypes.STRING)
+      .serialize();
     const args = new Args(serialized);
-    const deserialized = args.nextArray(ArrayType.STRING);
+    const deserialized = args.nextArray(ArrayTypes.STRING);
     expect(deserialized).toEqual(array);
   });
 });

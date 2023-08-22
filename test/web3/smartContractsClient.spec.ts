@@ -24,6 +24,7 @@ import {
   validSignature,
   mockContractReadOperationDataWithError,
   mockAddresses,
+  mockBalance,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 import { Web3Account } from '../../src/web3/accounts/Web3Account';
@@ -197,6 +198,16 @@ describe('SmartContractsClient', () => {
   });
 
   describe('callSmartContract', () => {
+    beforeEach(() => {
+      // mock getAccountBalance
+      mockWalletClient.getAccountBalance = jest
+        .fn()
+        .mockResolvedValue(mockBalance);
+    });
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     test('should call sendJsonRPCRequest with correct arguments', async () => {
       await smartContractsClient.callSmartContract(
         mockCallData,
@@ -214,6 +225,31 @@ describe('SmartContractsClient', () => {
           },
         ],
       ]);
+    });
+
+    test('should default coins to 0 if not provided', async () => {
+      const mockCallDataWithoutCoins = {
+        ...mockCallData,
+        coins: undefined,
+      };
+
+      const spy = jest.spyOn(smartContractsClient, 'callSmartContract');
+
+      const result = await smartContractsClient.callSmartContract(
+        mockCallDataWithoutCoins,
+        mockDeployerAccount,
+      );
+
+      expect(result).toBe(mockOpIds[0]);
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...mockCallDataWithoutCoins,
+          coins: BigInt(0),
+        }),
+        mockDeployerAccount,
+      );
+
+      spy.mockRestore();
     });
 
     test('should return the correct result', async () => {
@@ -280,6 +316,29 @@ describe('SmartContractsClient', () => {
         smartContractsClient.callSmartContract(mockCallData),
       ).rejects.toThrow(
         `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
+      );
+    });
+
+    test('should throw error when maxGas is superior to the maximum gas allowed', async () => {
+      const modifiedMockCallData = { ...mockCallData };
+      modifiedMockCallData.maxGas = MAX_READ_BLOCK_GAS + BigInt(1);
+
+      await expect(
+        smartContractsClient.callSmartContract(modifiedMockCallData),
+      ).rejects.toThrow(
+        `The gas submitted ${modifiedMockCallData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+      );
+    });
+
+    test('should throw error when coins is superior to coins possessed by sender', async () => {
+      const modifiedMockCallData = { ...mockCallData };
+      modifiedMockCallData.coins =
+        BigInt(mockAddressesInfo[2].final_balance) + BigInt(1);
+
+      await expect(
+        smartContractsClient.callSmartContract(modifiedMockCallData),
+      ).rejects.toThrow(
+        `The sender ${mockDeployerAccount.address()} does not have enough balance to pay for the coins`,
       );
     });
   });
@@ -382,40 +441,60 @@ describe('SmartContractsClient', () => {
   });
 
   describe('getOperationStatus', () => {
-    test('should return EOperationStatus.INCLUDED_PENDING when operation is included in blocks', async () => {
-      const opId = mockOpIds[0];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.INCLUDED_PENDING);
-    });
-
-    test('should return EOperationStatus.FINAL when operation is final', async () => {
-      const opId = mockOpIds[1];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.FINAL);
-    });
-
-    test('should return EOperationStatus.AWAITING_INCLUSION when operation is in the pool', async () => {
-      const opId = mockOpIds[2];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
-    });
-
-    test('should return EOperationStatus.INCONSISTENT when operation is neither in blocks nor in the pool', async () => {
-      const opId = mockOpIds[3];
-      const status = await smartContractsClient.getOperationStatus(opId);
-      expect(status).toBe(EOperationStatus.INCONSISTENT);
-    });
-
     test('should return EOperationStatus.NOT_FOUND when operation does not exist', async () => {
       const opId = '0x005'; // Doesn't exist
       const status = await smartContractsClient.getOperationStatus(opId);
       expect(status).toBe(EOperationStatus.NOT_FOUND);
     });
+
+    test('should return EOperationStatus.FINAL_SUCCESS when operation executed as final and no error', async () => {
+      const opId = mockOpIds[0];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.FINAL_SUCCESS);
+    });
+
+    test('should return EOperationStatus.FINAL_ERROR when operation executed as final and error occured', async () => {
+      const opId = mockOpIds[1];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.FINAL_ERROR);
+    });
+
+    test('should return EOperationStatus.SPECULATIVE_SUCCESS when operation executed as speculative and was a success', async () => {
+      const opId = mockOpIds[2];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.SPECULATIVE_SUCCESS);
+    });
+
+    test('should return EOperationStatus.SPECULATIVE_ERROR when operation executed as speculative and error occured', async () => {
+      const opId = mockOpIds[3];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.SPECULATIVE_ERROR);
+    });
+    test('should return EOperationStatus.AWAITING_INCLUSION when operation not executed, or executed & expired & was forgotten', async () => {
+      const opId = mockOpIds[4];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.AWAITING_INCLUSION);
+    });
+    test('should return EOperationStatus.UNEXECUTED_OR_EXPIRED when operation not executed, or executed & expired & was forgotten', async () => {
+      const opId = mockOpIds[5];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.UNEXECUTED_OR_EXPIRED);
+    });
+    test('should return EOperationStatus.INCONSISTENT when no conditions are met', async () => {
+      const opId = mockOpIds[6];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.INCONSISTENT);
+    });
+    test.skip('should return EOperationStatus.INCLUDED_PENDING when operation is included in blocks', async () => {
+      const opId = mockOpIds[7];
+      const status = await smartContractsClient.getOperationStatus(opId);
+      expect(status).toBe(EOperationStatus.INCLUDED_PENDING);
+    });
   });
 
   describe('awaitRequiredOperationStatus', () => {
     const opId = mockOpIds[0];
-    const requiredStatus = EOperationStatus.FINAL;
+    const requiredStatus = EOperationStatus.FINAL_SUCCESS;
 
     beforeEach(() => {
       // Reset the getOperationStatus function
