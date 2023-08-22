@@ -5,7 +5,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** (MIT AND Apache-2.0) - perpetual
 
-**Used version:** 1.2.0
+**Used version:** 1.3.2
 
 **Many thanks to:** [Massa Labs](info@massa.net)
 
@@ -97,7 +97,7 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [jest-environment-jsdom](git+https://github.com/facebook/jest.git)
+## [jest-environment-jsdom](git+https://github.com/jestjs/jest.git)
 
 **License:** MIT - perpetual
 
@@ -189,7 +189,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 18.17.4
+**Used version:** 18.17.1
 
 **Many thanks to:** n/a
 
@@ -229,7 +229,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 8.46.0
+**Used version:** 8.45.0
 
 **Many thanks to:** [Nicholas C. Zakas](nicholas+npm@nczconsulting.com)
 
@@ -289,7 +289,7 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Typicode](typicode@gmail.com)
 
-## [jest](git+https://github.com/facebook/jest.git)
+## [jest](git+https://github.com/jestjs/jest.git)
 
 **License:** MIT - perpetual
 
