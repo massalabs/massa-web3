@@ -1,6 +1,5 @@
 import { IBaseAccount } from '../../interfaces/IBaseAccount';
 import { IAccount } from '@massalabs/wallet-provider';
-import { base58Encode } from '../../utils/Xbqcrypto';
 import { ISignature } from '../../interfaces/ISignature';
 import { IRollsData } from '../../interfaces/IRollsData';
 import { ITransactionData } from '../../interfaces/ITransactionData';
@@ -18,12 +17,12 @@ export class WalletProviderAccount implements IBaseAccount {
     if (data instanceof Uint8Array) {
       data = Buffer.from(data);
     }
+
     const signatureData = await this.account.sign(data);
-    let bytes_signature = signatureData.signature;
-    const base58Encoded = base58Encode(bytes_signature);
+
     return {
       publicKey: signatureData.publicKey,
-      base58Encoded,
+      base58Encoded: signatureData.base58Encoded,
     };
   }
 
