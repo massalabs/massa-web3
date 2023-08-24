@@ -42,6 +42,8 @@ export { IExecuteReadOnlyData } from './interfaces/IExecuteReadOnlyData';
 export { IExecuteReadOnlyResponse } from './interfaces/IExecuteReadOnlyResponse';
 export { JsonRpcResponseData } from './interfaces/JsonRpcResponseData';
 export { EOperationStatus } from './interfaces/EOperationStatus';
+export { IBaseAccount } from './interfaces/IBaseAccount';
+
 export {
   ITransactionOpType,
   IRollBuyOpType,
