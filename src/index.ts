@@ -67,6 +67,7 @@ export {
 } from './interfaces/IBlockcliqueBlockBySlot';
 export { ISubscribeNewBlocksMessage } from './interfaces/ISubscribeNewBlocksMessage';
 export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocksMessage';
+export { IBaseAccount } from './interfaces/IBaseAccount';
 
 /** Exposed clients and factories */
 export { ClientFactory, DefaultProviderUrls } from './web3/ClientFactory';

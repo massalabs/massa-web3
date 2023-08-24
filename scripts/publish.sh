@@ -12,6 +12,13 @@ ref=$1
 TAG=""
 if [[ "$ref" == *"buildnet"* ]]; then
   TAG="--tag buildnet"
+<<<<<<< HEAD
+=======
+elif [[ "$ref" == *"testnet"* ]]; then
+  TAG="--tag testnet"
+elif [[ "$ref" == *"latest"* ]]; then
+  TAG=""
+>>>>>>> main
 fi
 
 npm publish --access public $TAG
