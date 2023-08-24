@@ -189,7 +189,11 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
+<<<<<<< HEAD
 **Used version:** 18.17.1
+=======
+**Used version:** 18.17.4
+>>>>>>> main
 
 **Many thanks to:** n/a
 
@@ -229,7 +233,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 8.45.0
+**Used version:** 8.46.0
 
 **Many thanks to:** [Nicholas C. Zakas](nicholas+npm@nczconsulting.com)
 
