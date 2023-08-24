@@ -42,7 +42,6 @@ export { IExecuteReadOnlyData } from './interfaces/IExecuteReadOnlyData';
 export { IExecuteReadOnlyResponse } from './interfaces/IExecuteReadOnlyResponse';
 export { JsonRpcResponseData } from './interfaces/JsonRpcResponseData';
 export { EOperationStatus } from './interfaces/EOperationStatus';
-export { IBaseAccount } from './interfaces/IBaseAccount';
 
 export {
   ITransactionOpType,
@@ -67,6 +66,7 @@ export {
 } from './interfaces/IBlockcliqueBlockBySlot';
 export { ISubscribeNewBlocksMessage } from './interfaces/ISubscribeNewBlocksMessage';
 export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocksMessage';
+export { IBaseAccount } from './interfaces/IBaseAccount';
 
 /** Exposed clients and factories */
 export { ClientFactory, DefaultProviderUrls } from './web3/ClientFactory';
