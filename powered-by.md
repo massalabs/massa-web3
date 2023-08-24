@@ -189,11 +189,8 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-<<<<<<< HEAD
-**Used version:** 18.17.1
-=======
+
 **Used version:** 18.17.4
->>>>>>> main
 
 **Many thanks to:** n/a
 
