@@ -13,7 +13,7 @@ import { getBytesPublicKey, getBytesSecretKey } from './bytes';
  * Prefixes are used as a convention to differentiate one key from another.
  */
 const PUBLIC_KEY_PREFIX = 'P';
-const ADDRESS_PREFIX = 'AU';
+export const ADDRESS_PREFIX = 'AU';
 
 /**
  * A secret key.
