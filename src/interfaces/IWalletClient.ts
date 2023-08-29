@@ -163,4 +163,13 @@ export interface IWalletClient extends BaseClient {
    * @returns A promise that resolves to an array of operation ids as strings.
    */
   sellRolls(txData: IRollsData, executor: IBaseAccount): Promise<Array<string>>;
+
+  /**
+   * Validate an address.
+   *
+   * @param address - The address to validate.
+   *
+   * @returns A boolean (true if the address is valid, false otherwise).
+   */
+  validateAddress(address: string): boolean;
 }

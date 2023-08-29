@@ -20,7 +20,12 @@ import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
 import { fromMAS } from '../utils/converters';
 
-import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
+import {
+  Address,
+  SecretKey,
+  PublicKey,
+  ADDRESS_PREFIX,
+} from '../utils/keyAndAddresses';
 import { IBaseAccount } from '../interfaces/IBaseAccount';
 import { Web3Account } from './accounts/Web3Account';
 
@@ -563,5 +568,26 @@ export class WalletClient extends BaseClient implements IWalletClient {
       throw new Error('No tx sender available');
     }
     return [await sender.sellRolls(txData)];
+  }
+
+  /**
+   * Validate an address.
+   *
+   * @param address - The address to validate.
+   *
+   * @returns A boolean (true if the address is valid, false otherwise).
+   */
+  validateAddress(address: string): boolean {
+    address = address.slice(ADDRESS_PREFIX.length); // remove The address prefix
+    // check if the address is base58 encoded
+    try {
+      const bytesAddress = new Uint8Array(base58Decode(address));
+      if (bytesAddress.length != 32) {
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
+    return true;
   }
 }
