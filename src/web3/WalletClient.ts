@@ -9,6 +9,7 @@ import {
   base58Encode,
   varintEncode,
   hashBlake3,
+  varintDecode,
 } from '../utils/Xbqcrypto';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
@@ -581,8 +582,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
     address = address.slice(ADDRESS_PREFIX.length); // remove The address prefix
     // check if the address is base58 encoded
     try {
-      const bytesAddress = new Uint8Array(base58Decode(address));
-      if (bytesAddress.length != 32) {
+      // remove the version byte
+      const versionAndKeyBytes = new Uint8Array(base58Decode(address));
+      varintDecode(versionAndKeyBytes.slice(0, 1)); // check the version byte
+
+      if (versionAndKeyBytes.slice(1).length != 32) {
         return false;
       }
     } catch (err) {
