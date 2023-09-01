@@ -43,7 +43,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     }
 
     // get wallet account address
-    const address: Address = new Address(publicKey);
+    const address: Address = Address.fromPublicKey(publicKey);
     if (this.account.address && this.account.address !== address.base58Encode) {
       throw new Error(
         'Account address not correspond the the address submitted',

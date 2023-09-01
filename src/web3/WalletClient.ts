@@ -158,7 +158,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     for (const secretKeyBase58Encoded of uniqueSecretKeys) {
       const secretKey = new SecretKey(secretKeyBase58Encoded);
       const publicKey: PublicKey = await secretKey.getPublicKey();
-      const address: Address = new Address(publicKey);
+      const address: Address = Address.fromPublicKey(publicKey);
 
       if (!this.getWalletAccountByAddress(address.base58Encode)) {
         accountsToCreate.push({
@@ -217,7 +217,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
       }
 
       // get wallet account address
-      const address: Address = new Address(publicKey);
+      const address: Address = Address.fromPublicKey(publicKey);
       if (account.address && account.address !== address.base58Encode) {
         throw new Error(
           'Account address not correspond the the address submitted',
@@ -303,7 +303,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const publicKey: PublicKey = await secretKey.getPublicKey();
 
     // get wallet account address
-    const address: Address = new Address(publicKey);
+    const address: Address = Address.fromPublicKey(publicKey);
 
     return {
       address: address.base58Encode,
@@ -328,7 +328,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const publicKey: PublicKey = await secretKey.getPublicKey();
 
     // get wallet account address
-    const address: Address = new Address(publicKey);
+    const address: Address = Address.fromPublicKey(publicKey);
 
     return {
       address: address.base58Encode,

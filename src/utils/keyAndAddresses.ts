@@ -3,6 +3,7 @@ import {
   varintEncode,
   varintDecode,
   hashBlake3,
+  base58Decode,
 } from './Xbqcrypto';
 
 import * as ed from '@noble/ed25519';
@@ -13,7 +14,9 @@ import { getBytesPublicKey, getBytesSecretKey } from './bytes';
  * Prefixes are used as a convention to differentiate one key from another.
  */
 const PUBLIC_KEY_PREFIX = 'P';
-const ADDRESS_PREFIX = 'AU';
+const ADDRESS_PREFIX_LENGTH = 2;
+const ADDRESS_USER_PREFIX = 'AU';
+const ADDRESS_CONTRACT_PREFIX = 'AS';
 
 /**
  * A secret key.
@@ -25,15 +28,13 @@ const ADDRESS_PREFIX = 'AU';
  */
 export class SecretKey {
   version: number;
-  private bytes: Uint8Array;
+  bytes: Uint8Array;
 
   constructor(secretKeyBase58Encoded: string) {
     const versionAndKeyBytes = getBytesSecretKey(secretKeyBase58Encoded);
-
-    // Slice off the version byte
-    this.bytes = versionAndKeyBytes.slice(1);
-
-    this.version = varintDecode(versionAndKeyBytes.slice(0, 1)).value;
+    const { value, bytes } = varintDecode(versionAndKeyBytes);
+    this.version = value;
+    this.bytes = versionAndKeyBytes.slice(bytes);
   }
 
   /* Get the public key from the secret key */
@@ -77,17 +78,17 @@ export class PublicKey {
     const versionAndKeyBytes = getBytesPublicKey(base58Encoded);
 
     // Slice off the version byte
-    const version = varintDecode(versionAndKeyBytes.slice(0, 1)).value;
-    const keyBytes = versionAndKeyBytes.slice(1);
+    const { value, bytes } = varintDecode(versionAndKeyBytes);
+    const keyBytes = versionAndKeyBytes.slice(bytes);
 
-    return new PublicKey(keyBytes, version);
+    return new PublicKey(keyBytes, value);
   }
 }
 
 /**
  * An address.
  *
- * @remarks the address object is created from a public key and got the same version as the public key.
+ * @remarks when the address is created from a public key it got the same version as the public key.
  *
  * @remarks
  * - String representation is A + U/S + base58Check(version_bytes + hashBlake3(version_bytes + public_key_bytes))
@@ -95,20 +96,66 @@ export class PublicKey {
  * - bytes is not an attribute of the address object because it is not needed.
  */
 export class Address {
-  version: number;
   base58Encode: string;
+  private version: number;
+  private prefix: string;
+  private versionBytesLength: number;
+  private versionAndAddressBytes: Uint8Array;
 
-  constructor(publicKey: PublicKey) {
-    this.version = publicKey.version;
+  constructor(base58Encoded: string) {
+    this.base58Encode = base58Encoded;
+    this.setPrefix();
+    this.setDecodedVersionAndAddressBytes();
+    this.setVersion();
 
-    const versionBuffer = Buffer.from(varintEncode(this.version));
+    const addressBytes = this.versionAndAddressBytes.slice(
+      this.versionBytesLength,
+    );
+
+    if (addressBytes.length !== 32) {
+      throw new Error(
+        `Expected address to be 32 bytes long not ${addressBytes.length}`,
+      );
+    }
+  }
+
+  private setPrefix(): void {
+    this.prefix = this.base58Encode.slice(0, ADDRESS_PREFIX_LENGTH);
+    if (![ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX].includes(this.prefix)) {
+      throw new Error(`Invalid address prefix: ${this.prefix}`);
+    }
+  }
+
+  private setDecodedVersionAndAddressBytes(): void {
+    const versionAndAddress = this.base58Encode.slice(ADDRESS_PREFIX_LENGTH);
+    this.versionAndAddressBytes = new Uint8Array(
+      base58Decode(versionAndAddress),
+    );
+  }
+
+  private setVersion(): void {
+    const { value, bytes: versionBytesLength } = varintDecode(
+      this.versionAndAddressBytes,
+    );
+    this.version = value;
+    this.versionBytesLength = versionBytesLength;
+  }
+
+  static fromPublicKey(publicKey: PublicKey): Address {
+    const versionBuffer = Buffer.from(varintEncode(publicKey.version));
     const versionAndPublicKey = Buffer.concat([versionBuffer, publicKey.bytes]);
 
     // Generate base58 encoded address
-    this.base58Encode =
-      ADDRESS_PREFIX +
+    const base58Encoded =
+      ADDRESS_USER_PREFIX +
       base58Encode(
         Buffer.concat([versionBuffer, hashBlake3(versionAndPublicKey)]),
       );
+
+    return new Address(base58Encoded);
+  }
+
+  get versionNumber(): number {
+    return this.version;
   }
 }
