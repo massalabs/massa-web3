@@ -94,3 +94,4 @@ export { WalletProviderAccount } from './web3/accounts/WalletProviderAccount';
  * This namespace provides utility functions, such as unit conversion, serialization, encoding, etc.
  */
 export * as utils from './utils';
+export * from './utils/keyAndAddresses';

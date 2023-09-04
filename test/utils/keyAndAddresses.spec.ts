@@ -4,16 +4,15 @@ import {
   mockPublicKeyObject,
   mockSecretKeyOject,
   mockSignatureResult,
+  mockAddressVersion,
 } from '../web3/mockData';
 import { SecretKey, PublicKey, Address } from '../../src/utils/keyAndAddresses';
 
 describe('SecretKey', () => {
   it('should construct SecretKey correctly', async () => {
     const secretKey = new SecretKey(mockSecretKeyOject.base58Encoded);
-
     expect(secretKey.version).toEqual(mockSecretKeyOject.version);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((secretKey as any).bytes).toEqual(mockSecretKeyOject.bytes);
+    expect(secretKey.bytes).toEqual(mockSecretKeyOject.bytes);
   });
 
   it('should get the public key correctly', async () => {
@@ -29,15 +28,15 @@ describe('SecretKey', () => {
 
   it('should sign the digest correctly', async () => {
     const data = 'hello world';
-    // bytes compaction
+
     const bytesCompact: Buffer = Buffer.from(data);
-    // Hash byte compact
+
     const messageHashDigest: Uint8Array = hashBlake3(bytesCompact);
 
     const secretKey: SecretKey = new SecretKey(
       mockSecretKeyOject.base58Encoded,
     );
-    // sign the digest
+
     const sig = await secretKey.signDigest(messageHashDigest);
 
     expect(sig).toEqual(mockSignatureResult.bytes);
@@ -65,9 +64,24 @@ describe('Address', () => {
     );
     const publicKeyObject: PublicKey = await secretKeyObject.getPublicKey();
 
-    const addressObject: Address = new Address(publicKeyObject);
+    const addressObject: Address = Address.fromPublicKey(publicKeyObject);
 
-    expect(addressObject.version).toEqual(mockAddressResult.version);
+    expect(addressObject.versionNumber).toEqual(mockAddressResult.version);
     expect(addressObject.base58Encode).toEqual(mockAddressResult.base58Encoded);
+  });
+
+  it('should construct Address correctly with version', async () => {
+    for (let addressObject of mockAddressVersion) {
+      const address = new Address(addressObject.base58Encoded);
+      expect(address.versionNumber).toEqual(addressObject.version);
+    }
+  });
+
+  it('should throw if the address is not valid', async () => {
+    const invalidAddress = 'A1';
+    expect(() => {
+      /* eslint-disable @typescript-eslint/no-unused-vars */
+      const address = new Address(invalidAddress);
+    }).toThrow();
   });
 });

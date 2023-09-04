@@ -680,6 +680,25 @@ export const mockSecretKeyOject = {
   version: 0,
 };
 
+export const mockAddressVersion = [
+  {
+    base58Encoded: 'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3',
+    version: 0,
+  },
+  {
+    base58Encoded: 'AU4RyMrF2r7b85PJWgFtyk4WS2GNh6Mh9ecAnow8fGMi6PVi6i2x',
+    version: 1,
+  },
+  {
+    base58Encoded: 'AUdyXW15XYA6LSfyJiBMVG89twMSEUVymMF7aXasr5YYrczaaEXo',
+    version: 19,
+  },
+  {
+    base58Encoded: 'AUQXH9ootnQAUgdWHi7eK4DoJukbx7buKWT1NB8iTpMeRhjGQV6Ven',
+    version: 287,
+  },
+];
+
 export const mockPublicKeyObject = {
   base58Encoded: 'P121uDTpo58d3SxQTENXKqSJTpB21ueSAy8RqQ2virGVeWs339ub',
   bytes: Uint8Array.from([
