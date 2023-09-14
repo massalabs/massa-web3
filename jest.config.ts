@@ -8,9 +8,12 @@ const config: Config = {
   testMatch: ['**/*.spec.ts'],
   transform: {
     '^.+\\.ts$': 'ts-jest',
+    '^.+\\.jsx?$': 'babel-jest',
   },
+  transformIgnorePatterns: ['node_modules/(?!(@massalabs/massa-web3)/)'],
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1',
+    '^@massalabs/massa-web3$': '<rootDir>/dist/esm/index.js',
   },
   moduleFileExtensions: ['ts', 'js', 'json'],
 };
