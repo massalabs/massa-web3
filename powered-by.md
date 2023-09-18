@@ -145,6 +145,14 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Chris Dickinson](chris@neversaw.us)
 
+## [@babel/preset-env](https://github.com/babel/babel.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 7.22.15
+
+**Many thanks to:** The Babel Team (https://babel.dev/team)
+
 ## [@massalabs/eslint-config](git+https://github.com/massalabs/eslint-config.git)
 
 **License:** ISC - perpetual
@@ -214,6 +222,14 @@ The following is a list of all the dependencies of this project:
 **License:** BSD-2-Clause - perpetual
 
 **Used version:** 5.62.0
+
+**Many thanks to:** n/a
+
+## [babel-jest](git+https://github.com/jestjs/jest.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 29.7.0
 
 **Many thanks to:** n/a
 
