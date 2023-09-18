@@ -19,7 +19,7 @@
         "update-version-patch": "npm version patch",
         "test": "jest",
         "test:watch": "jest --watch",
-        "test:watch:all": "jest --watchAll", 
+        "test:watch:all": "jest --watchAll",
         "test:cov": "jest --coverage",
         "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
         "test-wallet": "ts-node ./examples/wallet/index.ts",
@@ -80,6 +80,7 @@
         "varint": "^6.0.0"
     },
     "devDependencies": {
+        "@babel/preset-env": "^7.22.15",
         "@massalabs/eslint-config": "^0.0.9",
         "@massalabs/prettier-config-as": "^0.0.2",
         "@massalabs/web3-utils": "^1.4.1",
@@ -89,6 +90,7 @@
         "@types/secp256k1": "^4.0.3",
         "@typescript-eslint/eslint-plugin": "^5.52.0",
         "@typescript-eslint/parser": "^5.52.0",
+        "babel-jest": "^29.7.0",
         "chalk": "^4.1.0",
         "eslint": "^8.34.0",
         "eslint-config-airbnb-base": "^15.0.0",
@@ -119,5 +121,8 @@
         "bufferutil": "^4.0.7",
         "utf-8-validate": "^6.0.2"
     },
-    "prettier": "@massalabs/prettier-config-as"
+    "prettier": "@massalabs/prettier-config-as",
+    "_moduleAliases": {
+        "@massalabs/massa-web3": "./dist/esm/index.js"
+    }
 }

@@ -39,7 +39,11 @@
             "es2021",
             "esnext",
             "esnext.asynciterable"
-        ]
+        ],
+        "baseUrl": ".",
+        "paths": {
+          "@massalabs/massa-web3": ["./dist/esm/index.js"],
+        }
     },
     "lib": [
         "es7",
