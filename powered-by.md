@@ -269,7 +269,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 2.28.0
+**Used version:** 2.28.1
 
 **Many thanks to:** [Ben Mosher](me@benmosher.com)
 
@@ -416,22 +416,6 @@ The following is a list of all the dependencies of this project:
 **Used version:** 4.9.5
 
 **Many thanks to:** Microsoft Corp.
-
-## [webpack](git+https://github.com/webpack/webpack.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 5.88.2
-
-**Many thanks to:** Tobias Koppers @sokra
-
-## [webpack-cli](git+https://github.com/webpack/webpack-cli.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 5.1.4
-
-**Many thanks to:** n/a
 
 ## [bufferutil](git+https://github.com/websockets/bufferutil.git)
 
