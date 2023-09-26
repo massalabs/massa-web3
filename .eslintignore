@@ -4,4 +4,3 @@ node_modules
 bundle.*
 docs
 dist
-webpack.config.js
