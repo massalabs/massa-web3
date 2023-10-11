@@ -23,10 +23,14 @@ jobs:
           cache-dependency-path: ./contracts/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm ci
+        working-directory: ./
 
-      - name: Build
-        run: npm run build
+      - name: Build workspace
+        run: |
+          npm ci
+        working-directory: ./
 
       - name: Deploy
         run: |
