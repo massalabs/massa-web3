@@ -257,7 +257,7 @@ export class BaseClient {
     resp = await this.promisifyJsonRpcCall(resource, params);
 
     // in case of rpc error, rethrow the error.
-    if (resp.error && resp.error) {
+    if (resp.error) {
       throw resp.error;
     }
 

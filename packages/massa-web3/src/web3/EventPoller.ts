@@ -113,9 +113,9 @@ export class EventPoller extends EventEmitter {
     }
 
     // reset the interval.
-    this.timeoutId = new Timeout(this.pollIntervalMillis, () =>
-      this.callback(),
-    );
+    this.timeoutId = new Timeout(this.pollIntervalMillis, () => {
+      this.callback();
+    });
   }
 
   /**
@@ -133,9 +133,9 @@ export class EventPoller extends EventEmitter {
     if (this.timeoutId) {
       return;
     }
-    this.timeoutId = new Timeout(this.pollIntervalMillis, () =>
-      that.callback(),
-    );
+    this.timeoutId = new Timeout(this.pollIntervalMillis, () => {
+      that.callback();
+    });
   }
 
   /**
