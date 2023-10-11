@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/massalabs/massa-web3#readme",
   "workspaces": [
-    "packages/massa-web3",
-    "packages/web3-utils"
+    "packages/web3-utils",
+    "packages/massa-web3"
   ]
 }
