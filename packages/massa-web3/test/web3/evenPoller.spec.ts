@@ -147,6 +147,7 @@ describe('EventPoller', () => {
       ).toHaveBeenCalledTimes(1);
 
       jest.useRealTimers();
+      eventPoller.stopPolling();
     });
   });
 

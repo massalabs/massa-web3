@@ -16,7 +16,7 @@
         "update-version-major": "npm version major",
         "update-version-minor": "npm version minor",
         "update-version-patch": "npm version patch",
-        "test": "jest",
+        "test": "jest ----detectOpenHandles --forceExit",
         "test:watch": "jest --watch",
         "test:watch:all": "jest --watchAll",
         "test:cov": "jest --coverage",

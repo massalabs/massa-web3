@@ -23,7 +23,7 @@ export class Timeout {
   }
   private isCleared: boolean;
   private isCalled: boolean;
-  private timeoutHook: NodeJS.Timeout;
+  private timeoutHook: ReturnType<typeof setTimeout>;
 
   /**
    * Clears the timeout so that the callback function is not called.
