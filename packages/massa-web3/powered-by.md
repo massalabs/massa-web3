@@ -1,11 +1,11 @@
 # Dependencies Report
 
-The following is a list of all the dependencies of this project:
+The following is a list of all the dependencies for this package:
 ## [@massalabs/wallet-provider](git+https://github.com/massalabs/massa-wallet-provider.git)
 
 **License:** (MIT AND Apache-2.0) - perpetual
 
-**Used version:** 1.3.3
+**Used version:** 1.4.1
 
 **Many thanks to:** [Massa Labs](info@massa.net)
 
@@ -21,7 +21,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 1.3.1
+**Used version:** 1.3.2
 
 **Many thanks to:** Paul Miller (https://paulmillr.com)
 
@@ -29,7 +29,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 8.5.5
+**Used version:** 8.5.7
 
 **Many thanks to:** n/a
 
@@ -53,7 +53,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 9.1.1
+**Used version:** 9.1.2
 
 **Many thanks to:** Michael Mclaughlin M8ch88l@gmail.com
 
@@ -101,7 +101,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.6.2
+**Used version:** 29.7.0
 
 **Many thanks to:** n/a
 
@@ -125,7 +125,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** 0BSD - perpetual
 
-**Used version:** 2.6.1
+**Used version:** 2.6.2
 
 **Many thanks to:** Microsoft Corp.
 
@@ -149,7 +149,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 7.22.15
+**Used version:** 7.22.20
 
 **Many thanks to:** The Babel Team (https://babel.dev/team)
 
@@ -173,7 +173,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** ISC - perpetual
 
-**Used version:** 1.4.1
+**Used version:** 1.4.2
 
 **Many thanks to:** 
 
@@ -181,7 +181,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 5.1.1
+**Used version:** 5.1.2
 
 **Many thanks to:** n/a
 
@@ -189,7 +189,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.5.3
+**Used version:** 29.5.5
 
 **Many thanks to:** n/a
 
@@ -197,7 +197,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 18.17.4
+**Used version:** 18.18.4
 
 **Many thanks to:** n/a
 
@@ -205,7 +205,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 4.0.3
+**Used version:** 4.0.4
 
 **Many thanks to:** n/a
 
@@ -245,7 +245,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 8.46.0
+**Used version:** 8.51.0
 
 **Many thanks to:** [Nicholas C. Zakas](nicholas+npm@nczconsulting.com)
 
@@ -309,7 +309,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.6.2
+**Used version:** 29.7.0
 
 **Many thanks to:** n/a
 
@@ -373,7 +373,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** ISC - perpetual
 
-**Used version:** 5.0.1
+**Used version:** 5.0.5
 
 **Many thanks to:** [Isaac Z. Schlueter](i@izs.me> (http://blog.izs.me/)
 
@@ -389,7 +389,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 9.4.4
+**Used version:** 9.5.0
 
 **Many thanks to:** [John Reilly](johnny_reilly@hotmail.com> (https://johnnyreilly.com)
 

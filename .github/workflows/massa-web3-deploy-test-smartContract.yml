@@ -1,16 +1,13 @@
-name: Smart contract example Deploy
+name: (massa-web3) Smart contract example Deploy
 
 on:
   push:
-    branches:
-      - main
-
 
 jobs:
   deploy-SC-example:
     defaults:
       run:
-        working-directory: ./examples/smartContracts/
+        working-directory: ./packages/massa-web3/examples/smartContracts/
 
     runs-on: ubuntu-latest
 

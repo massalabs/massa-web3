@@ -1,0 +1,70 @@
+{
+    "ts-node": {
+        "experimentalResolver": true
+    },
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "commonjs",
+        "declaration": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "jsx": "preserve",
+        "allowJs": true,
+        "importHelpers": true,
+        "alwaysStrict": true,
+        "sourceMap": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noImplicitAny": false,
+        "noImplicitThis": false,
+        "skipLibCheck": true,
+        "strictNullChecks": false,
+        "downlevelIteration": true,
+        "esModuleInterop": true,
+        "outDir": "dist",
+        "types": ["node", "jest"],
+        "typeRoots": ["node_modules/@types"],
+        "lib": [
+            "es7",
+            "es6",
+            "dom",
+            "es2015",
+            "es2017",
+            "es2018",
+            "es2019",
+            "es2020",
+            "es2021",
+            "esnext",
+            "esnext.asynciterable"
+        ]
+    },
+    "lib": [
+        "es7",
+        "es6",
+        "dom",
+        "es2015",
+        "es2017",
+        "es2018",
+        "es2019",
+        "es2020",
+        "es2021",
+        "esnext",
+        "esnext.asynciterable"
+    ],
+    "files": ["./node_modules/@types/node/index.d.ts"],
+    "include": ["./src/**/*.ts"],
+    "exclude": [
+        "./node_modules/**/*",
+        "typings/browser.d.ts",
+        "typings/browser",
+        "node_modules",
+        "typings/main",
+        "typings/main.d.ts",
+        "typings/index.d.ts",
+        "typings",
+        "./dist/**/*"
+    ]
+}
