@@ -34,6 +34,16 @@ jobs:
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
 
+      - name: Install dependencies
+        run: |
+          npm ci
+        working-directory: ./
+
+      - name: Build workspace
+        run: |
+          npm run build
+        working-directory: ./
+
       - name: Execute unit tests
         run: |
           npm ci

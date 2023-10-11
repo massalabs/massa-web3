@@ -2,6 +2,7 @@ name: (massa-web3) Smart contract example Deploy
 
 on:
   push:
+    branches: [main]
 
 jobs:
   deploy-SC-example:
@@ -20,7 +21,7 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
-          cache-dependency-path: ./contracts/package-lock.json
+          cache-dependency-path: ./packages/massa-web3/examples/smartContracts/contracts/package-lock.json
 
       - name: Install dependencies
         run: |
@@ -29,7 +30,7 @@ jobs:
 
       - name: Build workspace
         run: |
-          npm ci
+          npm run build
         working-directory: ./
 
       - name: Deploy
@@ -42,9 +43,9 @@ jobs:
             exit 1
           fi
         env:
-          JSON_RPC_URL_PUBLIC: https://test.massa.net/api/v2
+          JSON_RPC_URL_PUBLIC: https://buildnet.massa.net/api/v2
 
-          JSON_RPC_URL_PRIVATE: https://test.massa.net/api/v2
+          JSON_RPC_URL_PRIVATE: https://buildnet.massa.net/api/v2
 
           DEPLOYER_PRIVATE_KEY: S12srNEAvZrTb9pktYeuePpuM4taW5dfmWAZYtdqyETWTBspkoT1
           RECEIVER_PRIVATE_KEY: S1ykLaxXyMnJoaWLYds8UntqKTamZ4vcxrZ1fdToR8WpWEpk3FC
