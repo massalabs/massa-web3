@@ -25,8 +25,13 @@
         "downlevelIteration": true,
         "esModuleInterop": true,
         "outDir": "dist",
-        "types": ["node", "jest"],
-        "typeRoots": ["node_modules/@types"],
+        "types": [
+            "node",
+            "jest"
+        ],
+        "typeRoots": [
+            "node_modules/@types"
+        ],
         "lib": [
             "es7",
             "es6",
@@ -42,7 +47,9 @@
         ],
         "baseUrl": ".",
         "paths": {
-          "@massalabs/massa-web3": ["./dist/esm/index.js"],
+            "@massalabs/massa-web3": [
+                "./dist/esm/index.js"
+            ],
         }
     },
     "lib": [
@@ -58,8 +65,12 @@
         "esnext",
         "esnext.asynciterable"
     ],
-    "files": ["./node_modules/@types/node/index.d.ts"],
-    "include": ["./src/**/*.ts"],
+    "files": [
+        "../../node_modules/@types/node/index.d.ts"
+    ],
+    "include": [
+        "./src/**/*.ts"
+    ],
     "exclude": [
         "./node_modules/**/*",
         "typings/browser.d.ts",

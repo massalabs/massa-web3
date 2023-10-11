@@ -1,4 +1,4 @@
-name: () Generate Powered-By
+name: (workspace) Generate Powered-By
 on:
   push:
 
