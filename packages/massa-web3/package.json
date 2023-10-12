@@ -19,7 +19,7 @@
         "test": "jest ----detectOpenHandles --forceExit",
         "test:watch": "jest --watch",
         "test:watch:all": "jest --watchAll",
-        "test:cov": "jest --coverage",
+        "test:cov": "jest --coverage --silent",
         "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
         "test-wallet": "ts-node ./examples/wallet/index.ts",
         "lint": "eslint .",

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test --ws --if-present",
+    "test:cov": "npm run test:cov --ws --if-present",
     "build": "npm run build --ws --if-present",
     "prettier": "npm run prettier --ws --if-present",
     "prettier:fix": "npm run prettier:fix --ws --if-present",
