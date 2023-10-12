@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { expect, it, describe } from '@jest/globals';
-import { IDeserializedResult, ISerializable } from '@massalabs/web3-utils';
-import { Args, ArrayTypes } from '@massalabs/web3-utils';
+import {
+  IDeserializedResult,
+  ISerializable,
+} from '../src/interfaces/ISerializable';
+import { Args, ArrayTypes } from '../src/arguments';
 
 export class Divinity implements ISerializable<Divinity> {
   constructor(public age: number = 0, public name: string = '') {}
 
   serialize(): Uint8Array {
     return Uint8Array.from(
-      new Args().addU32(this.age).addString(this.name).serialize(),
+      new Args().addU32(this.age).addString(this.name).serialize()
     );
   }
 
@@ -205,7 +208,7 @@ describe('Args class', () => {
         .addU32(age)
         .addString(name)
         .addSerializable(classObject)
-        .serialize(),
+        .serialize()
     );
 
     expect(args.nextUint8Array()).toEqual(array);
@@ -219,7 +222,7 @@ describe('Args class', () => {
   it('should return undefined when deserializing an empty array using nextSerializableObjectArray', () => {
     const arrayOfSerializable = [];
     const args = new Args(
-      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize()
     );
 
     const deserialized = args.nextSerializableObjectArray(Divinity);
@@ -232,7 +235,7 @@ describe('Args class', () => {
       new Divinity(45, 'Superman'),
     ];
     const args = new Args(
-      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize()
     );
 
     const deserialized = args.nextSerializableObjectArray(Divinity);
@@ -260,7 +263,7 @@ describe('Args class', () => {
         .addSerializableObjectArray(arrayOfSerializable)
         .addU32(age)
         .addString(name)
-        .serialize(),
+        .serialize()
     );
 
     expect(args.nextUint8Array()).toEqual(array);
@@ -392,7 +395,7 @@ describe('Args class', () => {
         .addString(name)
         .addArray(i32Array, ArrayTypes.I32)
         .addSerializable(classObject)
-        .serialize(),
+        .serialize()
     );
 
     expect(args.nextUint8Array()).toEqual(array);

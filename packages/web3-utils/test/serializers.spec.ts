@@ -1,7 +1,7 @@
 import { expect, it, describe } from '@jest/globals';
-import * as ser from '@massalabs/web3-utils';
-import { asTests } from './fixtures/as-serializer';
-import { Args, ArrayTypes } from '@massalabs/web3-utils';
+import * as ser from '../src';
+import { asTests } from './utils/fixtures/as-serializer';
+import { Args, ArrayTypes } from '../src/arguments';
 import {
   deserializeObj,
   getDatatypeSize,
@@ -9,8 +9,8 @@ import {
   arrayToBytes,
   bytesToArray,
   bytesToSerializableObjectArray,
-} from '@massalabs/web3-utils';
-import { IDeserializedResult, ISerializable } from '@massalabs/web3-utils';
+} from '../src/serializers/arrays';
+import { IDeserializedResult, ISerializable } from '../src/interfaces';
 
 // Implement a simple serializable class for testing.
 class TestSerializable implements ISerializable<TestSerializable> {
@@ -26,7 +26,7 @@ class TestSerializable implements ISerializable<TestSerializable> {
 
   deserialize(
     data: Uint8Array,
-    offset: number,
+    offset: number
   ): IDeserializedResult<TestSerializable> {
     this.value = data[offset];
     return { instance: this, offset: offset + 1 };
@@ -62,7 +62,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU8(negativeValue)).toThrow(
-      `Unable to serialize invalid Uint8 value ${negativeValue}`,
+      `Unable to serialize invalid Uint8 value ${negativeValue}`
     );
   });
   it('throws an error when trying to serialize a Uint8 value greater than 255', () => {
@@ -70,7 +70,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU8(largeValue)).toThrow(
-      `Unable to serialize invalid Uint8 value ${largeValue}`,
+      `Unable to serialize invalid Uint8 value ${largeValue}`
     );
   });
   it('ser/deser u32', () => {
@@ -82,7 +82,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU32(negativeValue)).toThrow(
-      `Unable to serialize invalid Uint32 value ${negativeValue}`,
+      `Unable to serialize invalid Uint32 value ${negativeValue}`
     );
   });
   it('throws an error when trying to serialize a Uint32 value greater than 4294967295', () => {
@@ -90,7 +90,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU32(largeValue)).toThrow(
-      `Unable to serialize invalid Uint32 value ${largeValue}`,
+      `Unable to serialize invalid Uint32 value ${largeValue}`
     );
   });
   it('ser/deser u64', () => {
@@ -102,7 +102,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU64(negativeValue)).toThrow(
-      `Unable to serialize invalid Uint64 value ${negativeValue}`,
+      `Unable to serialize invalid Uint64 value ${negativeValue}`
     );
   });
   it('throws an error when trying to serialize a u64 value greater than 18446744073709551615', () => {
@@ -110,7 +110,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU64(largeValue)).toThrow(
-      `Unable to serialize invalid Uint64 value ${largeValue}`,
+      `Unable to serialize invalid Uint64 value ${largeValue}`
     );
   });
   it('ser/deser u128', () => {
@@ -122,7 +122,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU128(negativeValue)).toThrow(
-      `Unable to serialize invalid Uint128 value ${negativeValue}`,
+      `Unable to serialize invalid Uint128 value ${negativeValue}`
     );
   });
   it('throws an error when trying to serialize a u128 value greater than 340282366920938463463374607431768211455', () => {
@@ -130,7 +130,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU128(largeValue)).toThrow(
-      `Unable to serialize invalid Uint128 value ${largeValue}`,
+      `Unable to serialize invalid Uint128 value ${largeValue}`
     );
   });
   it('ser/deser u256', () => {
@@ -142,17 +142,17 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addU256(negativeValue)).toThrow(
-      `Unable to serialize invalid Uint256 value ${negativeValue}`,
+      `Unable to serialize invalid Uint256 value ${negativeValue}`
     );
   });
   it('throws an error when trying to serialize a u256 value greater than 115792089237316195423570985008687907853269984665640564039457584007913129639935', () => {
     const largeValue = BigInt(
-      '115792089237316195423570985008687907853269984665640564039457584007913129639936',
+      '115792089237316195423570985008687907853269984665640564039457584007913129639936'
     );
     const args = new Args();
 
     expect(() => args.addU256(largeValue)).toThrow(
-      `Unable to serialize invalid Uint256 value ${largeValue}`,
+      `Unable to serialize invalid Uint256 value ${largeValue}`
     );
   });
   it('ser/deser i32', () => {
@@ -164,7 +164,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addI32(invalidValue)).toThrow(
-      `Unable to serialize invalid int32 value ${invalidValue}`,
+      `Unable to serialize invalid int32 value ${invalidValue}`
     );
   });
   it('ser/deser i64', () => {
@@ -176,7 +176,7 @@ describe('Serialization tests', () => {
     const args = new Args();
 
     expect(() => args.addI64(invalidValue)).toThrow(
-      `Unable to serialize invalid int64 value ${invalidValue.toString()}`,
+      `Unable to serialize invalid int64 value ${invalidValue.toString()}`
     );
   });
   it('ser/deser f32', () => {
@@ -212,11 +212,11 @@ describe('Test against assemblyscript serializer', () => {
         // Special case for 32bits floats
         expect(ser[test.deser](new Uint8Array(test.serialized))).toBeCloseTo(
           test.val as number,
-          0.001,
+          0.001
         );
       } else {
         expect(ser[test.deser](new Uint8Array(test.serialized))).toEqual(
-          test.val,
+          test.val
         );
       }
     });
@@ -229,7 +229,7 @@ describe('Test against assemblyscript serializer', () => {
       108, 100, 4, 0, 0, 0, 240, 159, 153, 130,
     ];
     expect(new Args().addArray(input, ArrayTypes.STRING).serialize()).toEqual(
-      serialized,
+      serialized
     );
     expect(new Args(serialized).nextArray(ArrayTypes.STRING)).toEqual(input);
   });
@@ -280,7 +280,7 @@ describe('array.ts functions', () => {
     it('throws an error for unsupported types', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => getDatatypeSize((ArrayTypes as any).BadType)).toThrow(
-        'Unsupported type',
+        'Unsupported type'
       );
     });
   });
@@ -455,7 +455,7 @@ describe('array.ts functions', () => {
       const unsupportedType = 'someUnsupportedType' as any;
 
       expect(() => arrayToBytes(dataArray, unsupportedType)).toThrow(
-        `Unsupported type: ${unsupportedType}`,
+        `Unsupported type: ${unsupportedType}`
       );
     });
   });
