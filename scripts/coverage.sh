@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Running coverage script..."
+echo $COVERAGE
+echo $PROJECT
+
 # Define the color based on coverage threshold
 determine_color() {
     local coverage=$1

@@ -1,4 +1,4 @@
-name: (massa-web3) Unit tests
+name: (workspace) Coverage
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
       - name: Extract coverage
         id: coverage
         run: |
-          value=$(npm run test:cov -w ${{ matrix.project }} | awk '/All files/ {print $10}' | tr -d '%')
+          value=$(npm run test:cov -w @massalabs/${{ matrix.project }} | awk '/All files/ {print $10}' | tr -d '%')
           echo "coverage=$value" >> $GITHUB_OUTPUT
 
       - name: Add test coverage to README
