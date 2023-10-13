@@ -24,12 +24,11 @@ Web3-Utils is a toolkit crafted for the Massa TypeScript projects. Although it c
 
 ## Contributing
 
-Community contributions are the backbone of our projects. If you wish to be a part of our growth and improve our tools, we'd love to have you! Please consult the [CONTRIBUTING guidelines](CONTRIBUTING.md) of the respective project.
+We welcome contributions from the community!
+
+If you would like to contribute to `massa-web3`, please read the [CONTRIBUTING file](CONTRIBUTING.md).
 
 ## License
 
 All projects within the Massa Web3 Workspace are released under the [MIT License](LICENSE).
 
-## Powered By
-
-These tools are developed with ❤️ by MassaLabs. Check out the [Powered By](powered-by.md) section to see the open-source projects that make our tools possible.
