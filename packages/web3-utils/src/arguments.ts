@@ -42,6 +42,7 @@ export enum ArrayTypes {
 
 export interface IParam {
   type: ArgTypes;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 }
 

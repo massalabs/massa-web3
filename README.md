@@ -11,7 +11,7 @@ Welcome to the Massa Web3 Workspace. This space houses a collection of projects 
 **Description:**  
 Massa-web3 is a TypeScript library that facilitates communication with the Massa blockchain. It's your key to extracting data, interfacing with smart contracts, monitoring blockchain events, and much more.
 
-- [📖 Read the full `Massa-web3` README](https://github.com/massalabs/massa-web3#readme) for detailed installation instructions, prerequisites, and additional resources.
+- [📖 Read the full `Massa-web3` README](./packages/massa-web3/README.md) for detailed installation instructions, prerequisites, and additional resources.
 
 ### 2. **Web3-Utils** 
 
@@ -20,7 +20,7 @@ Massa-web3 is a TypeScript library that facilitates communication with the Massa
 **Description:**  
 Web3-Utils is a toolkit crafted for the Massa TypeScript projects. Although it currently lacks a dedicated README, this utility provides an array of essential tools to streamline and enhance your blockchain interactions.
 
-- README for `Web3-Utils` will be available soon.
+- [📖 Read the full `Web3-utils` README](./packages/web3-utils/README.md) for detailed installation instructions, prerequisites, and additional resources.
 
 ## Contributing
 

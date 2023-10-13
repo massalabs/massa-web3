@@ -13,11 +13,10 @@ import {
   bytesToF64,
   bytesToI32,
   bytesToI64,
-  bytesToU128,
-  bytesToU256,
   bytesToU32,
   bytesToU64,
 } from './numbers';
+import { bytesToU128, bytesToU256 } from './bignum';
 
 /**
  * Get the byte size of a typed array unit.
