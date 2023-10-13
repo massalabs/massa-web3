@@ -15,7 +15,7 @@ Massa-web3 is a TypeScript library that facilitates communication with the Massa
 
 ### 2. **Web3-Utils** 
 
-![check-code-coverage](https://img.shields.io/badge/coverage-40%25-red)
+![check-code-coverage](https://img.shields.io/badge/coverage-92.11%25-green)
 
 **Description:**  
 Web3-Utils is a toolkit crafted for the Massa TypeScript projects. Although it currently lacks a dedicated README, this utility provides an array of essential tools to streamline and enhance your blockchain interactions.
