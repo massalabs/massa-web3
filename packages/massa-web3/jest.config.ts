@@ -1,21 +1,11 @@
-import type { Config } from 'jest';
+import baseConfig from '../../jest.config';
+import type { Config } from '@jest/types';
 
-const config: Config = {
-  verbose: true,
-  testEnvironment: 'node',
-  preset: 'ts-jest',
-  roots: ['<rootDir>'],
-  testMatch: ['**/*.spec.ts'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-    '^.+\\.jsx?$': 'babel-jest',
-  },
-  transformIgnorePatterns: ['node_modules/(?!(@massalabs/massa-web3)/)'],
-  moduleNameMapper: {
-    '@/(.*)': '<rootDir>/src/$1',
-    '^@massalabs/massa-web3$': '<rootDir>/dist/esm/index.js',
-  },
-  moduleFileExtensions: ['ts', 'js', 'json'],
+const config: Config.InitialOptions = {
+  ...baseConfig,
+  rootDir: '../..',
+  displayName: 'massa-web3',
+  testMatch: ['<rootDir>/packages/massa-web3/test/**/*.(spec|test).ts?(x)'],
 };
 
 export default config;
