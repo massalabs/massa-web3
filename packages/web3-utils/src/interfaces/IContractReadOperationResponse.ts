@@ -1,4 +1,4 @@
-import { IContractReadOperationData } from './IContractReadOperationData';
+import { IContractReadOperationData } from "./IContractReadOperationData";
 
 /**
  * Represents the output of a smart contract non persistent execution.

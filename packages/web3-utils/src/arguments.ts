@@ -1,5 +1,5 @@
-import { ISerializable } from './interfaces/ISerializable';
-import * as ser from './serializers';
+import { ISerializable } from "./interfaces/ISerializable";
+import * as ser from "./serializers";
 
 /**
  * Typed Arguments facilitating the differentiation
@@ -553,7 +553,7 @@ export class Args {
 
     if (size > maxSize) {
       // eslint-disable-next-line no-console
-      console.warn('input string is too long, it will be truncated');
+      console.warn("input string is too long, it will be truncated");
       value = value.slice(0, maxSize);
     }
 

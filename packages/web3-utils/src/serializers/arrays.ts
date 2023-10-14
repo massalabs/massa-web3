@@ -1,12 +1,12 @@
 /* eslint-disable no-case-declarations */
 
-import { Args, NativeType, ArrayTypes } from '../arguments';
+import { Args, NativeType, ArrayTypes } from "../arguments";
 import {
   IDeserializedResult,
   ISerializable,
-} from '../interfaces/ISerializable';
-import { bytesToStr } from './strings';
-import { byteToBool } from './bool';
+} from "../interfaces/ISerializable";
+import { bytesToStr } from "./strings";
+import { byteToBool } from "./bool";
 import {
   byteToU8,
   bytesToF32,
@@ -15,8 +15,8 @@ import {
   bytesToI64,
   bytesToU32,
   bytesToU64,
-} from './numbers';
-import { bytesToU128, bytesToU256 } from './bignum';
+} from "./numbers";
+import { bytesToU128, bytesToU256 } from "./bignum";
 
 /**
  * Get the byte size of a typed array unit.
@@ -123,7 +123,7 @@ export function arrayToBytes(
   type: ArrayTypes
 ): Uint8Array {
   let args = new Args();
-  source.forEach(value => {
+  source.forEach((value) => {
     switch (type) {
       case ArrayTypes.STRING:
         args.addString(value as string);

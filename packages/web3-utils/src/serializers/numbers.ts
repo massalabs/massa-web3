@@ -20,7 +20,7 @@ const U32_MAX = 0xffffffff;
 /**
  * The maximum value for an unsigned 64-bit integer (u64) represented as a BigInt.
  */
-export const U64_MAX = BigInt('0xffffffffffffffff');
+export const U64_MAX = BigInt("0xffffffffffffffff");
 
 /**
  * The minimum value for a signed 16-bit integer (i16).
@@ -45,12 +45,12 @@ const I32_MAX = 0x7fffffff;
 /**
  * The minimum value for a signed 64-bit integer (i64) represented as a BigInt.
  */
-const I64_MIN = BigInt('-9223372036854775808');
+const I64_MIN = BigInt("-9223372036854775808");
 
 /**
  * The maximum value for a signed 64-bit integer (i64) represented as a BigInt.
  */
-const I64_MAX = BigInt('0x7fffffffffffffff');
+const I64_MAX = BigInt("0x7fffffffffffffff");
 
 /**
  * Converts an unsigned 8-bit integer (u8) into a Uint8Array.
