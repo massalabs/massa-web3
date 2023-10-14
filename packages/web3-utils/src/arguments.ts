@@ -1,5 +1,5 @@
-import { ISerializable } from "./interfaces/ISerializable";
-import * as ser from "./serializers";
+import { ISerializable } from './interfaces/ISerializable';
+import * as ser from './serializers';
 
 /**
  * Typed Arguments facilitating the differentiation
@@ -297,7 +297,7 @@ export class Args {
     let deserializationResult = ser.deserializeObj(
       this.serialized,
       this.offset,
-      ctor
+      ctor,
     );
     this.offset = deserializationResult.offset;
     return deserializationResult.instance;
@@ -314,7 +314,7 @@ export class Args {
    * @returns the deserialized array of object that implement ISerializable
    */
   public nextSerializableObjectArray<T extends ISerializable<T>>(
-    ctor: new () => T
+    ctor: new () => T,
   ): T[] {
     const length = this.nextU32();
 
@@ -386,7 +386,7 @@ export class Args {
   public addBool(value: boolean): this {
     this.serialized = Args.concatArrays(
       this.serialized,
-      ser.u8toByte(value ? 1 : 0)
+      ser.u8toByte(value ? 1 : 0),
     );
     this.offset++;
     this.argsList.push({ type: ArgTypes.BOOL, value: value });
@@ -417,7 +417,7 @@ export class Args {
   public addU64(bigInt: bigint): this {
     this.serialized = Args.concatArrays(
       this.serialized,
-      ser.u64ToBytes(bigInt)
+      ser.u64ToBytes(bigInt),
     );
 
     this.offset += 8;
@@ -435,7 +435,7 @@ export class Args {
   public addU128(bigInt: bigint): this {
     this.serialized = Args.concatArrays(
       this.serialized,
-      ser.u128ToBytes(bigInt)
+      ser.u128ToBytes(bigInt),
     );
 
     this.offset += 16;
@@ -453,7 +453,7 @@ export class Args {
   public addU256(bigInt: bigint): this {
     this.serialized = Args.concatArrays(
       this.serialized,
-      ser.u256ToBytes(bigInt)
+      ser.u256ToBytes(bigInt),
     );
 
     this.offset += 32;
@@ -485,7 +485,7 @@ export class Args {
   public addI64(bigInt: bigint): this {
     this.serialized = Args.concatArrays(
       this.serialized,
-      ser.i64ToBytes(bigInt)
+      ser.i64ToBytes(bigInt),
     );
     this.offset += 8;
     this.argsList.push({ type: ArgTypes.I64, value: bigInt });
@@ -553,7 +553,7 @@ export class Args {
 
     if (size > maxSize) {
       // eslint-disable-next-line no-console
-      console.warn("input string is too long, it will be truncated");
+      console.warn('input string is too long, it will be truncated');
       value = value.slice(0, maxSize);
     }
 
@@ -604,7 +604,7 @@ export class Args {
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addSerializableObjectArray<T extends ISerializable<T>>(
-    arg: T[]
+    arg: T[],
   ): this {
     const content: Uint8Array = ser.serializableObjectsArrayToBytes(arg);
     this.addU32(content.length);

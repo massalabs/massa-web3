@@ -1,6 +1,6 @@
-import { IEvent } from "./IEvent";
-import { IReadOperationResult } from "./IReadOperationResult";
-import { ISlot } from "./ISlot";
+import { IEvent } from './IEvent';
+import { IReadOperationResult } from './IReadOperationResult';
+import { ISlot } from './ISlot';
 
 /**
  * Represents the inputs of a read-only operation on a deployed contract.

@@ -1,15 +1,15 @@
-import { U64_MAX } from "./numbers";
+import { U64_MAX } from './numbers';
 
 /**
  * The maximum value for an unsigned 128-bit integer (u128) represented as a BigInt.
  */
-const U128_MAX = BigInt("0xffffffffffffffffffffffffffffffff");
+const U128_MAX = BigInt('0xffffffffffffffffffffffffffffffff');
 
 /**
  * The maximum value for an unsigned 256-bit integer (u256) represented as a BigInt.
  */
 const U256_MAX = BigInt(
-  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
 );
 
 /**

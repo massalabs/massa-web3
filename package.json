@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "prepare": "husky install",
-    "test": "jest",
+    "test": "jest --forceExit --detectOpenHandles",
     "test:cov": "npm run test:cov --ws --if-present",
     "build": "npm run build --ws --if-present",
     "lint": "eslint .",
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@massalabs/eslint-config": "^0.0.9",
     "@massalabs/prettier-config-as": "^0.0.2",
+
     "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "eslint": "^8.51.0",
@@ -41,5 +42,7 @@
     "husky": "^8.0.0",
     "prettier": "^2.8.4",
     "typescript": "^4.9.5"
-  }
+  },
+  "prettier": "@massalabs/prettier-config-as"
+
 }

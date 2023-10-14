@@ -1,12 +1,12 @@
 /* eslint-disable no-case-declarations */
 
-import { Args, NativeType, ArrayTypes } from "../arguments";
+import { Args, NativeType, ArrayTypes } from '../arguments';
 import {
   IDeserializedResult,
   ISerializable,
-} from "../interfaces/ISerializable";
-import { bytesToStr } from "./strings";
-import { byteToBool } from "./bool";
+} from '../interfaces/ISerializable';
+import { bytesToStr } from './strings';
+import { byteToBool } from './bool';
 import {
   byteToU8,
   bytesToF32,
@@ -15,8 +15,8 @@ import {
   bytesToI64,
   bytesToU32,
   bytesToU64,
-} from "./numbers";
-import { bytesToU128, bytesToU256 } from "./bignum";
+} from './numbers';
+import { bytesToU128, bytesToU256 } from './bignum';
 
 /**
  * Get the byte size of a typed array unit.
@@ -56,11 +56,11 @@ export const getDatatypeSize = (type: ArrayTypes): number => {
  */
 
 export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
-  source: T[]
+  source: T[],
 ): Uint8Array {
   return source.reduce(
     (acc, curr) => Args.concatArrays(acc, curr.serialize()),
-    new Uint8Array(0)
+    new Uint8Array(0),
   );
 }
 
@@ -76,7 +76,7 @@ export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
 export function deserializeObj<T extends ISerializable<T>>(
   data: Uint8Array,
   offset: number,
-  Clazz: new () => T
+  Clazz: new () => T,
 ): IDeserializedResult<T> {
   const deserialized = new Clazz().deserialize(data, offset);
   return deserialized;
@@ -92,7 +92,7 @@ export function deserializeObj<T extends ISerializable<T>>(
  */
 export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
   source: Uint8Array,
-  Clazz: new () => T
+  Clazz: new () => T,
 ): T[] {
   const array: T[] = [];
   let offset = 0;
@@ -120,7 +120,7 @@ export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
  */
 export function arrayToBytes(
   source: NativeType[],
-  type: ArrayTypes
+  type: ArrayTypes,
 ): Uint8Array {
   let args = new Args();
   source.forEach((value) => {
