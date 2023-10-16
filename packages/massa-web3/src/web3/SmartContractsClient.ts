@@ -22,7 +22,6 @@ import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
 import { fromMAS } from '../utils/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
-import { wait } from '../utils/time';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
 import { IWalletClient } from '../interfaces/IWalletClient';
@@ -33,10 +32,12 @@ import {
   IEvent,
   Args,
 } from '@massalabs/web3-utils';
+import { wait } from '../utils/time';
 
-const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
-const TX_POLL_INTERVAL_MS = 10000;
-const TX_STATUS_CHECK_RETRY_COUNT = 100;
+export const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
+
+const WAIT_STATUS_TIMEOUT = 60000;
+const TX_POLL_INTERVAL_MS = 1000;
 
 /**
  * The key name (as a string) to look for when we are retrieving the proto file from a contract
@@ -376,35 +377,24 @@ export class SmartContractsClient
     opId: string,
     requiredStatus: EOperationStatus,
   ): Promise<EOperationStatus> {
-    let errCounter = 0;
-    let pendingCounter = 0;
-    while (true) {
+    const start = Date.now();
+    let counterMs = 0;
+    while (counterMs < WAIT_STATUS_TIMEOUT) {
       let status = EOperationStatus.NOT_FOUND;
       try {
         status = await this.getOperationStatus(opId);
-      } catch (ex) {
-        if (++errCounter > 100) {
-          const msg = `Failed to retrieve the tx status after 100 failed attempts for operation id: ${opId}.`;
-          console.error(msg, ex);
-          throw ex;
+        if (status == requiredStatus) {
+          return status;
         }
-
-        await wait(TX_POLL_INTERVAL_MS);
-      }
-
-      if (status == requiredStatus) {
-        return status;
-      }
-
-      if (++pendingCounter > 1000) {
-        const msg = `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${
-          TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT
-        }ms.`;
-        console.warn(msg);
-        throw new Error(msg);
+      } catch (ex) {
+        console.warn(ex);
       }
 
       await wait(TX_POLL_INTERVAL_MS);
+      counterMs = Date.now() - start;
     }
+    throw new Error(
+      `Failed to retrieve status of operation id: ${opId}: Timeout reached.`,
+    );
   }
 }

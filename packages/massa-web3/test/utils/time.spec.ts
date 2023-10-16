@@ -1,9 +1,4 @@
-import {
-  Timeout,
-  Interval,
-  wait,
-  withTimeoutRejection,
-} from '../../src/utils/time';
+import { Timeout, Interval, withTimeoutRejection } from '../../src/utils/time';
 
 describe('Timer utilities', () => {
   jest.useFakeTimers();
@@ -53,15 +48,6 @@ describe('Timer utilities', () => {
 
       jest.advanceTimersByTime(3000);
       expect(callback).not.toBeCalled();
-    });
-  });
-
-  describe('wait function', () => {
-    it('should resolve after the specified time', async () => {
-      const promise = wait(1000);
-      jest.advanceTimersByTime(1000);
-
-      await expect(promise).resolves.toBeUndefined();
     });
   });
 
