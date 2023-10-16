@@ -29,7 +29,6 @@
   "devDependencies": {
     "@massalabs/eslint-config": "^0.0.9",
     "@massalabs/prettier-config-as": "^0.0.2",
-
     "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "eslint": "^8.51.0",
@@ -41,9 +40,9 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
     "husky": "^8.0.0",
+    "lint-staged": "^15.0.1",
     "prettier": "^2.8.4",
     "typescript": "^4.9.5"
   },
   "prettier": "@massalabs/prettier-config-as"
-
 }
