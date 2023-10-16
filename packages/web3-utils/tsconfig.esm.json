@@ -1,0 +1,8 @@
+{
+    // Extends base TypeScript configuration from 'tsconfig.json'
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        // The location where the output files will be placed.
+        "outDir": "./dist/esm/",
+    },
+}
