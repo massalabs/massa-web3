@@ -12,6 +12,7 @@
     "build-commonjs": "tsc --project tsconfig.commonjs.json",
     "build": "npm-run-all clean-dist build-*",
     "test": "jest --passWithNoTests",
+    "test:all": "npm run test",
     "test:cov": "jest --coverage --silent --passWithNoTests",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

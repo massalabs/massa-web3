@@ -5,6 +5,7 @@
     "prepare": "husky install",
     "test": "jest --forceExit --detectOpenHandles",
     "test:cov": "npm run test:cov --ws --if-present",
+    "test:all": "npm run test:all --ws --if-present",
     "build": "npm run build --ws --if-present",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

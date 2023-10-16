@@ -14,6 +14,7 @@
       "build-commonjs": "tsc --project tsconfig.commonjs.json",
       "build": "npm-run-all clean-dist build-*",
       "test": "jest --detectOpenHandles --forceExit",
+      "test:all": "npm run test && npm run test-smart-contract-example && npm run test-wallet",
       "test:watch": "jest --watch",
       "test:watch:all": "jest --watchAll",
       "test:cov": "jest --coverage --silent --detectOpenHandles --forceExit",

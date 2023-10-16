@@ -5,7 +5,7 @@ const config: Config.InitialOptions = {
     '^.+\\.ts$': [
       'ts-jest',
       {
-        tsconfig: 'tsconfig.base.json',
+        tsconfig: '<rootDir>/tsconfig.base.json',
       },
     ],
     '^.+\\.jsx?$': 'babel-jest',
