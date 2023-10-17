@@ -377,22 +377,23 @@ export class SmartContractsClient
     opId: string,
     requiredStatus: EOperationStatus,
   ): Promise<EOperationStatus> {
-    const start = Date.now();
-    let counterMs = 0;
-    while (counterMs < WAIT_STATUS_TIMEOUT) {
-      let status = EOperationStatus.NOT_FOUND;
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < WAIT_STATUS_TIMEOUT) {
+      let currentStatus = EOperationStatus.NOT_FOUND;
+
       try {
-        status = await this.getOperationStatus(opId);
-        if (status == requiredStatus) {
-          return status;
+        currentStatus = await this.getOperationStatus(opId);
+
+        if (currentStatus === requiredStatus) {
+          return currentStatus;
         }
       } catch (ex) {
         console.warn(ex);
       }
-
       await wait(TX_POLL_INTERVAL_MS);
-      counterMs = Date.now() - start;
     }
+
     throw new Error(
       `Failed to retrieve status of operation id: ${opId}: Timeout reached.`,
     );
