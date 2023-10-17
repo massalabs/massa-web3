@@ -6,7 +6,7 @@ Welcome to the Massa Web3 Workspace. This space houses a collection of projects 
 
 ### 1. **Massa-web3**
    
-![check-code-coverage](https://img.shields.io/badge/coverage-95.27%25-green)
+![check-code-coverage](https://img.shields.io/badge/coverage-94.94%25-green)
 
 **Description:**  
 Massa-web3 is a TypeScript library that facilitates communication with the Massa blockchain. It's your key to extracting data, interfacing with smart contracts, monitoring blockchain events, and much more.
