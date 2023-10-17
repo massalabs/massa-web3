@@ -1,7 +1,8 @@
 import { readdir, readFile, writeFile } from 'fs';
 import { join } from 'path';
+const massaWeb3Path = 'packages/massa-web3';
 
-const testCodeSnippetDirectory = './test/code-snippets';
+const testCodeSnippetDirectory = `${massaWeb3Path}/test/code-snippets`;
 
 // Extract import statements from the content
 const extractImports = (content) => {
@@ -51,7 +52,7 @@ readdir(testCodeSnippetDirectory, (err, files) => {
       const snippetContent = `${importStatements}\n\n${transformedContent}`;
 
       const newFilePath = join(
-        './code-snippets',
+        `${massaWeb3Path}/code-snippets`,
         fileName.replace('.spec', ''),
       );
       writeFile(newFilePath, snippetContent, 'utf8', (err) => {

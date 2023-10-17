@@ -9,9 +9,6 @@ on:
 jobs:
   generate-code-snippets:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./packages/massa-web3/
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
