@@ -1,15 +1,12 @@
 {
-    // Extends base TypeScript configuration from 'tsconfig.json'
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        // The location where the output files will be placed.
+        "target": "ESNext",
+        "module": "ESNext",
         "outDir": "./dist/esm/",
-        // Source map options
         "sourceMap": true,
         "inlineSources": true
     },
-    // A list of glob patterns that exclude certain files from the compilation.
-    // Here, it's set to exclude all the files in 'node_modules' and any file ending in '.spec.ts'.
     "exclude": [
         "node_modules",
         "**/*.spec.ts"
