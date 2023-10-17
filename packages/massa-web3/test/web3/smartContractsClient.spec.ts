@@ -522,6 +522,64 @@ describe('SmartContractsClient', () => {
     });
   });
 
+  describe('awaitMultipleRequiredOperationStatuses', () => {
+    const opId = mockOpIds[0];
+    const requiredStatus = EOperationStatus.FINAL_SUCCESS;
+    const timeout = 1000;
+    let getOperationStatusMock;
+
+    beforeEach(() => {
+      getOperationStatusMock = jest.spyOn(
+        smartContractsClient,
+        'getOperationStatus',
+      );
+    });
+
+    afterEach(() => {
+      getOperationStatusMock.mockReset();
+    });
+
+    it('should return the expected status when all required statuses are met', async () => {
+      getOperationStatusMock
+        .mockResolvedValueOnce(EOperationStatus.NOT_FOUND)
+        .mockResolvedValueOnce(requiredStatus);
+
+      const requiredStatuses = [
+        EOperationStatus.FINAL_SUCCESS,
+        EOperationStatus.FINAL_ERROR,
+      ];
+
+      const result =
+        await smartContractsClient.awaitMultipleRequiredOperationStatus(
+          opId,
+          requiredStatuses,
+          timeout,
+        );
+
+      expect(result).toEqual(requiredStatus);
+      expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw an error when the required statuses are not met within the timeout', async () => {
+      getOperationStatusMock.mockResolvedValue(EOperationStatus.NOT_FOUND); // Always return NOT_FOUND
+
+      const requiredStatuses = [
+        EOperationStatus.FINAL_SUCCESS,
+        EOperationStatus.FINAL_ERROR,
+      ];
+
+      await expect(
+        smartContractsClient.awaitMultipleRequiredOperationStatus(
+          opId,
+          requiredStatuses,
+          timeout,
+        ),
+      ).rejects.toThrow(
+        `Failed to retrieve status of operation id: ${opId}: Timeout reached.`,
+      );
+    });
+  });
+
   describe('getContractBalance', () => {
     const expectedBalance: IBalance = {
       candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
