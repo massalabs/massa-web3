@@ -333,34 +333,27 @@ export class SmartContractsClient
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
     const operationData: Array<IOperationData> =
       await this.publicApiClient.getOperations([opId]);
-    if (!operationData || operationData.length === 0)
-      return EOperationStatus.NOT_FOUND;
-    const opData = operationData[0];
-    if (opData.is_operation_final === null && opData.op_exec_status === null) {
+
+    if (!operationData?.length) return EOperationStatus.NOT_FOUND;
+
+    const { is_operation_final, op_exec_status, in_pool, in_blocks } =
+      operationData[0];
+
+    if (is_operation_final === null && op_exec_status === null)
       return EOperationStatus.UNEXECUTED_OR_EXPIRED;
+
+    if (in_pool) return EOperationStatus.AWAITING_INCLUSION;
+
+    if (is_operation_final) {
+      if (op_exec_status) return EOperationStatus.FINAL_SUCCESS;
+      // We explicitly check for false here because null means that the operation was not executed
+      if (op_exec_status === false) return EOperationStatus.FINAL_ERROR;
+    } else {
+      if (op_exec_status) return EOperationStatus.SPECULATIVE_SUCCESS;
+      if (op_exec_status === false) return EOperationStatus.SPECULATIVE_ERROR;
     }
-    if (opData.in_pool) {
-      return EOperationStatus.AWAITING_INCLUSION;
-    }
-    if (opData.is_operation_final && opData.op_exec_status) {
-      return EOperationStatus.FINAL_SUCCESS;
-    }
-    // since null is a falsy value, we need to check for false explicitly
-    if (opData.is_operation_final && opData.op_exec_status === false) {
-      return EOperationStatus.FINAL_ERROR;
-    }
-    if (opData.is_operation_final === false && opData.op_exec_status) {
-      return EOperationStatus.SPECULATIVE_SUCCESS;
-    }
-    if (
-      opData.is_operation_final === false &&
-      opData.op_exec_status === false
-    ) {
-      return EOperationStatus.SPECULATIVE_ERROR;
-    }
-    if (opData.in_blocks.length > 0) {
-      return EOperationStatus.INCLUDED_PENDING;
-    }
+
+    if (in_blocks.length > 0) return EOperationStatus.INCLUDED_PENDING;
 
     return EOperationStatus.INCONSISTENT;
   }
@@ -376,16 +369,59 @@ export class SmartContractsClient
   public async awaitRequiredOperationStatus(
     opId: string,
     requiredStatus: EOperationStatus,
+    timeout?: number,
+  ): Promise<EOperationStatus> {
+    return await this.awaitOperationStatusHelper(
+      opId,
+      timeout,
+      (currentStatus) => currentStatus === requiredStatus,
+    );
+  }
+
+  /**
+   * Get the status of a specific operation and wait until it reaches one of the required statuses.
+   *
+   * @param opId - The required operation id.
+   * @param requiredStatuses - An array of required statuses.
+   *
+   * @returns A promise that resolves to the status of the operation.
+   */
+  public async awaitMultipleRequiredOperationStatus(
+    opId: string,
+    requiredStatuses: EOperationStatus[],
+    timeout?: number,
+  ): Promise<EOperationStatus> {
+    return await this.awaitOperationStatusHelper(
+      opId,
+      timeout,
+      (currentStatus) => requiredStatuses.includes(currentStatus),
+    );
+  }
+
+  /**
+   * Helper method to wait for a specific condition on an operation's status.
+   *
+   * @param opId - The operation id to check.
+   * @param statusCheck - A callback function that defines the condition for the operation status.
+   *
+   * @returns A promise that resolves to the status of the operation.
+   *
+   * @private
+   */
+  private async awaitOperationStatusHelper(
+    opId: string,
+    timeout = WAIT_STATUS_TIMEOUT,
+    statusCheck: (status: EOperationStatus) => boolean,
   ): Promise<EOperationStatus> {
     const startTime = Date.now();
 
-    while (Date.now() - startTime < WAIT_STATUS_TIMEOUT) {
+    while (Date.now() - startTime < timeout) {
       let currentStatus = EOperationStatus.NOT_FOUND;
 
       try {
         currentStatus = await this.getOperationStatus(opId);
 
-        if (currentStatus === requiredStatus) {
+        if (statusCheck(currentStatus)) {
           return currentStatus;
         }
       } catch (ex) {
