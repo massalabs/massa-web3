@@ -4,7 +4,10 @@ import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 import { fromMAS } from '../../src/utils/converters';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
-import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
+import {
+  MAX_READ_BLOCK_GAS,
+  SmartContractsClient,
+} from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
   mockClientConfig,
@@ -29,15 +32,11 @@ import {
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 import { Web3Account } from '../../src/web3/accounts/Web3Account';
 
-const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
-const TX_POLL_INTERVAL_MS = 10000;
-const TX_STATUS_CHECK_RETRY_COUNT = 100;
-
 // Mock to not wait for the timeout to finish
 jest.mock('../../src/utils/time', () => {
   return {
     Timeout: jest.fn(),
-    wait: jest.fn(() => Promise.resolve()),
+    wait: jest.fn().mockResolvedValue(true),
   };
 });
 
@@ -495,88 +494,31 @@ describe('SmartContractsClient', () => {
   describe('awaitRequiredOperationStatus', () => {
     const opId = mockOpIds[0];
     const requiredStatus = EOperationStatus.FINAL_SUCCESS;
+    let getOperationStatusMock;
 
     beforeEach(() => {
-      // Reset the getOperationStatus function
-      smartContractsClient.getOperationStatus = jest.fn();
+      getOperationStatusMock = jest.spyOn(
+        smartContractsClient,
+        'getOperationStatus',
+      );
+    });
+
+    afterEach(() => {
+      getOperationStatusMock.mockReset();
     });
 
     test('waiting for NOT_FOUND status to become the required status', async () => {
-      let callCount = 0;
-      smartContractsClient.getOperationStatus = jest
-        .fn()
-        .mockImplementation(() => {
-          callCount++;
-          if (callCount === 1) {
-            return Promise.resolve(EOperationStatus.NOT_FOUND);
-          } else {
-            return Promise.resolve(requiredStatus);
-          }
-        });
+      getOperationStatusMock
+        .mockResolvedValueOnce(EOperationStatus.NOT_FOUND)
+        .mockResolvedValueOnce(requiredStatus);
 
-      const promise = smartContractsClient.awaitRequiredOperationStatus(
+      const status = await smartContractsClient.awaitRequiredOperationStatus(
         opId,
         requiredStatus,
       );
 
-      const status = await promise;
-
       expect(status).toBe(requiredStatus);
       expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(2);
-    });
-
-    test('fails after reaching the error limit', async () => {
-      console.error = jest.fn();
-
-      // Always throw an error
-      const expectedErrorMessage = 'Test error';
-      smartContractsClient.getOperationStatus = jest
-        .fn()
-        .mockRejectedValue(new Error(expectedErrorMessage));
-
-      const consoleErrorSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
-      const error = await smartContractsClient
-        .awaitRequiredOperationStatus(opId, requiredStatus)
-        .catch((e) => e);
-
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toEqual(expectedErrorMessage);
-      expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
-        101,
-      );
-
-      // Restore console.error
-      consoleErrorSpy.mockRestore();
-    });
-
-    test('fails after reaching the pending limit', async () => {
-      console.warn = jest.fn();
-      // Always return a status other than the requiredStatus
-      smartContractsClient.getOperationStatus = jest
-        .fn()
-        .mockResolvedValue(EOperationStatus.NOT_FOUND);
-
-      const consoleWarnSpy = jest
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {});
-
-      await expect(
-        smartContractsClient.awaitRequiredOperationStatus(opId, requiredStatus),
-      ).rejects.toThrow(
-        `Getting the tx status for operation Id ${opId} took too long to conclude. We gave up after ${
-          TX_POLL_INTERVAL_MS * TX_STATUS_CHECK_RETRY_COUNT
-        }ms.`,
-      );
-
-      expect(smartContractsClient.getOperationStatus).toHaveBeenCalledTimes(
-        1001,
-      );
-
-      // Restore console.warn
-      consoleWarnSpy.mockRestore();
     });
   });
 

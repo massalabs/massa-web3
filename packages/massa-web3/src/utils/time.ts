@@ -1,3 +1,7 @@
+export function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * A class representing a timeout that triggers a callback function after a specified time interval.
  */
@@ -74,22 +78,6 @@ export class Interval {
     }
   }
 }
-
-/**
- * Returns a promise that resolves after the specified time interval.
- *
- * @param timeMilli - The time interval in milliseconds.
- *
- * @returns A promise that resolves after the specified time interval.
- */
-export const wait = async (timeMilli: number): Promise<void> => {
-  return new Promise<void>((resolve) => {
-    const timeout = new Timeout(timeMilli, () => {
-      timeout.clear();
-      return resolve();
-    });
-  });
-};
 
 /**
  * Returns a promise that resolves after the specified time interval and throws an error if the

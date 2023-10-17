@@ -1,7 +1,9 @@
-import { wait } from './time';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
+import { wait } from './time';
 
 const MAX_NUMBER_RETRIALS = 5;
+const RETRY_INTERVAL_MS = 300;
+
 type CallbackFunction<R> = (
   resource: JSON_RPC_REQUEST_METHOD,
   params: object,
@@ -37,11 +39,10 @@ export const trySafeExecute = async <R>(
       res = await func(...args);
       break;
     } catch (ex) {
-      const msg = `Failed to execute function ${
-        func.name
-      }. Retrying for ${++failureCounter}th time in 1s.`;
+      ++failureCounter;
+      const msg = `Failed to execute function ${func.name}. Retrying for ${failureCounter}th time in ${RETRY_INTERVAL_MS}ms.`;
       console.error(msg);
-      await wait(200 * (failureCounter + 1));
+      await wait(RETRY_INTERVAL_MS);
 
       if (failureCounter === retryTimes) {
         throw ex;

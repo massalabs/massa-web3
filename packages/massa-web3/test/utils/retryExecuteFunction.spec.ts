@@ -1,6 +1,5 @@
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { trySafeExecute } from '../../src/utils/retryExecuteFunction';
-import { wait } from '../../src/utils/time';
 
 jest.mock('../../src/utils/time');
 
@@ -12,9 +11,6 @@ describe('trySafeExecute function', () => {
 
   beforeEach(() => {
     jest.spyOn(global, 'setTimeout');
-    (wait as jest.Mock).mockImplementation((delay: number) => {
-      return new Promise((resolve) => setTimeout(resolve, delay));
-    });
   });
 
   afterEach(() => {
