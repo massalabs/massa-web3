@@ -47,6 +47,15 @@ export const asTests = [
     serialized: [154, 2, 0, 0, 0, 0, 0, 0],
   },
   {
+    name: 'ser/deser i128',
+    ser: 'i128ToBytes',
+    deser: 'bytesToI128',
+    val: -123456789012345678901234567890n,
+    serialized: [
+      46, 245, 192, 177, 17, 31, 140, 60, 9, 240, 22, 113, 254, 255, 255, 255,
+    ],
+  },
+  {
     name: 'ser/deser u128',
     ser: 'u128ToBytes',
     deser: 'bytesToU128',

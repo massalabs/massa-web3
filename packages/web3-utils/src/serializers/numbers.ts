@@ -50,7 +50,7 @@ const I64_MIN = BigInt('-9223372036854775808');
 /**
  * The maximum value for a signed 64-bit integer (i64) represented as a BigInt.
  */
-const I64_MAX = BigInt('0x7fffffffffffffff');
+export const I64_MAX = BigInt('0x7fffffffffffffff');
 
 /**
  * Converts an unsigned 8-bit integer (u8) into a Uint8Array.

@@ -3,14 +3,37 @@ import { U64_MAX } from './numbers';
 /**
  * The maximum value for an unsigned 128-bit integer (u128) represented as a BigInt.
  */
-const U128_MAX = BigInt('0xffffffffffffffffffffffffffffffff');
+export const U128_MAX = BigInt('0xffffffffffffffffffffffffffffffff');
 
 /**
  * The maximum value for an unsigned 256-bit integer (u256) represented as a BigInt.
  */
-const U256_MAX = BigInt(
+export const U256_MAX = BigInt(
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
 );
+
+/**
+ * The maximum value for a signed 128-bit integer (i128) represented as a BigInt.
+ */
+export const I128_MAX = BigInt('0x7fffffffffffffffffffffffffffffff');
+
+/**
+ * The minimum value for a signed 128-bit integer (i128) represented as a BigInt.
+ */
+export const I128_MIN = BigInt('-170141183460469231731687303715884105728');
+
+function generic128ToBytes(val: bigint): Uint8Array {
+  const upper = val >> 64n;
+  const lower = (val << 64n) >> 64n;
+
+  const buffer = new ArrayBuffer(16);
+  const view = new DataView(buffer);
+
+  view.setBigUint64(0, lower, true);
+  view.setBigUint64(8, upper, true);
+
+  return new Uint8Array(view.buffer);
+}
 
 /**
  * Converts an unsigned 128-bit integer (u128) BigInt into a Uint8Array.
@@ -27,16 +50,7 @@ export function u128ToBytes(val: bigint): Uint8Array {
     throw new Error(`Unable to serialize invalid Uint128 value ${val}`);
   }
 
-  const upper = val >> 64n;
-  const lower = (val << 64n) >> 64n;
-
-  const buffer = new ArrayBuffer(16);
-  const view = new DataView(buffer);
-
-  view.setBigUint64(0, lower, true);
-  view.setBigUint64(8, upper, true);
-
-  return new Uint8Array(view.buffer);
+  return generic128ToBytes(val);
 }
 
 /**
@@ -53,6 +67,41 @@ export function bytesToU128(arr: Uint8Array, offset = 0): bigint {
 
   const lower = view.getBigUint64(0, true); // Lower 64 bits
   const upper = view.getBigUint64(8, true); // Upper 64 bits
+
+  return (upper << 64n) | lower;
+}
+
+/**
+ * Converts a signed 128-bit integer (i128) BigInt into a Uint8Array.
+ *
+ * @param val - The BigInt to convert
+ *
+ * @throws Will throw an error if the input value is not within the valid u128 range (0 to 340282366920938463463374607431768211455)
+ *
+ * @returns A Uint8Array containing the serialized u128 BigInt value
+ *
+ */
+export function i128ToBytes(val: bigint): Uint8Array {
+  if (val < I128_MIN || val > I128_MAX) {
+    throw new Error(`Unable to serialize invalid Int128 value ${val}`);
+  }
+  return generic128ToBytes(val);
+}
+
+/**
+ * Converts a Uint8Array into a signed 128-bit integer (i128) BigInt.
+ *
+ * @param arr - The array to convert
+ * @param offset - The optional offset in the Uint8Array at which to start reading the i128 value (default: 0)
+ *
+ * @returns The deserialized i128 BigInt value
+ *
+ */
+export function bytesToI128(arr: Uint8Array, offset = 0): bigint {
+  const view = new DataView(arr.buffer, offset);
+
+  const lower = view.getBigUint64(0, true); // Lower 64 bits
+  const upper = view.getBigInt64(8, true); // Upper 64 bits
 
   return (upper << 64n) | lower;
 }
