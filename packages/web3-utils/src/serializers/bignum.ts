@@ -72,7 +72,7 @@ export function bytesToU128(arr: Uint8Array, offset = 0): bigint {
 }
 
 /**
- * Converts an unsigned 128-bit integer (u128) BigInt into a Uint8Array.
+ * Converts a signed 128-bit integer (i128) BigInt into a Uint8Array.
  *
  * @param val - The BigInt to convert
  *
