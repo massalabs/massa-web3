@@ -113,6 +113,18 @@ describe('Serialization tests', () => {
       `Unable to serialize invalid Uint64 value ${largeValue}`,
     );
   });
+  it('ser/deser i128', () => {
+    const val = -123456789123456789n;
+    expect(ser.bytesToI128(ser.i128ToBytes(val))).toEqual(val);
+  });
+  it('ser/deser i128', () => {
+    const val = ser.I128_MAX;
+    expect(ser.bytesToI128(ser.i128ToBytes(val))).toEqual(val);
+  });
+  it('ser/deser i128', () => {
+    const val = ser.I128_MIN;
+    expect(ser.bytesToI128(ser.i128ToBytes(val))).toEqual(val);
+  });
   it('ser/deser u128', () => {
     const val = 123456789123456789n;
     expect(ser.bytesToU128(ser.u128ToBytes(val))).toEqual(val);
@@ -125,8 +137,8 @@ describe('Serialization tests', () => {
       `Unable to serialize invalid Uint128 value ${negativeValue}`,
     );
   });
-  it('throws an error when trying to serialize a u128 value greater than 340282366920938463463374607431768211455', () => {
-    const largeValue = BigInt('340282366920938463463374607431768211456');
+  it('throws an error when trying to serialize a u128 value greater than U128_MAX', () => {
+    const largeValue = ser.U128_MAX + 1n;
     const args = new Args();
 
     expect(() => args.addU128(largeValue)).toThrow(
@@ -145,10 +157,8 @@ describe('Serialization tests', () => {
       `Unable to serialize invalid Uint256 value ${negativeValue}`,
     );
   });
-  it('throws an error when trying to serialize a u256 value greater than 115792089237316195423570985008687907853269984665640564039457584007913129639935', () => {
-    const largeValue = BigInt(
-      '115792089237316195423570985008687907853269984665640564039457584007913129639936',
-    );
+  it('throws an error when trying to serialize a u256 value greater than U256_MAX', () => {
+    const largeValue = ser.U256_MAX + 1n;
     const args = new Args();
 
     expect(() => args.addU256(largeValue)).toThrow(
@@ -273,6 +283,10 @@ describe('array.ts functions', () => {
       expect(getDatatypeSize(ArrayTypes.U128)).toEqual(16);
     });
 
+    it('returns the correct size for I128', () => {
+      expect(getDatatypeSize(ArrayTypes.I128)).toEqual(16);
+    });
+
     it('returns the correct size for U256', () => {
       expect(getDatatypeSize(ArrayTypes.U256)).toEqual(32);
     });
@@ -375,6 +389,20 @@ describe('array.ts functions', () => {
 
       const byteArray = arrayToBytes(dataArray, ArrayTypes.U128);
       const arrayBack = bytesToArray(byteArray, ArrayTypes.U128);
+      expect(arrayBack).toEqual(dataArray);
+    });
+    it('converts a I128 array to bytes and back correctly', () => {
+      const dataArray = [
+        123456789123456789n,
+        -123456789123456789n,
+        0n,
+        ser.I128_MAX,
+        ser.I128_MIN,
+        -123456789123456789n,
+      ];
+
+      const byteArray = arrayToBytes(dataArray, ArrayTypes.I128);
+      const arrayBack = bytesToArray(byteArray, ArrayTypes.I128);
       expect(arrayBack).toEqual(dataArray);
     });
     it('converts a U256 array to bytes and back correctly', () => {

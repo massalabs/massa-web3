@@ -14,6 +14,7 @@ export enum ArgTypes {
   U8,
   U32,
   U64,
+  I128,
   U128,
   U256,
   I32,
@@ -32,6 +33,7 @@ export enum ArrayTypes {
   U8,
   U32,
   U64,
+  I128,
   U128,
   U256,
   I32,
@@ -162,6 +164,21 @@ export class Args {
     const value = ser.bytesToU64(this.serialized, this.offset);
 
     this.offset += 8;
+    return value;
+  }
+
+  /**
+   * Returns the next int128 in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextI128(): bigint {
+    const value = ser.bytesToI128(this.serialized, this.offset);
+
+    this.offset += 16;
     return value;
   }
 
@@ -422,6 +439,24 @@ export class Args {
 
     this.offset += 8;
     this.argsList.push({ type: ArgTypes.U64, value: bigInt });
+    return this;
+  }
+
+  /**
+   * Adds a signed long integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addI128(bigInt: bigint): this {
+    this.serialized = Args.concatArrays(
+      this.serialized,
+      ser.i128ToBytes(bigInt),
+    );
+
+    this.offset += 16;
+    this.argsList.push({ type: ArgTypes.I128, value: bigInt });
     return this;
   }
 

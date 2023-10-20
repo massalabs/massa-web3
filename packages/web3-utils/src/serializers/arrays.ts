@@ -16,7 +16,7 @@ import {
   bytesToU32,
   bytesToU64,
 } from './numbers';
-import { bytesToU128, bytesToU256 } from './bignum';
+import { bytesToI128, bytesToU128, bytesToU256 } from './bignum';
 
 /**
  * Get the byte size of a typed array unit.
@@ -38,6 +38,7 @@ export const getDatatypeSize = (type: ArrayTypes): number => {
     case ArrayTypes.I64:
     case ArrayTypes.U64:
       return 8;
+    case ArrayTypes.I128:
     case ArrayTypes.U128:
       return 16;
     case ArrayTypes.U256:
@@ -152,6 +153,9 @@ export function arrayToBytes(
       case ArrayTypes.U64:
         args.addU64(value as bigint);
         break;
+      case ArrayTypes.I128:
+        args.addI128(value as bigint);
+        break;
       case ArrayTypes.U128:
         args.addU128(value as bigint);
         break;
@@ -222,6 +226,9 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
         break;
       case ArrayTypes.U64:
         result.push(bytesToU64(elt) as T);
+        break;
+      case ArrayTypes.I128:
+        result.push(bytesToI128(elt) as T);
         break;
       case ArrayTypes.U128:
         result.push(bytesToU128(elt) as T);
