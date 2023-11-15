@@ -14,7 +14,7 @@ import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { mockAddressesInfo, mockNodeStatusInfo, mockOpIds } from './mockData';
 import { IRollsData } from '../../src/interfaces/IRollsData';
-import { fromMAS } from '../../src/utils/converters';
+import { fromMAS } from '@massalabs/web3-utils';
 import { Web3Account } from '../../src/web3/accounts/Web3Account';
 import { IBaseAccount } from '../../src/interfaces/IBaseAccount';
 

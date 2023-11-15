@@ -18,14 +18,13 @@ import { IRollsData } from '../interfaces/IRollsData';
 import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
-import { fromMAS } from '../utils/converters';
+import { fromMAS } from '@massalabs/web3-utils/src/converters';
 
 import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
 import { IBaseAccount } from '../interfaces/IBaseAccount';
 import { Web3Account } from './accounts/Web3Account';
+import { KEYS_VERSION_NUMBER, SECRET_KEY_PREFIX } from '@massalabs/web3-utils';
 
-const SECRET_KEY_PREFIX = 'S';
-const VERSION_NUMBER = 0;
 const MAX_WALLET_ACCOUNTS = 256;
 
 /**
@@ -285,7 +284,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
   /**
    * Generates a new wallet account.
-   * @param version_number - The version number of the secret key to be generated, to create a new account.
+   * @param KEYS_VERSION_NUMBER - The version number of the secret key to be generated, to create a new account.
    *
    * @returns A Promise that resolves to an {@link IAccount} object, which represents the newly created account.
    */
@@ -293,7 +292,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
     // generate private key
     const secretKeyArray: Uint8Array = ed.utils.randomPrivateKey();
 
-    const version = Buffer.from(varintEncode(VERSION_NUMBER));
+    const version = Buffer.from(varintEncode(KEYS_VERSION_NUMBER));
     const secretKeyBase58Encoded: string =
       SECRET_KEY_PREFIX +
       base58Encode(Buffer.concat([version, secretKeyArray]));

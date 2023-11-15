@@ -83,9 +83,7 @@ export {
   MASSA_PROTOFILE_KEY,
   PROTO_FILE_SEPARATOR,
 } from './web3/SmartContractsClient';
-export * from '@massalabs/web3-utils';
 export { withTimeoutRejection } from './utils/time';
-export { fromMAS, toMAS, MassaUnits } from './utils/converters';
 
 export { Web3Account } from './web3/accounts/Web3Account';
 export { WalletProviderAccount } from './web3/accounts/WalletProviderAccount';
@@ -95,3 +93,4 @@ export { WalletProviderAccount } from './web3/accounts/WalletProviderAccount';
  */
 export * as utils from './utils';
 export * from './utils/keyAndAddresses';
+export * from '@massalabs/web3-utils';

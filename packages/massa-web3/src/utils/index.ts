@@ -1,8 +1,6 @@
-export * as arguments from '@massalabs/web3-utils';
-
 export * as bytes from './bytes';
 
-export * as converters from './converters';
+export * as converters from '@massalabs/web3-utils/src/converters';
 
 export * as keyAndAddresses from './keyAndAddresses';
 

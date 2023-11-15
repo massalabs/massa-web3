@@ -20,7 +20,7 @@ import { IOperationData } from '../interfaces/IOperationData';
 import { IReadData } from '../interfaces/IReadData';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { fromMAS } from '../utils/converters';
+import { fromMAS } from '@massalabs/web3-utils/src/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
@@ -31,10 +31,9 @@ import {
   IContractReadOperationData,
   IEvent,
   Args,
+  MAX_GAS_CALL,
 } from '@massalabs/web3-utils';
 import { wait } from '../utils/time';
-
-export const MAX_READ_BLOCK_GAS = BigInt(4_294_967_295);
 
 const WAIT_STATUS_TIMEOUT = 60000;
 const TX_POLL_INTERVAL_MS = 1000;
@@ -122,9 +121,9 @@ export class SmartContractsClient
       throw new Error(`No tx sender available`);
     }
     // check the max. allowed gas
-    if (callData.maxGas > MAX_READ_BLOCK_GAS) {
+    if (callData.maxGas > MAX_GAS_CALL) {
       throw new Error(
-        `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+        `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`,
       );
     }
 
@@ -154,9 +153,9 @@ export class SmartContractsClient
     readData: IReadData,
   ): Promise<IContractReadOperationResponse> {
     // check the max. allowed gas
-    if (readData.maxGas > MAX_READ_BLOCK_GAS) {
+    if (readData.maxGas > MAX_GAS_CALL) {
       throw new Error(
-        `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+        `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`,
       );
     }
 
@@ -406,7 +405,6 @@ export class SmartContractsClient
    *
    * @returns A promise that resolves to the status of the operation.
    *
-   * @private
    */
   private async awaitOperationStatusHelper(
     opId: string,
