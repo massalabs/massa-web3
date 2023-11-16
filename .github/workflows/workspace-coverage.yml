@@ -2,7 +2,7 @@ name: (workspace) Coverage
 
 on:
   push:
-    branches: [main, buildnet]
+    branches: [paused]
 
 jobs:
   build:
