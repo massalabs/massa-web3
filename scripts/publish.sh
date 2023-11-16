@@ -5,6 +5,7 @@ set -ex
 # npm publish "@massalabs/massa-proto-cli"
 # npm publish "@massalabs/massa-sc-deployer" 
 
+
 npm dist-tag add "@massalabs/massa-web3@2.2.6" buildnet
 # npm dist-tag add "@massalabs/massa-web3@2.2.2" latest
 # npm dist-tag add "@massalabs/massa-sc-deployer@1.1.1" latest
