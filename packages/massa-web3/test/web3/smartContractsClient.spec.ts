@@ -2,12 +2,9 @@
 import { IBalance } from '../../src/interfaces/IBalance';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
-import { fromMAS } from '../../src/utils/converters';
+import { fromMAS, MAX_GAS_CALL } from '@massalabs/web3-utils';
 import { PublicApiClient } from '../../src/web3/PublicApiClient';
-import {
-  MAX_READ_BLOCK_GAS,
-  SmartContractsClient,
-} from '../../src/web3/SmartContractsClient';
+import { SmartContractsClient } from '../../src/web3/SmartContractsClient';
 import { WalletClient } from '../../src/web3/WalletClient';
 import {
   mockClientConfig,
@@ -320,12 +317,12 @@ describe('SmartContractsClient', () => {
 
     test('should throw error when maxGas is superior to the maximum gas allowed', async () => {
       const modifiedMockCallData = { ...mockCallData };
-      modifiedMockCallData.maxGas = MAX_READ_BLOCK_GAS + BigInt(1);
+      modifiedMockCallData.maxGas = MAX_GAS_CALL + BigInt(1);
 
       await expect(
         smartContractsClient.callSmartContract(modifiedMockCallData),
       ).rejects.toThrow(
-        `The gas submitted ${modifiedMockCallData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+        `The gas submitted ${modifiedMockCallData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`,
       );
     });
 
@@ -378,12 +375,12 @@ describe('SmartContractsClient', () => {
       const mockReadDataWithLargeMaxGas = {
         ...mockReadData,
         maxGas: BigInt(4_294_967_296),
-      }; // value > MAX_READ_BLOCK_GAS
+      }; // value > MAX_GAS_CALL
 
       await expect(
         smartContractsClient.readSmartContract(mockReadDataWithLargeMaxGas),
       ).rejects.toThrow(
-        `The gas submitted ${mockReadDataWithLargeMaxGas.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_READ_BLOCK_GAS.toString()}`,
+        `The gas submitted ${mockReadDataWithLargeMaxGas.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`,
       );
     });
 

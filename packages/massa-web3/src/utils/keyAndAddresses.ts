@@ -8,15 +8,12 @@ import {
 
 import * as ed from '@noble/ed25519';
 import { getBytesPublicKey, getBytesSecretKey } from './bytes';
-
-/**
- * Prefixes for secret keys, public keys, and addresses.
- * Prefixes are used as a convention to differentiate one key from another.
- */
-const PUBLIC_KEY_PREFIX = 'P';
-const ADDRESS_PREFIX_LENGTH = 2;
-const ADDRESS_USER_PREFIX = 'AU';
-const ADDRESS_CONTRACT_PREFIX = 'AS';
+import {
+  ADDRESS_CONTRACT_PREFIX,
+  ADDRESS_PREFIX_LENGTH,
+  ADDRESS_USER_PREFIX,
+  PUBLIC_KEY_PREFIX,
+} from '@massalabs/web3-utils';
 
 /**
  * A secret key.
