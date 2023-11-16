@@ -10,3 +10,4 @@ README.md
 *.html
 *.md
 coverage
+.eslintrc.cjs

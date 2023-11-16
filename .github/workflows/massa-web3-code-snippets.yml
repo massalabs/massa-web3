@@ -1,0 +1,49 @@
+name: Generate code snippets
+
+on:
+  push:
+   branches: [ main ]
+
+  
+
+jobs:
+  generate-code-snippets:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        # Checkout code using massabot account
+        token: ${{ secrets.MASSABOTCLASSIC }}
+
+    - name: Install node 
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        registry-url: https://registry.npmjs.org
+
+    - name: Install project dependencies
+      run: |
+        npm i
+
+    - name: Generate code snippets
+      run: |
+        node scripts/transform-code-snippet-tests.mjs
+
+    - name: Format code snippets
+      run: |
+        npm run prettier:fix
+
+    - name: Commit Changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        token: 
+        commit_message: "Generate code snippets"
+        file_pattern: "code-snippets/*"
+        # Commit code using massabot account that can bypass push and MR restriction
+        commit_author: massabot <info@massa.net>

@@ -1,0 +1,45 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "commonjs",
+        "declaration": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "jsx": "preserve",
+        "allowJs": true,
+        "importHelpers": true,
+        "alwaysStrict": true,
+        "sourceMap": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "outDir": "./dist",
+        "types": [
+            "node",
+            "jest"
+        ],
+        "lib": [
+            "dom",
+            "esnext"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@massa-web3/*": [
+                "packages/massa-web3/src/*"
+            ],
+            "@web3-utils/*": [
+                "packages/web3-utils/src/*"
+            ]
+        }
+    },
+    "include": [
+        "packages/**/src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "packages/**/node_modules",
+        "packages/**/dist"
+    ]
+}
