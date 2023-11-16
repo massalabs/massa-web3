@@ -20,7 +20,6 @@ import { IOperationData } from '../interfaces/IOperationData';
 import { IReadData } from '../interfaces/IReadData';
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { fromMAS } from '@massalabs/web3-utils/src/converters';
 import { trySafeExecute } from '../utils/retryExecuteFunction';
 import { BaseClient } from './BaseClient';
 import { PublicApiClient } from './PublicApiClient';
@@ -31,6 +30,7 @@ import {
   IContractReadOperationData,
   IEvent,
   Args,
+  fromMAS,
   MAX_GAS_CALL,
 } from '@massalabs/web3-utils';
 import { wait } from '../utils/time';
