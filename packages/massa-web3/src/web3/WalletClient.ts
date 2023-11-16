@@ -18,12 +18,14 @@ import { IRollsData } from '../interfaces/IRollsData';
 import { IBalance } from '../interfaces/IBalance';
 import * as ed from '@noble/ed25519';
 import { IWalletClient } from '../interfaces/IWalletClient';
-import { fromMAS } from '@massalabs/web3-utils/src/converters';
-
 import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
 import { IBaseAccount } from '../interfaces/IBaseAccount';
 import { Web3Account } from './accounts/Web3Account';
-import { KEYS_VERSION_NUMBER, SECRET_KEY_PREFIX } from '@massalabs/web3-utils';
+import {
+  KEYS_VERSION_NUMBER,
+  SECRET_KEY_PREFIX,
+  fromMAS,
+} from '@massalabs/web3-utils';
 
 const MAX_WALLET_ACCOUNTS = 256;
 
