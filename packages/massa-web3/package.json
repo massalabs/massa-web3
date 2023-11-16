@@ -1,44 +1,52 @@
 {
     "name": "@massalabs/massa-web3",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "description": "massa's web3 sdk client",
     "main": "dist/cmd/index.js",
     "module": "dist/esm/index.js",
     "types": "dist/esm/index.d.ts",
     "scripts": {
-      "up": "npm update",
-      "check": "npm outdated",
-      "upgrade": "npm run up && npm run check && npm run build",
-      "clean-dist": "rimraf dist/*",
-      "build-esm": "tsc --project tsconfig.esm.json",
-      "build-commonjs": "tsc --project tsconfig.commonjs.json",
-      "build": "npm-run-all clean-dist build-*",
-      "test": "jest --detectOpenHandles --forceExit",
-      "test:all": "npm run test && npm run test-smart-contract-example && npm run test-wallet",
-      "test:watch": "jest --watch",
-      "test:watch:all": "jest --watchAll",
-      "test:cov": "jest --coverage --silent --detectOpenHandles --forceExit",
-      "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
-      "test-wallet": "ts-node ./examples/wallet/index.ts",
-      "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json"
+        "up": "npm update",
+        "check": "npm outdated",
+        "upgrade": "npm run up && npm run check && npm run build",
+        "clean-dist": "rimraf dist/*",
+        "build-esm": "tsc --project tsconfig.esm.json",
+        "build-commonjs": "tsc --project tsconfig.commonjs.json",
+        "build": "npm-run-all clean-dist build-*",
+        "test": "jest --detectOpenHandles --forceExit",
+        "test:all": "npm run test && npm run test-smart-contract-example && npm run test-wallet",
+        "test:watch": "jest --watch",
+        "test:watch:all": "jest --watchAll",
+        "test:cov": "jest --coverage --silent --detectOpenHandles --forceExit",
+        "test-smart-contract-example": "ts-node ./examples/smartContracts/index.ts",
+        "test-wallet": "ts-node ./examples/wallet/index.ts",
+        "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json"
     },
     "author": "Massa Labs <info@massa.net>",
-    "contributors": ["Evgeni Pirianov", "Yvan Sraka"],
+    "contributors": [
+        "Evgeni Pirianov",
+        "Yvan Sraka"
+    ],
     "license": "MIT",
     "homepage": "https://github.com/massalabs/massa-web3",
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/massalabs/massa-web3"
+        "type": "git",
+        "url": "git+https://github.com/massalabs/massa-web3"
     },
-    "keywords": ["web3", "ts", "sdk", "massa"],
+    "keywords": [
+        "web3",
+        "ts",
+        "sdk",
+        "massa"
+    ],
     "files": [
         "dist",
         "bundle.js",
         "bundle.min.js"
-      ],    
+    ],
     "dependencies": {
         "@massalabs/wallet-provider": "^1.3.3",
-        "@massalabs/web3-utils": "^1.4.2",
+        "@massalabs/web3-utils": "^1.4.3",
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
         "@types/ws": "^8.5.4",
