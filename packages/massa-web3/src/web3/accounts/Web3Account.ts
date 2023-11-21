@@ -24,28 +24,43 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     this.publicApiClient = publicApiClient;
   }
 
+  /**
+   * Verifies the integrity of account details including public key and address.
+   * @throws Throws an error if the public key or address does not match the submitted account details.
+   */
   public async verify(): Promise<void> {
-    // Create the secret key object
-    const secretKeyBase58Encoded: string = this.account.secretKey;
-    const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
+    try {
+      // Create the secret key object
+      const secretKeyBase58Encoded: string = this.account.secretKey;
+      const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
 
-    // create the public key object
-    const publicKey: PublicKey = await secretKey.getPublicKey();
-    if (
-      this.account.publicKey &&
-      this.account.publicKey !== publicKey.base58Encode
-    ) {
-      throw new Error(
-        'Public key does not correspond the the private key submitted',
-      );
-    }
+      // Get the public key object from the secret key
+      const publicKey: PublicKey = await secretKey.getPublicKey();
 
-    // get wallet account address
-    const address: Address = Address.fromPublicKey(publicKey);
-    if (this.account.address && this.account.address !== address.base58Encode) {
-      throw new Error(
-        'Account address not correspond the the address submitted',
-      );
+      // Validate the public key
+      if (
+        this.account.publicKey &&
+        this.account.publicKey !== publicKey.base58Encode
+      ) {
+        throw new Error(
+          'Public key does not correspond to the private key submitted',
+        );
+      }
+
+      // Get the account's address
+      const address: Address = Address.fromPublicKey(publicKey);
+
+      // Validate the account address
+      if (
+        this.account.address &&
+        this.account.address !== address.base58Encode
+      ) {
+        throw new Error(
+          'Account address does not correspond to the submitted address',
+        );
+      }
+    } catch (error) {
+      throw new Error(`Failed to verify account: ${error.message}`);
     }
   }
 
@@ -112,76 +127,129 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     };
   }
 
+  /**
+   * Retrieves the address associated with the account.
+   * @returns {string} The account address.
+   * @throws {Error} Throws an error if the account address is not available.
+   */
   public address(): string {
-    return this.account.address;
+    try {
+      if (!this.account || !this.account.address) {
+        throw new Error('No account or no address available');
+      }
+      return this.account.address;
+    } catch (error) {
+      throw new Error(`Failed to retrieve account address: ${error.message}`);
+    }
   }
 
+  /**
+   * Initiates the selling of rolls based on provided transaction data.
+   * @param {IRollsData} txData - The transaction data for the roll sale.
+   * @returns {Promise<string>} The ID of the initiated buy operation.
+   * @throws {Error} Throws an error if the sell operation fails.
+   */
   public async sellRolls(txData: IRollsData): Promise<string> {
-    if (!this.account) {
-      throw new Error(`No tx sender available`);
+    if (!this.account || !this.account.publicKey) {
+      throw new Error(`Invalid account or no public key available`);
     }
 
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+    // Ensure txData is provided and valid
+    if (!txData) {
+      throw new Error(`Invalid transaction data provided`);
+    }
 
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.RollSell,
-      expiryPeriod,
-    );
+    try {
+      // Get next period info
+      const nodeStatusInfo: INodeStatus =
+        await this.publicApiClient.getNodeStatus();
+      const expiryPeriod: number =
+        nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
-    // sign payload
-    const signature: ISignature = await this.sign(
-      Buffer.concat([getBytesPublicKey(this.account.publicKey), bytesCompact]),
-    );
+      // Compact bytes for operation
+      const bytesCompact: Buffer = this.compactBytesForOperation(
+        txData,
+        OperationTypeId.RollSell,
+        expiryPeriod,
+      );
 
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: this.account.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds[0];
+      // Sign payload
+      const publicKeyBytes = getBytesPublicKey(this.account.publicKey);
+      const signature: ISignature = await this.sign(
+        Buffer.concat([publicKeyBytes, bytesCompact]),
+      );
+
+      // Prepare data for operation
+      const data = {
+        serialized_content: Array.from(bytesCompact), // Use Array.from for conversion
+        creator_public_key: this.account.publicKey,
+        signature: signature.base58Encoded,
+      };
+
+      // Send operation request
+      const opIds: Array<string> = await this.sendJsonRPCRequest(
+        JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
+        [[data]],
+      );
+
+      if (opIds.length === 0) {
+        throw new Error(`Failed to retrieve operation ID`);
+      }
+
+      return opIds[0]; // Return the first operation ID
+    } catch (error) {
+      throw new Error(`Failed to sell rolls: ${error.message}`);
+    }
   }
 
+  /**
+   * Initiates a request to buy rolls.
+   * @param {IRollsData} txData - The transaction data for buying rolls.
+   * @returns {Promise<string>} The ID of the initiated buy operation.
+   * @throws {Error} Throws an error if the buy operation fails.
+   */
   public async buyRolls(txData: IRollsData): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+    try {
+      // Get next period info
+      const nodeStatusInfo: INodeStatus =
+        await this.publicApiClient.getNodeStatus();
+      const expiryPeriod: number =
+        nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
 
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.RollBuy,
-      expiryPeriod,
-    );
+      // Compact bytes for the buy operation
+      const bytesCompact: Buffer = this.compactBytesForOperation(
+        txData,
+        OperationTypeId.RollBuy,
+        expiryPeriod,
+      );
 
-    // sign payload
-    const signature: ISignature = await this.sign(
-      Buffer.concat([getBytesPublicKey(this.account.publicKey), bytesCompact]),
-    );
+      // Sign the payload
+      const publicKeyBytes = getBytesPublicKey(this.account.publicKey);
+      const signature: ISignature = await this.sign(
+        Buffer.concat([publicKeyBytes, bytesCompact]),
+      );
 
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: this.account.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds[0];
+      // Prepare data for the buy operation
+      const data = {
+        serialized_content: Array.from(bytesCompact), // Use Array.from for conversion
+        creator_public_key: this.account.publicKey,
+        signature: signature.base58Encoded,
+      };
+
+      // Send operation request
+      const opIds: Array<string> = await this.sendJsonRPCRequest(
+        JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
+        [[data]],
+      );
+
+      if (opIds.length === 0) {
+        throw new Error(`Failed to retrieve operation ID`);
+      }
+
+      return opIds[0]; // Return the ID of the initiated buy operation
+    } catch (error) {
+      throw new Error(`Failed to initiate buy operation: ${error.message}`);
+    }
   }
 
   public async sendTransaction(txData: IRollsData): Promise<string> {
