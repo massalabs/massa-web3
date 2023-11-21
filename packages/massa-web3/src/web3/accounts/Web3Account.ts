@@ -129,8 +129,8 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
   /**
    * Retrieves the address associated with the account.
-   * @returns {string} The account address.
-   * @throws {Error} Throws an error if the account address is not available.
+   * @returns The account address.
+   * @throws Throws an error if the account address is not available.
    */
   public address(): string {
     try {
@@ -145,9 +145,9 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
   /**
    * Initiates the selling of rolls based on provided transaction data.
-   * @param {IRollsData} txData - The transaction data for the roll sale.
-   * @returns {Promise<string>} The ID of the initiated buy operation.
-   * @throws {Error} Throws an error if the sell operation fails.
+   * @param txData - The transaction data for the roll sale.
+   * @returns The ID of the initiated buy operation.
+   * @throws Throws an error if the sell operation fails.
    */
   public async sellRolls(txData: IRollsData): Promise<string> {
     if (!this.account || !this.account.publicKey) {
@@ -204,9 +204,9 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
   /**
    * Initiates a request to buy rolls.
-   * @param {IRollsData} txData - The transaction data for buying rolls.
-   * @returns {Promise<string>} The ID of the initiated buy operation.
-   * @throws {Error} Throws an error if the buy operation fails.
+   * @param txData - The transaction data for buying rolls.
+   * @returns The ID of the initiated buy operation.
+   * @throws Throws an error if the buy operation fails.
    */
   public async buyRolls(txData: IRollsData): Promise<string> {
     try {
