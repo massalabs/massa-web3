@@ -226,10 +226,10 @@ const pollAsyncEvents = async (
         },
       ],
       web3Client,
+      baseAccount,
       0n,
       1_000_000n,
       fromMAS(0.2),
-      baseAccount,
     );
 
     spinner.succeed(

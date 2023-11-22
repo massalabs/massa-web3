@@ -78,10 +78,10 @@ export async function awaitTxConfirmation(
 export const deploySmartContracts = async (
   contractsToDeploy: ISCData[],
   web3Client: Client,
+  deployerAccount: IBaseAccount,
   fee = 0n,
   maxGas = MAX_GAS_DEPLOYMENT,
   maxCoins = fromMAS(0.1),
-  deployerAccount: IBaseAccount,
 ): Promise<string> => {
   let deploymentOperationId: string;
   try {
