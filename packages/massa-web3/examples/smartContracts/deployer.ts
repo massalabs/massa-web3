@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { IContractData } from '../../src/interfaces/IContractData';
 import { Client } from '../../src/web3/Client';
@@ -5,7 +6,13 @@ import { EOperationStatus } from '../../src/interfaces/EOperationStatus';
 
 import { readFileSync } from 'fs';
 
-import { Args, fromMAS, u64ToBytes, u8toByte } from '../../src';
+import {
+  Args,
+  MAX_GAS_DEPLOYMENT,
+  fromMAS,
+  u64ToBytes,
+  u8toByte,
+} from '../../src';
 import { IBaseAccount } from '../../src/interfaces/IBaseAccount';
 const path = require('path');
 const chalk = require('chalk');
@@ -72,7 +79,7 @@ export const deploySmartContracts = async (
   contractsToDeploy: ISCData[],
   web3Client: Client,
   fee = 0n,
-  maxGas = 1_000_000n,
+  maxGas = MAX_GAS_DEPLOYMENT,
   maxCoins = fromMAS(0.1),
   deployerAccount: IBaseAccount,
 ): Promise<string> => {

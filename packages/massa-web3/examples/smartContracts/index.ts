@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-console */
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { ClientFactory } from '../../src/web3/ClientFactory';
