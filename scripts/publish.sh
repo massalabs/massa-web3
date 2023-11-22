@@ -11,6 +11,7 @@ npm ci
 npm run build
 
 ref=$1
+echo "Publishing packages for reference: $ref"
 TAG=""
 
 if [[ "$ref" == *"buildnet"* ]]; then
