@@ -1,5 +1,5 @@
 import { IBaseAccount } from '../../interfaces/IBaseAccount';
-import { IAccount } from '@massalabs/wallet-provider';
+import { IAccount, ITransactionDetails } from '@massalabs/wallet-provider';
 import { ISignature } from '../../interfaces/ISignature';
 import { IRollsData } from '../../interfaces/IRollsData';
 import { ITransactionData } from '../../interfaces/ITransactionData';
@@ -60,7 +60,7 @@ export class WalletProviderAccount implements IBaseAccount {
       paramToSend = params;
     }
 
-    let res = await this.account.callSC(
+    let res = (await this.account.callSC(
       callData.targetAddress,
       callData.functionName,
       paramToSend,
@@ -68,7 +68,8 @@ export class WalletProviderAccount implements IBaseAccount {
       callData.fee,
       callData.maxGas,
       false,
-    );
+    )) as ITransactionDetails;
+
     return res.operationId;
   }
 

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-console */
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { ClientFactory } from '../../src/web3/ClientFactory';
@@ -225,10 +226,10 @@ const pollAsyncEvents = async (
         },
       ],
       web3Client,
+      baseAccount,
       0n,
       1_000_000n,
       fromMAS(0.2),
-      baseAccount,
     );
 
     spinner.succeed(
