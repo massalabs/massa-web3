@@ -228,8 +228,8 @@ const pollAsyncEvents = async (
       web3Client,
       baseAccount,
       0n,
-      1_000_000n,
-      fromMAS(0.2),
+      3000_000_000n,
+      fromMAS(1.5),
     );
 
     spinner.succeed(
@@ -279,7 +279,7 @@ const pollAsyncEvents = async (
     const args = new Args().addString('1');
     const result = await web3Client.smartContracts().readSmartContract({
       fee: 0n,
-      maxGas: 700_000n,
+      maxGas: 2000_000_000n,
       targetAddress: scAddress,
       targetFunction: 'getMusicAlbum',
       parameter: args.serialize(),
