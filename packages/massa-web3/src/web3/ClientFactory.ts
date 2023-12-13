@@ -39,6 +39,7 @@ export class ClientFactory {
    */
   public static async createDefaultClient(
     provider: DefaultProviderUrls,
+    chainId: number,
     retryStrategyOn = true,
     baseAccount?: IAccount,
   ): Promise<Client> {
@@ -75,7 +76,7 @@ export class ClientFactory {
     let publicApi = new PublicApiClient(clientConfig);
     let account: Web3Account = null;
     if (baseAccount) {
-      account = new Web3Account(baseAccount, publicApi);
+      account = new Web3Account(baseAccount, publicApi, chainId);
     }
     const client: Client = new Client(
       {
@@ -102,6 +103,7 @@ export class ClientFactory {
    */
   public static async createCustomClient(
     providers: Array<IProvider>,
+    chainId: number,
     retryStrategyOn = true,
     baseAccount?: IAccount,
   ): Promise<Client> {
@@ -112,7 +114,7 @@ export class ClientFactory {
     let publicApi = new PublicApiClient(clientConfig);
     let account: Web3Account = null;
     if (baseAccount) {
-      account = new Web3Account(baseAccount, publicApi);
+      account = new Web3Account(baseAccount, publicApi, chainId);
     }
     const client: Client = new Client(clientConfig, account, publicApi);
     return client;
@@ -132,6 +134,7 @@ export class ClientFactory {
    */
   public static async fromWalletProvider(
     provider: IProviderWalletProvider,
+    chainId: number,
     baseAccount: IAccountWalletProvider,
     retryStrategyOn = true,
   ): Promise<Client> {

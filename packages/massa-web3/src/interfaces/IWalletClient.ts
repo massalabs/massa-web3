@@ -103,6 +103,7 @@ export interface IWalletClient extends BaseClient {
    */
   signMessage(
     data: string | Buffer,
+    chainId: number,
     accountSignerAddress: string,
   ): Promise<ISignature>;
 
@@ -141,6 +142,7 @@ export interface IWalletClient extends BaseClient {
    */
   sendTransaction(
     txData: ITransactionData,
+    chainId: number,
     executor?: IBaseAccount,
   ): Promise<Array<string>>;
 

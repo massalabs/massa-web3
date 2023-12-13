@@ -18,10 +18,13 @@ import { trySafeExecute } from '../../utils/retryExecuteFunction';
 export class Web3Account extends BaseClient implements IBaseAccount {
   private account: IAccount;
   private publicApiClient: IPublicApiClient;
-  constructor(account: IAccount, publicApiClient: IPublicApiClient) {
+  private chainId: number;
+
+  constructor(account: IAccount, publicApiClient: IPublicApiClient, chainId: number) {
     super(publicApiClient.clientConfig);
     this.account = account;
     this.publicApiClient = publicApiClient;
+    this.chainId = chainId;
   }
 
   public async verify(): Promise<void> {
@@ -198,12 +201,16 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       expiryPeriod,
     );
 
+    const chainIdBuffer = new ArrayBuffer(8);
+    const view = new DataView(chainIdBuffer);
+    view.setBigUint64(0, BigInt(this.chainId), false);
+
     // sign payload
     const bytesPublicKey: Uint8Array = getBytesPublicKey(
       this.account.publicKey,
     );
     const signature: ISignature = await this.sign(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
+      Buffer.concat([Buffer.from(chainIdBuffer), bytesPublicKey, bytesCompact]),
     );
 
     // prepare tx data
