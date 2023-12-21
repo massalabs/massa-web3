@@ -32,6 +32,7 @@ export class ClientFactory {
    * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET).
    *
    * @param provider - Default provider to be used by the client.
+   * @param chainId - Chain id matching the network used by the provider
    * @param retryStrategyOn - Whether to retry failed requests.
    * @param baseAccount - Base account to use with the client (optional).
    *
@@ -39,7 +40,7 @@ export class ClientFactory {
    */
   public static async createDefaultClient(
     provider: DefaultProviderUrls,
-    chainId: number,
+    chainId: bigint,
     retryStrategyOn = true,
     baseAccount?: IAccount,
   ): Promise<Client> {
@@ -96,6 +97,7 @@ export class ClientFactory {
    * Suitable for local node interactions.
    *
    * @param providers - Array of providers to be used by the client.
+   * @param chainId - Chain id matching the network used by the provider
    * @param retryStrategyOn - Whether to retry failed requests.
    * @param baseAccount - Base account to be used by the client (optional).
    *
@@ -103,7 +105,7 @@ export class ClientFactory {
    */
   public static async createCustomClient(
     providers: Array<IProvider>,
-    chainId: number,
+    chainId: bigint,
     retryStrategyOn = true,
     baseAccount?: IAccount,
   ): Promise<Client> {
@@ -127,6 +129,7 @@ export class ClientFactory {
    * Suitable for local node interactions.
    *
    * @param provider - Provider from wallet provider to be used by the client.
+   * @param chainId - Chain id matching the network used by the provider
    * @param baseAccount - Base account from the wallet provider to be used by the client.
    * @param retryStrategyOn - Whether to retry failed requests.
    *
@@ -134,7 +137,7 @@ export class ClientFactory {
    */
   public static async fromWalletProvider(
     provider: IProviderWalletProvider,
-    chainId: number,
+    chainId: bigint,
     baseAccount: IAccountWalletProvider,
     retryStrategyOn = true,
   ): Promise<Client> {

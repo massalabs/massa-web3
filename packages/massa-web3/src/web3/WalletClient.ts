@@ -350,7 +350,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async signMessage(
     data: string | Buffer,
-    chainId: number,
+    chainId: bigint,
     accountSignerAddress: string,
   ): Promise<ISignature> {
     let signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
@@ -511,7 +511,6 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async sendTransaction(
     txData: ITransactionData,
-    chainId: number,
     executor?: IBaseAccount,
   ): Promise<Array<string>> {
     // check sender account

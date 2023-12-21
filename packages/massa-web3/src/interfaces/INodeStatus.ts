@@ -70,5 +70,5 @@ export interface INodeStatus {
   node_ip: string | null;
   pool_stats: { endorsement_count: number; operation_count: number };
   version: string;
-  chain_id: number;
+  chain_id: bigint;
 }
