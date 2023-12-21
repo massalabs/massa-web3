@@ -15,6 +15,8 @@ import { IAccount } from '../../src/interfaces/IAccount';
 import { Timeout } from '../../src/utils/time';
 import { IEvent, ISlot } from '@massalabs/web3-utils';
 
+const chainId = BigInt(77658366);
+
 // Mock the Timeout class
 jest.mock('../../src/utils/time', () => {
   function Timeout(timeoutMil, callback) {
@@ -113,6 +115,7 @@ describe('EventPoller', () => {
     const provider = DefaultProviderUrls.TESTNET;
     web3Client = await ClientFactory.createDefaultClient(
       provider,
+      chainId,
       true,
       baseAccount,
     );
