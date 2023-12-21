@@ -20,7 +20,11 @@ export class Web3Account extends BaseClient implements IBaseAccount {
   private publicApiClient: IPublicApiClient;
   private chainId: bigint;
 
-  constructor(account: IAccount, publicApiClient: IPublicApiClient, chainId: bigint) {
+  constructor(
+    account: IAccount,
+    publicApiClient: IPublicApiClient,
+    chainId: bigint,
+  ) {
     super(publicApiClient.clientConfig);
     this.account = account;
     this.publicApiClient = publicApiClient;
@@ -144,7 +148,11 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
     // sign payload
     const signature: ISignature = await this.sign(
-      Buffer.concat([Buffer.from(chainIdBuffer) ,getBytesPublicKey(this.account.publicKey), bytesCompact]),
+      Buffer.concat([
+        Buffer.from(chainIdBuffer),
+        getBytesPublicKey(this.account.publicKey),
+        bytesCompact,
+      ]),
     );
 
     const data = {
@@ -181,7 +189,11 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
     // sign payload
     const signature: ISignature = await this.sign(
-      Buffer.concat([Buffer.from(chainIdBuffer), getBytesPublicKey(this.account.publicKey), bytesCompact]),
+      Buffer.concat([
+        Buffer.from(chainIdBuffer),
+        getBytesPublicKey(this.account.publicKey),
+        bytesCompact,
+      ]),
     );
 
     const data = {
