@@ -13,6 +13,7 @@
     "test": "jest --passWithNoTests",
     "test:all": "npm run test",
     "test:cov": "jest --coverage --silent --passWithNoTests",
+    "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",

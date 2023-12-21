@@ -5,6 +5,8 @@
     },
     "include": [
         "./src/**/*.ts",
+        "./examples/wallet/**/*.ts",
+        "./examples/smartContracts/*.ts"
     ],
     "exclude": [
         "node_modules",
