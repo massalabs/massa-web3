@@ -38,7 +38,11 @@ describe('ClientFactory', () => {
     test('should create a default client without a base account if not provided', async () => {
       const provider = DefaultProviderUrls.MAINNET;
 
-      const client = await ClientFactory.createDefaultClient(provider, chainId, true);
+      const client = await ClientFactory.createDefaultClient(
+        provider,
+        chainId,
+        true,
+      );
 
       expect(client).toBeInstanceOf(Client);
       expect(client.getProviders()).toHaveLength(2);
@@ -73,7 +77,11 @@ describe('ClientFactory', () => {
         { url: privateApi, type: ProviderType.PRIVATE },
       ];
 
-      const client = await ClientFactory.createCustomClient(providers, chainId, true);
+      const client = await ClientFactory.createCustomClient(
+        providers,
+        chainId,
+        true,
+      );
 
       expect(client).toBeInstanceOf(Client);
       expect(client.getProviders()).toHaveLength(2);

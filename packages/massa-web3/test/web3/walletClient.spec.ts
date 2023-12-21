@@ -100,7 +100,9 @@ describe('WalletClient', () => {
       );
       await web3Client
         .wallet()
-        .setBaseAccount(new Web3Account(account, web3Client.publicApi(), chainId));
+        .setBaseAccount(
+          new Web3Account(account, web3Client.publicApi(), chainId),
+        );
       const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
       expect(baseAccount?.address()).toEqual(account.address);
@@ -131,14 +133,18 @@ describe('WalletClient', () => {
       );
       await web3Client
         .wallet()
-        .setBaseAccount(new Web3Account(firstAccount, web3Client.publicApi(), chainId));
+        .setBaseAccount(
+          new Web3Account(firstAccount, web3Client.publicApi(), chainId),
+        );
 
       const secondAccount = await WalletClient.getAccountFromSecretKey(
         deployerPrivateKey,
       );
       await web3Client
         .wallet()
-        .setBaseAccount(new Web3Account(secondAccount, web3Client.publicApi(), chainId));
+        .setBaseAccount(
+          new Web3Account(secondAccount, web3Client.publicApi(), chainId),
+        );
 
       const baseAccount = web3Client.wallet().getBaseAccount();
       expect(baseAccount).not.toBeNull();
@@ -461,7 +467,11 @@ describe('WalletClient', () => {
   describe('walletSignMessage', () => {
     test('should sign a message with a valid signer', async () => {
       const data = 'Test message';
-      const signer = new Web3Account(baseAccount, web3Client.publicApi(), chainId);
+      const signer = new Web3Account(
+        baseAccount,
+        web3Client.publicApi(),
+        chainId,
+      );
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
 
@@ -481,7 +491,7 @@ describe('WalletClient', () => {
       const signer = new Web3Account(
         baseAccountWithoutSecretKey,
         web3Client.publicApi(),
-        chainId
+        chainId,
       );
 
       await expect(
@@ -498,7 +508,7 @@ describe('WalletClient', () => {
       const signer = new Web3Account(
         baseAccountWithoutPublicKey,
         web3Client.publicApi(),
-        chainId
+        chainId,
       );
 
       await expect(
@@ -508,7 +518,11 @@ describe('WalletClient', () => {
 
     test('should throw an error when signature length is invalid', async () => {
       const data = 'Test message';
-      const signer = new Web3Account(baseAccount, web3Client.publicApi(), chainId);
+      const signer = new Web3Account(
+        baseAccount,
+        web3Client.publicApi(),
+        chainId,
+      );
 
       // Create a spy on the 'sign' function to provide an incorrect mock implementation for this test
       const signSpy = jest.spyOn(ed, 'sign');
@@ -526,7 +540,11 @@ describe('WalletClient', () => {
       const data = Buffer.from('Test message');
       const modelSignedMessage =
         '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE';
-      const signer = new Web3Account(baseAccount, web3Client.publicApi(), chainId);
+      const signer = new Web3Account(
+        baseAccount,
+        web3Client.publicApi(),
+        chainId,
+      );
 
       const signedMessage = await WalletClient.walletSignMessage(data, signer);
 
@@ -537,7 +555,11 @@ describe('WalletClient', () => {
 
     test('should throw an error if the signature could not be verified with the public key', async () => {
       const data = 'Test message';
-      const signer = new Web3Account(baseAccount, web3Client.publicApi(), chainId);
+      const signer = new Web3Account(
+        baseAccount,
+        web3Client.publicApi(),
+        chainId,
+      );
 
       // Create a spy on the 'verify' function to provide an incorrect mock implementation for this test
       const verifySpy = jest.spyOn(ed, 'verify');
@@ -576,7 +598,9 @@ describe('WalletClient', () => {
       const nonExistentSignerAddress = 'nonExistentSignerAddress';
 
       await expect(
-        web3Client.wallet().signMessage(data, chainId, nonExistentSignerAddress),
+        web3Client
+          .wallet()
+          .signMessage(data, chainId, nonExistentSignerAddress),
       ).rejects.toThrow(
         `No signer account ${nonExistentSignerAddress} found in wallet`,
       );
@@ -939,7 +963,11 @@ describe('WalletClient', () => {
         fee: 1n,
         amount: 100n,
       };
-      mockAccount = new Web3Account(baseAccount, web3Client.publicApi(), chainId);
+      mockAccount = new Web3Account(
+        baseAccount,
+        web3Client.publicApi(),
+        chainId,
+      );
     });
 
     describe('sendTransaction', () => {

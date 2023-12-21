@@ -88,7 +88,7 @@ export const mockNodeStatusInfo: INodeStatus = {
     pos_lock_cycles: 64,
     pos_lookback_cycles: 64,
   },
-  chain_id: BigInt(77658366)
+  chain_id: BigInt(77658366),
 };
 
 export const mockGraphInterval: IGetGraphInterval = {

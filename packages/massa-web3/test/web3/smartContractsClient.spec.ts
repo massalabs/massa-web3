@@ -51,7 +51,7 @@ describe('SmartContractsClient', () => {
     mockDeployerAccount = new Web3Account(
       importedMockDeployerAccount,
       mockPublicApiClient,
-      chainId
+      chainId,
     );
     mockWalletClient = new WalletClient(
       mockClientConfig,
