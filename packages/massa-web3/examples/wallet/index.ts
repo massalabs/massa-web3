@@ -27,6 +27,11 @@ const privateApi = process.env.JSON_RPC_URL_PRIVATE;
 if (!privateApi) {
   throw new Error('Missing JSON_RPC_URL_PRIVATE in .env file');
 }
+const chainId_ = process.env.CHAIN_ID;
+if (!chainId_) {
+  throw new Error('Missing CHAIN_ID in .env file');
+}
+const chainId = BigInt(chainId_);
 const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
 if (!deployerPrivateKey) {
   throw new Error('Missing DEPLOYER_PRIVATE_KEY in .env file');
@@ -57,6 +62,7 @@ if (!receiverPrivateKey) {
         { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
         { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
       ],
+      chainId,
       true,
       deployerAccount,
     );
@@ -113,7 +119,7 @@ if (!receiverPrivateKey) {
     // sign a random wallet message using account2
     const signedMessage = await web3Client
       .wallet()
-      .signMessage(message, receiverAccount.address);
+      .signMessage(message, chainId, receiverAccount.address);
     console.log('Wallet sender signing a message... ', signedMessage);
 
     if (!deployerAccount?.publicKey || !signedMessage) {
