@@ -15,6 +15,23 @@ import { ICallData } from '../../interfaces/ICallData';
 import { IContractData } from '../../interfaces/IContractData';
 import { trySafeExecute } from '../../utils/retryExecuteFunction';
 
+function getOperationBufferToSign(
+  chainId: bigint,
+  bytesPublicKey: Uint8Array,
+  bytesCompact: Buffer,
+): Buffer {
+  // Chain id is an 64-bit unsigned integer, convert to byte array (big endian)
+  const chainIdBuffer = new ArrayBuffer(8);
+  const view = new DataView(chainIdBuffer);
+  view.setBigUint64(0, chainId, false);
+
+  return Buffer.concat([
+    Buffer.from(chainIdBuffer),
+    bytesPublicKey,
+    bytesCompact,
+  ]);
+}
+
 export class Web3Account extends BaseClient implements IBaseAccount {
   private account: IAccount;
   private publicApiClient: IPublicApiClient;
@@ -141,18 +158,13 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       expiryPeriod,
     );
 
-    // Chain id is an 64-bit unsigned integer, convert to byte array (big endian)
-    const chainIdBuffer = new ArrayBuffer(8);
-    const view = new DataView(chainIdBuffer);
-    view.setBigUint64(0, this.chainId, false);
-
     // sign payload
     const signature: ISignature = await this.sign(
-      Buffer.concat([
-        Buffer.from(chainIdBuffer),
+      getOperationBufferToSign(
+        this.chainId,
         getBytesPublicKey(this.account.publicKey),
         bytesCompact,
-      ]),
+      ),
     );
 
     const data = {
@@ -182,18 +194,13 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       expiryPeriod,
     );
 
-    // Chain id is an 64-bit unsigned integer, convert to byte array (big endian)
-    const chainIdBuffer = new ArrayBuffer(8);
-    const view = new DataView(chainIdBuffer);
-    view.setBigUint64(0, this.chainId, false);
-
     // sign payload
     const signature: ISignature = await this.sign(
-      Buffer.concat([
-        Buffer.from(chainIdBuffer),
+      getOperationBufferToSign(
+        this.chainId,
         getBytesPublicKey(this.account.publicKey),
         bytesCompact,
-      ]),
+      ),
     );
 
     const data = {
@@ -223,17 +230,13 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       expiryPeriod,
     );
 
-    // Chain id is an 64-bit unsigned integer, convert to byte array (big endian)
-    const chainIdBuffer = new ArrayBuffer(8);
-    const view = new DataView(chainIdBuffer);
-    view.setBigUint64(0, this.chainId, false);
-
     // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(
-      this.account.publicKey,
-    );
     const signature: ISignature = await this.sign(
-      Buffer.concat([Buffer.from(chainIdBuffer), bytesPublicKey, bytesCompact]),
+      getOperationBufferToSign(
+        this.chainId,
+        getBytesPublicKey(this.account.publicKey),
+        bytesCompact,
+      ),
     );
 
     // prepare tx data
@@ -278,17 +281,13 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       expiryPeriod,
     );
 
-    // Chain id is an 64-bit unsigned integer, convert to byte array (big endian)
-    const chainIdBuffer = new ArrayBuffer(8);
-    const view = new DataView(chainIdBuffer);
-    view.setBigUint64(0, this.chainId, false);
-
     // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(
-      this.account.publicKey,
-    );
     const signature: ISignature = await this.sign(
-      Buffer.concat([Buffer.from(chainIdBuffer), bytesPublicKey, bytesCompact]),
+      getOperationBufferToSign(
+        this.chainId,
+        getBytesPublicKey(this.account.publicKey),
+        bytesCompact,
+      ),
     );
     // request data
     const data = {
@@ -348,17 +347,13 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       expiryPeriod,
     );
 
-    // Chain id is an 64-bit unsigned integer, convert to byte array (big endian)
-    const chainIdBuffer = new ArrayBuffer(8);
-    const view = new DataView(chainIdBuffer);
-    view.setBigUint64(0, this.chainId, false);
-
     // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(
-      this.account.publicKey,
-    );
     const signature: ISignature = await this.sign(
-      Buffer.concat([Buffer.from(chainIdBuffer), bytesPublicKey, bytesCompact]),
+      getOperationBufferToSign(
+        this.chainId,
+        getBytesPublicKey(this.account.publicKey),
+        bytesCompact,
+      ),
     );
 
     const data = {
