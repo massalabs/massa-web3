@@ -25,6 +25,8 @@ import {
 } from '@massalabs/web3-utils';
 import { IBalance } from '../../src/interfaces/IBalance';
 
+export const BUILDNET_CHAIN_ID = BigInt(77658366);
+
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
   id: string,
@@ -88,7 +90,7 @@ export const mockNodeStatusInfo: INodeStatus = {
     pos_lock_cycles: 64,
     pos_lookback_cycles: 64,
   },
-  chain_id: BigInt(77658366),
+  chain_id: BUILDNET_CHAIN_ID,
 };
 
 export const mockGraphInterval: IGetGraphInterval = {

@@ -25,11 +25,10 @@ import {
   mockContractReadOperationDataWithError,
   mockAddresses,
   mockBalance,
+  BUILDNET_CHAIN_ID,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 import { Web3Account } from '../../src/web3/accounts/Web3Account';
-
-const chainId = BigInt(77658366);
 
 // Mock to not wait for the timeout to finish
 jest.mock('../../src/utils/time', () => {
@@ -51,7 +50,7 @@ describe('SmartContractsClient', () => {
     mockDeployerAccount = new Web3Account(
       importedMockDeployerAccount,
       mockPublicApiClient,
-      chainId,
+      BUILDNET_CHAIN_ID,
     );
     mockWalletClient = new WalletClient(
       mockClientConfig,

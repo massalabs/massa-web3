@@ -14,8 +14,7 @@ import {
 import { IAccount } from '../../src/interfaces/IAccount';
 import { Timeout } from '../../src/utils/time';
 import { IEvent, ISlot } from '@massalabs/web3-utils';
-
-const chainId = BigInt(77658366);
+import { BUILDNET_CHAIN_ID } from './mockData';
 
 // mock axios to intercept any axios POST request and resolve it immediately with an empty object, so
 // no request is pending before Jest finishes the test
@@ -88,7 +87,7 @@ describe('EventPoller', () => {
     const provider = DefaultProviderUrls.TESTNET;
     web3Client = await ClientFactory.createDefaultClient(
       provider,
-      chainId,
+      BUILDNET_CHAIN_ID,
       true,
       baseAccount,
     );

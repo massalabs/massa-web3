@@ -8,7 +8,10 @@ import { expect, test, describe, beforeEach, afterEach } from '@jest/globals';
 import * as ed from '@noble/ed25519';
 import { ISignature } from '../../src/interfaces/ISignature';
 import { IFullAddressInfo } from '../../src/interfaces/IFullAddressInfo';
-import { mockResultSendJsonRPCRequestWalletInfo } from './mockData';
+import {
+  BUILDNET_CHAIN_ID,
+  mockResultSendJsonRPCRequestWalletInfo,
+} from './mockData';
 import { ITransactionData } from '../../src/interfaces/ITransactionData';
 import { OperationTypeId } from '../../src/interfaces/OperationTypes';
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
@@ -27,7 +30,7 @@ const receiverPrivateKey =
 // for CI testing:
 const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';
-const chainId = BigInt(77658366);
+const chainId = BUILDNET_CHAIN_ID;
 
 const MAX_WALLET_ACCOUNTS = 256;
 

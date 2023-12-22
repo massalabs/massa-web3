@@ -6,10 +6,11 @@ import { WalletClient } from '../../src/web3/WalletClient';
 import { ProviderType } from '../../src/interfaces/IProvider';
 import { Client } from '../../src/web3/Client';
 import { IAccount } from '../../src/interfaces/IAccount';
+import { BUILDNET_CHAIN_ID } from './mockData';
 
 const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';
-const chainId = BigInt(77658366);
+const chainId = BUILDNET_CHAIN_ID;
 
 describe('ClientFactory', () => {
   describe('createDefaultClient', () => {
