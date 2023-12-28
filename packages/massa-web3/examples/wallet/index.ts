@@ -12,6 +12,7 @@ import * as dotenv from 'dotenv';
 import { Client } from '../../src/web3/Client';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import { fromMAS } from '../../src';
+import { getEnvVariable } from '../utils';
 const path = require('path');
 const chalk = require('chalk');
 
@@ -19,27 +20,12 @@ dotenv.config({
   path: path.resolve(__dirname, '..', '.env'),
 });
 
-const publicApi = process.env.JSON_RPC_URL_PUBLIC;
-if (!publicApi) {
-  throw new Error('Missing JSON_RPC_URL_PUBLIC in .env file');
-}
-const privateApi = process.env.JSON_RPC_URL_PRIVATE;
-if (!privateApi) {
-  throw new Error('Missing JSON_RPC_URL_PRIVATE in .env file');
-}
-const chainId_ = process.env.CHAIN_ID;
-if (!chainId_) {
-  throw new Error('Missing CHAIN_ID in .env file');
-}
+const publicApi = getEnvVariable('JSON_RPC_URL_PUBLIC');
+const privateApi = getEnvVariable('JSON_RPC_URL_PRIVATE');
+const chainId_ = getEnvVariable('CHAIN_ID');
 const chainId = BigInt(chainId_);
-const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
-if (!deployerPrivateKey) {
-  throw new Error('Missing DEPLOYER_PRIVATE_KEY in .env file');
-}
-const receiverPrivateKey = process.env.RECEIVER_PRIVATE_KEY;
-if (!receiverPrivateKey) {
-  throw new Error('Missing RECEIVER_PRIVATE_KEY in .env file');
-}
+const deployerPrivateKey = getEnvVariable('DEPLOYER_PRIVATE_KEY');
+const receiverPrivateKey = getEnvVariable('RECEIVER_PRIVATE_KEY');
 
 (async () => {
   const header = '='.repeat(process.stdout.columns - 1);
