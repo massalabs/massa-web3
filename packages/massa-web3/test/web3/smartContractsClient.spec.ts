@@ -167,7 +167,7 @@ describe('SmartContractsClient', () => {
       await smartContractsClient.deploySmartContract(mockContractData);
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
+        'Bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
       );
     });
 
