@@ -234,7 +234,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       // Check if SC data exists
       if (!data.contractDataBinary) {
         throw new Error(
-          `Expected non-null contract bytecode, but received null.`,
+          'Expected non-null contract bytecode, but received null.',
         );
       }
 
