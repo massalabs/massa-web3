@@ -137,7 +137,6 @@ export class ClientFactory {
    */
   public static async fromWalletProvider(
     provider: IProviderWalletProvider,
-    chainId: bigint,
     baseAccount: IAccountWalletProvider,
     retryStrategyOn = true,
   ): Promise<Client> {
