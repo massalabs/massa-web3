@@ -129,7 +129,6 @@ export class ClientFactory {
    * Suitable for local node interactions.
    *
    * @param provider - Provider from wallet provider to be used by the client.
-   * @param chainId - Chain id matching the network used by the provider
    * @param baseAccount - Base account from the wallet provider to be used by the client.
    * @param retryStrategyOn - Whether to retry failed requests.
    *
