@@ -56,7 +56,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
    * @param useRetry - Determines whether to use retry logic in case of failures.
    * @param errorMessage - Custom error message to throw if operation fails.
    * @param preExecutionCallback - An optional callback function to be executed before the operation, for any pre-execution logic or validation.
-   * @returns {Promise<string>} - Returns a promise that resolves to the operation ID.
+   * @returns Returns a promise that resolves to the operation ID.
    */
   private async executeOperation(
     txData: IRollsData | ICallData | IContractData,
