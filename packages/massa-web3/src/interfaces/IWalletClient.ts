@@ -103,6 +103,7 @@ export interface IWalletClient extends BaseClient {
    */
   signMessage(
     data: string | Buffer,
+    chainId: bigint,
     accountSignerAddress: string,
   ): Promise<ISignature>;
 

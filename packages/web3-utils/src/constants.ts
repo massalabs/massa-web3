@@ -23,3 +23,20 @@ export const BASE_ACCOUNT_CREATION_COST = fromMAS(0.001);
 export const MAX_GAS_EXECUTE_SC = 3_980_167_295n;
 export const MAX_GAS_DEPLOYMENT = MAX_GAS_EXECUTE_SC;
 export const MAX_GAS_CALL = 4_294_167_295n;
+
+/* -------------------------------------------------------------------------- */
+/*                                   NETWORK                                  */
+/* -------------------------------------------------------------------------- */
+export const MAINNET = 'MainNet';
+export const BUILDNET = 'BuildNet';
+export const SECURENET = 'SecureNet';
+export const LABNET = 'LabNet';
+export const SANDBOX = 'Sandbox';
+
+export const CHAIN_ID_TO_NETWORK_NAME = {
+  77658377: MAINNET,
+  77658366: BUILDNET,
+  77658383: SECURENET,
+  77658376: LABNET,
+  77: SANDBOX,
+} as const; // type is inferred as the specific, unchangeable structure

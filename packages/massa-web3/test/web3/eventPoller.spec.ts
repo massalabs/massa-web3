@@ -14,6 +14,7 @@ import {
 import { IAccount } from '../../src/interfaces/IAccount';
 import { Timeout } from '../../src/utils/time';
 import { IEvent, ISlot } from '@massalabs/web3-utils';
+import { BUILDNET_CHAIN_ID } from './mockData';
 
 // Mock the Timeout class
 jest.mock('../../src/utils/time', () => {
@@ -113,6 +114,7 @@ describe('EventPoller', () => {
     const provider = DefaultProviderUrls.TESTNET;
     web3Client = await ClientFactory.createDefaultClient(
       provider,
+      BUILDNET_CHAIN_ID,
       true,
       baseAccount,
     );

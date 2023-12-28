@@ -15,13 +15,104 @@ import { ICallData } from '../../interfaces/ICallData';
 import { IContractData } from '../../interfaces/IContractData';
 import { trySafeExecute } from '../../utils/retryExecuteFunction';
 
+function getOperationBufferToSign(
+  chainId: bigint,
+  bytesPublicKey: Uint8Array,
+  bytesCompact: Buffer,
+): Buffer {
+  // Chain id is an 64-bit unsigned integer, convert to byte array (big endian)
+  const chainIdBuffer = new ArrayBuffer(8);
+  const view = new DataView(chainIdBuffer);
+  view.setBigUint64(0, chainId, false);
+
+  return Buffer.concat([
+    Buffer.from(chainIdBuffer),
+    bytesPublicKey,
+    bytesCompact,
+  ]);
+}
+
 export class Web3Account extends BaseClient implements IBaseAccount {
   private account: IAccount;
   private publicApiClient: IPublicApiClient;
-  constructor(account: IAccount, publicApiClient: IPublicApiClient) {
+  private chainId: bigint;
+
+  constructor(
+    account: IAccount,
+    publicApiClient: IPublicApiClient,
+    chainId: bigint,
+  ) {
     super(publicApiClient.clientConfig);
     this.account = account;
     this.publicApiClient = publicApiClient;
+    this.chainId = chainId;
+  }
+
+  /**
+   * Executes a blockchain operation
+   *
+   * @param txData - The transaction data for the operation.
+   * @param operationType - The type of operation to be executed.
+   * @param useRetry - Determines whether to use retry logic in case of failures.
+   * @param errorMessage - Custom error message to throw if operation fails.
+   * @param preExecutionCallback - An optional callback function to be executed before the operation, for any pre-execution logic or validation.
+   * @returns Returns a promise that resolves to the operation ID.
+   */
+  private async executeOperation(
+    txData: IRollsData | ICallData | IContractData,
+    operationType: OperationTypeId,
+    useRetry: boolean = false,
+    errorMessage: string = 'Operation did not return a valid response',
+    preExecutionCallback?: (
+      data: IRollsData | ICallData | IContractData,
+    ) => Promise<void>,
+  ): Promise<string> {
+    // Run pre-execution logic if provided
+    if (preExecutionCallback) {
+      await preExecutionCallback(txData);
+    }
+
+    const nodeStatusInfo: INodeStatus =
+      await this.publicApiClient.getNodeStatus();
+
+    const expiryPeriod: number =
+      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+
+    const bytesCompact: Buffer = this.compactBytesForOperation(
+      txData,
+      operationType,
+      expiryPeriod,
+    );
+
+    const signature: ISignature = await this.sign(
+      getOperationBufferToSign(
+        this.chainId,
+        getBytesPublicKey(this.account.publicKey),
+        bytesCompact,
+      ),
+    );
+
+    const data = {
+      serialized_content: Array.prototype.slice.call(bytesCompact),
+      creator_public_key: this.account.publicKey,
+      signature: signature.base58Encoded,
+    };
+
+    let opIds: Array<string>;
+    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
+
+    if (useRetry) {
+      opIds = await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [[data]],
+      ]);
+    } else {
+      opIds = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
+    }
+
+    if (opIds.length <= 0) throw new Error(errorMessage);
+
+    return opIds[0];
   }
 
   public async verify(): Promise<void> {
@@ -117,225 +208,55 @@ export class Web3Account extends BaseClient implements IBaseAccount {
   }
 
   public async sellRolls(txData: IRollsData): Promise<string> {
-    if (!this.account) {
-      throw new Error(`No tx sender available`);
-    }
-
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.RollSell,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const signature: ISignature = await this.sign(
-      Buffer.concat([getBytesPublicKey(this.account.publicKey), bytesCompact]),
-    );
-
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: this.account.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds[0];
+    return this.executeOperation(txData, OperationTypeId.RollSell);
   }
-
   public async buyRolls(txData: IRollsData): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.RollBuy,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const signature: ISignature = await this.sign(
-      Buffer.concat([getBytesPublicKey(this.account.publicKey), bytesCompact]),
-    );
-
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: this.account.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds[0];
+    return this.executeOperation(txData, OperationTypeId.RollBuy);
   }
 
   public async sendTransaction(txData: IRollsData): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      txData,
-      OperationTypeId.Transaction,
-      expiryPeriod,
-    );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(
-      this.account.publicKey,
-    );
-    const signature: ISignature = await this.sign(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-    );
-
-    // prepare tx data
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: this.account.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    return opIds[0];
+    return this.executeOperation(txData, OperationTypeId.Transaction);
   }
 
   public async callSmartContract(callData: ICallData): Promise<string> {
-    let serializedParam: number[]; // serialized parameter
-    if (callData.parameter instanceof Array) {
-      serializedParam = callData.parameter;
-    } else {
-      serializedParam = callData.parameter.serialize();
-    }
-    const call: ICallData = {
-      fee: callData.fee,
-      maxGas: callData.maxGas,
-      coins: callData.coins,
-      targetAddress: callData.targetAddress,
-      functionName: callData.functionName,
-      parameter: serializedParam,
-    };
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
-      call,
+    return this.executeOperation(
+      callData,
       OperationTypeId.CallSC,
-      expiryPeriod,
+      this.clientConfig.retryStrategyOn,
+      'Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract',
     );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(
-      this.account.publicKey,
-    );
-    const signature: ISignature = await this.sign(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-    );
-    // request data
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: this.account.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    let opIds: Array<string> = [];
-    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS;
-    if (this.clientConfig.retryStrategyOn) {
-      opIds = await trySafeExecute<Array<string>>(this.sendJsonRPCRequest, [
-        jsonRpcRequestMethod,
-        [[data]],
-      ]);
-    } else {
-      opIds = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [[data]]);
-    }
-    if (opIds.length <= 0) {
-      throw new Error(
-        `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
-    }
-    return opIds[0];
   }
 
   public async deploySmartContract(
     contractData: IContractData,
   ): Promise<string> {
-    // get next period info
-    const nodeStatusInfo: INodeStatus =
-      await this.publicApiClient.getNodeStatus();
-    const expiryPeriod: number =
-      nodeStatusInfo.next_slot.period + this.clientConfig.periodOffset;
+    const preExecutionLogic = async (data: IContractData) => {
+      // Check if SC data exists
+      if (!data.contractDataBinary) {
+        throw new Error(
+          'Expected non-null contract bytecode, but received null.',
+        );
+      }
 
-    // Check if SC data exists
-    if (!contractData.contractDataBinary) {
-      throw new Error(
-        `Expected non-null contract bytecode, but received null.`,
-      );
-    }
+      // Get the block size
+      const nodeStatusInfo: INodeStatus =
+        await this.publicApiClient.getNodeStatus();
+      if (
+        data.contractDataBinary.length >
+        nodeStatusInfo.config.max_block_size / 2
+      ) {
+        console.warn(
+          'Bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
+        );
+      }
+    };
 
-    // get the block size
-    if (
-      contractData.contractDataBinary.length >
-      nodeStatusInfo.config.max_block_size / 2
-    ) {
-      console.warn(
-        'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
-      );
-    }
-
-    // bytes compaction
-    const bytesCompact: Buffer = this.compactBytesForOperation(
+    return this.executeOperation(
       contractData,
       OperationTypeId.ExecuteSC,
-      expiryPeriod,
+      false,
+      'Deploy smart contract operation bad response. No results array in json rpc response. Inspect smart contract',
+      preExecutionLogic,
     );
-
-    // sign payload
-    const bytesPublicKey: Uint8Array = getBytesPublicKey(
-      this.account.publicKey,
-    );
-    const signature: ISignature = await this.sign(
-      Buffer.concat([bytesPublicKey, bytesCompact]),
-    );
-
-    const data = {
-      serialized_content: Array.prototype.slice.call(bytesCompact),
-      creator_public_key: this.account.publicKey,
-      signature: signature.base58Encoded,
-    };
-    // returns operation ids
-    const opIds: Array<string> = await this.sendJsonRPCRequest(
-      JSON_RPC_REQUEST_METHOD.SEND_OPERATIONS,
-      [[data]],
-    );
-    if (opIds.length <= 0) {
-      throw new Error(
-        `Deploy smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
-    }
-    return opIds[0];
   }
 }

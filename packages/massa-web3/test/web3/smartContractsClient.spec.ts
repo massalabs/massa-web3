@@ -25,6 +25,7 @@ import {
   mockContractReadOperationDataWithError,
   mockAddresses,
   mockBalance,
+  BUILDNET_CHAIN_ID,
 } from './mockData';
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
 import { Web3Account } from '../../src/web3/accounts/Web3Account';
@@ -49,6 +50,7 @@ describe('SmartContractsClient', () => {
     mockDeployerAccount = new Web3Account(
       importedMockDeployerAccount,
       mockPublicApiClient,
+      BUILDNET_CHAIN_ID,
     );
     mockWalletClient = new WalletClient(
       mockClientConfig,
@@ -165,7 +167,7 @@ describe('SmartContractsClient', () => {
       await smartContractsClient.deploySmartContract(mockContractData);
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
+        'Bytecode size exceeded half of the maximum size of a block, operation will certainly be rejected',
       );
     });
 

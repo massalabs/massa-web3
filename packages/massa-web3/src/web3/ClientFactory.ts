@@ -32,6 +32,7 @@ export class ClientFactory {
    * Creates a default client using a default provider (MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET).
    *
    * @param provider - Default provider to be used by the client.
+   * @param chainId - Chain id matching the network used by the provider
    * @param retryStrategyOn - Whether to retry failed requests.
    * @param baseAccount - Base account to use with the client (optional).
    *
@@ -39,6 +40,7 @@ export class ClientFactory {
    */
   public static async createDefaultClient(
     provider: DefaultProviderUrls,
+    chainId: bigint,
     retryStrategyOn = true,
     baseAccount?: IAccount,
   ): Promise<Client> {
@@ -75,7 +77,7 @@ export class ClientFactory {
     let publicApi = new PublicApiClient(clientConfig);
     let account: Web3Account = null;
     if (baseAccount) {
-      account = new Web3Account(baseAccount, publicApi);
+      account = new Web3Account(baseAccount, publicApi, chainId);
     }
     const client: Client = new Client(
       {
@@ -95,6 +97,7 @@ export class ClientFactory {
    * Suitable for local node interactions.
    *
    * @param providers - Array of providers to be used by the client.
+   * @param chainId - Chain id matching the network used by the provider
    * @param retryStrategyOn - Whether to retry failed requests.
    * @param baseAccount - Base account to be used by the client (optional).
    *
@@ -102,6 +105,7 @@ export class ClientFactory {
    */
   public static async createCustomClient(
     providers: Array<IProvider>,
+    chainId: bigint,
     retryStrategyOn = true,
     baseAccount?: IAccount,
   ): Promise<Client> {
@@ -112,7 +116,7 @@ export class ClientFactory {
     let publicApi = new PublicApiClient(clientConfig);
     let account: Web3Account = null;
     if (baseAccount) {
-      account = new Web3Account(baseAccount, publicApi);
+      account = new Web3Account(baseAccount, publicApi, chainId);
     }
     const client: Client = new Client(clientConfig, account, publicApi);
     return client;

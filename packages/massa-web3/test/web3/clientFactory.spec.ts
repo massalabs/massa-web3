@@ -6,9 +6,11 @@ import { WalletClient } from '../../src/web3/WalletClient';
 import { ProviderType } from '../../src/interfaces/IProvider';
 import { Client } from '../../src/web3/Client';
 import { IAccount } from '../../src/interfaces/IAccount';
+import { BUILDNET_CHAIN_ID } from './mockData';
 
 const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';
+const chainId = BUILDNET_CHAIN_ID;
 
 describe('ClientFactory', () => {
   describe('createDefaultClient', () => {
@@ -19,6 +21,7 @@ describe('ClientFactory', () => {
 
       const client = await ClientFactory.createDefaultClient(
         provider,
+        chainId,
         true,
         baseAccount,
       );
@@ -36,7 +39,11 @@ describe('ClientFactory', () => {
     test('should create a default client without a base account if not provided', async () => {
       const provider = DefaultProviderUrls.MAINNET;
 
-      const client = await ClientFactory.createDefaultClient(provider, true);
+      const client = await ClientFactory.createDefaultClient(
+        provider,
+        chainId,
+        true,
+      );
 
       expect(client).toBeInstanceOf(Client);
       expect(client.getProviders()).toHaveLength(2);
@@ -55,6 +62,7 @@ describe('ClientFactory', () => {
 
       const client = await ClientFactory.createCustomClient(
         providers,
+        chainId,
         true,
         baseAccount,
       );
@@ -70,7 +78,11 @@ describe('ClientFactory', () => {
         { url: privateApi, type: ProviderType.PRIVATE },
       ];
 
-      const client = await ClientFactory.createCustomClient(providers, true);
+      const client = await ClientFactory.createCustomClient(
+        providers,
+        chainId,
+        true,
+      );
 
       expect(client).toBeInstanceOf(Client);
       expect(client.getProviders()).toHaveLength(2);

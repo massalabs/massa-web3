@@ -350,6 +350,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async signMessage(
     data: string | Buffer,
+    chainId: bigint,
     accountSignerAddress: string,
   ): Promise<ISignature> {
     let signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
@@ -363,7 +364,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
         );
       }
     } else {
-      account = new Web3Account(signerAccount, this.publicApiClient);
+      account = new Web3Account(signerAccount, this.publicApiClient, chainId);
     }
     if (typeof data === 'string') {
       data = Buffer.from(data);
