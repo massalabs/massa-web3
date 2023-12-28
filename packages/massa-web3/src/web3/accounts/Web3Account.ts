@@ -223,7 +223,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
       callData,
       OperationTypeId.CallSC,
       this.clientConfig.retryStrategyOn,
-      `Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract`,
+      'Call smart contract operation bad response. No results array in json rpc response. Inspect smart contract',
     );
   }
 
