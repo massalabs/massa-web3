@@ -1,6 +1,6 @@
 {
     "name": "@massalabs/massa-web3",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "massa's web3 sdk client",
     "main": "dist/cmd/index.js",
     "module": "dist/esm/index.js",
@@ -46,7 +46,7 @@
     ],
     "dependencies": {
         "@massalabs/wallet-provider": "^1.5.1",
-        "@massalabs/web3-utils": "^1.4.5",
+        "@massalabs/web3-utils": "^1.4.6",
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
         "@types/ws": "^8.5.4",
