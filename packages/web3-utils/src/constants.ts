@@ -52,7 +52,7 @@ export const CHAIN_ID_TO_NETWORK_NAME = {
 export type ChainId = keyof typeof CHAIN_ID_TO_NETWORK_NAME;
 
 // NETWORK_NAME_TO_CHAIN_ID mapping remains the same
-export const NETWORK_NAME_TO_CHAIN_ID = {
+export const CHAIN_ID = {
   [MAINNET]: MAINNET_CHAIN_ID,
   [BUILDNET]: BUILDNET_CHAIN_ID,
   [SECURENET]: SECURENET_CHAIN_ID,
@@ -61,4 +61,4 @@ export const NETWORK_NAME_TO_CHAIN_ID = {
 } as const;
 
 // Define NetworkName type as the keys of NETWORK_NAME_TO_CHAIN_ID
-export type NetworkName = keyof typeof NETWORK_NAME_TO_CHAIN_ID;
+export type NetworkName = keyof typeof CHAIN_ID;
