@@ -1,6 +1,6 @@
 {
   "name": "@massalabs/web3-utils",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Set of utilities shared between multiple @massalabs packages",
   "main": "dist/cmd/index.js",
   "module": "dist/esm/index.js",
