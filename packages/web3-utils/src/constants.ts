@@ -33,10 +33,32 @@ export const SECURENET = 'SecureNet';
 export const LABNET = 'LabNet';
 export const SANDBOX = 'Sandbox';
 
+export const MAINNET_CHAIN_ID = 77658377n;
+export const BUILDNET_CHAIN_ID = 77658366n;
+export const SECURENET_CHAIN_ID = 77658383n;
+export const LABNET_CHAIN_ID = 77658376n;
+export const SANDBOX_CHAIN_ID = 77n;
+
+// Adjusted: Use the values of the constants as keys
 export const CHAIN_ID_TO_NETWORK_NAME = {
-  77658377: MAINNET,
-  77658366: BUILDNET,
-  77658383: SECURENET,
-  77658376: LABNET,
-  77: SANDBOX,
-} as const; // type is inferred as the specific, unchangeable structure
+  [MAINNET_CHAIN_ID.toString()]: MAINNET,
+  [BUILDNET_CHAIN_ID.toString()]: BUILDNET,
+  [SECURENET_CHAIN_ID.toString()]: SECURENET,
+  [LABNET_CHAIN_ID.toString()]: LABNET,
+  [SANDBOX_CHAIN_ID.toString()]: SANDBOX,
+} as const;
+
+// Define ChainId type as the keys of CHAIN_ID_TO_NETWORK_NAME
+export type ChainId = keyof typeof CHAIN_ID_TO_NETWORK_NAME;
+
+// NETWORK_NAME_TO_CHAIN_ID mapping remains the same
+export const NETWORK_NAME_TO_CHAIN_ID = {
+  [MAINNET]: MAINNET_CHAIN_ID,
+  [BUILDNET]: BUILDNET_CHAIN_ID,
+  [SECURENET]: SECURENET_CHAIN_ID,
+  [LABNET]: LABNET_CHAIN_ID,
+  [SANDBOX]: SANDBOX_CHAIN_ID,
+} as const;
+
+// Define NetworkName type as the keys of NETWORK_NAME_TO_CHAIN_ID
+export type NetworkName = keyof typeof NETWORK_NAME_TO_CHAIN_ID;
