@@ -4,7 +4,7 @@ set -ex
 # npm publish --access public
 # npm publish "@massalabs/massa-proto-cli"
 
-npm dist-tag add "@massalabs/massa-web3@2.2.7" buildnet
+npm dist-tag add "@massalabs/massa-web3@3.0.2" buildnet
 
 
 # npm dist-tag rm "@massalabs/sc-project-initializer@0.5.0" testnet
