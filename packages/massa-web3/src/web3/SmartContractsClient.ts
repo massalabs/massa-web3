@@ -170,10 +170,8 @@ export class SmartContractsClient
 
     // request data
     let baseAccountSignerAddress: string | null = null;
-
-    const baseAccount = this.walletClient.getBaseAccount();
-    if (baseAccount) {
-      baseAccountSignerAddress = baseAccount.address();
+    if (this.walletClient.getBaseAccount()) {
+      baseAccountSignerAddress = this.walletClient.getBaseAccount().address();
     }
     const data = {
       max_gas: Number(readData.maxGas),

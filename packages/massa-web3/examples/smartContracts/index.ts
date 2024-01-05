@@ -20,6 +20,7 @@ import * as dotenv from 'dotenv';
 import { IProvider, ProviderType } from '../../src/interfaces/IProvider';
 import {
   Args,
+  CHAIN_ID,
   IDeserializedResult,
   IEvent,
   ISerializable,
@@ -86,8 +87,7 @@ dotenv.config({
 
 const publicApi = getEnvVariable('JSON_RPC_URL_PUBLIC');
 const privateApi = getEnvVariable('JSON_RPC_URL_PRIVATE');
-const chainId_ = getEnvVariable('CHAIN_ID');
-const chainId = BigInt(chainId_);
+const chainId = CHAIN_ID.BuildNet;
 const deployerPrivateKey = getEnvVariable('DEPLOYER_PRIVATE_KEY');
 const MASSA_EXEC_ERROR = 'massa_execution_error';
 
