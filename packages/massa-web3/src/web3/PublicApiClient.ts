@@ -114,17 +114,20 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
    */
   public async getNodeStatus(): Promise<INodeStatus> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS;
+    let nodeStatus: INodeStatus;
     if (this.clientConfig.retryStrategyOn) {
-      return await trySafeExecute<INodeStatus>(this.sendJsonRPCRequest, [
+      nodeStatus = await trySafeExecute<INodeStatus>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
         [],
       ]);
     } else {
-      return await this.sendJsonRPCRequest<INodeStatus>(
+      nodeStatus = await this.sendJsonRPCRequest<INodeStatus>(
         jsonRpcRequestMethod,
         [],
       );
     }
+    // convert chain_id to BigInt
+    return { ...nodeStatus, chain_id: BigInt(nodeStatus.chain_id) };
   }
 
   /**
