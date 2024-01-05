@@ -19,6 +19,7 @@
     "@massalabs/prettier-config-as": "^0.0.2",
     "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "bignumber.js": "^9.1.1",
     "eslint": "^8.51.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-standard": "^17.0.0",

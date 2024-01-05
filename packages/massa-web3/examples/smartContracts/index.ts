@@ -3,7 +3,6 @@
 import { IAccount } from '../../src/interfaces/IAccount';
 import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { ClientFactory } from '../../src/web3/ClientFactory';
-import { IReadData } from '../../src/interfaces/IReadData';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { awaitTxConfirmation, deploySmartContracts } from './deployer';
 import { readFileSync } from 'fs';
@@ -268,12 +267,13 @@ const pollAsyncEvents = async (
     ).start();
     const args = new Args().addString('1');
     const result = await web3Client.smartContracts().readSmartContract({
-      fee: 0n,
       maxGas: 2000_000_000n,
       targetAddress: scAddress,
       targetFunction: 'getMusicAlbum',
       parameter: args.serialize(),
-    } as IReadData);
+      coins: 0n,
+      fee: 0n,
+    });
 
     const res = new Args(result.returnValue, 0);
     const musicAlbum = res.nextSerializable(MusicAlbum);

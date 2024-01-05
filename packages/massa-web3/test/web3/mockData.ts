@@ -614,6 +614,8 @@ export const mockReadData: IReadData = {
   targetFunction: 'test',
   parameter: [1, 2, 3, 4],
   callerAddress: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
+  coins: 1n,
+  fee: 1n,
 };
 
 export const mockContractReadOperationData: Array<IContractReadOperationData> =
