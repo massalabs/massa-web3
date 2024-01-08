@@ -179,8 +179,8 @@ export class SmartContractsClient
       target_function: readData.targetFunction,
       parameter: readData.parameter,
       caller_address: readData.callerAddress || baseAccountSignerAddress,
-      coins: readData.coins.toString(),
-      fee: readData.fee.toString(),
+      coins: readData.coins?.toString(),
+      fee: readData.fee?.toString(),
     };
     // returns operation ids
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
