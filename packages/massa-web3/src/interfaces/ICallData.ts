@@ -5,10 +5,10 @@ import { Args } from '@massalabs/web3-utils';
  *
  * @remarks
  * This interface is used to track the calldata information, including the
- * storage fee, maximum gas, transferred coins, target smart contract address,
+ * transaction fee, maximum gas, transferred coins, target smart contract address,
  * target function name, and parameters for the function call.
  *
- * @see fee of type `bigint` represents the storage fee.
+ * @see fee of type `bigint` represents the transaction fee.
  * @see maxGas of type `bigint` represents the maximum amount of gas that the execution of the contract is allowed to cost.
  * @see coins of type `bigint` represents the extra coins that are spent from the caller's balance and transferred to the target.
  * @see targetAddress of type `string` represents the target smart contract address.

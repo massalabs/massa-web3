@@ -129,10 +129,16 @@ export class SmartContractsClient
 
     callData.coins = callData.coins || BigInt(0);
 
-    // check that the sender has enough balance to pay for coins
-    const senderBalance: IBalance = await this.walletClient.getAccountBalance(
+    const senderBalance = await this.walletClient.getAccountBalance(
       sender.address(),
     );
+
+    if (!senderBalance) {
+      throw new Error(
+        `Unable to retrieve the balance of the sender ${sender.address()}`,
+      );
+    }
+
     if (senderBalance.final < callData.coins) {
       throw new Error(
         `The sender ${sender.address()} does not have enough balance to pay for the coins`,
@@ -173,6 +179,8 @@ export class SmartContractsClient
       target_function: readData.targetFunction,
       parameter: readData.parameter,
       caller_address: readData.callerAddress || baseAccountSignerAddress,
+      coins: readData.coins?.toString(),
+      fee: readData.fee?.toString(),
     };
     // returns operation ids
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
@@ -195,6 +203,7 @@ export class SmartContractsClient
     if (jsonRpcCallResult[0].result.Error) {
       throw new Error(jsonRpcCallResult[0].result.Error);
     }
+
     return {
       returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
       info: jsonRpcCallResult[0],
@@ -212,11 +221,12 @@ export class SmartContractsClient
     const addresses: Array<IAddressInfo> =
       await this.publicApiClient.getAddresses([address]);
     if (addresses.length === 0) return null;
-    const addressInfo: IAddressInfo = addresses.at(0);
+    const { candidate_balance, final_balance } = addresses[0];
+
     return {
-      candidate: fromMAS(addressInfo.candidate_balance),
-      final: fromMAS(addressInfo.final_balance),
-    } as IBalance;
+      candidate: fromMAS(candidate_balance),
+      final: fromMAS(final_balance),
+    };
   }
 
   /**
