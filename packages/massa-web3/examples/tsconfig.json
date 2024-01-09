@@ -1,0 +1,10 @@
+{
+    "extends": "../../../tsconfig.base.json",
+    "include": [
+        "./smartContracts/**/*.ts",
+        "./wallet/**/*.ts"
+    ],
+    "exclude": [
+        "./smartContracts/contract/**/*.ts"
+    ]
+}

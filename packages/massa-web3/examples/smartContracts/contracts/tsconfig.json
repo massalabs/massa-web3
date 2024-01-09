@@ -1,0 +1,14 @@
+{
+  "extends": "assemblyscript/std/assembly.json",
+  "include": [
+    "**/*.ts"
+  ],
+  "typedocOptions": {
+    "exclude": "assembly/**/__tests__",
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeExternals": true,
+    "includeVersion": true,
+    "skipErrorChecking": true
+  }
+}
