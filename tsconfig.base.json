@@ -26,10 +26,10 @@
         ],
         "baseUrl": ".",
         "paths": {
-            "@massa-web3/*": [
+            "@massalabs/massa-web3/*": [
                 "packages/massa-web3/src/*"
             ],
-            "@web3-utils/*": [
+            "@massalabs/web3-utils/*": [
                 "packages/web3-utils/src/*"
             ]
         }

@@ -4,9 +4,7 @@
         "outDir": "./dist"
     },
     "include": [
-        "./src/**/*.ts",
-        "./examples/wallet/**/*.ts",
-        "./examples/smartContracts/*.ts"
+        "./src/**/*.ts"
     ],
     "exclude": [
         "node_modules",
