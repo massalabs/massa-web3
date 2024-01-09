@@ -1,7 +1,12 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "paths": {
+            "@massa-web3/*": [
+                "./src/*"
+            ]
+        }
     },
     "include": [
         "./src/**/*.ts"
