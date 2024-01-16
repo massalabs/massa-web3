@@ -12,7 +12,7 @@ import { WalletProviderAccount } from './accounts/WalletProviderAccount';
 
 /** Global connection urls, for Massa's MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET */
 export enum DefaultProviderUrls {
-  MAINNET = 'https://massa.net/api/v2',
+  MAINNET = 'https://mainnet.massa.net/api/v2',
   TESTNET = 'https://test.massa.net/api/v2',
   BUILDNET = 'https://buildnet.massa.net/api/v2',
   LABNET = 'https://labnet.massa.net/api/v2',
