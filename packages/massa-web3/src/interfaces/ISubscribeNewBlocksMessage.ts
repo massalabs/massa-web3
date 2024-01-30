@@ -1,4 +1,4 @@
-import { IBlockHeaderInfo } from './IBlockcliqueBlockBySlot';
+import { IBlockHeaderInfo } from './IBlockcliqueBlockBySlot'
 
 /**
  * Represents a subscribed new blocks message.
@@ -12,11 +12,11 @@ import { IBlockHeaderInfo } from './IBlockcliqueBlockBySlot';
  */
 export interface ISubscribeNewBlocksMessage {
   header: {
-    content: IBlockHeaderInfo;
-    signature: string;
-    creator_public_key: string;
-    creator_address: string;
-    id: string;
-  };
-  operations: Array<string>;
+    content: IBlockHeaderInfo
+    signature: string
+    creator_public_key: string
+    creator_address: string
+    id: string
+  }
+  operations: Array<string>
 }

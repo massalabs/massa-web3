@@ -1,4 +1,4 @@
-import { Args } from '@massalabs/web3-utils';
+import { Args } from '@massalabs/web3-utils'
 
 /**
  * Represents the information for a smart contract call.
@@ -16,10 +16,10 @@ import { Args } from '@massalabs/web3-utils';
  * @see parameter of type `Array<number>` or an Args represents the parameters to pass to the target function.
  */
 export interface ICallData {
-  fee: bigint;
-  maxGas: bigint;
-  coins?: bigint;
-  targetAddress: string;
-  functionName: string;
-  parameter: Array<number> | Args;
+  fee: bigint
+  maxGas: bigint
+  coins?: bigint
+  targetAddress: string
+  functionName: string
+  parameter: Array<number> | Args
 }

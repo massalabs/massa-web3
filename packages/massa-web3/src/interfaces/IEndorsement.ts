@@ -1,4 +1,4 @@
-import { ISlot } from '@massalabs/web3-utils';
+import { ISlot } from '@massalabs/web3-utils'
 
 /**
  * Represents an endorsement.
@@ -16,17 +16,17 @@ import { ISlot } from '@massalabs/web3-utils';
  * @see endorsement.signature of type `string` represents the signature of the endorsement by its sender public key.
  */
 export interface IEndorsement {
-  id: string; // EndorsementId,
-  in_pool: boolean;
-  in_blocks: string[]; // BlockId,
-  is_final: boolean;
+  id: string // EndorsementId,
+  in_pool: boolean
+  in_blocks: string[] // BlockId,
+  is_final: boolean
   endorsement: {
     content: {
-      sender_public_key: string;
-      slot: ISlot;
-      index: number;
-      endorsed_block: string; // BlockId,
-    };
-    signature: string;
-  };
+      sender_public_key: string
+      slot: ISlot
+      index: number
+      endorsed_block: string // BlockId,
+    }
+    signature: string
+  }
 }

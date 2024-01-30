@@ -5,52 +5,52 @@
 /**
  * The maximum value for an unsigned 8-bit integer (u8).
  */
-const U8_MAX = 0xff;
+const U8_MAX = 0xff
 
 /**
  * The maximum value for an unsigned 16-bit integer (u16).
  */
-const U16_MAX = 0xffff;
+const U16_MAX = 0xffff
 
 /**
  * The maximum value for an unsigned 32-bit integer (u32).
  */
-const U32_MAX = 0xffffffff;
+const U32_MAX = 0xffffffff
 
 /**
  * The maximum value for an unsigned 64-bit integer (u64) represented as a BigInt.
  */
-export const U64_MAX = BigInt('0xffffffffffffffff');
+export const U64_MAX = BigInt('0xffffffffffffffff')
 
 /**
  * The minimum value for a signed 16-bit integer (i16).
  */
-const I16_MIN = -32768;
+const I16_MIN = -32768
 
 /**
  * The maximum value for a signed 16-bit integer (i16).
  */
-const I16_MAX = 32767;
+const I16_MAX = 32767
 
 /**
  * The minimum value for a signed 32-bit integer (i32).
  */
-const I32_MIN = -0x80000000;
+const I32_MIN = -0x80000000
 
 /**
  * The maximum value for a signed 32-bit integer (i32).
  */
-const I32_MAX = 0x7fffffff;
+const I32_MAX = 0x7fffffff
 
 /**
  * The minimum value for a signed 64-bit integer (i64) represented as a BigInt.
  */
-const I64_MIN = BigInt('-9223372036854775808');
+const I64_MIN = BigInt('-9223372036854775808')
 
 /**
  * The maximum value for a signed 64-bit integer (i64) represented as a BigInt.
  */
-export const I64_MAX = BigInt('0x7fffffffffffffff');
+export const I64_MAX = BigInt('0x7fffffffffffffff')
 
 /**
  * Converts an unsigned 8-bit integer (u8) into a Uint8Array.
@@ -64,9 +64,9 @@ export const I64_MAX = BigInt('0x7fffffffffffffff');
  */
 export function u8toByte(val: number): Uint8Array {
   if (val < 0 || val > U8_MAX) {
-    throw new Error(`Unable to serialize invalid Uint8 value ${val}`);
+    throw new Error(`Unable to serialize invalid Uint8 value ${val}`)
   }
-  return new Uint8Array([val]);
+  return new Uint8Array([val])
 }
 
 /**
@@ -79,7 +79,7 @@ export function u8toByte(val: number): Uint8Array {
  *
  */
 export function byteToU8(arr: Uint8Array, offset = 0): number {
-  return arr[offset];
+  return arr[offset]
 }
 
 /**
@@ -94,13 +94,13 @@ export function byteToU8(arr: Uint8Array, offset = 0): number {
  */
 export function u16toByte(val: number): Uint8Array {
   if (val < 0 || val > U16_MAX) {
-    throw new Error(`Unable to serialize invalid Uint16 value ${val}`);
+    throw new Error(`Unable to serialize invalid Uint16 value ${val}`)
   }
 
-  const buffer = new ArrayBuffer(2);
-  const view = new DataView(buffer);
-  view.setUint16(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(2)
+  const view = new DataView(buffer)
+  view.setUint16(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -113,8 +113,8 @@ export function u16toByte(val: number): Uint8Array {
  *
  */
 export function byteToU16(arr: Uint8Array, offset = 0): number {
-  const view = new DataView(arr.buffer);
-  return view.getUint16(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getUint16(offset, true)
 }
 
 /**
@@ -129,12 +129,12 @@ export function byteToU16(arr: Uint8Array, offset = 0): number {
  */
 export function u32ToBytes(val: number): Uint8Array {
   if (val < 0 || val > U32_MAX) {
-    throw new Error(`Unable to serialize invalid Uint32 value ${val}`);
+    throw new Error(`Unable to serialize invalid Uint32 value ${val}`)
   }
-  const buffer = new ArrayBuffer(4);
-  const view = new DataView(buffer);
-  view.setUint32(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(4)
+  const view = new DataView(buffer)
+  view.setUint32(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -147,8 +147,8 @@ export function u32ToBytes(val: number): Uint8Array {
  *
  */
 export function bytesToU32(arr: Uint8Array, offset = 0): number {
-  const view = new DataView(arr.buffer);
-  return view.getUint32(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getUint32(offset, true)
 }
 
 /**
@@ -163,12 +163,12 @@ export function bytesToU32(arr: Uint8Array, offset = 0): number {
  */
 export function u64ToBytes(val: bigint): Uint8Array {
   if (val < 0 || val > U64_MAX) {
-    throw new Error(`Unable to serialize invalid Uint64 value ${val}`);
+    throw new Error(`Unable to serialize invalid Uint64 value ${val}`)
   }
-  const buffer = new ArrayBuffer(8);
-  const view = new DataView(buffer);
-  view.setBigUint64(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(8)
+  const view = new DataView(buffer)
+  view.setBigUint64(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -181,8 +181,8 @@ export function u64ToBytes(val: bigint): Uint8Array {
  *
  */
 export function bytesToU64(arr: Uint8Array, offset = 0): bigint {
-  const view = new DataView(arr.buffer);
-  return view.getBigUint64(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getBigUint64(offset, true)
 }
 
 /**
@@ -197,12 +197,12 @@ export function bytesToU64(arr: Uint8Array, offset = 0): bigint {
  */
 export function i16ToBytes(val: number): Uint8Array {
   if (val < I16_MIN || val > I16_MAX) {
-    throw new Error(`Unable to serialize invalid int16 value ${val}`);
+    throw new Error(`Unable to serialize invalid int16 value ${val}`)
   }
-  const buffer = new ArrayBuffer(2);
-  const view = new DataView(buffer);
-  view.setInt16(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(2)
+  const view = new DataView(buffer)
+  view.setInt16(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -215,8 +215,8 @@ export function i16ToBytes(val: number): Uint8Array {
  *
  */
 export function bytesToI16(arr: Uint8Array, offset = 0): number {
-  const view = new DataView(arr.buffer);
-  return view.getInt16(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getInt16(offset, true)
 }
 
 /**
@@ -231,12 +231,12 @@ export function bytesToI16(arr: Uint8Array, offset = 0): number {
  */
 export function i32ToBytes(val: number): Uint8Array {
   if (val < I32_MIN || val > I32_MAX) {
-    throw new Error(`Unable to serialize invalid int32 value ${val}`);
+    throw new Error(`Unable to serialize invalid int32 value ${val}`)
   }
-  const buffer = new ArrayBuffer(4);
-  const view = new DataView(buffer);
-  view.setInt32(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(4)
+  const view = new DataView(buffer)
+  view.setInt32(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -249,8 +249,8 @@ export function i32ToBytes(val: number): Uint8Array {
  *
  */
 export function bytesToI32(arr: Uint8Array, offset = 0): number {
-  const view = new DataView(arr.buffer);
-  return view.getInt32(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getInt32(offset, true)
 }
 
 /**
@@ -265,14 +265,12 @@ export function bytesToI32(arr: Uint8Array, offset = 0): number {
  */
 export function i64ToBytes(val: bigint): Uint8Array {
   if (val < I64_MIN || val > I64_MAX) {
-    throw new Error(
-      `Unable to serialize invalid int64 value ${val.toString()}`,
-    );
+    throw new Error(`Unable to serialize invalid int64 value ${val.toString()}`)
   }
-  const buffer = new ArrayBuffer(8);
-  const view = new DataView(buffer);
-  view.setBigInt64(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(8)
+  const view = new DataView(buffer)
+  view.setBigInt64(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -285,8 +283,8 @@ export function i64ToBytes(val: bigint): Uint8Array {
  *
  */
 export function bytesToI64(arr: Uint8Array, offset = 0): bigint {
-  const view = new DataView(arr.buffer);
-  return view.getBigInt64(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getBigInt64(offset, true)
 }
 
 /**
@@ -298,10 +296,10 @@ export function bytesToI64(arr: Uint8Array, offset = 0): bigint {
  *
  */
 export function f32ToBytes(val: number): Uint8Array {
-  const buffer = new ArrayBuffer(4);
-  const view = new DataView(buffer);
-  view.setFloat32(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(4)
+  const view = new DataView(buffer)
+  view.setFloat32(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -314,8 +312,8 @@ export function f32ToBytes(val: number): Uint8Array {
  *
  */
 export function bytesToF32(arr: Uint8Array, offset = 0): number {
-  const view = new DataView(arr.buffer);
-  return view.getFloat32(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getFloat32(offset, true)
 }
 
 /**
@@ -327,10 +325,10 @@ export function bytesToF32(arr: Uint8Array, offset = 0): number {
  *
  */
 export function f64ToBytes(val: number): Uint8Array {
-  const buffer = new ArrayBuffer(8);
-  const view = new DataView(buffer);
-  view.setFloat64(0, val, true);
-  return new Uint8Array(view.buffer);
+  const buffer = new ArrayBuffer(8)
+  const view = new DataView(buffer)
+  view.setFloat64(0, val, true)
+  return new Uint8Array(view.buffer)
 }
 
 /**
@@ -343,6 +341,6 @@ export function f64ToBytes(val: number): Uint8Array {
  *
  */
 export function bytesToF64(arr: Uint8Array, offset = 0): number {
-  const view = new DataView(arr.buffer);
-  return view.getFloat64(offset, true);
+  const view = new DataView(arr.buffer)
+  return view.getFloat64(offset, true)
 }

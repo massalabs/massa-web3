@@ -1,17 +1,17 @@
-import { IAddressInfo } from './IAddressInfo';
-import { IBlockInfo } from './IBlockInfo';
-import { IClique } from './IClique';
-import { IEndorsement } from './IEndorsement';
-import { INodeStatus } from './INodeStatus';
-import { IOperationData } from './IOperationData';
-import { IStakingAddresses } from './IStakingAddresses';
-import { IDatastoreEntryInput } from './IDatastoreEntryInput';
-import { IDatastoreEntry } from './IDatastoreEntry';
-import { IGetGraphInterval } from './IGetGraphInterval';
-import { IBlockcliqueBlockBySlot } from './IBlockcliqueBlockBySlot';
-import { IGraphInterval } from './IGraphInterval';
-import { BaseClient } from '../web3/BaseClient';
-import { ISlot } from '@massalabs/web3-utils';
+import { IAddressInfo } from './IAddressInfo'
+import { IBlockInfo } from './IBlockInfo'
+import { IClique } from './IClique'
+import { IEndorsement } from './IEndorsement'
+import { INodeStatus } from './INodeStatus'
+import { IOperationData } from './IOperationData'
+import { IStakingAddresses } from './IStakingAddresses'
+import { IDatastoreEntryInput } from './IDatastoreEntryInput'
+import { IDatastoreEntry } from './IDatastoreEntry'
+import { IGetGraphInterval } from './IGetGraphInterval'
+import { IBlockcliqueBlockBySlot } from './IBlockcliqueBlockBySlot'
+import { IGraphInterval } from './IGraphInterval'
+import { BaseClient } from '../web3/BaseClient'
+import { ISlot } from '@massalabs/web3-utils'
 
 /**
  * Represents a PublicApiClient object.
@@ -33,7 +33,7 @@ export interface IPublicApiClient extends BaseClient {
    *
    * @returns The node status.
    */
-  getNodeStatus(): Promise<INodeStatus>;
+  getNodeStatus(): Promise<INodeStatus>
 
   /**
    * Get addresses.
@@ -42,7 +42,7 @@ export interface IPublicApiClient extends BaseClient {
    *
    * @returns The addresses as IAddressInfo.
    */
-  getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>>;
+  getAddresses(addresses: Array<string>): Promise<Array<IAddressInfo>>
 
   /**
    * Get blocks.
@@ -51,7 +51,7 @@ export interface IPublicApiClient extends BaseClient {
    *
    * @returns The blocks as IBlockInfo.
    */
-  getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>>;
+  getBlocks(blockIds: Array<string>): Promise<Array<IBlockInfo>>
 
   /**
    * Get endorsements.
@@ -60,7 +60,7 @@ export interface IPublicApiClient extends BaseClient {
    *
    * @returns The endorsements as IEndorsement.
    */
-  getEndorsements(endorsementIds: Array<string>): Promise<Array<IEndorsement>>;
+  getEndorsements(endorsementIds: Array<string>): Promise<Array<IEndorsement>>
 
   /**
    * Get operations.
@@ -69,21 +69,21 @@ export interface IPublicApiClient extends BaseClient {
    *
    * @returns The operations as IOperationData.
    */
-  getOperations(operationIds: Array<string>): Promise<Array<IOperationData>>;
+  getOperations(operationIds: Array<string>): Promise<Array<IOperationData>>
 
   /**
    * Get cliques.
    *
    * @returns The cliques as IClique.
    */
-  getCliques(): Promise<Array<IClique>>;
+  getCliques(): Promise<Array<IClique>>
 
   /**
    * Get stakers.
    *
    * @returns The stakers as IStakingAddresses.
    */
-  getStakers(): Promise<Array<IStakingAddresses>>;
+  getStakers(): Promise<Array<IStakingAddresses>>
 
   /**
    * Get datastore entries.
@@ -93,8 +93,8 @@ export interface IPublicApiClient extends BaseClient {
    * @returns The datastore entries as IDatastoreEntry. (null if not found)
    */
   getDatastoreEntries(
-    getDatastoreEntries: Array<IDatastoreEntryInput>,
-  ): Promise<Array<IDatastoreEntry | null>>;
+    getDatastoreEntries: Array<IDatastoreEntryInput>
+  ): Promise<Array<IDatastoreEntry | null>>
 
   /**
    * Get blockclique block by slot.
@@ -103,7 +103,7 @@ export interface IPublicApiClient extends BaseClient {
    *
    * @returns The blockclique block by slot as IBlockcliqueBlockBySlot.
    */
-  getBlockcliqueBlockBySlot(slot: ISlot): Promise<IBlockcliqueBlockBySlot>;
+  getBlockcliqueBlockBySlot(slot: ISlot): Promise<IBlockcliqueBlockBySlot>
 
   /**
    * Get graph interval.
@@ -113,6 +113,6 @@ export interface IPublicApiClient extends BaseClient {
    * @returns The graph interval as IGraphInterval.
    */
   getGraphInterval(
-    graphInterval: IGetGraphInterval,
-  ): Promise<Array<IGraphInterval>>;
+    graphInterval: IGetGraphInterval
+  ): Promise<Array<IGraphInterval>>
 }

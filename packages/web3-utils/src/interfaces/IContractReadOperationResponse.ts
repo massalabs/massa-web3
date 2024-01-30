@@ -1,4 +1,4 @@
-import { IContractReadOperationData } from './IContractReadOperationData';
+import { IContractReadOperationData } from './IContractReadOperationData'
 
 /**
  * Represents the output of a smart contract non persistent execution.
@@ -8,6 +8,6 @@ import { IContractReadOperationData } from './IContractReadOperationData';
  * @see info of type `IContractReadOperationData` represents the inputs of the read operation.
  */
 export interface IContractReadOperationResponse {
-  returnValue: Uint8Array;
-  info: IContractReadOperationData;
+  returnValue: Uint8Array
+  info: IContractReadOperationData
 }

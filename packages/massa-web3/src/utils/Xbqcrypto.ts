@@ -1,5 +1,5 @@
-import * as varint from 'varint';
-import { blake3 } from '@noble/hashes/blake3';
+import * as varint from 'varint'
+import { blake3 } from '@noble/hashes/blake3'
 /**
  * A collection of utility functions for working with various data encoding and hashing formats.
  *
@@ -9,8 +9,8 @@ import { blake3 } from '@noble/hashes/blake3';
  * @module Xbqcrypto.ts
  */
 
-import { unsignedBigIntUtils } from './encode_decode_int';
-import { encode, decode } from 'bs58check';
+import { unsignedBigIntUtils } from './encode_decode_int'
+import { encode, decode } from 'bs58check'
 
 /**
  * Hashes data with blake3
@@ -20,7 +20,7 @@ import { encode, decode } from 'bs58check';
  * @returns The hash of the data with blake3
  */
 export function hashBlake3(data: Uint8Array | string): Uint8Array {
-  return blake3(data);
+  return blake3(data)
 }
 
 /**
@@ -31,7 +31,7 @@ export function hashBlake3(data: Uint8Array | string): Uint8Array {
  * @returns The base58 encoded data as a string
  */
 export function base58Encode(data: Buffer | Uint8Array): string {
-  return encode(data);
+  return encode(data)
 }
 
 /**
@@ -42,8 +42,8 @@ export function base58Encode(data: Buffer | Uint8Array): string {
  * @returns The decoded buffer
  */
 export function base58Decode(data: string): Buffer {
-  const decoded = decode(data);
-  return Buffer.from(decoded);
+  const decoded = decode(data)
+  return Buffer.from(decoded)
 }
 
 /**
@@ -55,9 +55,9 @@ export function base58Decode(data: string): Buffer {
  */
 export function varintEncode(data: number | bigint): Uint8Array {
   if (typeof data === 'bigint') {
-    return unsignedBigIntUtils.encode(data as bigint);
+    return unsignedBigIntUtils.encode(data as bigint)
   }
-  return varint.encode(data);
+  return varint.encode(data)
 }
 
 /**
@@ -68,10 +68,10 @@ export function varintEncode(data: number | bigint): Uint8Array {
  * @returns The decoded number and the number of bytes read
  */
 export function varintDecode(data: Uint8Array): {
-  value: number;
-  bytes: number;
+  value: number
+  bytes: number
 } {
-  const value = varint.decode(data);
-  const bytes = varint.decode.bytes;
-  return { value, bytes };
+  const value = varint.decode(data)
+  const bytes = varint.decode.bytes
+  return { value, bytes }
 }

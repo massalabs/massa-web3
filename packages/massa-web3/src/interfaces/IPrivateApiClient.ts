@@ -1,4 +1,4 @@
-import { ISignedMessage } from './ISignedMessage';
+import { ISignedMessage } from './ISignedMessage'
 
 /**
  * Private API client interface for creating an API to interact with a Massa Node.
@@ -11,7 +11,7 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeBanById(id: string): Promise<void>;
+  nodeBanById(id: string): Promise<void>
 
   /**
    * Method to ban a node by its IP address.
@@ -20,7 +20,7 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeBanByIpAddress(ipAddress: string): Promise<void>;
+  nodeBanByIpAddress(ipAddress: string): Promise<void>
 
   /**
    * Method to unban a node by its ID.
@@ -29,7 +29,7 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeUnbanById(nodeId: string): Promise<void>;
+  nodeUnbanById(nodeId: string): Promise<void>
 
   /**
    * Method to unban a node by its IP address.
@@ -38,7 +38,7 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeUnbanByIpAddress(ipAddress: string): Promise<void>;
+  nodeUnbanByIpAddress(ipAddress: string): Promise<void>
 
   /**
    * Method to remove a node from the whitelist.
@@ -47,7 +47,7 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeRemoveFromWhitelist(ipAddress: string): Promise<void>;
+  nodeRemoveFromWhitelist(ipAddress: string): Promise<void>
 
   /**
    * Method to add a node to the whitelist.
@@ -56,14 +56,14 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeAddToPeersWhitelist(ipAddress: string): Promise<void>;
+  nodeAddToPeersWhitelist(ipAddress: string): Promise<void>
 
   /**
    * Method to stop the node.
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeStop(): Promise<void>;
+  nodeStop(): Promise<void>
 
   /**
    * Method to sign a message from the node sign feature.
@@ -72,14 +72,14 @@ export interface IPrivateApiClient {
    *
    * @returns - The signed message.
    */
-  nodeSignMessage(message: Uint8Array): Promise<ISignedMessage>;
+  nodeSignMessage(message: Uint8Array): Promise<ISignedMessage>
 
   /**
    * Method to get the staking addresses of the node.
    *
    * @returns - Return an array of addresses that are stacking on the node.
    */
-  nodeGetStakingAddresses(): Promise<Array<string>>;
+  nodeGetStakingAddresses(): Promise<Array<string>>
 
   /**
    * Method to remove staking addresses from the node.
@@ -88,7 +88,7 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void>;
+  nodeRemoveStakingAddresses(addresses: Array<string>): Promise<void>
 
   /**
    * Method to add staking addresses to the node.
@@ -97,5 +97,5 @@ export interface IPrivateApiClient {
    *
    * @returns - A promise so that the call can be asynchronous.
    */
-  nodeAddStakingSecretKeys(secretKeys: Array<string>): Promise<void>;
+  nodeAddStakingSecretKeys(secretKeys: Array<string>): Promise<void>
 }

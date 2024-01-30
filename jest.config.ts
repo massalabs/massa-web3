@@ -1,4 +1,4 @@
-import type { Config } from '@jest/types';
+import type { Config } from '@jest/types'
 
 const config: Config.InitialOptions = {
   transform: {
@@ -18,6 +18,6 @@ const config: Config.InitialOptions = {
     '<rootDir>/node_modules/',
     '<rootDir>/packages/*/dist/',
   ],
-};
+}
 
-export default config;
+export default config

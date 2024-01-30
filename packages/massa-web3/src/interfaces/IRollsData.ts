@@ -5,6 +5,6 @@
  * @see amount - amount of rolls
  */
 export interface IRollsData {
-  fee: bigint;
-  amount: bigint;
+  fee: bigint
+  amount: bigint
 }

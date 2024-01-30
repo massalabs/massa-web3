@@ -6,6 +6,6 @@
  * for an address, which are represented as BigInt.
  */
 export interface IBalance {
-  final: bigint;
-  candidate: bigint;
+  final: bigint
+  candidate: bigint
 }

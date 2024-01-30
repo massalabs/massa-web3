@@ -6,25 +6,25 @@
  *
  * @module SmartContractsClient
  */
-import { EOperationStatus } from '../interfaces/EOperationStatus';
-import { IAddressInfo } from '../interfaces/IAddressInfo';
-import { IBalance } from '../interfaces/IBalance';
-import { ICallData } from '../interfaces/ICallData';
-import { IClientConfig } from '../interfaces/IClientConfig';
-import { IContractData } from '../interfaces/IContractData';
+import { EOperationStatus } from '../interfaces/EOperationStatus'
+import { IAddressInfo } from '../interfaces/IAddressInfo'
+import { IBalance } from '../interfaces/IBalance'
+import { ICallData } from '../interfaces/ICallData'
+import { IClientConfig } from '../interfaces/IClientConfig'
+import { IContractData } from '../interfaces/IContractData'
 
-import { IEventFilter } from '../interfaces/IEventFilter';
-import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData';
-import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse';
-import { IOperationData } from '../interfaces/IOperationData';
-import { IReadData } from '../interfaces/IReadData';
-import { ISmartContractsClient } from '../interfaces/ISmartContractsClient';
-import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { trySafeExecute } from '../utils/retryExecuteFunction';
-import { BaseClient } from './BaseClient';
-import { PublicApiClient } from './PublicApiClient';
-import { IWalletClient } from '../interfaces/IWalletClient';
-import { IBaseAccount } from '../interfaces/IBaseAccount';
+import { IEventFilter } from '../interfaces/IEventFilter'
+import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData'
+import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse'
+import { IOperationData } from '../interfaces/IOperationData'
+import { IReadData } from '../interfaces/IReadData'
+import { ISmartContractsClient } from '../interfaces/ISmartContractsClient'
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods'
+import { trySafeExecute } from '../utils/retryExecuteFunction'
+import { BaseClient } from './BaseClient'
+import { PublicApiClient } from './PublicApiClient'
+import { IWalletClient } from '../interfaces/IWalletClient'
+import { IBaseAccount } from '../interfaces/IBaseAccount'
 import {
   IContractReadOperationResponse,
   IContractReadOperationData,
@@ -32,20 +32,20 @@ import {
   Args,
   fromMAS,
   MAX_GAS_CALL,
-} from '@massalabs/web3-utils';
-import { wait } from '../utils/time';
+} from '@massalabs/web3-utils'
+import { wait } from '../utils/time'
 
-const WAIT_STATUS_TIMEOUT = 60000;
-const TX_POLL_INTERVAL_MS = 1000;
+const WAIT_STATUS_TIMEOUT = 60000
+const TX_POLL_INTERVAL_MS = 1000
 
 /**
  * The key name (as a string) to look for when we are retrieving the proto file from a contract
  */
-export const MASSA_PROTOFILE_KEY = 'protoMassa';
+export const MASSA_PROTOFILE_KEY = 'protoMassa'
 /**
  * The separator used to split the proto file content into separate proto files
  */
-export const PROTO_FILE_SEPARATOR = '|||||';
+export const PROTO_FILE_SEPARATOR = '|||||'
 /**
  * Smart Contracts Client object enables smart contract deployment, calls and streaming of events.
  */
@@ -59,21 +59,21 @@ export class SmartContractsClient
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    private readonly walletClient: IWalletClient,
+    private readonly walletClient: IWalletClient
   ) {
-    super(clientConfig);
+    super(clientConfig)
 
     // bind class methods
-    this.deploySmartContract = this.deploySmartContract.bind(this);
-    this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this);
+    this.deploySmartContract = this.deploySmartContract.bind(this)
+    this.getFilteredScOutputEvents = this.getFilteredScOutputEvents.bind(this)
     this.executeReadOnlySmartContract =
-      this.executeReadOnlySmartContract.bind(this);
+      this.executeReadOnlySmartContract.bind(this)
     this.awaitRequiredOperationStatus =
-      this.awaitRequiredOperationStatus.bind(this);
-    this.getOperationStatus = this.getOperationStatus.bind(this);
-    this.callSmartContract = this.callSmartContract.bind(this);
-    this.readSmartContract = this.readSmartContract.bind(this);
-    this.getContractBalance = this.getContractBalance.bind(this);
+      this.awaitRequiredOperationStatus.bind(this)
+    this.getOperationStatus = this.getOperationStatus.bind(this)
+    this.callSmartContract = this.callSmartContract.bind(this)
+    this.readSmartContract = this.readSmartContract.bind(this)
+    this.getContractBalance = this.getContractBalance.bind(this)
   }
 
   /**
@@ -91,13 +91,13 @@ export class SmartContractsClient
    */
   public async deploySmartContract(
     contractData: IContractData,
-    executor?: IBaseAccount,
+    executor?: IBaseAccount
   ): Promise<string> {
-    const sender = executor || this.walletClient.getBaseAccount();
+    const sender = executor || this.walletClient.getBaseAccount()
     if (!sender) {
-      throw new Error(`No tx sender available`);
+      throw new Error(`No tx sender available`)
     }
-    return await sender.deploySmartContract(contractData);
+    return await sender.deploySmartContract(contractData)
   }
 
   /**
@@ -114,37 +114,37 @@ export class SmartContractsClient
    */
   public async callSmartContract(
     callData: ICallData,
-    executor?: IBaseAccount,
+    executor?: IBaseAccount
   ): Promise<string> {
-    const sender = executor || this.walletClient.getBaseAccount();
+    const sender = executor || this.walletClient.getBaseAccount()
     if (!sender) {
-      throw new Error(`No tx sender available`);
+      throw new Error(`No tx sender available`)
     }
     // check the max. allowed gas
     if (callData.maxGas > MAX_GAS_CALL) {
       throw new Error(
-        `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`,
-      );
+        `The gas submitted ${callData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`
+      )
     }
 
-    callData.coins = callData.coins || BigInt(0);
+    callData.coins = callData.coins || BigInt(0)
 
     const senderBalance = await this.walletClient.getAccountBalance(
-      sender.address(),
-    );
+      sender.address()
+    )
 
     if (!senderBalance) {
       throw new Error(
-        `Unable to retrieve the balance of the sender ${sender.address()}`,
-      );
+        `Unable to retrieve the balance of the sender ${sender.address()}`
+      )
     }
 
     if (senderBalance.final < callData.coins) {
       throw new Error(
-        `The sender ${sender.address()} does not have enough balance to pay for the coins`,
-      );
+        `The sender ${sender.address()} does not have enough balance to pay for the coins`
+      )
     }
-    return await sender.callSmartContract(callData);
+    return await sender.callSmartContract(callData)
   }
 
   /**
@@ -156,22 +156,22 @@ export class SmartContractsClient
    * @returns A promise that resolves to an object which represents the result of the operation and contains data about its execution.
    */
   public async readSmartContract(
-    readData: IReadData,
+    readData: IReadData
   ): Promise<IContractReadOperationResponse> {
     // check the max. allowed gas
     if (readData.maxGas > MAX_GAS_CALL) {
       throw new Error(
-        `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`,
-      );
+        `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`
+      )
     }
 
     if (readData.parameter instanceof Args)
-      readData.parameter = readData.parameter.serialize();
+      readData.parameter = readData.parameter.serialize()
 
     // request data
-    let baseAccountSignerAddress: string | null = null;
+    let baseAccountSignerAddress: string | null = null
     if (this.walletClient.getBaseAccount()) {
-      baseAccountSignerAddress = this.walletClient.getBaseAccount().address();
+      baseAccountSignerAddress = this.walletClient.getBaseAccount().address()
     }
     const data = {
       max_gas: Number(readData.maxGas),
@@ -181,33 +181,33 @@ export class SmartContractsClient
       caller_address: readData.callerAddress || baseAccountSignerAddress,
       coins: readData.coins?.toString(),
       fee: readData.fee?.toString(),
-    };
+    }
     // returns operation ids
-    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL;
-    let jsonRpcCallResult: Array<IContractReadOperationData> = [];
+    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL
+    let jsonRpcCallResult: Array<IContractReadOperationData> = []
     if (this.clientConfig.retryStrategyOn) {
       jsonRpcCallResult = await trySafeExecute<
         Array<IContractReadOperationData>
-      >(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]]);
+      >(this.sendJsonRPCRequest, [jsonRpcRequestMethod, [[data]]])
     } else {
       jsonRpcCallResult = await this.sendJsonRPCRequest(jsonRpcRequestMethod, [
         [data],
-      ]);
+      ])
     }
 
     if (jsonRpcCallResult.length <= 0) {
       throw new Error(
-        `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
+        `Read operation bad response. No results array in json rpc response. Inspect smart contract`
+      )
     }
     if (jsonRpcCallResult[0].result.Error) {
-      throw new Error(jsonRpcCallResult[0].result.Error);
+      throw new Error(jsonRpcCallResult[0].result.Error)
     }
 
     return {
       returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
       info: jsonRpcCallResult[0],
-    };
+    }
   }
 
   /**
@@ -219,14 +219,14 @@ export class SmartContractsClient
    */
   public async getContractBalance(address: string): Promise<IBalance | null> {
     const addresses: Array<IAddressInfo> =
-      await this.publicApiClient.getAddresses([address]);
-    if (addresses.length === 0) return null;
-    const { candidate_balance, final_balance } = addresses[0];
+      await this.publicApiClient.getAddresses([address])
+    if (addresses.length === 0) return null
+    const { candidate_balance, final_balance } = addresses[0]
 
     return {
       candidate: fromMAS(candidate_balance),
       final: fromMAS(final_balance),
-    };
+    }
   }
 
   /**
@@ -237,7 +237,7 @@ export class SmartContractsClient
    * @returns A promise that resolves to an array of IEvent objects containing the filtered events.
    */
   public async getFilteredScOutputEvents(
-    eventFilterData: IEventFilter,
+    eventFilterData: IEventFilter
   ): Promise<Array<IEvent>> {
     const data = {
       start: eventFilterData.start,
@@ -246,22 +246,22 @@ export class SmartContractsClient
       original_caller_address: eventFilterData.original_caller_address,
       original_operation_id: eventFilterData.original_operation_id,
       is_final: eventFilterData.is_final,
-    };
+    }
 
     const jsonRpcRequestMethod =
-      JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT;
+      JSON_RPC_REQUEST_METHOD.GET_FILTERED_SC_OUTPUT_EVENT
 
     // returns filtered events
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<Array<IEvent>>(this.sendJsonRPCRequest, [
         jsonRpcRequestMethod,
         [data],
-      ]);
+      ])
     } else {
       return await this.sendJsonRPCRequest<Array<IEvent>>(
         jsonRpcRequestMethod,
-        [data],
-      );
+        [data]
+      )
     }
   }
 
@@ -284,52 +284,50 @@ export class SmartContractsClient
    * - If the result contains an error.
    */
   public async executeReadOnlySmartContract(
-    contractData: IContractData,
+    contractData: IContractData
   ): Promise<IExecuteReadOnlyResponse> {
     if (!contractData.contractDataBinary) {
-      throw new Error(
-        `Expected non-null contract bytecode, but received null.`,
-      );
+      throw new Error(`Expected non-null contract bytecode, but received null.`)
     }
 
     if (!contractData.address) {
-      throw new Error(`Expected contract address, but received null.`);
+      throw new Error(`Expected contract address, but received null.`)
     }
 
     const data = {
       max_gas: Number(contractData.maxGas),
       bytecode: Array.from(contractData.contractDataBinary),
       address: contractData.address,
-    };
+    }
 
-    let jsonRpcCallResult: Array<IExecuteReadOnlyData> = [];
+    let jsonRpcCallResult: Array<IExecuteReadOnlyData> = []
     const jsonRpcRequestMethod =
-      JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE;
+      JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_BYTECODE
     if (this.clientConfig.retryStrategyOn) {
       jsonRpcCallResult = await trySafeExecute<Array<IExecuteReadOnlyData>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [[data]]],
-      );
+        [jsonRpcRequestMethod, [[data]]]
+      )
     } else {
       jsonRpcCallResult = await this.sendJsonRPCRequest<
         Array<IExecuteReadOnlyData>
-      >(jsonRpcRequestMethod, [[data]]);
+      >(jsonRpcRequestMethod, [[data]])
     }
 
     if (jsonRpcCallResult.length <= 0) {
       throw new Error(
-        `Read operation bad response. No results array in json rpc response. Inspect smart contract`,
-      );
+        `Read operation bad response. No results array in json rpc response. Inspect smart contract`
+      )
     }
     if (jsonRpcCallResult[0].result.Error) {
       throw new Error('Execute read-only smart contract error', {
         cause: jsonRpcCallResult[0].result.Error,
-      });
+      })
     }
     return {
       returnValue: new Uint8Array(jsonRpcCallResult[0].result.Ok),
       info: jsonRpcCallResult[0],
-    };
+    }
   }
 
   /**
@@ -341,30 +339,30 @@ export class SmartContractsClient
    */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
     const operationData: Array<IOperationData> =
-      await this.publicApiClient.getOperations([opId]);
+      await this.publicApiClient.getOperations([opId])
 
-    if (!operationData?.length) return EOperationStatus.NOT_FOUND;
+    if (!operationData?.length) return EOperationStatus.NOT_FOUND
 
     const { is_operation_final, op_exec_status, in_pool, in_blocks } =
-      operationData[0];
+      operationData[0]
 
     if (is_operation_final === null && op_exec_status === null)
-      return EOperationStatus.UNEXECUTED_OR_EXPIRED;
+      return EOperationStatus.UNEXECUTED_OR_EXPIRED
 
-    if (in_pool) return EOperationStatus.AWAITING_INCLUSION;
+    if (in_pool) return EOperationStatus.AWAITING_INCLUSION
 
     if (is_operation_final) {
-      if (op_exec_status) return EOperationStatus.FINAL_SUCCESS;
+      if (op_exec_status) return EOperationStatus.FINAL_SUCCESS
       // We explicitly check for false here because null means that the operation was not executed
-      if (op_exec_status === false) return EOperationStatus.FINAL_ERROR;
+      if (op_exec_status === false) return EOperationStatus.FINAL_ERROR
     } else {
-      if (op_exec_status) return EOperationStatus.SPECULATIVE_SUCCESS;
-      if (op_exec_status === false) return EOperationStatus.SPECULATIVE_ERROR;
+      if (op_exec_status) return EOperationStatus.SPECULATIVE_SUCCESS
+      if (op_exec_status === false) return EOperationStatus.SPECULATIVE_ERROR
     }
 
-    if (in_blocks.length > 0) return EOperationStatus.INCLUDED_PENDING;
+    if (in_blocks.length > 0) return EOperationStatus.INCLUDED_PENDING
 
-    return EOperationStatus.INCONSISTENT;
+    return EOperationStatus.INCONSISTENT
   }
 
   /**
@@ -378,13 +376,13 @@ export class SmartContractsClient
   public async awaitRequiredOperationStatus(
     opId: string,
     requiredStatus: EOperationStatus,
-    timeout?: number,
+    timeout?: number
   ): Promise<EOperationStatus> {
     return await this.awaitOperationStatusHelper(
       opId,
       timeout,
-      (currentStatus) => currentStatus === requiredStatus,
-    );
+      (currentStatus) => currentStatus === requiredStatus
+    )
   }
 
   /**
@@ -398,13 +396,13 @@ export class SmartContractsClient
   public async awaitMultipleRequiredOperationStatus(
     opId: string,
     requiredStatuses: EOperationStatus[],
-    timeout?: number,
+    timeout?: number
   ): Promise<EOperationStatus> {
     return await this.awaitOperationStatusHelper(
       opId,
       timeout,
-      (currentStatus) => requiredStatuses.includes(currentStatus),
-    );
+      (currentStatus) => requiredStatuses.includes(currentStatus)
+    )
   }
 
   /**
@@ -419,27 +417,27 @@ export class SmartContractsClient
   private async awaitOperationStatusHelper(
     opId: string,
     timeout = WAIT_STATUS_TIMEOUT,
-    statusCheck: (status: EOperationStatus) => boolean,
+    statusCheck: (status: EOperationStatus) => boolean
   ): Promise<EOperationStatus> {
-    const startTime = Date.now();
+    const startTime = Date.now()
 
     while (Date.now() - startTime < timeout) {
-      let currentStatus = EOperationStatus.NOT_FOUND;
+      let currentStatus = EOperationStatus.NOT_FOUND
 
       try {
-        currentStatus = await this.getOperationStatus(opId);
+        currentStatus = await this.getOperationStatus(opId)
 
         if (statusCheck(currentStatus)) {
-          return currentStatus;
+          return currentStatus
         }
       } catch (ex) {
-        console.warn(ex);
+        console.warn(ex)
       }
-      await wait(TX_POLL_INTERVAL_MS);
+      await wait(TX_POLL_INTERVAL_MS)
     }
 
     throw new Error(
-      `Failed to retrieve status of operation id: ${opId}: Timeout reached.`,
-    );
+      `Failed to retrieve status of operation id: ${opId}: Timeout reached.`
+    )
   }
 }

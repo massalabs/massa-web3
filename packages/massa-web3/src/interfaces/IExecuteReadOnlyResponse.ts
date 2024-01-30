@@ -1,4 +1,4 @@
-import { IExecuteReadOnlyData } from './IExecuteReadOnlyData';
+import { IExecuteReadOnlyData } from './IExecuteReadOnlyData'
 
 /**
  * Represents the response from a read-only operation on a deployed contract.
@@ -7,6 +7,6 @@ import { IExecuteReadOnlyData } from './IExecuteReadOnlyData';
  * @see info of type `IExecuteReadOnlyData` represents the inputs of the read operation.
  */
 export interface IExecuteReadOnlyResponse {
-  returnValue: Uint8Array;
-  info: IExecuteReadOnlyData;
+  returnValue: Uint8Array
+  info: IExecuteReadOnlyData
 }

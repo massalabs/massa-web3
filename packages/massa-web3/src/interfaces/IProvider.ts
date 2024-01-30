@@ -5,8 +5,8 @@
  * @see type - type of the provider
  */
 export interface IProvider {
-  url: string;
-  type: ProviderType;
+  url: string
+  type: ProviderType
 }
 
 /**

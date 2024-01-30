@@ -1,35 +1,31 @@
-import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { IClientConfig } from '../interfaces/IClientConfig';
-import { Buffer } from 'buffer';
-import { base58Decode, varintEncode } from '../utils/Xbqcrypto';
-import { IContractData } from '../interfaces/IContractData';
-import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData';
-import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios';
-import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { ITransactionData } from '../interfaces/ITransactionData';
-import { OperationTypeId } from '../interfaces/OperationTypes';
-import { IRollsData } from '../interfaces/IRollsData';
-import { ICallData } from '../interfaces/ICallData';
+import { IProvider, ProviderType } from '../interfaces/IProvider'
+import { IClientConfig } from '../interfaces/IClientConfig'
+import { Buffer } from 'buffer'
+import { base58Decode, varintEncode } from '../utils/Xbqcrypto'
+import { IContractData } from '../interfaces/IContractData'
+import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData'
+import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios'
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods'
+import { ITransactionData } from '../interfaces/ITransactionData'
+import { OperationTypeId } from '../interfaces/OperationTypes'
+import { IRollsData } from '../interfaces/IRollsData'
+import { ICallData } from '../interfaces/ICallData'
 
 // encode a string address to bytes.
 const encodeAddressToBytes = (
   address: string,
-  isSmartContract = false,
+  isSmartContract = false
 ): Buffer => {
-  let targetAddressEncoded = base58Decode(address.slice(2));
+  let targetAddressEncoded = base58Decode(address.slice(2))
   targetAddressEncoded = Buffer.concat([
     isSmartContract ? Buffer.from([1]) : Buffer.from([0]),
     targetAddressEncoded,
-  ]);
+  ])
 
-  return targetAddressEncoded;
-};
+  return targetAddressEncoded
+}
 
-export type DataType =
-  | IContractData
-  | ITransactionData
-  | IRollsData
-  | ICallData;
+export type DataType = IContractData | ITransactionData | IRollsData | ICallData
 
 export const requestHeaders = {
   Accept:
@@ -37,9 +33,9 @@ export const requestHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
   'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-} as AxiosRequestHeaders;
+} as AxiosRequestHeaders
 
-export const PERIOD_OFFSET = 5;
+export const PERIOD_OFFSET = 5
 
 /**
  * The Base Client object is the main entry point for interacting with the massa blockchain.
@@ -53,7 +49,7 @@ export const PERIOD_OFFSET = 5;
  * @throws Will throw an error if no private providers are included in client configuration.
  */
 export class BaseClient {
-  public clientConfig: IClientConfig;
+  public clientConfig: IClientConfig
 
   /**
    * Constructor of the BaseClient class
@@ -61,23 +57,23 @@ export class BaseClient {
    * @param clientConfig - The client configuration object as defined in {@link IClientConfig}
    */
   public constructor(clientConfig: IClientConfig) {
-    this.clientConfig = clientConfig;
+    this.clientConfig = clientConfig
     this.clientConfig.periodOffset =
-      this.clientConfig.periodOffset | PERIOD_OFFSET;
+      this.clientConfig.periodOffset | PERIOD_OFFSET
     if (this.getPublicProviders().length === 0) {
       throw new Error(
-        'Cannot initialize web3 with no public providers. Need at least one',
-      );
+        'Cannot initialize web3 with no public providers. Need at least one'
+      )
     }
 
     // bind class methods
-    this.getPrivateProviders = this.getPrivateProviders.bind(this);
-    this.getProviderForRpcMethod = this.getProviderForRpcMethod.bind(this);
-    this.getPublicProviders = this.getPublicProviders.bind(this);
-    this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this);
-    this.compactBytesForOperation = this.compactBytesForOperation.bind(this);
-    this.setProviders = this.setProviders.bind(this);
-    this.promisifyJsonRpcCall = this.promisifyJsonRpcCall.bind(this);
+    this.getPrivateProviders = this.getPrivateProviders.bind(this)
+    this.getProviderForRpcMethod = this.getProviderForRpcMethod.bind(this)
+    this.getPublicProviders = this.getPublicProviders.bind(this)
+    this.sendJsonRPCRequest = this.sendJsonRPCRequest.bind(this)
+    this.compactBytesForOperation = this.compactBytesForOperation.bind(this)
+    this.setProviders = this.setProviders.bind(this)
+    this.promisifyJsonRpcCall = this.promisifyJsonRpcCall.bind(this)
   }
 
   /**
@@ -93,16 +89,16 @@ export class BaseClient {
    */
   public setProviders(providers: Array<IProvider>): void {
     const hasPublicProvider = providers.some(
-      (provider) => provider.type === ProviderType.PUBLIC,
-    );
+      (provider) => provider.type === ProviderType.PUBLIC
+    )
 
     if (!hasPublicProvider) {
       throw new Error(
-        'Cannot set providers with no public providers. Need at least one',
-      );
+        'Cannot set providers with no public providers. Need at least one'
+      )
     }
 
-    this.clientConfig.providers = providers;
+    this.clientConfig.providers = providers
   }
 
   /**
@@ -112,8 +108,8 @@ export class BaseClient {
    */
   protected getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PRIVATE,
-    );
+      (provider) => provider.type === ProviderType.PRIVATE
+    )
   }
 
   /**
@@ -123,8 +119,8 @@ export class BaseClient {
    */
   protected getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PUBLIC,
-    );
+      (provider) => provider.type === ProviderType.PUBLIC
+    )
   }
 
   /**
@@ -142,7 +138,7 @@ export class BaseClient {
    * @returns The provider for the rpc method.
    */
   private getProviderForRpcMethod(
-    requestMethod: JSON_RPC_REQUEST_METHOD,
+    requestMethod: JSON_RPC_REQUEST_METHOD
   ): IProvider {
     switch (requestMethod) {
       case JSON_RPC_REQUEST_METHOD.GET_ADDRESSES:
@@ -159,9 +155,9 @@ export class BaseClient {
       case JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES:
       case JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT:
       case JSON_RPC_REQUEST_METHOD.GET_GRAPH_INTERVAL: {
-        let providers = this.getPublicProviders();
-        let idx = Math.floor(Math.random() * providers.length);
-        return providers[idx];
+        let providers = this.getPublicProviders()
+        let idx = Math.floor(Math.random() * providers.length)
+        return providers[idx]
       }
       case JSON_RPC_REQUEST_METHOD.STOP_NODE:
       case JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_ID:
@@ -173,12 +169,12 @@ export class BaseClient {
       case JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS:
       case JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE:
       case JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST: {
-        let providers = this.getPrivateProviders();
-        let idx = Math.floor(Math.random() * providers.length);
-        return providers[idx];
+        let providers = this.getPrivateProviders()
+        let idx = Math.floor(Math.random() * providers.length)
+        return providers[idx]
       }
       default:
-        throw new Error(`Unknown Json rpc method: ${requestMethod}`);
+        throw new Error(`Unknown Json rpc method: ${requestMethod}`)
     }
   }
 
@@ -197,46 +193,46 @@ export class BaseClient {
    */
   private async promisifyJsonRpcCall<T>(
     resource: JSON_RPC_REQUEST_METHOD,
-    params: object,
+    params: object
   ): Promise<JsonRpcResponseData<T>> {
-    let resp: AxiosResponse<JsonRpcResponseData<T>> = null;
+    let resp: AxiosResponse<JsonRpcResponseData<T>> = null
 
     const body = {
       jsonrpc: '2.0',
       method: resource,
       params: params,
       id: 0,
-    };
+    }
 
     try {
       resp = await axios.post(
         this.getProviderForRpcMethod(resource).url,
         body,
-        requestHeaders,
-      );
+        requestHeaders
+      )
     } catch (ex) {
       return {
         isError: true,
         result: null,
         error: new Error('JSON.parse error: ' + String(ex)),
-      } as JsonRpcResponseData<T>;
+      } as JsonRpcResponseData<T>
     }
 
-    const responseData: JsonRpcResponseData<T> = resp.data;
+    const responseData: JsonRpcResponseData<T> = resp.data
 
     if (responseData.error) {
       return {
         isError: true,
         result: null,
         error: new Error(responseData.error.message),
-      } as JsonRpcResponseData<T>;
+      } as JsonRpcResponseData<T>
     }
 
     return {
       isError: false,
       result: responseData.result as T,
       error: null,
-    } as JsonRpcResponseData<T>;
+    } as JsonRpcResponseData<T>
   }
 
   /**
@@ -251,17 +247,17 @@ export class BaseClient {
    */
   protected async sendJsonRPCRequest<T>(
     resource: JSON_RPC_REQUEST_METHOD,
-    params: object,
+    params: object
   ): Promise<T> {
-    let resp: JsonRpcResponseData<T> = null;
-    resp = await this.promisifyJsonRpcCall(resource, params);
+    let resp: JsonRpcResponseData<T> = null
+    resp = await this.promisifyJsonRpcCall(resource, params)
 
     // in case of rpc error, rethrow the error.
     if (resp.error) {
-      throw resp.error;
+      throw resp.error
     }
 
-    return resp.result;
+    return resp.result
   }
 
   /**
@@ -277,58 +273,58 @@ export class BaseClient {
   protected compactBytesForOperation(
     data: DataType,
     opTypeId: OperationTypeId,
-    expirePeriod: number,
+    expirePeriod: number
   ): Buffer {
-    const feeEncoded = Buffer.from(varintEncode(data.fee));
-    const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod));
-    const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()));
+    const feeEncoded = Buffer.from(varintEncode(data.fee))
+    const expirePeriodEncoded = Buffer.from(varintEncode(expirePeriod))
+    const typeIdEncoded = Buffer.from(varintEncode(opTypeId.valueOf()))
 
     switch (opTypeId) {
       case OperationTypeId.ExecuteSC: {
         // get sc data binary
-        const scBinaryCode = (data as IContractData).contractDataBinary;
+        const scBinaryCode = (data as IContractData).contractDataBinary
 
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxGas),
-        );
+          varintEncode((data as IContractData).maxGas)
+        )
 
         // max coins amount
         const maxCoinEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxCoins),
-        );
+          varintEncode((data as IContractData).maxCoins)
+        )
 
         // contract data
-        const contractDataEncoded = Buffer.from(scBinaryCode);
+        const contractDataEncoded = Buffer.from(scBinaryCode)
         const dataLengthEncoded = Buffer.from(
-          varintEncode(contractDataEncoded.length),
-        );
+          varintEncode(contractDataEncoded.length)
+        )
 
         // smart contract operation datastore
         const datastoreKeyMap = (data as IContractData).datastore
           ? (data as IContractData).datastore
-          : new Map<Uint8Array, Uint8Array>();
-        let datastoreSerializedBuffer = Buffer.from(new Uint8Array());
+          : new Map<Uint8Array, Uint8Array>()
+        let datastoreSerializedBuffer = Buffer.from(new Uint8Array())
         for (const [key, value] of datastoreKeyMap) {
-          const encodedKeyBytes = Buffer.from(key);
+          const encodedKeyBytes = Buffer.from(key)
           const encodedKeyLen = Buffer.from(
-            varintEncode(encodedKeyBytes.length),
-          );
-          const encodedValueBytes = Buffer.from(value);
+            varintEncode(encodedKeyBytes.length)
+          )
+          const encodedValueBytes = Buffer.from(value)
           const encodedValueLen = Buffer.from(
-            varintEncode(encodedValueBytes.length),
-          );
+            varintEncode(encodedValueBytes.length)
+          )
           datastoreSerializedBuffer = Buffer.concat([
             datastoreSerializedBuffer,
             encodedKeyLen,
             encodedKeyBytes,
             encodedValueLen,
             encodedValueBytes,
-          ]);
+          ])
         }
         const datastoreSerializedBufferLen = Buffer.from(
-          varintEncode(datastoreKeyMap.size),
-        );
+          varintEncode(datastoreKeyMap.size)
+        )
         if (datastoreSerializedBuffer.length === 0) {
           return Buffer.concat([
             feeEncoded,
@@ -339,7 +335,7 @@ export class BaseClient {
             dataLengthEncoded,
             contractDataEncoded,
             datastoreSerializedBufferLen,
-          ]);
+          ])
         }
 
         return Buffer.concat([
@@ -352,45 +348,45 @@ export class BaseClient {
           contractDataEncoded,
           datastoreSerializedBufferLen,
           datastoreSerializedBuffer,
-        ]);
+        ])
       }
       case OperationTypeId.CallSC: {
         // max gas
         const maxGasEncoded = Buffer.from(
-          varintEncode((data as ICallData).maxGas),
-        );
+          varintEncode((data as ICallData).maxGas)
+        )
 
         // coins to send
         const coinsEncoded = Buffer.from(
-          varintEncode((data as ICallData).coins),
-        );
+          varintEncode((data as ICallData).coins)
+        )
 
         // target address
         const targetAddressEncoded = encodeAddressToBytes(
           (data as ICallData).targetAddress,
-          true,
-        );
+          true
+        )
 
         // target function name and name length
         const functionNameEncoded = new Uint8Array(
-          Buffer.from((data as ICallData).functionName, 'utf8'),
-        );
+          Buffer.from((data as ICallData).functionName, 'utf8')
+        )
         const functionNameLengthEncoded = Buffer.from(
-          varintEncode(functionNameEncoded.length),
-        );
+          varintEncode(functionNameEncoded.length)
+        )
 
         // parameter
-        const param = (data as ICallData).parameter;
-        let serializedParam: number[]; // serialized parameter
+        const param = (data as ICallData).parameter
+        let serializedParam: number[] // serialized parameter
         if (param instanceof Array) {
-          serializedParam = param;
+          serializedParam = param
         } else {
-          serializedParam = param.serialize();
+          serializedParam = param.serialize()
         }
-        const parametersEncoded = new Uint8Array(serializedParam);
+        const parametersEncoded = new Uint8Array(serializedParam)
         const parametersLengthEncoded = Buffer.from(
-          varintEncode(parametersEncoded.length),
-        );
+          varintEncode(parametersEncoded.length)
+        )
 
         return Buffer.concat([
           feeEncoded,
@@ -403,17 +399,17 @@ export class BaseClient {
           functionNameEncoded,
           parametersLengthEncoded,
           parametersEncoded,
-        ]);
+        ])
       }
       case OperationTypeId.Transaction: {
         // transfer amount
-        const amount = (data as ITransactionData).amount;
-        const transferAmountEncoded = Buffer.from(varintEncode(amount));
+        const amount = (data as ITransactionData).amount
+        const transferAmountEncoded = Buffer.from(varintEncode(amount))
         // recipient
         const recipientAddressEncoded = encodeAddressToBytes(
           (data as ITransactionData).recipientAddress,
-          false,
-        );
+          false
+        )
 
         return Buffer.concat([
           feeEncoded,
@@ -421,21 +417,21 @@ export class BaseClient {
           typeIdEncoded,
           recipientAddressEncoded,
           transferAmountEncoded,
-        ]);
+        ])
       }
       case OperationTypeId.RollBuy:
       case OperationTypeId.RollSell: {
         // rolls amount
         const rollsAmountEncoded = Buffer.from(
-          varintEncode((data as IRollsData).amount),
-        );
+          varintEncode((data as IRollsData).amount)
+        )
 
         return Buffer.concat([
           feeEncoded,
           expirePeriodEncoded,
           typeIdEncoded,
           rollsAmountEncoded,
-        ]);
+        ])
       }
     }
   }

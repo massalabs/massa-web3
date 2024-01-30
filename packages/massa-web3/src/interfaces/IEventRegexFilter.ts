@@ -1,4 +1,4 @@
-import { IEventFilter } from './IEventFilter';
+import { IEventFilter } from './IEventFilter'
 
 /**
  * Allows you to filter events by their name using regular expressions.
@@ -6,5 +6,5 @@ import { IEventFilter } from './IEventFilter';
  * @see eventsNameRegex of type `string` represents the regular expression to match the event name.
  */
 export interface IEventRegexFilter extends IEventFilter {
-  eventsNameRegex: null | string;
+  eventsNameRegex: null | string
 }

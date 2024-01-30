@@ -1,33 +1,33 @@
-import { IClientConfig } from '../interfaces/IClientConfig';
-import { IAccount } from '../interfaces/IAccount';
-import { BaseClient } from './BaseClient';
-import { IAddressInfo } from '../interfaces/IAddressInfo';
-import { IFullAddressInfo } from '../interfaces/IFullAddressInfo';
-import { ISignature } from '../interfaces/ISignature';
+import { IClientConfig } from '../interfaces/IClientConfig'
+import { IAccount } from '../interfaces/IAccount'
+import { BaseClient } from './BaseClient'
+import { IAddressInfo } from '../interfaces/IAddressInfo'
+import { IFullAddressInfo } from '../interfaces/IFullAddressInfo'
+import { ISignature } from '../interfaces/ISignature'
 import {
   base58Decode,
   base58Encode,
   varintEncode,
   hashBlake3,
-} from '../utils/Xbqcrypto';
-import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { trySafeExecute } from '../utils/retryExecuteFunction';
-import { ITransactionData } from '../interfaces/ITransactionData';
-import { PublicApiClient } from './PublicApiClient';
-import { IRollsData } from '../interfaces/IRollsData';
-import { IBalance } from '../interfaces/IBalance';
-import * as ed from '@noble/ed25519';
-import { IWalletClient } from '../interfaces/IWalletClient';
-import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses';
-import { IBaseAccount } from '../interfaces/IBaseAccount';
-import { Web3Account } from './accounts/Web3Account';
+} from '../utils/Xbqcrypto'
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods'
+import { trySafeExecute } from '../utils/retryExecuteFunction'
+import { ITransactionData } from '../interfaces/ITransactionData'
+import { PublicApiClient } from './PublicApiClient'
+import { IRollsData } from '../interfaces/IRollsData'
+import { IBalance } from '../interfaces/IBalance'
+import * as ed from '@noble/ed25519'
+import { IWalletClient } from '../interfaces/IWalletClient'
+import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses'
+import { IBaseAccount } from '../interfaces/IBaseAccount'
+import { Web3Account } from './accounts/Web3Account'
 import {
   KEYS_VERSION_NUMBER,
   SECRET_KEY_PREFIX,
   fromMAS,
-} from '@massalabs/web3-utils';
+} from '@massalabs/web3-utils'
 
-const MAX_WALLET_ACCOUNTS = 256;
+const MAX_WALLET_ACCOUNTS = 256
 
 /**
  * A client class for interacting with wallets, which can seamlessly work with WebExtensions.
@@ -38,8 +38,8 @@ const MAX_WALLET_ACCOUNTS = 256;
  * class and implements the IWalletClient interface.
  */
 export class WalletClient extends BaseClient implements IWalletClient {
-  private wallet: Array<IAccount> = [];
-  private baseAccount?: IBaseAccount;
+  private wallet: Array<IAccount> = []
+  private baseAccount?: IBaseAccount
 
   /**
    * Constructor of the {@link WalletClient} class.
@@ -51,31 +51,31 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    baseAccount?: IBaseAccount,
+    baseAccount?: IBaseAccount
   ) {
-    super(clientConfig);
+    super(clientConfig)
     if (baseAccount) {
-      this.baseAccount = baseAccount;
+      this.baseAccount = baseAccount
     }
 
     // ========== bind wallet methods ========= //
 
     // wallet methods
-    this.cleanWallet = this.cleanWallet.bind(this);
-    this.getWalletAccounts = this.getWalletAccounts.bind(this);
-    this.getWalletAccountByAddress = this.getWalletAccountByAddress.bind(this);
-    this.addSecretKeysToWallet = this.addSecretKeysToWallet.bind(this);
-    this.addAccountsToWallet = this.addAccountsToWallet.bind(this);
-    this.removeAddressesFromWallet = this.removeAddressesFromWallet.bind(this);
-    this.walletInfo = this.walletInfo.bind(this);
-    this.signMessage = this.signMessage.bind(this);
-    this.getWalletAddressesInfo = this.getWalletAddressesInfo.bind(this);
-    this.setBaseAccount = this.setBaseAccount.bind(this);
-    this.getBaseAccount = this.getBaseAccount.bind(this);
-    this.sendTransaction = this.sendTransaction.bind(this);
-    this.sellRolls = this.sellRolls.bind(this);
-    this.buyRolls = this.buyRolls.bind(this);
-    this.getAccountBalance = this.getAccountBalance.bind(this);
+    this.cleanWallet = this.cleanWallet.bind(this)
+    this.getWalletAccounts = this.getWalletAccounts.bind(this)
+    this.getWalletAccountByAddress = this.getWalletAccountByAddress.bind(this)
+    this.addSecretKeysToWallet = this.addSecretKeysToWallet.bind(this)
+    this.addAccountsToWallet = this.addAccountsToWallet.bind(this)
+    this.removeAddressesFromWallet = this.removeAddressesFromWallet.bind(this)
+    this.walletInfo = this.walletInfo.bind(this)
+    this.signMessage = this.signMessage.bind(this)
+    this.getWalletAddressesInfo = this.getWalletAddressesInfo.bind(this)
+    this.setBaseAccount = this.setBaseAccount.bind(this)
+    this.getBaseAccount = this.getBaseAccount.bind(this)
+    this.sendTransaction = this.sendTransaction.bind(this)
+    this.sellRolls = this.sellRolls.bind(this)
+    this.buyRolls = this.buyRolls.bind(this)
+    this.getAccountBalance = this.getAccountBalance.bind(this)
   }
 
   /**
@@ -87,10 +87,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async setBaseAccount(baseAccount: IBaseAccount): Promise<void> {
     if (!baseAccount.address()) {
-      throw new Error('Invalid base account address');
+      throw new Error('Invalid base account address')
     }
-    await baseAccount.verify();
-    this.baseAccount = baseAccount;
+    await baseAccount.verify()
+    this.baseAccount = baseAccount
   }
 
   /**
@@ -99,7 +99,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @returns The default {@link IAccount} of the wallet. If no default account is set, it returns `null`.
    */
   public getBaseAccount(): IBaseAccount | null {
-    return this.baseAccount;
+    return this.baseAccount
   }
 
   /**
@@ -108,15 +108,15 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @returns An array of {@link IAccount} objects.
    */
   public getWalletAccounts(): Array<IAccount> {
-    return this.wallet;
+    return this.wallet
   }
 
   /**
    * Removes all accounts from the wallet.
    */
   public cleanWallet(): void {
-    this.wallet.length = 0;
-    this.baseAccount = null;
+    this.wallet.length = 0
+    this.baseAccount = null
   }
 
   /**
@@ -129,8 +129,8 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public getWalletAccountByAddress(address: string): IAccount | undefined {
     return this.wallet.find(
-      (w) => w.address.toLowerCase() === address.toLowerCase(),
-    ); // ignore case for flexibility
+      (w) => w.address.toLowerCase() === address.toLowerCase()
+    ) // ignore case for flexibility
   }
 
   /**
@@ -143,35 +143,35 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @returns A Promise that resolves to an array of {@link IAccount} objects.
    */
   public async addSecretKeysToWallet(
-    secretKeys: Array<string>,
+    secretKeys: Array<string>
   ): Promise<Array<IAccount>> {
     if (secretKeys.length > MAX_WALLET_ACCOUNTS) {
       throw new Error(
-        `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${secretKeys.length}`,
-      );
+        `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted private keys: ${secretKeys.length}`
+      )
     }
-    const accountsToCreate: IAccount[] = [];
+    const accountsToCreate: IAccount[] = []
 
     const uniqueSecretKeys = secretKeys.filter(
-      (value, index, self) => self.indexOf(value) === index,
-    );
+      (value, index, self) => self.indexOf(value) === index
+    )
 
     for (const secretKeyBase58Encoded of uniqueSecretKeys) {
-      const secretKey = new SecretKey(secretKeyBase58Encoded);
-      const publicKey: PublicKey = await secretKey.getPublicKey();
-      const address: Address = Address.fromPublicKey(publicKey);
+      const secretKey = new SecretKey(secretKeyBase58Encoded)
+      const publicKey: PublicKey = await secretKey.getPublicKey()
+      const address: Address = Address.fromPublicKey(publicKey)
 
       if (!this.getWalletAccountByAddress(address.base58Encode)) {
         accountsToCreate.push({
           secretKey: secretKeyBase58Encoded,
           publicKey: publicKey.base58Encode,
           address: address.base58Encode,
-        } as IAccount);
+        } as IAccount)
       }
     }
 
-    this.wallet.push(...accountsToCreate);
-    return accountsToCreate;
+    this.wallet.push(...accountsToCreate)
+    return accountsToCreate
   }
 
   /**
@@ -191,38 +191,38 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @returns A Promise that resolves to an array of {@link IAccount} objects.
    */
   public async addAccountsToWallet(
-    accounts: Array<IAccount>,
+    accounts: Array<IAccount>
   ): Promise<Array<IAccount>> {
     if (accounts.length > MAX_WALLET_ACCOUNTS) {
       throw new Error(
-        `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted accounts: ${accounts.length}`,
-      );
+        `Maximum number of allowed wallet accounts exceeded ${MAX_WALLET_ACCOUNTS}. Submitted accounts: ${accounts.length}`
+      )
     }
-    const accountsAdded: Array<IAccount> = [];
+    const accountsAdded: Array<IAccount> = []
 
     for (const account of accounts) {
       if (!account.secretKey) {
-        throw new Error('Missing account private key');
+        throw new Error('Missing account private key')
       }
 
       // Create the secret key object
-      const secretKeyBase58Encoded: string = account.secretKey;
-      const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
+      const secretKeyBase58Encoded: string = account.secretKey
+      const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded)
 
       // create the public key object
-      const publicKey: PublicKey = await secretKey.getPublicKey();
+      const publicKey: PublicKey = await secretKey.getPublicKey()
       if (account.publicKey && account.publicKey !== publicKey.base58Encode) {
         throw new Error(
-          'Public key does not correspond the the private key submitted',
-        );
+          'Public key does not correspond the the private key submitted'
+        )
       }
 
       // get wallet account address
-      const address: Address = Address.fromPublicKey(publicKey);
+      const address: Address = Address.fromPublicKey(publicKey)
       if (account.address && account.address !== address.base58Encode) {
         throw new Error(
-          'Account address not correspond the the address submitted',
-        );
+          'Account address not correspond the the address submitted'
+        )
       }
 
       if (!this.getWalletAccountByAddress(address.base58Encode)) {
@@ -230,12 +230,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
           address: address.base58Encode,
           secretKey: secretKeyBase58Encoded,
           publicKey: publicKey.base58Encode,
-        } as IAccount);
+        } as IAccount)
       }
     }
 
-    this.wallet.push(...accountsAdded);
-    return accountsAdded;
+    this.wallet.push(...accountsAdded)
+    return accountsAdded
   }
 
   /**
@@ -245,9 +245,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public removeAddressesFromWallet(addresses: Array<string>): void {
     for (const address of addresses) {
-      const index = this.wallet.findIndex((w) => w.address === address);
+      const index = this.wallet.findIndex((w) => w.address === address)
       if (index > -1) {
-        this.wallet.splice(index, 1);
+        this.wallet.splice(index, 1)
       }
     }
   }
@@ -261,18 +261,18 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async walletInfo(): Promise<Array<IFullAddressInfo>> {
     if (this.wallet.length === 0) {
-      return [];
+      return []
     }
     const addresses: Array<string> = this.wallet.map(
-      (account) => account.address,
-    );
+      (account) => account.address
+    )
     const addressesInfo: Array<IAddressInfo> =
-      await this.getWalletAddressesInfo(addresses);
+      await this.getWalletAddressesInfo(addresses)
 
     if (addressesInfo.length !== this.wallet.length) {
       throw new Error(
-        `Requested wallets not fully retrieved. Got ${addressesInfo.length}, expected: ${this.wallet.length}`,
-      );
+        `Requested wallets not fully retrieved. Got ${addressesInfo.length}, expected: ${this.wallet.length}`
+      )
     }
 
     return addressesInfo.map((info, index) => {
@@ -280,8 +280,8 @@ export class WalletClient extends BaseClient implements IWalletClient {
         publicKey: this.wallet[index].publicKey,
         secretKey: this.wallet[index].secretKey,
         ...info,
-      } as IFullAddressInfo;
-    });
+      } as IFullAddressInfo
+    })
   }
 
   /**
@@ -292,25 +292,24 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public static async walletGenerateNewAccount(): Promise<IAccount> {
     // generate private key
-    const secretKeyArray: Uint8Array = ed.utils.randomPrivateKey();
+    const secretKeyArray: Uint8Array = ed.utils.randomPrivateKey()
 
-    const version = Buffer.from(varintEncode(KEYS_VERSION_NUMBER));
+    const version = Buffer.from(varintEncode(KEYS_VERSION_NUMBER))
     const secretKeyBase58Encoded: string =
-      SECRET_KEY_PREFIX +
-      base58Encode(Buffer.concat([version, secretKeyArray]));
-    const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded);
+      SECRET_KEY_PREFIX + base58Encode(Buffer.concat([version, secretKeyArray]))
+    const secretKey: SecretKey = new SecretKey(secretKeyBase58Encoded)
 
     // get public key
-    const publicKey: PublicKey = await secretKey.getPublicKey();
+    const publicKey: PublicKey = await secretKey.getPublicKey()
 
     // get wallet account address
-    const address: Address = Address.fromPublicKey(publicKey);
+    const address: Address = Address.fromPublicKey(publicKey)
 
     return {
       address: address.base58Encode,
       secretKey: secretKeyBase58Encoded,
       publicKey: publicKey.base58Encode,
-    } as IAccount;
+    } as IAccount
   }
 
   /**
@@ -321,21 +320,21 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * @returns A Promise that resolves to an {@link IAccount} object.
    */
   public static async getAccountFromSecretKey(
-    secretKeyBase58: string,
+    secretKeyBase58: string
   ): Promise<IAccount> {
     // get private key
-    const secretKey: SecretKey = new SecretKey(secretKeyBase58);
+    const secretKey: SecretKey = new SecretKey(secretKeyBase58)
     // get public key
-    const publicKey: PublicKey = await secretKey.getPublicKey();
+    const publicKey: PublicKey = await secretKey.getPublicKey()
 
     // get wallet account address
-    const address: Address = Address.fromPublicKey(publicKey);
+    const address: Address = Address.fromPublicKey(publicKey)
 
     return {
       address: address.base58Encode,
       secretKey: secretKeyBase58,
       publicKey: publicKey.base58Encode,
-    } as IAccount;
+    } as IAccount
   }
 
   /**
@@ -351,25 +350,25 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public async signMessage(
     data: string | Buffer,
     chainId: bigint,
-    accountSignerAddress: string,
+    accountSignerAddress: string
   ): Promise<ISignature> {
-    let signerAccount = this.getWalletAccountByAddress(accountSignerAddress);
-    let account: IBaseAccount;
+    let signerAccount = this.getWalletAccountByAddress(accountSignerAddress)
+    let account: IBaseAccount
     if (!signerAccount) {
       if (this.baseAccount.address() === accountSignerAddress) {
-        account = this.baseAccount;
+        account = this.baseAccount
       } else {
         throw new Error(
-          `No signer account ${accountSignerAddress} found in wallet`,
-        );
+          `No signer account ${accountSignerAddress} found in wallet`
+        )
       }
     } else {
-      account = new Web3Account(signerAccount, this.publicApiClient, chainId);
+      account = new Web3Account(signerAccount, this.publicApiClient, chainId)
     }
     if (typeof data === 'string') {
-      data = Buffer.from(data);
+      data = Buffer.from(data)
     }
-    return account.sign(data);
+    return account.sign(data)
   }
 
   /**
@@ -381,19 +380,19 @@ export class WalletClient extends BaseClient implements IWalletClient {
    * information about a corresponding wallet address.
    */
   private async getWalletAddressesInfo(
-    addresses: Array<string>,
+    addresses: Array<string>
   ): Promise<Array<IAddressInfo>> {
-    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES;
+    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_ADDRESSES
     if (this.clientConfig.retryStrategyOn) {
       return await trySafeExecute<Array<IAddressInfo>>(
         this.sendJsonRPCRequest,
-        [jsonRpcRequestMethod, [addresses]],
-      );
+        [jsonRpcRequestMethod, [addresses]]
+      )
     } else {
       return await this.sendJsonRPCRequest<Array<IAddressInfo>>(
         jsonRpcRequestMethod,
-        [addresses],
-      );
+        [addresses]
+      )
     }
   }
 
@@ -416,9 +415,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public static async walletSignMessage(
     data: string | Buffer,
-    signer: IBaseAccount,
+    signer: IBaseAccount
   ): Promise<ISignature> {
-    return signer.sign(Buffer.from(data));
+    return signer.sign(Buffer.from(data))
   }
 
   /**
@@ -432,44 +431,44 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async verifySignature(
     data: string | Buffer,
-    signature: ISignature,
+    signature: ISignature
   ): Promise<boolean> {
     // setup the public key.
-    const publicKey: PublicKey = PublicKey.fromString(signature.publicKey);
+    const publicKey: PublicKey = PublicKey.fromString(signature.publicKey)
 
     // setup the message digest.
-    const bytesCompact: Buffer = Buffer.from(data);
-    const messageDigest: Uint8Array = hashBlake3(bytesCompact);
+    const bytesCompact: Buffer = Buffer.from(data)
+    const messageDigest: Uint8Array = hashBlake3(bytesCompact)
 
     try {
       // setup the signature.
       const versionAndSignatureBytes: Buffer = base58Decode(
-        signature.base58Encoded,
-      );
+        signature.base58Encoded
+      )
 
       // removing the version byte
-      const signatureBytes: Uint8Array = versionAndSignatureBytes.slice(1);
+      const signatureBytes: Uint8Array = versionAndSignatureBytes.slice(1)
       // check sig length
       if (signatureBytes.length != 64) {
         throw new Error(
-          `Invalid signature length. Expected 64, got ${signatureBytes.length}`,
-        );
+          `Invalid signature length. Expected 64, got ${signatureBytes.length}`
+        )
       }
       if (publicKey.bytes.length != 32) {
         throw new Error(
-          `Invalid public key length. Expected 32, got ${publicKey.bytes.length}`,
-        );
+          `Invalid public key length. Expected 32, got ${publicKey.bytes.length}`
+        )
       }
       // verify signature.
       const isVerified = await ed.verify(
         signatureBytes,
         messageDigest,
-        publicKey.bytes,
-      );
-      return isVerified;
+        publicKey.bytes
+      )
+      return isVerified
     } catch (err) {
-      console.error('Failed to verify signature:', err);
-      return false;
+      console.error('Failed to verify signature:', err)
+      return false
     }
   }
 
@@ -484,17 +483,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public async getAccountBalance(address: string): Promise<IBalance | null> {
     try {
       const addresses: Array<IAddressInfo> =
-        await this.publicApiClient.getAddresses([address]);
-      if (addresses.length === 0) return null;
+        await this.publicApiClient.getAddresses([address])
+      if (addresses.length === 0) return null
 
-      const addressInfo: IAddressInfo = addresses.at(0);
+      const addressInfo: IAddressInfo = addresses.at(0)
       return {
         candidate: fromMAS(addressInfo.candidate_balance),
         final: fromMAS(addressInfo.final_balance),
-      } as IBalance;
+      } as IBalance
     } catch (err) {
-      console.error('Failed to get account balance:', err);
-      return null;
+      console.error('Failed to get account balance:', err)
+      return null
     }
   }
 
@@ -511,14 +510,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async sendTransaction(
     txData: ITransactionData,
-    executor?: IBaseAccount,
+    executor?: IBaseAccount
   ): Promise<Array<string>> {
     // check sender account
-    const sender: IBaseAccount = executor || this.getBaseAccount();
+    const sender: IBaseAccount = executor || this.getBaseAccount()
     if (!sender) {
-      throw new Error('No tx sender available');
+      throw new Error('No tx sender available')
     }
-    return [await sender.sendTransaction(txData)];
+    return [await sender.sendTransaction(txData)]
   }
 
   /**
@@ -534,14 +533,14 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async buyRolls(
     txData: IRollsData,
-    executor?: IBaseAccount,
+    executor?: IBaseAccount
   ): Promise<Array<string>> {
     // check sender account
-    const sender: IBaseAccount = executor || this.getBaseAccount();
+    const sender: IBaseAccount = executor || this.getBaseAccount()
     if (!sender) {
-      throw new Error('No tx sender available');
+      throw new Error('No tx sender available')
     }
-    return [await sender.buyRolls(txData)];
+    return [await sender.buyRolls(txData)]
   }
 
   /**
@@ -557,13 +556,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
    */
   public async sellRolls(
     txData: IRollsData,
-    executor?: IBaseAccount,
+    executor?: IBaseAccount
   ): Promise<Array<string>> {
     // check sender account
-    const sender: IBaseAccount = executor || this.getBaseAccount();
+    const sender: IBaseAccount = executor || this.getBaseAccount()
     if (!sender) {
-      throw new Error('No tx sender available');
+      throw new Error('No tx sender available')
     }
-    return [await sender.sellRolls(txData)];
+    return [await sender.sellRolls(txData)]
   }
 }

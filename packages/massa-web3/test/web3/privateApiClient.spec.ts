@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import { IClientConfig } from '../../src/interfaces/IClientConfig';
-import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
-import { PrivateApiClient } from '../../src';
+import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods'
+import { IClientConfig } from '../../src/interfaces/IClientConfig'
+import { ProviderType, IProvider } from '../../src/interfaces/IProvider'
+import { PrivateApiClient } from '../../src'
 
-export const PERIOD_OFFSET = 5;
+export const PERIOD_OFFSET = 5
 
 describe('PrivateApiClient', () => {
-  let client: PrivateApiClient;
-  let mockSendJsonRPCRequest: jest.SpyInstance;
-  let ipAddress = '192.168.0.1';
+  let client: PrivateApiClient
+  let mockSendJsonRPCRequest: jest.SpyInstance
+  let ipAddress = '192.168.0.1'
 
   const getRpcArgs = (wrapArgsInArray, mockData) => {
-    const argsInArray = Array.isArray(mockData) ? mockData : [mockData];
-    const rpcArgs = wrapArgsInArray ? [argsInArray] : argsInArray;
-    return rpcArgs;
-  };
+    const argsInArray = Array.isArray(mockData) ? mockData : [mockData]
+    const rpcArgs = wrapArgsInArray ? [argsInArray] : argsInArray
+    return rpcArgs
+  }
 
   // Function to generate tests for a set of similar operations to avoid code duplication
   function generateAPITests(
@@ -23,60 +23,59 @@ describe('PrivateApiClient', () => {
     mockData: any,
     mockResponse: any,
     jsonRpcRequestMethod: JSON_RPC_REQUEST_METHOD,
-    wrapArgsInArray = true,
+    wrapArgsInArray = true
   ) {
     test(`should call sendJsonRPCRequest with correct arguments`, async () => {
-      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse))
 
-      await (client as any)[operation](mockData);
+      await (client as any)[operation](mockData)
 
-      const rpcArgs = getRpcArgs(wrapArgsInArray, mockData);
+      const rpcArgs = getRpcArgs(wrapArgsInArray, mockData)
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,
-        rpcArgs,
-      );
-    });
+        rpcArgs
+      )
+    })
 
     test(`should return the correct result`, async () => {
-      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse))
 
-      const result = await (client as any)[operation](mockData);
+      const result = await (client as any)[operation](mockData)
 
-      expect(result).toEqual(mockResponse);
-    });
+      expect(result).toEqual(mockResponse)
+    })
 
     test(`should handle errors correctly`, async () => {
-      const mockError = new Error('Error message');
-      mockSendJsonRPCRequest.mockRejectedValue(mockError);
+      const mockError = new Error('Error message')
+      mockSendJsonRPCRequest.mockRejectedValue(mockError)
 
       await expect((client as any)[operation](mockData)).rejects.toThrow(
-        mockError,
-      );
-    });
+        mockError
+      )
+    })
 
     test(`should call trySafeExecute if retryStrategyOn is true`, async () => {
       // Enable retry strategy
-      const originalRetryStrategy = (client as any).clientConfig
-        .retryStrategyOn;
-      (client as any).clientConfig.retryStrategyOn = true;
+      const originalRetryStrategy = (client as any).clientConfig.retryStrategyOn
+      ;(client as any).clientConfig.retryStrategyOn = true
 
-      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse))
 
-      const result = await (client as any)[operation](mockData);
+      const result = await (client as any)[operation](mockData)
 
-      const rpcArgs = getRpcArgs(wrapArgsInArray, mockData);
+      const rpcArgs = getRpcArgs(wrapArgsInArray, mockData)
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,
-        rpcArgs,
-      );
+        rpcArgs
+      )
 
-      expect(result).toEqual(mockResponse);
+      expect(result).toEqual(mockResponse)
 
       // Restore retry strategy
-      (client as any).clientConfig.retryStrategyOn = originalRetryStrategy;
-    });
+      ;(client as any).clientConfig.retryStrategyOn = originalRetryStrategy
+    })
   }
 
   beforeEach(() => {
@@ -92,37 +91,37 @@ describe('PrivateApiClient', () => {
         } as IProvider,
       ],
       periodOffset: PERIOD_OFFSET,
-    };
-    client = new PrivateApiClient(clientConfig);
-    mockSendJsonRPCRequest = jest.spyOn(client as any, 'sendJsonRPCRequest');
-  });
+    }
+    client = new PrivateApiClient(clientConfig)
+    mockSendJsonRPCRequest = jest.spyOn(client as any, 'sendJsonRPCRequest')
+  })
 
   describe('nodeAddToPeersWhitelist', () => {
     generateAPITests(
       'nodeAddToPeersWhitelist',
       ipAddress,
       undefined,
-      JSON_RPC_REQUEST_METHOD.NODE_ADD_TO_PEERS_WHITELIST,
-    );
-  });
+      JSON_RPC_REQUEST_METHOD.NODE_ADD_TO_PEERS_WHITELIST
+    )
+  })
 
   describe('nodeRemoveFromWhitelist', () => {
     generateAPITests(
       'nodeRemoveFromWhitelist',
       ipAddress,
       undefined,
-      JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST,
-    );
-  });
+      JSON_RPC_REQUEST_METHOD.NODE_REMOVE_FROM_WHITELIST
+    )
+  })
 
   describe('nodeUnbanByIpAddress', () => {
     generateAPITests(
       'nodeUnbanByIpAddress',
       ipAddress,
       undefined,
-      JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_IP,
-    );
-  });
+      JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_IP
+    )
+  })
 
   describe('nodeUnbanById', () => {
     generateAPITests(
@@ -130,9 +129,9 @@ describe('PrivateApiClient', () => {
       'nodeIdExample',
       undefined,
       JSON_RPC_REQUEST_METHOD.NODE_UNBAN_BY_ID,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('nodeBanByIpAddress', () => {
     generateAPITests(
@@ -140,9 +139,9 @@ describe('PrivateApiClient', () => {
       '127.0.0.1',
       undefined,
       JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_IP,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('nodeBanById', () => {
     generateAPITests(
@@ -150,9 +149,9 @@ describe('PrivateApiClient', () => {
       'nodeIdExample',
       undefined,
       JSON_RPC_REQUEST_METHOD.NODE_BAN_BY_ID,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('nodeStop', () => {
     generateAPITests(
@@ -160,9 +159,9 @@ describe('PrivateApiClient', () => {
       [],
       undefined,
       JSON_RPC_REQUEST_METHOD.STOP_NODE,
-      false,
-    );
-  });
+      false
+    )
+  })
 
   describe('nodeSignMessage', () => {
     generateAPITests(
@@ -170,9 +169,9 @@ describe('PrivateApiClient', () => {
       new Uint8Array([]),
       { signature: 'mockSignature' },
       JSON_RPC_REQUEST_METHOD.NODE_SIGN_MESSAGE,
-      false,
-    );
-  });
+      false
+    )
+  })
 
   describe('nodeGetStakingAddresses', () => {
     generateAPITests(
@@ -180,9 +179,9 @@ describe('PrivateApiClient', () => {
       [],
       ['address1', 'address2'],
       JSON_RPC_REQUEST_METHOD.GET_STAKING_ADDRESSES,
-      false,
-    );
-  });
+      false
+    )
+  })
 
   describe('nodeRemoveStakingAddresses', () => {
     generateAPITests(
@@ -190,9 +189,9 @@ describe('PrivateApiClient', () => {
       ['address1', 'address2'],
       undefined,
       JSON_RPC_REQUEST_METHOD.REMOVE_STAKING_ADDRESSES,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('nodeAddStakingSecretKeys', () => {
     generateAPITests(
@@ -200,7 +199,7 @@ describe('PrivateApiClient', () => {
       ['key1', 'key2'],
       undefined,
       JSON_RPC_REQUEST_METHOD.ADD_STAKING_PRIVATE_KEYS,
-      true,
-    );
-  });
-});
+      true
+    )
+  })
+})

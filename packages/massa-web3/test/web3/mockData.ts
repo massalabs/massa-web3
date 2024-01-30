@@ -2,37 +2,37 @@
     This file contains mock data for testing purposes.
 */
 
-import { IClientConfig } from '../../src/interfaces/IClientConfig';
-import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
-import { PERIOD_OFFSET } from '../../src/web3/BaseClient';
-import { IAccount } from '../../src/interfaces/IAccount';
-import { IContractData } from '../../src/interfaces/IContractData';
-import { ICallData } from '../../src/interfaces/ICallData';
-import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval';
-import { IReadData } from '../../src/interfaces/IReadData';
-import { IEventFilter } from '../../src/interfaces/IEventFilter';
-import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
-import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse';
-import { ISignature } from '../../src/interfaces/ISignature';
-import { IOperationData } from '../../src/interfaces/IOperationData';
-import { INodeStatus } from '../../src/interfaces/INodeStatus';
-import { IEndorsement } from '../../src/interfaces/IEndorsement';
+import { IClientConfig } from '../../src/interfaces/IClientConfig'
+import { ProviderType, IProvider } from '../../src/interfaces/IProvider'
+import { PERIOD_OFFSET } from '../../src/web3/BaseClient'
+import { IAccount } from '../../src/interfaces/IAccount'
+import { IContractData } from '../../src/interfaces/IContractData'
+import { ICallData } from '../../src/interfaces/ICallData'
+import { IGetGraphInterval } from '../../src/interfaces/IGetGraphInterval'
+import { IReadData } from '../../src/interfaces/IReadData'
+import { IEventFilter } from '../../src/interfaces/IEventFilter'
+import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter'
+import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse'
+import { ISignature } from '../../src/interfaces/ISignature'
+import { IOperationData } from '../../src/interfaces/IOperationData'
+import { INodeStatus } from '../../src/interfaces/INodeStatus'
+import { IEndorsement } from '../../src/interfaces/IEndorsement'
 import {
   ISlot,
   IEvent,
   IContractReadOperationData,
   IContractReadOperationResponse,
-} from '@massalabs/web3-utils';
-import { IBalance } from '../../src/interfaces/IBalance';
+} from '@massalabs/web3-utils'
+import { IBalance } from '../../src/interfaces/IBalance'
 
-export const BUILDNET_CHAIN_ID = BigInt(77658366);
+export const BUILDNET_CHAIN_ID = BigInt(77658366)
 
 // util function to create an event, only for that test file to avoid code duplication
 function createEvent(
   id: string,
   data: string,
   slot: ISlot,
-  callStack: string[],
+  callStack: string[]
 ): IEvent {
   return {
     id,
@@ -47,7 +47,7 @@ function createEvent(
       is_final: true,
       is_error: false,
     },
-  };
+  }
 }
 
 export const mockNodeStatusInfo: INodeStatus = {
@@ -91,12 +91,12 @@ export const mockNodeStatusInfo: INodeStatus = {
     pos_lookback_cycles: 64,
   },
   chain_id: BUILDNET_CHAIN_ID,
-};
+}
 
 export const mockGraphInterval: IGetGraphInterval = {
   start: 1624153200000,
   end: 1624156800000,
-};
+}
 
 export const mockBlock = {
   header: {
@@ -111,13 +111,13 @@ export const mockBlock = {
     creator_address: '0x000',
     id: '0x000',
   },
-};
+}
 
 export const mockAddresses: string[] = [
   'AU1qx8SWRBX3EaLLWmcviYiQqS7zb4jV4QykHt2TskjTPJbQAHF7',
   'AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp',
   'AU12WVAJoH2giHAjSxk9R1XK3YhpCw2QxmkCbtXxcr4T3XCUG55nr',
-];
+]
 
 export const mockAddressesInfo = [
   {
@@ -138,9 +138,9 @@ export const mockAddressesInfo = [
     final_balance: '50',
     thread: 3,
   },
-];
+]
 
-export const mockBlockIds = ['0x000', '0x001'];
+export const mockBlockIds = ['0x000', '0x001']
 
 export const mockBlockData = [
   {
@@ -157,9 +157,9 @@ export const mockBlockData = [
     is_in_blockclique: false,
     is_stale: false,
   },
-];
+]
 
-export const mockEndorsementIds = ['0x000', '0x001'];
+export const mockEndorsementIds = ['0x000', '0x001']
 
 export const mockEndorsementData: Array<IEndorsement> = [
   {
@@ -192,7 +192,7 @@ export const mockEndorsementData: Array<IEndorsement> = [
       signature: '0x000',
     },
   },
-];
+]
 
 export const mockOpIds: Array<string> = [
   'O1z2xVtwFsKP3po3vkPmpEtZiJvwEd4v1hpK7iT8P3rk9zCEs9f',
@@ -202,7 +202,7 @@ export const mockOpIds: Array<string> = [
   'O1t2xVtwFsKP3po3vkPmpELZiJvwEd2vy3pK7iT8P3rk9zCEs9j',
   'O1t2xVtwFsKP3po3vkPmpELZiJvwEd2vy3pK7iT8P3rk9zCEs9k',
   'O1t2xVtwFsKP3po3vkPmpELZiJvwEd2vy3pK7iT8P3rk9zCEs9l',
-];
+]
 
 export const mockOperationData = [
   {
@@ -269,7 +269,7 @@ export const mockOperationData = [
     thread: 4,
     operation: {},
   },
-];
+]
 
 export const mockOperationDataDetailed: Array<IOperationData> = [
   // EOperationStatus.FINAL_SUCCESS
@@ -498,7 +498,7 @@ export const mockOperationDataDetailed: Array<IOperationData> = [
     },
     op_exec_status: true,
   },
-];
+]
 
 export const mockStackersData = [
   {
@@ -506,7 +506,7 @@ export const mockStackersData = [
     AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp: 2,
     AU12WVAJoH2giHAjSxk9R1XK3YhpCw2QxmkCbtXxcr4T3XCUG55nr: 3,
   },
-];
+]
 
 export const mockDatastoreEntryInput = [
   {
@@ -517,7 +517,7 @@ export const mockDatastoreEntryInput = [
     address: 'AU1mTRrw6vVY2ehJTpL2PzHewP5iS1kGV2jhh3P9gNtLRxj4Z2fp',
     key: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
   },
-];
+]
 
 export const mockDatastoreEntries = [
   {
@@ -528,7 +528,7 @@ export const mockDatastoreEntries = [
     final_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
     candidate_value: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]),
   },
-];
+]
 
 export const mockClientConfig: IClientConfig = {
   providers: [
@@ -542,18 +542,18 @@ export const mockClientConfig: IClientConfig = {
     } as IProvider,
   ],
   periodOffset: PERIOD_OFFSET,
-};
+}
 
 export const mockDeployerAccount: IAccount = {
   address: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
   publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   secretKey: 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd',
-};
+}
 
 export const mockBalance: IBalance = {
   final: 50n,
   candidate: 50n,
-};
+}
 
 export const mockContractData: IContractData = {
   fee: 1n,
@@ -580,7 +580,7 @@ export const mockContractData: IContractData = {
       new Uint8Array([0x0c, 0x0d, 0x0e, 0x0f]),
     ],
   ]),
-};
+}
 
 export const mockCallData: ICallData = {
   fee: 1n,
@@ -589,7 +589,7 @@ export const mockCallData: ICallData = {
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
   functionName: 'test',
   parameter: [1, 2, 3, 4],
-};
+}
 
 export const mockedEvents: IEvent[] = [
   createEvent('event1', 'value1', { period: 1, thread: 1 }, ['address1']), // n°1
@@ -598,7 +598,7 @@ export const mockedEvents: IEvent[] = [
   createEvent('event5', 'value5', { period: 2, thread: 2 }, ['address4']), // n°4
   createEvent('event4', 'value4', { period: 1, thread: 2 }, ['address4']), // n°2
   createEvent('event6', 'value6', { period: 3, thread: 2 }, ['address4']), // n°5
-];
+]
 
 export const mockEventFilter: IEventFilter | IEventRegexFilter = {
   start: { period: 2, thread: 1 },
@@ -607,7 +607,7 @@ export const mockEventFilter: IEventFilter | IEventRegexFilter = {
   original_caller_address: null,
   original_operation_id: null,
   is_final: null,
-};
+}
 export const mockReadData: IReadData = {
   maxGas: 10n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
@@ -616,7 +616,7 @@ export const mockReadData: IReadData = {
   callerAddress: 'AU1QRRX6o2igWogY8qbBtqLYsNzYNHwvnpMC48Y6CLCv4cXe9gmK',
   coins: 1n,
   fee: 1n,
-};
+}
 
 export const mockContractReadOperationData: Array<IContractReadOperationData> =
   [
@@ -649,24 +649,24 @@ export const mockContractReadOperationData: Array<IContractReadOperationData> =
       ],
       gas_cost: 1000000,
     },
-  ];
+  ]
 
 export const mockContractReadOperationResponse: IContractReadOperationResponse =
   {
     returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
     info: mockContractReadOperationData[0],
-  };
+  }
 
 export const mockContractReadOnlyOperationResponse: IExecuteReadOnlyResponse = {
   returnValue: new Uint8Array([0x00, 0x01, 0x02, 0x03]),
   info: mockContractReadOperationData[0],
-};
+}
 
 export const validSignature: ISignature = {
   publicKey: 'P129tbNd4oVMRsnFvQcgSq4PUAZYYDA1pvqtef2ER6W7JqgY1Bfg',
   base58Encoded:
     '1TXucC8nai7BYpAnMPYrotVcKCZ5oxkfWHb2ykKj2tXmaGMDL1XTU5AbC6Z13RH3q59F8QtbzKq4gzBphGPWpiDonownxE',
-};
+}
 
 export const mockContractReadOperationDataWithError = [
   {
@@ -674,16 +674,16 @@ export const mockContractReadOperationDataWithError = [
       Error: 'Some error message. Inspect smart contract for more details',
     },
   },
-];
+]
 
 export const mockSecretKeyOject = {
   base58Encoded: 'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6',
   bytes: Buffer.from(
     '54b8270c454be4dd5adb9f75eea6492c0d9a61d23d839c9924100622110f5a2f',
-    'hex',
+    'hex'
   ),
   version: 0,
-};
+}
 
 export const mockAddressVersion = [
   {
@@ -702,7 +702,7 @@ export const mockAddressVersion = [
     base58Encoded: 'AUQXH9ootnQAUgdWHi7eK4DoJukbx7buKWT1NB8iTpMeRhjGQV6Ven',
     version: 287,
   },
-];
+]
 
 export const mockPublicKeyObject = {
   base58Encoded: 'P121uDTpo58d3SxQTENXKqSJTpB21ueSAy8RqQ2virGVeWs339ub',
@@ -711,7 +711,7 @@ export const mockPublicKeyObject = {
     51, 176, 124, 204, 229, 184, 245, 144, 208, 126, 241, 70, 210, 29, 122, 105,
   ]),
   version: 0,
-};
+}
 
 export const mockSignatureResult = {
   bytes: Uint8Array.from([
@@ -720,12 +720,12 @@ export const mockSignatureResult = {
     211, 42, 128, 159, 61, 214, 186, 133, 154, 100, 82, 251, 44, 56, 232, 24,
     203, 7, 121, 84, 78, 50, 205, 62, 146, 193, 4, 221, 73, 223, 226, 0,
   ]),
-};
+}
 
 export const mockAddressResult = {
   version: 0,
   base58Encoded: 'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3',
-};
+}
 
 export const mockResultSendJsonRPCRequestWalletInfo = [
   {
@@ -778,4 +778,4 @@ export const mockResultSendJsonRPCRequestWalletInfo = [
       [Object],
     ],
   },
-];
+]

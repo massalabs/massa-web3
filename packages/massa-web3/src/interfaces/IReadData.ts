@@ -1,4 +1,4 @@
-import { Args } from '@massalabs/web3-utils';
+import { Args } from '@massalabs/web3-utils'
 
 /**
  * Represents the data of a read operation.
@@ -12,11 +12,11 @@ import { Args } from '@massalabs/web3-utils';
  * @see coins of type `bigint` represents the extra coins that are spent from the caller's balance and transferred to the target.
  */
 export interface IReadData {
-  maxGas: bigint;
-  targetAddress: string;
-  targetFunction: string;
-  parameter: Array<number> | Args;
-  callerAddress?: string;
-  coins?: bigint;
-  fee?: bigint;
+  maxGas: bigint
+  targetAddress: string
+  targetFunction: string
+  parameter: Array<number> | Args
+  callerAddress?: string
+  coins?: bigint
+  fee?: bigint
 }

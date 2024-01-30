@@ -1,6 +1,6 @@
-import { IEvent } from './IEvent';
-import { IReadOperationResult } from './IReadOperationResult';
-import { ISlot } from './ISlot';
+import { IEvent } from './IEvent'
+import { IReadOperationResult } from './IReadOperationResult'
+import { ISlot } from './ISlot'
 
 /**
  * Represents the inputs of a read-only operation on a deployed contract.
@@ -11,8 +11,8 @@ import { ISlot } from './ISlot';
  * @see gas_cost of type `number` represents the amount of gas that was consumed by the read operation.
  */
 export interface IContractReadOperationData {
-  executed_at: ISlot;
-  result: IReadOperationResult;
-  output_events: Array<IEvent>;
-  gas_cost: number;
+  executed_at: ISlot
+  result: IReadOperationResult
+  output_events: Array<IEvent>
+  gas_cost: number
 }
