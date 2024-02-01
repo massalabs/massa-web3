@@ -1,6 +1,4 @@
-import {
-  ClientFactory,
-} from '../../src/web3/ClientFactory';
+import { ClientFactory } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { ProviderType } from '../../src/interfaces/IProvider';
 import { Client } from '../../src/web3/Client';

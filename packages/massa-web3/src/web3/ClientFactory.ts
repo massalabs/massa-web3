@@ -11,7 +11,6 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletProviderAccount } from './accounts/WalletProviderAccount';
 import { DefaultProviderUrls } from '@massalabs/web3-utils';
 
-
 /**
  * Massa Web3 ClientFactory class allows you to easily initialize a client to
  * connect to the massa blockchain.
@@ -132,7 +131,6 @@ export class ClientFactory {
     baseAccount: IAccountWalletProvider,
     retryStrategyOn = true,
   ): Promise<Client> {
-
     const providers = (await provider.getNodesUrls()).map((url) => {
       return {
         url,

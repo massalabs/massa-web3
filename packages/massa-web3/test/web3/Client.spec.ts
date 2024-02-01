@@ -53,7 +53,8 @@ describe('Client Class', () => {
   });
 
   test('should set new default provider', () => {
-    const newDefaultProvider = 'https://new-default-provider.com' as DefaultProviderUrls;
+    const newDefaultProvider =
+      'https://new-default-provider.com' as DefaultProviderUrls;
     client.setNewDefaultProvider(newDefaultProvider);
 
     const currentProviders = client.getProviders();
