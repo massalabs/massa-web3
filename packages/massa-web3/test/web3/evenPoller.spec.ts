@@ -7,13 +7,10 @@ import { IEventFilter } from '../../src/interfaces/IEventFilter';
 import { IEventRegexFilter } from '../../src/interfaces/IEventRegexFilter';
 import { Client } from '../../src/web3/Client';
 import { WalletClient } from '../../src/web3/WalletClient';
-import {
-  ClientFactory,
-  DefaultProviderUrls,
-} from '../../src/web3/ClientFactory';
+import { ClientFactory } from '../../src/web3/ClientFactory';
 import { IAccount } from '../../src/interfaces/IAccount';
 import { Timeout } from '../../src/utils/time';
-import { IEvent, ISlot } from '@massalabs/web3-utils';
+import { IEvent, ISlot, DefaultProviderUrls } from '@massalabs/web3-utils';
 import { BUILDNET_CHAIN_ID } from './mockData';
 
 // mock axios to intercept any axios POST request and resolve it immediately with an empty object, so

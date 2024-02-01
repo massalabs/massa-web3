@@ -2,7 +2,7 @@ import { Client } from '../../src/web3/Client';
 import { IClientConfig } from '../../src/interfaces/IClientConfig';
 import { IProvider } from '../../src/interfaces/IProvider';
 import { ProviderType } from '../../src/interfaces/IProvider';
-import { DefaultProviderUrls } from '../../src/web3/ClientFactory';
+import { DefaultProviderUrls } from '@massalabs/web3-utils';
 
 describe('Client Class', () => {
   let clientConfig: IClientConfig;
@@ -53,8 +53,9 @@ describe('Client Class', () => {
   });
 
   test('should set new default provider', () => {
-    const newDefaultProvider = 'https://new-default-provider.com';
-    client.setNewDefaultProvider(newDefaultProvider as DefaultProviderUrls);
+    const newDefaultProvider =
+      'https://new-default-provider.com' as DefaultProviderUrls;
+    client.setNewDefaultProvider(newDefaultProvider);
 
     const currentProviders = client.getProviders();
     expect(currentProviders).toHaveLength(2);

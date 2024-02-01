@@ -46,7 +46,7 @@ export const CHAIN_ID_TO_NETWORK_NAME = {
   [SECURENET_CHAIN_ID.toString()]: SECURENET,
   [LABNET_CHAIN_ID.toString()]: LABNET,
   [SANDBOX_CHAIN_ID.toString()]: SANDBOX,
-} as const;
+} as const; // type is inferred as the specific, unchangeable structure
 
 // Define ChainId type as the keys of CHAIN_ID_TO_NETWORK_NAME
 export type ChainId = keyof typeof CHAIN_ID_TO_NETWORK_NAME;
@@ -58,7 +58,21 @@ export const CHAIN_ID = {
   [SECURENET]: SECURENET_CHAIN_ID,
   [LABNET]: LABNET_CHAIN_ID,
   [SANDBOX]: SANDBOX_CHAIN_ID,
-} as const;
+} as const; // type is inferred as the specific, unchangeable structure
 
 // Define NetworkName type as the keys of NETWORK_NAME_TO_CHAIN_ID
 export type NetworkName = keyof typeof CHAIN_ID;
+
+export enum DefaultProviderUrls {
+  MAINNET = 'https://mainnet.massa.net/api/v2',
+  TESTNET = 'https://test.massa.net/api/v2',
+  BUILDNET = 'https://buildnet.massa.net/api/v2',
+  LABNET = 'https://labnet.massa.net/api/v2',
+  LOCALNET = 'http://127.0.0.1',
+}
+
+export const CHAIN_ID_RPC_URL_MAP = {
+  [MAINNET_CHAIN_ID.toString()]: DefaultProviderUrls.MAINNET,
+  [BUILDNET_CHAIN_ID.toString()]: DefaultProviderUrls.BUILDNET,
+  [SANDBOX_CHAIN_ID.toString()]: DefaultProviderUrls.LOCALNET,
+} as const; // type is inferred as the specific, unchangeable structure
