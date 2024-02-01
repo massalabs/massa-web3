@@ -4,9 +4,9 @@ import { PublicApiClient } from './PublicApiClient';
 import { WalletClient } from './WalletClient';
 import { SmartContractsClient } from './SmartContractsClient';
 import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { DefaultProviderUrls } from './ClientFactory';
 import { IClient } from '../interfaces/IClient';
 import { IBaseAccount } from '../interfaces/IBaseAccount';
+import { DefaultProviderUrls } from '@massalabs/web3-utils';
 
 /**
  * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities.

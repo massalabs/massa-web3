@@ -9,15 +9,8 @@ import {
 import { Web3Account } from './accounts/Web3Account';
 import { PublicApiClient } from './PublicApiClient';
 import { WalletProviderAccount } from './accounts/WalletProviderAccount';
+import { DefaultProviderUrls } from '@massalabs/web3-utils';
 
-/** Global connection urls, for Massa's MAINNET, TESTNET, LABNET, LOCALNET and BUILDNET */
-export enum DefaultProviderUrls {
-  MAINNET = 'https://mainnet.massa.net/api/v2',
-  TESTNET = 'https://test.massa.net/api/v2',
-  BUILDNET = 'https://buildnet.massa.net/api/v2',
-  LABNET = 'https://labnet.massa.net/api/v2',
-  LOCALNET = 'http://127.0.0.1',
-}
 
 /**
  * Massa Web3 ClientFactory class allows you to easily initialize a client to
@@ -139,6 +132,7 @@ export class ClientFactory {
     baseAccount: IAccountWalletProvider,
     retryStrategyOn = true,
   ): Promise<Client> {
+
     const providers = (await provider.getNodesUrls()).map((url) => {
       return {
         url,

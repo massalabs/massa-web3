@@ -68,7 +68,7 @@ export { ISubscribedFullBlocksMessage } from './interfaces/ISubscribedFullBlocks
 export { IBaseAccount } from './interfaces/IBaseAccount';
 
 /** Exposed clients and factories */
-export { ClientFactory, DefaultProviderUrls } from './web3/ClientFactory';
+export { ClientFactory } from './web3/ClientFactory';
 export { Client } from './web3/Client';
 export { PublicApiClient } from './web3/PublicApiClient';
 export { PrivateApiClient } from './web3/PrivateApiClient';

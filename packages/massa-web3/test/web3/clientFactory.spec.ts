@@ -1,12 +1,12 @@
 import {
   ClientFactory,
-  DefaultProviderUrls,
 } from '../../src/web3/ClientFactory';
 import { WalletClient } from '../../src/web3/WalletClient';
 import { ProviderType } from '../../src/interfaces/IProvider';
 import { Client } from '../../src/web3/Client';
 import { IAccount } from '../../src/interfaces/IAccount';
 import { BUILDNET_CHAIN_ID } from './mockData';
+import { DefaultProviderUrls } from '@massalabs/web3-utils';
 
 const publicApi = 'https://mock-public-api.com';
 const privateApi = 'https://mock-private-api.com';

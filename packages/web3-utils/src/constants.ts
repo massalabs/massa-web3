@@ -62,3 +62,19 @@ export const CHAIN_ID = {
 
 // Define NetworkName type as the keys of NETWORK_NAME_TO_CHAIN_ID
 export type NetworkName = keyof typeof CHAIN_ID;
+
+export enum DefaultProviderUrls {
+  MAINNET = 'https://mainnet.massa.net/api/v2',
+  TESTNET = 'https://test.massa.net/api/v2',
+  BUILDNET = 'https://buildnet.massa.net/api/v2',
+  LABNET = 'https://labnet.massa.net/api/v2',
+  LOCALNET = 'http://127.0.0.1',
+}
+
+export const CHAIN_ID_RPC_URL_MAP = {
+  [MAINNET_CHAIN_ID.toString()]: DefaultProviderUrls.MAINNET,
+  [BUILDNET_CHAIN_ID.toString()]: DefaultProviderUrls.BUILDNET,
+  [SANDBOX_CHAIN_ID.toString()]: DefaultProviderUrls.LOCALNET,
+} as const;
+
+
