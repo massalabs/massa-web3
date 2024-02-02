@@ -33,9 +33,8 @@ console.log(header)
 
 try {
   // init account
-  const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
-    deployerPrivateKey
-  )
+  const deployerAccount: IAccount =
+    await WalletClient.getAccountFromSecretKey(deployerPrivateKey)
 
   console.log('Deployer Wallet ', deployerAccount)
 

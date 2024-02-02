@@ -7,7 +7,10 @@ import {
 import { Args, ArrayTypes } from '../src/arguments'
 
 export class Divinity implements ISerializable<Divinity> {
-  constructor(public age: number = 0, public name: string = '') {}
+  constructor(
+    public age: number = 0,
+    public name: string = ''
+  ) {}
 
   serialize(): Uint8Array {
     return Uint8Array.from(

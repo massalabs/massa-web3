@@ -123,9 +123,8 @@ describe('SmartContractsClient', () => {
     })
 
     test('should return the correct result', async () => {
-      const result = await smartContractsClient.deploySmartContract(
-        mockContractData
-      )
+      const result =
+        await smartContractsClient.deploySmartContract(mockContractData)
 
       expect(result).toBe(mockOpIds[0])
     })
@@ -635,9 +634,8 @@ describe('SmartContractsClient', () => {
         .fn()
         .mockResolvedValue(mockedEvents)
 
-      const result = await smartContractsClient.getFilteredScOutputEvents(
-        mockEventFilter
-      )
+      const result =
+        await smartContractsClient.getFilteredScOutputEvents(mockEventFilter)
 
       expect(result).toEqual(mockedEvents)
     })
@@ -725,9 +723,10 @@ describe('SmartContractsClient', () => {
         .fn()
         .mockResolvedValue(mockContractReadOperationData)
 
-      const result = await smartContractsClient.executeReadOnlySmartContract(
-        mockContractData
-      )
+      const result =
+        await smartContractsClient.executeReadOnlySmartContract(
+          mockContractData
+        )
 
       expect(result).toEqual(expectedResponse)
     })

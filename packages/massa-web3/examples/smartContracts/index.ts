@@ -161,9 +161,8 @@ console.log(header)
 let spinner
 try {
   // init client
-  const deployerAccount: IAccount = await WalletClient.getAccountFromSecretKey(
-    deployerPrivateKey
-  )
+  const deployerAccount: IAccount =
+    await WalletClient.getAccountFromSecretKey(deployerPrivateKey)
 
   const web3Client: Client = await ClientFactory.createCustomClient(
     [
