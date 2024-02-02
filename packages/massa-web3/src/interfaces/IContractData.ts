@@ -16,11 +16,11 @@
  * @see datastore of type `Map<Uint8Array, Uint8Array> | undefined` represents the smart contract's operational storage data (optional).
  */
 export interface IContractData {
-  fee: bigint;
-  maxGas: bigint;
-  maxCoins: bigint;
-  contractDataText?: string;
-  contractDataBinary?: Uint8Array;
-  address?: string;
-  datastore?: Map<Uint8Array, Uint8Array>;
+  fee: bigint
+  maxGas: bigint
+  maxCoins: bigint
+  contractDataText?: string
+  contractDataBinary?: Uint8Array
+  address?: string
+  datastore?: Map<Uint8Array, Uint8Array>
 }

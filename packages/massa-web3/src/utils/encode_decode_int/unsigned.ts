@@ -1,7 +1,7 @@
-const LIMIT = BigInt(0x7f);
+const LIMIT = BigInt(0x7f)
 
-const zeroBI = BigInt(0);
-const sevenBI = BigInt(7);
+const zeroBI = BigInt(0)
+const sevenBI = BigInt(7)
 /**
  * @module unsigned.ts
  *
@@ -16,13 +16,13 @@ const sevenBI = BigInt(7);
  * @returns The number of bytes required to store the number.
  */
 export function encodingLength(value: bigint): number {
-  let i = 0;
+  let i = 0
 
   for (; value >= BigInt(0x80); i++) {
-    value >>= sevenBI;
+    value >>= sevenBI
   }
 
-  return i + 1;
+  return i + 1
 }
 
 /**
@@ -36,32 +36,32 @@ export function encodingLength(value: bigint): number {
 export function encode(
   i: bigint,
   buffer?: ArrayBuffer,
-  byteOffset?: number,
+  byteOffset?: number
 ): Uint8Array {
   if (i < zeroBI) {
-    throw new RangeError('value must be unsigned');
+    throw new RangeError('value must be unsigned')
   }
 
-  const byteLength = encodingLength(i);
-  buffer = buffer || new ArrayBuffer(byteLength);
-  byteOffset = byteOffset || 0;
+  const byteLength = encodingLength(i)
+  buffer = buffer || new ArrayBuffer(byteLength)
+  byteOffset = byteOffset || 0
   if (buffer.byteLength < byteOffset + byteLength) {
     throw new RangeError(
-      'the buffer is too small to encode the number at the offset',
-    );
+      'the buffer is too small to encode the number at the offset'
+    )
   }
 
-  const array = new Uint8Array(buffer, byteOffset);
+  const array = new Uint8Array(buffer, byteOffset)
 
-  let offset = 0;
+  let offset = 0
   while (LIMIT < i) {
-    array[offset++] = Number(i & LIMIT) | 0x80;
-    i >>= sevenBI;
+    array[offset++] = Number(i & LIMIT) | 0x80
+    i >>= sevenBI
   }
 
-  array[offset] = Number(i);
+  array[offset] = Number(i)
 
-  return array;
+  return array
 }
 
 /**
@@ -72,17 +72,17 @@ export function encode(
  * @returns The decoded big number.
  */
 export function decode(data: Uint8Array, offset = 0): bigint {
-  let i = zeroBI;
-  let n = 0;
-  let b: number;
+  let i = zeroBI
+  let n = 0
+  let b: number
   do {
-    b = data[offset + n];
+    b = data[offset + n]
     if (b === undefined) {
-      throw new RangeError('offset out of range');
+      throw new RangeError('offset out of range')
     }
 
-    i += BigInt(b & 0x7f) << BigInt(n * 7);
-    n++;
-  } while (0x80 <= b);
-  return i;
+    i += BigInt(b & 0x7f) << BigInt(n * 7)
+    n++
+  } while (0x80 <= b)
+  return i
 }

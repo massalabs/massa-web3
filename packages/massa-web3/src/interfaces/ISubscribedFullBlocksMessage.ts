@@ -1,4 +1,4 @@
-import { IBlockHeaderInfo } from './IBlockcliqueBlockBySlot';
+import { IBlockHeaderInfo } from './IBlockcliqueBlockBySlot'
 
 /**
  * Represents a filled block info.
@@ -12,11 +12,11 @@ import { IBlockHeaderInfo } from './IBlockcliqueBlockBySlot';
  * @see id - block id
  */
 export interface IFilledBlockInfo {
-  content: { fee: string; expire_period: number; op: object };
-  signature: string;
-  creator_public_key: string;
-  creator_address: string;
-  id: string;
+  content: { fee: string; expire_period: number; op: object }
+  signature: string
+  creator_public_key: string
+  creator_address: string
+  id: string
 }
 
 /**
@@ -31,11 +31,11 @@ export interface IFilledBlockInfo {
  */
 export interface ISubscribedFullBlocksMessage {
   header: {
-    content: IBlockHeaderInfo;
-    signature: string;
-    creator_public_key: string;
-    creator_address: string;
-    id: string;
-  };
-  operations: Array<[string, [IFilledBlockInfo]]>;
+    content: IBlockHeaderInfo
+    signature: string
+    creator_public_key: string
+    creator_address: string
+    id: string
+  }
+  operations: Array<[string, [IFilledBlockInfo]]>
 }

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PublicApiClient } from '../../src/web3/PublicApiClient';
-import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods';
-import { IClientConfig } from '../../src/interfaces/IClientConfig';
-import { ProviderType, IProvider } from '../../src/interfaces/IProvider';
+import { PublicApiClient } from '../../src/web3/PublicApiClient'
+import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods'
+import { IClientConfig } from '../../src/interfaces/IClientConfig'
+import { ProviderType, IProvider } from '../../src/interfaces/IProvider'
 import {
   mockAddresses,
   mockAddressesInfo,
@@ -17,13 +17,13 @@ import {
   mockDatastoreEntryInput,
   mockDatastoreEntries,
   mockOpIds,
-} from './mockData';
+} from './mockData'
 
-export const PERIOD_OFFSET = 5;
+export const PERIOD_OFFSET = 5
 
 describe('PublicApiClient', () => {
-  let client: PublicApiClient;
-  let mockSendJsonRPCRequest: jest.SpyInstance;
+  let client: PublicApiClient
+  let mockSendJsonRPCRequest: jest.SpyInstance
 
   // Function to generate tests for a set of similar operations to avoid code duplication
   function generateAPITests(
@@ -31,71 +31,70 @@ describe('PublicApiClient', () => {
     mockData: any,
     mockResponse: any,
     jsonRpcRequestMethod: JSON_RPC_REQUEST_METHOD,
-    wrapArgsInArray: boolean,
+    wrapArgsInArray: boolean
   ) {
     test(`should call sendJsonRPCRequest with correct arguments`, async () => {
-      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse))
 
-      await (client as any)[operation](mockData);
+      await (client as any)[operation](mockData)
 
-      let rpcArgs;
+      let rpcArgs
 
       if (wrapArgsInArray) {
-        rpcArgs = [Array.isArray(mockData) ? mockData : []];
+        rpcArgs = [Array.isArray(mockData) ? mockData : []]
       } else {
-        rpcArgs = Array.isArray(mockData) ? mockData : [];
+        rpcArgs = Array.isArray(mockData) ? mockData : []
       }
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,
-        rpcArgs,
-      );
-    });
+        rpcArgs
+      )
+    })
 
     test(`should return the correct result`, async () => {
-      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse))
 
-      const result = await (client as any)[operation](mockData);
+      const result = await (client as any)[operation](mockData)
 
-      expect(result).toEqual(mockResponse);
-    });
+      expect(result).toEqual(mockResponse)
+    })
 
     test(`should handle errors correctly`, async () => {
-      const mockError = new Error('Error message');
-      mockSendJsonRPCRequest.mockRejectedValue(mockError);
+      const mockError = new Error('Error message')
+      mockSendJsonRPCRequest.mockRejectedValue(mockError)
 
       await expect((client as any)[operation](mockData)).rejects.toThrow(
-        mockError,
-      );
-    });
+        mockError
+      )
+    })
 
     test(`should call trySafeExecute if retryStrategyOn is true`, async () => {
       // Enable retry strategy
-      const originalRetryStrategy = (client as any).clientConfig
-        .retryStrategyOn;
-      (client as any).clientConfig.retryStrategyOn = true;
+      const originalRetryStrategy = (client as any).clientConfig.retryStrategyOn
+      ;(client as any).clientConfig.retryStrategyOn = true
 
-      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse));
+      mockSendJsonRPCRequest.mockResolvedValue(Promise.resolve(mockResponse))
 
-      const result = await (client as any)[operation](mockData);
+      const result = await (client as any)[operation](mockData)
 
-      let rpcArgs;
+      let rpcArgs
       if (wrapArgsInArray) {
-        rpcArgs = [Array.isArray(mockData) ? mockData : []];
+        rpcArgs = [Array.isArray(mockData) ? mockData : []]
       } else {
-        rpcArgs = Array.isArray(mockData) ? mockData : [];
+        rpcArgs = Array.isArray(mockData) ? mockData : []
       }
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         jsonRpcRequestMethod,
-        rpcArgs,
-      );
+        rpcArgs
+      )
 
-      expect(result).toEqual(mockResponse);
+      expect(result).toEqual(mockResponse)
 
       // Restore retry strategy
-      (client as any).clientConfig.retryStrategyOn = originalRetryStrategy;
-    });
+      ;(client as any).clientConfig.retryStrategyOn = originalRetryStrategy
+    })
   }
 
   beforeEach(() => {
@@ -111,11 +110,11 @@ describe('PublicApiClient', () => {
         } as IProvider,
       ],
       periodOffset: PERIOD_OFFSET,
-    };
-    client = new PublicApiClient(clientConfig);
+    }
+    client = new PublicApiClient(clientConfig)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mockSendJsonRPCRequest = jest.spyOn(client as any, 'sendJsonRPCRequest');
-  });
+    mockSendJsonRPCRequest = jest.spyOn(client as any, 'sendJsonRPCRequest')
+  })
 
   describe('getGraphInterval', () => {
     generateAPITests(
@@ -123,9 +122,9 @@ describe('PublicApiClient', () => {
       [],
       mockGraphInterval,
       JSON_RPC_REQUEST_METHOD.GET_GRAPH_INTERVAL,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('getBlockcliqueBlockBySlot', () => {
     generateAPITests(
@@ -133,9 +132,9 @@ describe('PublicApiClient', () => {
       [],
       mockBlockData,
       JSON_RPC_REQUEST_METHOD.GET_BLOCKCLIQUE_BLOCK_BY_SLOT,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('getNodeStatus', () => {
     generateAPITests(
@@ -143,9 +142,9 @@ describe('PublicApiClient', () => {
       [],
       mockNodeStatusInfo,
       JSON_RPC_REQUEST_METHOD.GET_STATUS,
-      false,
-    );
-  });
+      false
+    )
+  })
 
   describe('getAddresses', () => {
     generateAPITests(
@@ -153,9 +152,9 @@ describe('PublicApiClient', () => {
       mockAddresses,
       mockAddressesInfo,
       JSON_RPC_REQUEST_METHOD.GET_ADDRESSES,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('getBlocks', () => {
     generateAPITests(
@@ -163,9 +162,9 @@ describe('PublicApiClient', () => {
       mockBlockIds,
       mockBlockData,
       JSON_RPC_REQUEST_METHOD.GET_BLOCKS,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('getEndorsements', () => {
     generateAPITests(
@@ -173,9 +172,9 @@ describe('PublicApiClient', () => {
       mockEndorsementIds,
       mockEndorsementData,
       JSON_RPC_REQUEST_METHOD.GET_ENDORSEMENTS,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('getOperations', () => {
     generateAPITests(
@@ -183,9 +182,9 @@ describe('PublicApiClient', () => {
       mockOpIds,
       mockOperationData,
       JSON_RPC_REQUEST_METHOD.GET_OPERATIONS,
-      true,
-    );
-  });
+      true
+    )
+  })
 
   describe('getCliques', () => {
     generateAPITests(
@@ -193,9 +192,9 @@ describe('PublicApiClient', () => {
       [],
       mockEndorsementData,
       JSON_RPC_REQUEST_METHOD.GET_CLIQUES,
-      false,
-    );
-  });
+      false
+    )
+  })
 
   describe('getStakers', () => {
     generateAPITests(
@@ -203,66 +202,64 @@ describe('PublicApiClient', () => {
       [],
       mockStackersData,
       JSON_RPC_REQUEST_METHOD.GET_STAKERS,
-      false,
-    );
-  });
+      false
+    )
+  })
 
   describe('getDatastoreEntries', () => {
     const transformedInput = mockDatastoreEntryInput.map((input) => ({
       address: input.address,
       key: Array.prototype.slice.call(Buffer.from(input.key)),
-    }));
+    }))
 
     test('should call sendJsonRPCRequest with correct arguments', async () => {
       mockSendJsonRPCRequest.mockResolvedValue(
-        Promise.resolve(mockDatastoreEntries),
-      );
+        Promise.resolve(mockDatastoreEntries)
+      )
 
-      await client.getDatastoreEntries(mockDatastoreEntryInput);
+      await client.getDatastoreEntries(mockDatastoreEntryInput)
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES,
-        [transformedInput],
-      );
-    });
+        [transformedInput]
+      )
+    })
 
     test('should return correct result', async () => {
       mockSendJsonRPCRequest.mockResolvedValue(
-        Promise.resolve(mockDatastoreEntries),
-      );
+        Promise.resolve(mockDatastoreEntries)
+      )
 
-      const result = await client.getDatastoreEntries(mockDatastoreEntryInput);
+      const result = await client.getDatastoreEntries(mockDatastoreEntryInput)
 
-      expect(result).toEqual(mockDatastoreEntries);
-    });
+      expect(result).toEqual(mockDatastoreEntries)
+    })
 
     test('should handle errors correctly', async () => {
-      const mockError = new Error('Error message');
-      mockSendJsonRPCRequest.mockRejectedValue(mockError);
+      const mockError = new Error('Error message')
+      mockSendJsonRPCRequest.mockRejectedValue(mockError)
 
       await expect(
-        client.getDatastoreEntries(mockDatastoreEntryInput),
-      ).rejects.toThrow(mockError);
-    });
+        client.getDatastoreEntries(mockDatastoreEntryInput)
+      ).rejects.toThrow(mockError)
+    })
 
     test('should call trySafeExecute if retryStrategyOn is true', async () => {
-      const originalRetryStrategy = (client as any).clientConfig
-        .retryStrategyOn;
-      (client as any).clientConfig.retryStrategyOn = true;
+      const originalRetryStrategy = (client as any).clientConfig.retryStrategyOn
+      ;(client as any).clientConfig.retryStrategyOn = true
 
       mockSendJsonRPCRequest.mockResolvedValue(
-        Promise.resolve(mockDatastoreEntries),
-      );
+        Promise.resolve(mockDatastoreEntries)
+      )
 
-      const result = await client.getDatastoreEntries(mockDatastoreEntryInput);
+      const result = await client.getDatastoreEntries(mockDatastoreEntryInput)
 
       expect(mockSendJsonRPCRequest).toHaveBeenCalledWith(
         JSON_RPC_REQUEST_METHOD.GET_DATASTORE_ENTRIES,
-        [transformedInput],
-      );
-      expect(result).toEqual(mockDatastoreEntries);
-
-      (client as any).clientConfig.retryStrategyOn = originalRetryStrategy;
-    });
-  });
-});
+        [transformedInput]
+      )
+      expect(result).toEqual(mockDatastoreEntries)
+      ;(client as any).clientConfig.retryStrategyOn = originalRetryStrategy
+    })
+  })
+})

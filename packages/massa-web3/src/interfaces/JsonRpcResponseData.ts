@@ -6,7 +6,7 @@
  * @see error - the error of the response (can be null)
  */
 export interface JsonRpcResponseData<T> {
-  isError: boolean;
-  result: T | null;
-  error: Error | null;
+  isError: boolean
+  result: T | null
+  error: Error | null
 }

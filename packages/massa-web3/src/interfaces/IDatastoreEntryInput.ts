@@ -5,6 +5,6 @@
  * @see key of type `Uint8Array` represents the key of the datastore entry.
  */
 export interface IDatastoreEntryInput {
-  address: string;
-  key: Uint8Array;
+  address: string
+  key: Uint8Array
 }

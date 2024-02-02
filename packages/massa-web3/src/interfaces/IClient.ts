@@ -1,9 +1,9 @@
-import { DefaultProviderUrls } from '@massalabs/web3-utils';
-import { IPrivateApiClient } from './IPrivateApiClient';
-import { IProvider } from './IProvider';
-import { IPublicApiClient } from './IPublicApiClient';
-import { ISmartContractsClient } from './ISmartContractsClient';
-import { IWalletClient } from './IWalletClient';
+import { DefaultProviderUrls } from '@massalabs/web3-utils'
+import { IPrivateApiClient } from './IPrivateApiClient'
+import { IProvider } from './IProvider'
+import { IPublicApiClient } from './IPublicApiClient'
+import { ISmartContractsClient } from './ISmartContractsClient'
+import { IWalletClient } from './IWalletClient'
 
 /**
  * Represents the client object.
@@ -21,10 +21,10 @@ import { IWalletClient } from './IWalletClient';
  * @see setNewDefaultProvider - A method for setting a new default provider.
  */
 export interface IClient {
-  privateApi(): IPrivateApiClient;
-  publicApi(): IPublicApiClient;
-  wallet(): IWalletClient;
-  smartContracts(): ISmartContractsClient;
-  setCustomProviders(providers: Array<IProvider>): void;
-  setNewDefaultProvider(provider: DefaultProviderUrls): void;
+  privateApi(): IPrivateApiClient
+  publicApi(): IPublicApiClient
+  wallet(): IWalletClient
+  smartContracts(): ISmartContractsClient
+  setCustomProviders(providers: Array<IProvider>): void
+  setNewDefaultProvider(provider: DefaultProviderUrls): void
 }

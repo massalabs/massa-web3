@@ -7,9 +7,9 @@
  */
 export function strToBytes(str: string): Uint8Array {
   if (!str.length) {
-    return new Uint8Array(0);
+    return new Uint8Array(0)
   }
-  return new Uint8Array(Buffer.from(str, 'utf-8'));
+  return new Uint8Array(Buffer.from(str, 'utf-8'))
 }
 
 /**
@@ -21,21 +21,21 @@ export function strToBytes(str: string): Uint8Array {
  */
 export function bytesToStr(arr: Uint8Array): string {
   if (!arr.length) {
-    return '';
+    return ''
   }
 
   if (typeof window === 'undefined') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const StringDecoder = require('string_decoder').StringDecoder;
-    const decoder = new StringDecoder('utf-8');
-    return decoder.write(Buffer.from(arr));
+    const StringDecoder = require('string_decoder').StringDecoder
+    const decoder = new StringDecoder('utf-8')
+    return decoder.write(Buffer.from(arr))
   }
 
-  let TextDecoder = window.TextDecoder;
+  let TextDecoder = window.TextDecoder
   if (typeof TextDecoder === 'undefined') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    TextDecoder = require('util').TextDecoder;
+    TextDecoder = require('util').TextDecoder
   }
-  const textDecoder = new TextDecoder('utf-8');
-  return textDecoder.decode(arr);
+  const textDecoder = new TextDecoder('utf-8')
+  return textDecoder.decode(arr)
 }

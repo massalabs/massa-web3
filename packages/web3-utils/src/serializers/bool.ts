@@ -6,7 +6,7 @@
  * @returns The converted boolean value.
  */
 export function byteToBool(arr: Uint8Array): boolean {
-  return !!arr[0];
+  return !!arr[0]
 }
 
 /**
@@ -17,5 +17,5 @@ export function byteToBool(arr: Uint8Array): boolean {
  * @returns The converted Uint8Array.
  */
 export function boolToByte(val: boolean): Uint8Array {
-  return new Uint8Array([val ? 1 : 0]);
+  return new Uint8Array([val ? 1 : 0])
 }

@@ -1,6 +1,6 @@
-import BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js'
 
-const MASSA_SCALING_FACTOR = 9;
+const MASSA_SCALING_FACTOR = 9
 
 /**
  * Convert any value expressed in Massa back to nanoMassa (the smallest unit of Massa).
@@ -20,15 +20,13 @@ const MASSA_SCALING_FACTOR = 9;
  * ```
  */
 export const fromMAS = (
-  amountInMassa: number | string | BigNumber | bigint,
+  amountInMassa: number | string | BigNumber | bigint
 ): bigint => {
-  const amount = new BigNumber(amountInMassa.toString());
-  const scaleFactor = new BigNumber(10).pow(
-    new BigNumber(MASSA_SCALING_FACTOR),
-  );
-  const amountScaled = amount.times(scaleFactor);
-  return BigInt(amountScaled.toFixed(0));
-};
+  const amount = new BigNumber(amountInMassa.toString())
+  const scaleFactor = new BigNumber(10).pow(new BigNumber(MASSA_SCALING_FACTOR))
+  const amountScaled = amount.times(scaleFactor)
+  return BigInt(amountScaled.toFixed(0))
+}
 
 /**
  * Convert any value expressed in nanoMassa back to Massa.
@@ -48,15 +46,13 @@ export const fromMAS = (
  * ```
  */
 export const toMAS = (
-  amountInNanoMassa: number | string | BigNumber | bigint,
+  amountInNanoMassa: number | string | BigNumber | bigint
 ): BigNumber => {
-  const amount = new BigNumber(amountInNanoMassa.toString());
-  const scaleFactor = new BigNumber(10).pow(
-    new BigNumber(MASSA_SCALING_FACTOR),
-  );
-  const amountScaled = amount.dividedBy(scaleFactor);
-  return new BigNumber(amountScaled.toFixed(MASSA_SCALING_FACTOR));
-};
+  const amount = new BigNumber(amountInNanoMassa.toString())
+  const scaleFactor = new BigNumber(10).pow(new BigNumber(MASSA_SCALING_FACTOR))
+  const amountScaled = amount.dividedBy(scaleFactor)
+  return new BigNumber(amountScaled.toFixed(MASSA_SCALING_FACTOR))
+}
 
 /**
  * MassaUnits contains constants representing different magnitudes of the Massa currency.
@@ -79,4 +75,4 @@ export const MassaUnits = {
   oneMassa: BigInt(10 ** 9),
   mMassa: BigInt(10 ** 6),
   uMassa: BigInt(10 ** 3),
-};
+}

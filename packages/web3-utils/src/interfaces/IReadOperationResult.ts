@@ -5,6 +5,6 @@
  * @see Error - Included in case of error. The error message
  */
 export interface IReadOperationResult {
-  Ok?: Uint8Array;
-  Error?: string;
+  Ok?: Uint8Array
+  Error?: string
 }

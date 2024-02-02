@@ -1,4 +1,4 @@
-import { ISlot } from '@massalabs/web3-utils';
+import { ISlot } from '@massalabs/web3-utils'
 
 /**
  * Represents the information for a block header.
@@ -8,10 +8,10 @@ import { ISlot } from '@massalabs/web3-utils';
  * slot, parent blocks, operation merkle root, and endorsements.
  */
 export interface IBlockHeaderInfo {
-  slot: ISlot;
-  parents: Array<string>;
-  operation_merkle_root: string;
-  endorsements: Array<IEndorsementInfo>;
+  slot: ISlot
+  parents: Array<string>
+  operation_merkle_root: string
+  endorsements: Array<IEndorsementInfo>
 }
 
 /**
@@ -24,14 +24,14 @@ export interface IBlockHeaderInfo {
  */
 export interface IEndorsementInfo {
   content: {
-    slot: ISlot;
-    index: number;
-    endorsed_block: string; // Block ID
-  };
-  signature: string;
-  creator_public_key: string;
-  creator_address: string;
-  id: string;
+    slot: ISlot
+    index: number
+    endorsed_block: string // Block ID
+  }
+  signature: string
+  creator_public_key: string
+  creator_address: string
+  id: string
 }
 
 /**
@@ -44,11 +44,11 @@ export interface IEndorsementInfo {
  */
 export interface IBlockcliqueBlockBySlot {
   header: {
-    content: IBlockHeaderInfo;
-    signature: string;
-    creator_public_key: string;
-    creator_address: string;
-    id: string; // Block ID
-  };
-  operations: Array<string>;
+    content: IBlockHeaderInfo
+    signature: string
+    creator_public_key: string
+    creator_address: string
+    id: string // Block ID
+  }
+  operations: Array<string>
 }

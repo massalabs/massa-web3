@@ -95,4 +95,4 @@ export const asTests = [
     val: -666.666,
     serialized: [23, 217, 206, 247, 83, 213, 132, 192],
   },
-];
+]

@@ -5,6 +5,6 @@
  * @see candidate_value of type `Uint8Array | null` represents the value of the data entry at the latest active executed slot.
  */
 export interface IDatastoreEntry {
-  final_value: Uint8Array | null;
-  candidate_value: Uint8Array | null;
+  final_value: Uint8Array | null
+  candidate_value: Uint8Array | null
 }

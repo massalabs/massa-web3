@@ -6,7 +6,7 @@
  * @see recipientAddress - recipient address
  */
 export interface ITransactionData {
-  fee: bigint;
-  amount: bigint;
-  recipientAddress: string;
+  fee: bigint
+  amount: bigint
+  recipientAddress: string
 }

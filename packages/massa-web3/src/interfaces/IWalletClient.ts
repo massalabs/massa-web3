@@ -1,11 +1,11 @@
-import { IAccount } from './IAccount';
-import { IFullAddressInfo } from './IFullAddressInfo';
-import { IBalance } from './IBalance';
-import { IRollsData } from './IRollsData';
-import { ISignature } from './ISignature';
-import { ITransactionData } from './ITransactionData';
-import { BaseClient } from '../web3/BaseClient';
-import { IBaseAccount } from './IBaseAccount';
+import { IAccount } from './IAccount'
+import { IFullAddressInfo } from './IFullAddressInfo'
+import { IBalance } from './IBalance'
+import { IRollsData } from './IRollsData'
+import { ISignature } from './ISignature'
+import { ITransactionData } from './ITransactionData'
+import { BaseClient } from '../web3/BaseClient'
+import { IBaseAccount } from './IBaseAccount'
 
 /**
  * Interface for WalletClient objects
@@ -31,26 +31,26 @@ export interface IWalletClient extends BaseClient {
    *
    * @param baseAccount - The base account as an IAccount object.
    */
-  setBaseAccount(baseAccount: IBaseAccount): void;
+  setBaseAccount(baseAccount: IBaseAccount): void
 
   /**
    * Get the base account.
    *
    * @returns The base account (or null if the base account is not set).
    */
-  getBaseAccount(): IBaseAccount | null;
+  getBaseAccount(): IBaseAccount | null
 
   /**
    * Get all accounts in the wallet.
    *
    * @returns An array of IAccount objects.
    */
-  getWalletAccounts(): Array<IAccount>;
+  getWalletAccounts(): Array<IAccount>
 
   /**
    * Delete all accounts from the wallet.
    */
-  cleanWallet(): void;
+  cleanWallet(): void
 
   /**
    * Get an account by its address.
@@ -59,7 +59,7 @@ export interface IWalletClient extends BaseClient {
    *
    * @returns An IAccount object or undefined if not found.
    */
-  getWalletAccountByAddress(address: string): IAccount | undefined;
+  getWalletAccountByAddress(address: string): IAccount | undefined
 
   /**
    * Add accounts to the wallet by secret keys.
@@ -68,7 +68,7 @@ export interface IWalletClient extends BaseClient {
    *
    * @returns A promise that resolves to an array of IAccount.
    */
-  addSecretKeysToWallet(secretKeys: Array<string>): Promise<Array<IAccount>>;
+  addSecretKeysToWallet(secretKeys: Array<string>): Promise<Array<IAccount>>
 
   /**
    * Add accounts to the wallet.
@@ -77,21 +77,21 @@ export interface IWalletClient extends BaseClient {
    *
    * @returns A promise that resolves to an array of IAccount objects.
    */
-  addAccountsToWallet(accounts: Array<IAccount>): Promise<Array<IAccount>>;
+  addAccountsToWallet(accounts: Array<IAccount>): Promise<Array<IAccount>>
 
   /**
    * Remove accounts from the wallet using their addresses.
    *
    * @param addresses - An array of addresses.
    */
-  removeAddressesFromWallet(addresses: Array<string>): void;
+  removeAddressesFromWallet(addresses: Array<string>): void
 
   /**
    * Get all accounts info.
    *
    * @returns A promise that resolves to an array of IFullAddressInfo objects.
    */
-  walletInfo(): Promise<Array<IFullAddressInfo>>;
+  walletInfo(): Promise<Array<IFullAddressInfo>>
 
   /**
    * Sign a message using a specific account.
@@ -104,8 +104,8 @@ export interface IWalletClient extends BaseClient {
   signMessage(
     data: string | Buffer,
     chainId: bigint,
-    accountSignerAddress: string,
-  ): Promise<ISignature>;
+    accountSignerAddress: string
+  ): Promise<ISignature>
 
   /**
    * Verify a signature.
@@ -120,8 +120,8 @@ export interface IWalletClient extends BaseClient {
   verifySignature(
     data: string | Buffer,
     signature: ISignature,
-    signerPublicKey: string,
-  ): Promise<boolean>;
+    signerPublicKey: string
+  ): Promise<boolean>
 
   /**
    * Get the account balance.
@@ -130,7 +130,7 @@ export interface IWalletClient extends BaseClient {
    *
    * @returns A promise that resolves to an IBalance object or null if not found.
    */
-  getAccountBalance(address: string): Promise<IBalance | null>;
+  getAccountBalance(address: string): Promise<IBalance | null>
 
   /**
    * Send a transaction.
@@ -142,8 +142,8 @@ export interface IWalletClient extends BaseClient {
    */
   sendTransaction(
     txData: ITransactionData,
-    executor?: IBaseAccount,
-  ): Promise<Array<string>>;
+    executor?: IBaseAccount
+  ): Promise<Array<string>>
 
   /**
    * Buy rolls.
@@ -153,7 +153,7 @@ export interface IWalletClient extends BaseClient {
    *
    * @returns A promise that resolves to an array of operation ids as strings.
    */
-  buyRolls(txData: IRollsData, executor?: IBaseAccount): Promise<Array<string>>;
+  buyRolls(txData: IRollsData, executor?: IBaseAccount): Promise<Array<string>>
 
   /**
    * Sell rolls.
@@ -163,5 +163,5 @@ export interface IWalletClient extends BaseClient {
    *
    * @returns A promise that resolves to an array of operation ids as strings.
    */
-  sellRolls(txData: IRollsData, executor: IBaseAccount): Promise<Array<string>>;
+  sellRolls(txData: IRollsData, executor: IBaseAccount): Promise<Array<string>>
 }

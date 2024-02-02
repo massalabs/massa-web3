@@ -1,4 +1,6 @@
 {
-    "*.{js,ts,jsx,tsx,json,cjs}": ["npx eslint"],
-    "*.ts": ["npx as-prettier --check"]
+    "*.{js,ts,json,cjs,md}": [
+        "prettier --check",
+        "eslint"
+    ]
 }

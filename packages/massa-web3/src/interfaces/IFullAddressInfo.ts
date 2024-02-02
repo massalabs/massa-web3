@@ -1,4 +1,4 @@
-import { IAddressInfo } from './IAddressInfo';
+import { IAddressInfo } from './IAddressInfo'
 
 /**
  * Represents an address with its public and secret keys.
@@ -7,6 +7,6 @@ import { IAddressInfo } from './IAddressInfo';
  * @see secretKey of type `string` represents the secret key of the address.
  */
 export interface IFullAddressInfo extends IAddressInfo {
-  publicKey: string;
-  secretKey: string;
+  publicKey: string
+  secretKey: string
 }

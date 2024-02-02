@@ -12,7 +12,7 @@
  * @see is_blockclique - A boolean indicating whether the clique is a valid block clique.
  */
 export interface IClique {
-  block_ids: string[];
-  fitness: number;
-  is_blockclique: boolean;
+  block_ids: string[]
+  fitness: number
+  is_blockclique: boolean
 }

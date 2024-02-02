@@ -1,12 +1,12 @@
-import { IContractReadOperationResponse, IEvent } from '@massalabs/web3-utils';
-import { EOperationStatus } from './EOperationStatus';
-import { IBalance } from './IBalance';
-import { IBaseAccount } from './IBaseAccount';
-import { ICallData } from './ICallData';
-import { IContractData } from './IContractData';
-import { IEventFilter } from './IEventFilter';
-import { IExecuteReadOnlyResponse } from './IExecuteReadOnlyResponse';
-import { IReadData } from './IReadData';
+import { IContractReadOperationResponse, IEvent } from '@massalabs/web3-utils'
+import { EOperationStatus } from './EOperationStatus'
+import { IBalance } from './IBalance'
+import { IBaseAccount } from './IBaseAccount'
+import { ICallData } from './ICallData'
+import { IContractData } from './IContractData'
+import { IEventFilter } from './IEventFilter'
+import { IExecuteReadOnlyResponse } from './IExecuteReadOnlyResponse'
+import { IReadData } from './IReadData'
 
 /**
  * Represents a SmartContractClient object.
@@ -31,8 +31,8 @@ export interface ISmartContractsClient {
    */
   deploySmartContract(
     contractData: IContractData,
-    executor?: IBaseAccount,
-  ): Promise<string>;
+    executor?: IBaseAccount
+  ): Promise<string>
 
   /**
    * Calls a smart contract.
@@ -44,8 +44,8 @@ export interface ISmartContractsClient {
    */
   callSmartContract(
     callData: ICallData,
-    executor?: IBaseAccount,
-  ): Promise<string>;
+    executor?: IBaseAccount
+  ): Promise<string>
 
   /**
    * Read a smart contract.
@@ -55,8 +55,8 @@ export interface ISmartContractsClient {
    * @returns The contract read operation response
    */
   readSmartContract(
-    readData: IReadData,
-  ): Promise<IContractReadOperationResponse>;
+    readData: IReadData
+  ): Promise<IContractReadOperationResponse>
 
   /**
    * Get contract balance.
@@ -65,7 +65,7 @@ export interface ISmartContractsClient {
    *
    * @returns The contract balance (null if not found)
    */
-  getContractBalance(address: string): Promise<IBalance | null>;
+  getContractBalance(address: string): Promise<IBalance | null>
 
   /**
    * Get filtered smart contract output events.
@@ -75,8 +75,8 @@ export interface ISmartContractsClient {
    * @returns The array of corresponding events
    */
   getFilteredScOutputEvents(
-    eventFilterData: IEventFilter,
-  ): Promise<Array<IEvent>>;
+    eventFilterData: IEventFilter
+  ): Promise<Array<IEvent>>
 
   /**
    * Execute read only smart contract.
@@ -86,8 +86,8 @@ export interface ISmartContractsClient {
    * @returns The execute read only response
    */
   executeReadOnlySmartContract(
-    contractData: IContractData,
-  ): Promise<IExecuteReadOnlyResponse>;
+    contractData: IContractData
+  ): Promise<IExecuteReadOnlyResponse>
 
   /**
    * Get an operation status.
@@ -96,7 +96,7 @@ export interface ISmartContractsClient {
    *
    * @returns The operation status
    */
-  getOperationStatus(opId: string): Promise<EOperationStatus>;
+  getOperationStatus(opId: string): Promise<EOperationStatus>
 
   /**
    * Await required operation status.
@@ -108,6 +108,6 @@ export interface ISmartContractsClient {
    */
   awaitRequiredOperationStatus(
     opId: string,
-    requiredStatus: EOperationStatus,
-  ): Promise<EOperationStatus>;
+    requiredStatus: EOperationStatus
+  ): Promise<EOperationStatus>
 }

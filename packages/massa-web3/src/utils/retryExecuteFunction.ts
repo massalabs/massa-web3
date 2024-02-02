@@ -1,13 +1,13 @@
-import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods';
-import { wait } from './time';
+import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods'
+import { wait } from './time'
 
-const MAX_NUMBER_RETRIALS = 5;
-const RETRY_INTERVAL_MS = 300;
+const MAX_NUMBER_RETRIALS = 5
+const RETRY_INTERVAL_MS = 300
 
 type CallbackFunction<R> = (
   resource: JSON_RPC_REQUEST_METHOD,
-  params: object,
-) => Promise<R>;
+  params: object
+) => Promise<R>
 
 /**
  * Tries to execute a function and retries if it fails.
@@ -23,31 +23,29 @@ type CallbackFunction<R> = (
 export const trySafeExecute = async <R>(
   func: CallbackFunction<R>,
   args?: [JSON_RPC_REQUEST_METHOD, object],
-  retryTimes: number = MAX_NUMBER_RETRIALS,
+  retryTimes: number = MAX_NUMBER_RETRIALS
 ): Promise<R> => {
-  args = args || [null, {}];
+  args = args || [null, {}]
 
   if (!func)
-    throw new Error(
-      `Function execution init conditions are erroneous: ${func}`,
-    );
+    throw new Error(`Function execution init conditions are erroneous: ${func}`)
 
-  let failureCounter = 0;
-  let res: R = null;
+  let failureCounter = 0
+  let res: R = null
   while (true) {
     try {
-      res = await func(...args);
-      break;
+      res = await func(...args)
+      break
     } catch (ex) {
-      ++failureCounter;
-      const msg = `Failed to execute function ${func.name}. Retrying for ${failureCounter}th time in ${RETRY_INTERVAL_MS}ms.`;
-      console.error(msg);
-      await wait(RETRY_INTERVAL_MS);
+      ++failureCounter
+      const msg = `Failed to execute function ${func.name}. Retrying for ${failureCounter}th time in ${RETRY_INTERVAL_MS}ms.`
+      console.error(msg)
+      await wait(RETRY_INTERVAL_MS)
 
       if (failureCounter === retryTimes) {
-        throw ex;
+        throw ex
       }
     }
   }
-  return res;
-};
+  return res
+}

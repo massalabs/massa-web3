@@ -1,5 +1,5 @@
 export function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**
@@ -13,29 +13,29 @@ export class Timeout {
    * @param callback - The function to be called when the timeout is triggered.
    */
   constructor(timeoutMil: number, callback: () => void) {
-    this.clear = this.clear.bind(this);
+    this.clear = this.clear.bind(this)
 
-    const that = this;
-    this.isCleared = false;
-    this.isCalled = false;
+    const that = this
+    this.isCleared = false
+    this.isCalled = false
     this.timeoutHook = setTimeout(() => {
       if (!that.isCleared) {
-        this.isCalled = true;
-        callback();
+        this.isCalled = true
+        callback()
       }
-    }, timeoutMil);
+    }, timeoutMil)
   }
-  private isCleared: boolean;
-  private isCalled: boolean;
-  private timeoutHook: ReturnType<typeof setTimeout>;
+  private isCleared: boolean
+  private isCalled: boolean
+  private timeoutHook: ReturnType<typeof setTimeout>
 
   /**
    * Clears the timeout so that the callback function is not called.
    */
   public clear(): void {
     if (!this.isCleared) {
-      clearTimeout(this.timeoutHook);
-      this.isCleared = true;
+      clearTimeout(this.timeoutHook)
+      this.isCleared = true
     }
   }
 }
@@ -52,29 +52,29 @@ export class Interval {
    * @param callback - The function to be called when the interval is triggered.
    */
   constructor(timeoutMil: number, callback: () => void) {
-    this.clear = this.clear.bind(this);
+    this.clear = this.clear.bind(this)
 
-    const that = this;
-    this.isCleared = false;
-    this.isCalled = false;
+    const that = this
+    this.isCleared = false
+    this.isCalled = false
     this.intervalHook = setInterval(() => {
       if (!that.isCleared) {
-        this.isCalled = true;
-        callback();
+        this.isCalled = true
+        callback()
       }
-    }, timeoutMil);
+    }, timeoutMil)
   }
-  private isCleared: boolean;
-  private isCalled: boolean;
-  private intervalHook: NodeJS.Timeout;
+  private isCleared: boolean
+  private isCalled: boolean
+  private intervalHook: NodeJS.Timeout
 
   /**
    * Clears the interval so that the callback function is not called anymore.
    */
   public clear(): void {
     if (!this.isCleared) {
-      clearInterval(this.intervalHook);
-      this.isCleared = true;
+      clearInterval(this.intervalHook)
+      this.isCleared = true
     }
   }
 }
@@ -92,18 +92,18 @@ export class Interval {
  */
 export async function withTimeoutRejection<T>(
   promise: Promise<T>,
-  timeoutMs: number,
+  timeoutMs: number
 ): Promise<T> {
   const sleep = new Promise((resolve, reject) =>
     setTimeout(
       () =>
         reject(
           new Error(
-            `Timeout of ${timeoutMs} has passed and promise did not resolve`,
-          ),
+            `Timeout of ${timeoutMs} has passed and promise did not resolve`
+          )
         ),
-      timeoutMs,
-    ),
-  );
-  return Promise.race([promise, sleep]) as Promise<T>;
+      timeoutMs
+    )
+  )
+  return Promise.race([promise, sleep]) as Promise<T>
 }

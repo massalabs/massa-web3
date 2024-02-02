@@ -1,4 +1,4 @@
-import * as unsigned from './unsigned';
+import * as unsigned from './unsigned'
 
 /**
  * @module Signed
@@ -6,8 +6,8 @@ import * as unsigned from './unsigned';
  * This module provides functions to encode and decode signed
  * integers using Varint, which is a compact binary representation of integers.
  */
-const oneBI = BigInt(1);
-const twoBI = BigInt(2);
+const oneBI = BigInt(1)
+const twoBI = BigInt(2)
 
 /**
  * Returns the number of bytes required to store the number.
@@ -22,8 +22,8 @@ const twoBI = BigInt(2);
  */
 export function encodingLength(value: bigint): number {
   return unsigned.encodingLength(
-    value >= 0 ? value * twoBI : value * -twoBI - oneBI,
-  );
+    value >= 0 ? value * twoBI : value * -twoBI - oneBI
+  )
 }
 
 /**
@@ -38,10 +38,10 @@ export function encodingLength(value: bigint): number {
 export function encode(
   value: bigint,
   buffer?: ArrayBuffer,
-  byteOffset?: number,
+  byteOffset?: number
 ): ArrayBuffer {
-  value = value >= 0 ? value * twoBI : value * -twoBI - oneBI;
-  return unsigned.encode(value, buffer, byteOffset);
+  value = value >= 0 ? value * twoBI : value * -twoBI - oneBI
+  return unsigned.encode(value, buffer, byteOffset)
 }
 
 /**
@@ -53,6 +53,6 @@ export function encode(
  * @returns The decoded value.
  */
 export function decode(data: Uint8Array, offset = 0): bigint {
-  const value = unsigned.decode(data, offset);
-  return value & oneBI ? (value + oneBI) / -twoBI : value / twoBI;
+  const value = unsigned.decode(data, offset)
+  return value & oneBI ? (value + oneBI) / -twoBI : value / twoBI
 }

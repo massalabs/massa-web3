@@ -1,15 +1,15 @@
-import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { IAccount } from '../interfaces/IAccount';
-import { Client } from './Client';
-import { IClientConfig } from '../interfaces/IClientConfig';
+import { IProvider, ProviderType } from '../interfaces/IProvider'
+import { IAccount } from '../interfaces/IAccount'
+import { Client } from './Client'
+import { IClientConfig } from '../interfaces/IClientConfig'
 import {
   IAccount as IAccountWalletProvider,
   IProvider as IProviderWalletProvider,
-} from '@massalabs/wallet-provider';
-import { Web3Account } from './accounts/Web3Account';
-import { PublicApiClient } from './PublicApiClient';
-import { WalletProviderAccount } from './accounts/WalletProviderAccount';
-import { DefaultProviderUrls } from '@massalabs/web3-utils';
+} from '@massalabs/wallet-provider'
+import { Web3Account } from './accounts/Web3Account'
+import { PublicApiClient } from './PublicApiClient'
+import { WalletProviderAccount } from './accounts/WalletProviderAccount'
+import { DefaultProviderUrls } from '@massalabs/web3-utils'
 
 /**
  * Massa Web3 ClientFactory class allows you to easily initialize a client to
@@ -34,20 +34,20 @@ export class ClientFactory {
     provider: DefaultProviderUrls,
     chainId: bigint,
     retryStrategyOn = true,
-    baseAccount?: IAccount,
+    baseAccount?: IAccount
   ): Promise<Client> {
-    let publicProviderUrl = provider.toString();
-    let privateProviderUrl = provider.toString();
+    let publicProviderUrl = provider.toString()
+    let privateProviderUrl = provider.toString()
     switch (provider) {
       // in the case of LocalNet append specific default ports to url.
       case DefaultProviderUrls.LOCALNET: {
-        privateProviderUrl = `${privateProviderUrl}:33034`;
-        publicProviderUrl = `${publicProviderUrl}:33035`;
-        break;
+        privateProviderUrl = `${privateProviderUrl}:33034`
+        publicProviderUrl = `${publicProviderUrl}:33035`
+        break
       }
       // all other networks should have public access only.
       default: {
-        break;
+        break
       }
     }
 
@@ -60,16 +60,16 @@ export class ClientFactory {
         url: privateProviderUrl,
         type: ProviderType.PRIVATE,
       } as IProvider,
-    ];
+    ]
 
     let clientConfig = {
       retryStrategyOn,
       providers,
-    } as IClientConfig;
-    let publicApi = new PublicApiClient(clientConfig);
-    let account: Web3Account = null;
+    } as IClientConfig
+    let publicApi = new PublicApiClient(clientConfig)
+    let account: Web3Account = null
     if (baseAccount) {
-      account = new Web3Account(baseAccount, publicApi, chainId);
+      account = new Web3Account(baseAccount, publicApi, chainId)
     }
     const client: Client = new Client(
       {
@@ -77,9 +77,9 @@ export class ClientFactory {
         providers,
       } as IClientConfig,
       account,
-      publicApi,
-    );
-    return client;
+      publicApi
+    )
+    return client
   }
 
   /**
@@ -99,19 +99,19 @@ export class ClientFactory {
     providers: Array<IProvider>,
     chainId: bigint,
     retryStrategyOn = true,
-    baseAccount?: IAccount,
+    baseAccount?: IAccount
   ): Promise<Client> {
     let clientConfig = {
       retryStrategyOn,
       providers,
-    } as IClientConfig;
-    let publicApi = new PublicApiClient(clientConfig);
-    let account: Web3Account = null;
+    } as IClientConfig
+    let publicApi = new PublicApiClient(clientConfig)
+    let account: Web3Account = null
     if (baseAccount) {
-      account = new Web3Account(baseAccount, publicApi, chainId);
+      account = new Web3Account(baseAccount, publicApi, chainId)
     }
-    const client: Client = new Client(clientConfig, account, publicApi);
-    return client;
+    const client: Client = new Client(clientConfig, account, publicApi)
+    return client
   }
 
   /**
@@ -129,22 +129,22 @@ export class ClientFactory {
   public static async fromWalletProvider(
     provider: IProviderWalletProvider,
     baseAccount: IAccountWalletProvider,
-    retryStrategyOn = true,
+    retryStrategyOn = true
   ): Promise<Client> {
     const providers = (await provider.getNodesUrls()).map((url) => {
       return {
         url,
         type: ProviderType.PUBLIC,
-      };
-    });
+      }
+    })
     const client: Client = new Client(
       {
         retryStrategyOn,
         providers,
       },
-      new WalletProviderAccount(baseAccount),
-    );
+      new WalletProviderAccount(baseAccount)
+    )
 
-    return client;
+    return client
   }
 }

@@ -6,7 +6,7 @@
  * @see secretKey - A string representing the base58 encoded private key associated with the account.
  */
 export interface IAccount {
-  address: string | null;
-  publicKey: string | null;
-  secretKey: string | null;
+  address: string | null
+  publicKey: string | null
+  secretKey: string | null
 }

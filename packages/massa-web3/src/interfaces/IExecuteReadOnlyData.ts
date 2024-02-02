@@ -1,4 +1,4 @@
-import { ISlot, IReadOperationResult, IEvent } from '@massalabs/web3-utils';
+import { ISlot, IReadOperationResult, IEvent } from '@massalabs/web3-utils'
 
 /**
  * Represents the inputs of a read-only operation on a deployed contract.
@@ -9,8 +9,8 @@ import { ISlot, IReadOperationResult, IEvent } from '@massalabs/web3-utils';
  * @see gas_cost of type `number` represents the amount of gas that was consumed by the read operation.
  */
 export interface IExecuteReadOnlyData {
-  executed_at: ISlot;
-  result: IReadOperationResult;
-  output_events: Array<IEvent>;
-  gas_cost: number;
+  executed_at: ISlot
+  result: IReadOperationResult
+  output_events: Array<IEvent>
+  gas_cost: number
 }

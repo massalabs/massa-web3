@@ -1,21 +1,21 @@
-import { IClientConfig } from '../interfaces/IClientConfig';
-import { PrivateApiClient } from './PrivateApiClient';
-import { PublicApiClient } from './PublicApiClient';
-import { WalletClient } from './WalletClient';
-import { SmartContractsClient } from './SmartContractsClient';
-import { IProvider, ProviderType } from '../interfaces/IProvider';
-import { IClient } from '../interfaces/IClient';
-import { IBaseAccount } from '../interfaces/IBaseAccount';
-import { DefaultProviderUrls } from '@massalabs/web3-utils';
+import { IClientConfig } from '../interfaces/IClientConfig'
+import { PrivateApiClient } from './PrivateApiClient'
+import { PublicApiClient } from './PublicApiClient'
+import { WalletClient } from './WalletClient'
+import { SmartContractsClient } from './SmartContractsClient'
+import { IProvider, ProviderType } from '../interfaces/IProvider'
+import { IClient } from '../interfaces/IClient'
+import { IBaseAccount } from '../interfaces/IBaseAccount'
+import { DefaultProviderUrls } from '@massalabs/web3-utils'
 
 /**
  * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities.
  */
 export class Client implements IClient {
-  private publicApiClient: PublicApiClient;
-  private privateApiClient: PrivateApiClient;
-  private walletClient: WalletClient;
-  private smartContractsClient: SmartContractsClient;
+  private publicApiClient: PublicApiClient
+  private privateApiClient: PrivateApiClient
+  private walletClient: WalletClient
+  private smartContractsClient: SmartContractsClient
 
   /**
    * Constructor of the Client class.
@@ -26,33 +26,33 @@ export class Client implements IClient {
   public constructor(
     private clientConfig: IClientConfig,
     baseAccount?: IBaseAccount,
-    publicApiClient?: PublicApiClient,
+    publicApiClient?: PublicApiClient
   ) {
-    this.publicApiClient = publicApiClient || new PublicApiClient(clientConfig);
-    this.privateApiClient = new PrivateApiClient(clientConfig);
+    this.publicApiClient = publicApiClient || new PublicApiClient(clientConfig)
+    this.privateApiClient = new PrivateApiClient(clientConfig)
     this.walletClient = new WalletClient(
       clientConfig,
       this.publicApiClient,
-      baseAccount,
-    );
+      baseAccount
+    )
     this.smartContractsClient = new SmartContractsClient(
       clientConfig,
       this.publicApiClient,
-      this.walletClient,
-    );
+      this.walletClient
+    )
 
     // subclients
-    this.privateApi = this.privateApi.bind(this);
-    this.publicApi = this.publicApi.bind(this);
-    this.wallet = this.wallet.bind(this);
-    this.smartContracts = this.smartContracts.bind(this);
+    this.privateApi = this.privateApi.bind(this)
+    this.publicApi = this.publicApi.bind(this)
+    this.wallet = this.wallet.bind(this)
+    this.smartContracts = this.smartContracts.bind(this)
     // setters
-    this.setCustomProviders = this.setCustomProviders.bind(this);
-    this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this);
+    this.setCustomProviders = this.setCustomProviders.bind(this)
+    this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this)
     // getters
-    this.getProviders = this.getProviders.bind(this);
-    this.getPrivateProviders = this.getPrivateProviders.bind(this);
-    this.getPublicProviders = this.getPublicProviders.bind(this);
+    this.getProviders = this.getProviders.bind(this)
+    this.getPrivateProviders = this.getPrivateProviders.bind(this)
+    this.getPublicProviders = this.getPublicProviders.bind(this)
   }
 
   /**
@@ -61,7 +61,7 @@ export class Client implements IClient {
    * @returns PrivateApiClient object.
    */
   public privateApi(): PrivateApiClient {
-    return this.privateApiClient;
+    return this.privateApiClient
   }
 
   /**
@@ -70,7 +70,7 @@ export class Client implements IClient {
    * @returns PublicApiClient object.
    */
   public publicApi(): PublicApiClient {
-    return this.publicApiClient;
+    return this.publicApiClient
   }
 
   /**
@@ -79,7 +79,7 @@ export class Client implements IClient {
    * @returns WalletClient object.
    */
   public wallet(): WalletClient {
-    return this.walletClient;
+    return this.walletClient
   }
 
   /**
@@ -88,7 +88,7 @@ export class Client implements IClient {
    * @returns SmartContractsClient object.
    */
   public smartContracts(): SmartContractsClient {
-    return this.smartContractsClient;
+    return this.smartContractsClient
   }
 
   /**
@@ -97,10 +97,10 @@ export class Client implements IClient {
    * @param providers - array of providers to set.
    */
   public setCustomProviders(providers: Array<IProvider>): void {
-    this.publicApiClient.setProviders(providers);
-    this.privateApiClient.setProviders(providers);
-    this.walletClient.setProviders(providers);
-    this.smartContractsClient.setProviders(providers);
+    this.publicApiClient.setProviders(providers)
+    this.privateApiClient.setProviders(providers)
+    this.walletClient.setProviders(providers)
+    this.smartContractsClient.setProviders(providers)
   }
 
   /**
@@ -109,7 +109,7 @@ export class Client implements IClient {
    * @returns array of the known providers.
    */
   public getProviders(): Array<IProvider> {
-    return this.clientConfig.providers;
+    return this.clientConfig.providers
   }
 
   /**
@@ -119,8 +119,8 @@ export class Client implements IClient {
    */
   public getPrivateProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PRIVATE,
-    );
+      (provider) => provider.type === ProviderType.PRIVATE
+    )
   }
 
   /**
@@ -130,8 +130,8 @@ export class Client implements IClient {
    */
   public getPublicProviders(): Array<IProvider> {
     return this.clientConfig.providers.filter(
-      (provider) => provider.type === ProviderType.PUBLIC,
-    );
+      (provider) => provider.type === ProviderType.PUBLIC
+    )
   }
 
   /**
@@ -149,10 +149,10 @@ export class Client implements IClient {
         url: provider,
         type: ProviderType.PRIVATE,
       } as IProvider,
-    ];
-    this.publicApiClient.setProviders(providers);
-    this.privateApiClient.setProviders(providers);
-    this.walletClient.setProviders(providers);
-    this.smartContractsClient.setProviders(providers);
+    ]
+    this.publicApiClient.setProviders(providers)
+    this.privateApiClient.setProviders(providers)
+    this.walletClient.setProviders(providers)
+    this.smartContractsClient.setProviders(providers)
   }
 }

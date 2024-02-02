@@ -5,8 +5,8 @@
  * @see deserialize - deserialize Uint8Array to object
  */
 export interface ISerializable<T> {
-  serialize(): Uint8Array;
-  deserialize(data: Uint8Array, offset: number): IDeserializedResult<T>;
+  serialize(): Uint8Array
+  deserialize(data: Uint8Array, offset: number): IDeserializedResult<T>
 }
 
 /**
@@ -16,6 +16,6 @@ export interface ISerializable<T> {
  * @see offset - offset of the deserialized instance
  */
 export interface IDeserializedResult<T> {
-  instance: T;
-  offset: number;
+  instance: T
+  offset: number
 }

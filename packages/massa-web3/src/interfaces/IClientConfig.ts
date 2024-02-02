@@ -1,4 +1,4 @@
-import { IProvider } from './IProvider';
+import { IProvider } from './IProvider'
 
 /**
  * This interface is used to configure the client.
@@ -9,8 +9,8 @@ import { IProvider } from './IProvider';
  * @see pingTimeoutMs of type `number` (optional) is the ping timeout in milliseconds for the provider.
  */
 export interface IClientConfig {
-  providers: Array<IProvider>;
-  retryStrategyOn?: boolean;
-  periodOffset?: number | null;
-  pingTimeoutMs?: number;
+  providers: Array<IProvider>
+  retryStrategyOn?: boolean
+  periodOffset?: number | null
+  pingTimeoutMs?: number
 }

@@ -5,10 +5,10 @@ import {
   call,
   functionExists,
   hasOpKey,
-} from '@massalabs/massa-as-sdk';
-import { Args } from '@massalabs/as-types';
+} from '@massalabs/massa-as-sdk'
+import { Args } from '@massalabs/as-types'
 
-const CONSTRUCTOR = 'constructor';
+const CONSTRUCTOR = 'constructor'
 
 /**
  * This function deploys and calls the constructor function of the deployed smart contract.
@@ -19,44 +19,44 @@ const CONSTRUCTOR = 'constructor';
  * @param _ - not used
  */
 export function main(): StaticArray<u8> {
-  const masterKey = new StaticArray<u8>(1);
-  masterKey[0] = 0x00;
+  const masterKey = new StaticArray<u8>(1)
+  masterKey[0] = 0x00
   if (!hasOpKey(masterKey)) {
-    return [];
+    return []
   }
-  const nbSCSer = getOpData(masterKey);
-  const nbSC = new Args(nbSCSer).nextU64().unwrap();
+  const nbSCSer = getOpData(masterKey)
+  const nbSC = new Args(nbSCSer).nextU64().unwrap()
   for (let i: u64 = 0; i < nbSC; i++) {
-    const keyBaseArgs = new Args().add(i + 1);
-    const keyBaseCoins = new Args().add(i + 1);
-    const key = keyBaseArgs.serialize();
+    const keyBaseArgs = new Args().add(i + 1)
+    const keyBaseCoins = new Args().add(i + 1)
+    const key = keyBaseArgs.serialize()
     if (!hasOpKey(key)) {
-      return [];
+      return []
     }
-    const SCBytecode = getOpData(key);
-    const contractAddr = createSC(SCBytecode);
+    const SCBytecode = getOpData(key)
+    const contractAddr = createSC(SCBytecode)
     if (functionExists(contractAddr, CONSTRUCTOR)) {
-      const argsIdent = new Uint8Array(1);
-      argsIdent[0] = 0x00;
-      const keyArgs = keyBaseArgs.add(argsIdent).serialize();
-      const coinsIdent = new Uint8Array(1);
-      coinsIdent[0] = 0x01;
-      const keyCoins = keyBaseCoins.add(coinsIdent).serialize();
-      let args: Args;
+      const argsIdent = new Uint8Array(1)
+      argsIdent[0] = 0x00
+      const keyArgs = keyBaseArgs.add(argsIdent).serialize()
+      const coinsIdent = new Uint8Array(1)
+      coinsIdent[0] = 0x01
+      const keyCoins = keyBaseCoins.add(coinsIdent).serialize()
+      let args: Args
       if (hasOpKey(keyArgs)) {
-        args = new Args(getOpData(keyArgs));
+        args = new Args(getOpData(keyArgs))
       } else {
-        args = new Args();
+        args = new Args()
       }
-      let coins: u64;
+      let coins: u64
       if (hasOpKey(keyCoins)) {
-        coins = new Args(getOpData(keyCoins)).nextU64().unwrap();
+        coins = new Args(getOpData(keyCoins)).nextU64().unwrap()
       } else {
-        coins = 0;
+        coins = 0
       }
-      call(contractAddr, CONSTRUCTOR, args, coins);
+      call(contractAddr, CONSTRUCTOR, args, coins)
     }
-    generateEvent(`Contract deployed at address: ${contractAddr.toString()}`);
+    generateEvent(`Contract deployed at address: ${contractAddr.toString()}`)
   }
-  return [];
+  return []
 }
