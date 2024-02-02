@@ -12,7 +12,7 @@
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "fmt": "npm run lint:fix && npm run prettier:fix",
-    "fmt:check": "npm run prettier && npm run lint"
+    "fmt:check": "npm run lint && npm run prettier"
   },
   "devDependencies": {
     "@massalabs/eslint-config": "^0.0.10",
