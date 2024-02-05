@@ -587,7 +587,7 @@ export const mockCallData: ICallData = {
   maxGas: 10n,
   coins: 1n,
   targetAddress: 'AS12sRd6E6zKdBx3PGeZpCUUM8sE5oSA5mTa3VV4AoDCoqpoxwkmu',
-  functionName: 'test',
+  targetFunction: 'test',
   parameter: [1, 2, 3, 4],
 }
 

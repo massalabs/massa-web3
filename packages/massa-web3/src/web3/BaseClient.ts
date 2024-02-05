@@ -368,11 +368,11 @@ export class BaseClient {
         )
 
         // target function name and name length
-        const functionNameEncoded = new Uint8Array(
-          Buffer.from((data as ICallData).functionName, 'utf8')
+        const targetFunctionEncoded = new Uint8Array(
+          Buffer.from((data as ICallData).targetFunction, 'utf8')
         )
-        const functionNameLengthEncoded = Buffer.from(
-          varintEncode(functionNameEncoded.length)
+        const targetFunctionLengthEncoded = Buffer.from(
+          varintEncode(targetFunctionEncoded.length)
         )
 
         // parameter
@@ -395,8 +395,8 @@ export class BaseClient {
           maxGasEncoded,
           coinsEncoded,
           targetAddressEncoded,
-          functionNameLengthEncoded,
-          functionNameEncoded,
+          targetFunctionLengthEncoded,
+          targetFunctionEncoded,
           parametersLengthEncoded,
           parametersEncoded,
         ])

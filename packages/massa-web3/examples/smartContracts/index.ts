@@ -289,7 +289,7 @@ try {
       maxGas: BigInt(10_500_000),
       coins: 0n,
       targetAddress: scAddress,
-      functionName: 'deleteMusicAlbum',
+      targetFunction: 'deleteMusicAlbum',
       parameter: deleteMusicAlbumArgs.serialize(),
     } as ICallData)
   spinner.succeed(
@@ -319,7 +319,7 @@ try {
       maxGas: BigInt(10_500_000),
       coins: 0n,
       targetAddress: scAddress,
-      functionName: 'addMusicAlbum',
+      targetFunction: 'addMusicAlbum',
       parameter: createMusicAlbumCallArgs.serialize(),
     } as ICallData)
   spinner.succeed(

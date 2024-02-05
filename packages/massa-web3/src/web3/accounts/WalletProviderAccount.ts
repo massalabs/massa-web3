@@ -62,7 +62,7 @@ export class WalletProviderAccount implements IBaseAccount {
 
     let res = (await this.account.callSC(
       callData.targetAddress,
-      callData.functionName,
+      callData.targetFunction,
       paramToSend,
       callData.coins,
       callData.fee,
