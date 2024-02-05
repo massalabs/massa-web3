@@ -144,6 +144,17 @@ export class SmartContractsClient
         `The sender ${sender.address()} does not have enough balance to pay for the coins`
       )
     }
+
+    if (!callData.maxGas) {
+      const reponse = await this.readSmartContract({
+        maxGas: BigInt(0),
+        targetAddress: callData.targetAddress,
+        targetFunction: callData.targetFunction,
+        parameter: callData.parameter,
+      })
+      callData.maxGas = BigInt(reponse.info.gas_cost)
+    }
+
     return await sender.callSmartContract(callData)
   }
 
