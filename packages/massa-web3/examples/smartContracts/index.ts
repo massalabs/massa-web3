@@ -286,7 +286,6 @@ try {
     .smartContracts()
     .callSmartContract({
       fee: 0n,
-      maxGas: BigInt(10_500_000),
       coins: 0n,
       targetAddress: scAddress,
       targetFunction: 'deleteMusicAlbum',
@@ -316,7 +315,6 @@ try {
     .smartContracts()
     .callSmartContract({
       fee: 0n,
-      maxGas: BigInt(10_500_000),
       coins: 0n,
       targetAddress: scAddress,
       targetFunction: 'addMusicAlbum',
