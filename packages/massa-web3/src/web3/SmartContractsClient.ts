@@ -151,6 +151,8 @@ export class SmartContractsClient
         targetAddress: callData.targetAddress,
         targetFunction: callData.targetFunction,
         parameter: callData.parameter,
+        coins: callData.coins,
+        fee: callData.fee,
       })
       callData.maxGas = BigInt(reponse.info.gas_cost)
     }

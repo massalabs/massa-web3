@@ -17,7 +17,7 @@ import { Args } from '@massalabs/web3-utils'
  */
 export interface ICallData {
   fee: bigint
-  maxGas: bigint
+  maxGas?: bigint
   coins?: bigint
   targetAddress: string
   targetFunction: string
