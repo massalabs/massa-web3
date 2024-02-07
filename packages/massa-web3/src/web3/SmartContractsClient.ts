@@ -147,7 +147,7 @@ export class SmartContractsClient
 
     if (callData.maxGas === null || callData.maxGas === undefined) {
       const reponse = await this.readSmartContract({
-        maxGas: BigInt(0),
+        maxGas: BigInt(2_100_000),
         targetAddress: callData.targetAddress,
         targetFunction: callData.targetFunction,
         parameter: callData.parameter,
