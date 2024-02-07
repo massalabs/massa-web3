@@ -247,6 +247,32 @@ describe('SmartContractsClient', () => {
       spy.mockRestore()
     })
 
+    test('should set default maxGas using readSmartContract if maxGas is not provided', async () => {
+      ;(smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockResolvedValue(mockContractReadOperationData)
+
+      const mockCallDataWithoutMaxGas = {
+        ...mockCallData,
+        maxGas: undefined,
+      }
+
+      const spy = jest.spyOn(smartContractsClient, 'readSmartContract')
+
+      await smartContractsClient.callSmartContract(
+        mockCallDataWithoutMaxGas,
+        mockDeployerAccount
+      )
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...mockCallDataWithoutMaxGas,
+          maxGas: BigInt(0),
+        })
+      )
+      spy.mockRestore()
+    })
+
     test('should return the correct result', async () => {
       const result = await smartContractsClient.callSmartContract(
         mockCallData,
@@ -336,6 +362,7 @@ describe('SmartContractsClient', () => {
       )
     })
   })
+
   describe('readSmartContract', () => {
     test('should send the correct JSON RPC request', async () => {
       ;(smartContractsClient as any).sendJsonRPCRequest = jest
