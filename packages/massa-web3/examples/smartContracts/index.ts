@@ -153,216 +153,220 @@ const pollAsyncEvents = async (
   })
 }
 
-const header = '='.repeat(process.stdout.columns - 1)
-console.log(header)
-console.log(`${chalk.green.bold('Massa Smart Contract Interaction Example')}`)
-console.log(header)
+;(async () => {
+  const header = '='.repeat(process.stdout.columns - 1)
+  console.log(header)
+  console.log(`${chalk.green.bold('Massa Smart Contract Interaction Example')}`)
+  console.log(header)
 
-let spinner
-try {
-  // init client
-  const deployerAccount: IAccount =
-    await WalletClient.getAccountFromSecretKey(deployerPrivateKey)
+  let spinner
+  try {
+    // init client
+    const deployerAccount: IAccount =
+      await WalletClient.getAccountFromSecretKey(deployerPrivateKey)
 
-  const web3Client: Client = await ClientFactory.createCustomClient(
-    [
-      { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
-      { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
-    ],
-    chainId,
-    true,
-    deployerAccount
-  )
-
-  const accountAddress = deployerAccount.address
-
-  if (!accountAddress) {
-    throw new Error('Missing account address')
-  }
-
-  const deployerAccountBalance = await web3Client
-    .wallet()
-    .getAccountBalance(accountAddress)
-
-  console.log(
-    `Deployer Wallet Address: ${accountAddress} with balance (candidate, final) = (${toMAS(
-      deployerAccountBalance?.candidate.toString() as string
-    )}, ${toMAS(deployerAccountBalance?.final.toString() as string)})`
-  )
-
-  // deploy smart contract
-  spinner = ora(
-    `Running ${chalk.green('deployment')} of deployer smart contract....`
-  ).start()
-
-  const baseAccount = web3Client.wallet().getBaseAccount()
-
-  if (!baseAccount) {
-    throw new Error('Failed to get base account')
-  }
-
-  const deploymentOperationId = await deploySmartContracts(
-    [
-      {
-        data: readFileSync(path.join(__dirname, '.', 'contracts', '/sc.wasm')),
-        args: undefined,
-        coins: fromMAS(0.1),
-      },
-    ],
-    web3Client,
-    baseAccount,
-    0n,
-    3000_000_000n,
-    fromMAS(1.5)
-  )
-
-  spinner.succeed(
-    `Deployed Smart Contract ${chalk.green(
-      'successfully'
-    )} with opId ${deploymentOperationId}`
-  )
-
-  // async poll events in the background for the given opId
-  const { isError, eventPoller, events }: IEventPollerResult =
-    await withTimeoutRejection<IEventPollerResult>(
-      pollAsyncEvents(web3Client, deploymentOperationId),
-      20000
+    const web3Client: Client = await ClientFactory.createCustomClient(
+      [
+        { url: publicApi, type: ProviderType.PUBLIC } as IProvider,
+        { url: privateApi, type: ProviderType.PRIVATE } as IProvider,
+      ],
+      chainId,
+      true,
+      deployerAccount
     )
 
-  // stop polling
-  eventPoller.stopPolling()
+    const accountAddress = deployerAccount.address
 
-  // if errors, don't await finalization
-  if (isError) {
-    throw new Error(
-      `Massa Deployment Error: ${JSON.stringify(events, null, 4)}`
+    if (!accountAddress) {
+      throw new Error('Missing account address')
+    }
+
+    const deployerAccountBalance = await web3Client
+      .wallet()
+      .getAccountBalance(accountAddress)
+
+    console.log(
+      `Deployer Wallet Address: ${accountAddress} with balance (candidate, final) = (${toMAS(
+        deployerAccountBalance?.candidate.toString() as string
+      )}, ${toMAS(deployerAccountBalance?.final.toString() as string)})`
     )
-  }
 
-  // await finalization
-  await awaitTxConfirmation(web3Client, deploymentOperationId)
+    // deploy smart contract
+    spinner = ora(
+      `Running ${chalk.green('deployment')} of deployer smart contract....`
+    ).start()
 
-  // find an event that contains the emitted sc address
-  spinner = ora(`Extracting deployed sc address from events....`).start()
-  const addressEvent: IEvent | undefined = events.find((event) =>
-    event.data.includes('Contract deployed at address')
-  )
-  if (!addressEvent) {
-    throw new Error(
-      'No events were emitted from contract containing a message `SC created at:...`. Please make sure to include such a message in order to fetch the sc address'
+    const baseAccount = web3Client.wallet().getBaseAccount()
+
+    if (!baseAccount) {
+      throw new Error('Failed to get base account')
+    }
+
+    const deploymentOperationId = await deploySmartContracts(
+      [
+        {
+          data: readFileSync(
+            path.join(__dirname, '.', 'contracts', '/sc.wasm')
+          ),
+          args: undefined,
+          coins: fromMAS(0.1),
+        },
+      ],
+      web3Client,
+      baseAccount,
+      0n,
+      3000_000_000n,
+      fromMAS(1.5)
     )
-  }
-  const scAddress: string = addressEvent.data.split(':')[1].trim()
-  spinner.succeed(`Smart Contract Address: ${chalk.yellow(scAddress)}`)
 
-  // =========================================
-  // get function return value: get the music album
-  spinner = ora(
-    `Getting a function return value from the deployed smart contract...`
-  ).start()
-  const args = new Args().addString('1')
-  const result = await web3Client.smartContracts().readSmartContract({
-    maxGas: 2000_000_000n,
-    targetAddress: scAddress,
-    targetFunction: 'getMusicAlbum',
-    parameter: args.serialize(),
-    coins: 0n,
-    fee: 0n,
-  })
+    spinner.succeed(
+      `Deployed Smart Contract ${chalk.green(
+        'successfully'
+      )} with opId ${deploymentOperationId}`
+    )
 
-  const res = new Args(result.returnValue, 0)
-  const musicAlbum = res.nextSerializable(MusicAlbum)
-  spinner.succeed(
-    `Function Return Value: ${JSON.stringify(musicAlbum, null, 4)}`
-  )
+    // async poll events in the background for the given opId
+    const { isError, eventPoller, events }: IEventPollerResult =
+      await withTimeoutRejection<IEventPollerResult>(
+        pollAsyncEvents(web3Client, deploymentOperationId),
+        20000
+      )
 
-  // =========================================
-  // make a smart contract call: delete the music album
-  spinner = ora(
-    `Calling a set function on the deployed smart contract...`
-  ).start()
-  const deleteMusicAlbumArgs = new Args().addString('1')
-  const deleteMusicAlbumCallOperationId = await web3Client
-    .smartContracts()
-    .callSmartContract({
-      fee: 0n,
-      coins: 0n,
+    // stop polling
+    eventPoller.stopPolling()
+
+    // if errors, don't await finalization
+    if (isError) {
+      throw new Error(
+        `Massa Deployment Error: ${JSON.stringify(events, null, 4)}`
+      )
+    }
+
+    // await finalization
+    await awaitTxConfirmation(web3Client, deploymentOperationId)
+
+    // find an event that contains the emitted sc address
+    spinner = ora(`Extracting deployed sc address from events....`).start()
+    const addressEvent: IEvent | undefined = events.find((event) =>
+      event.data.includes('Contract deployed at address')
+    )
+    if (!addressEvent) {
+      throw new Error(
+        'No events were emitted from contract containing a message `SC created at:...`. Please make sure to include such a message in order to fetch the sc address'
+      )
+    }
+    const scAddress: string = addressEvent.data.split(':')[1].trim()
+    spinner.succeed(`Smart Contract Address: ${chalk.yellow(scAddress)}`)
+
+    // =========================================
+    // get function return value: get the music album
+    spinner = ora(
+      `Getting a function return value from the deployed smart contract...`
+    ).start()
+    const args = new Args().addString('1')
+    const result = await web3Client.smartContracts().readSmartContract({
+      maxGas: 2000_000_000n,
       targetAddress: scAddress,
-      targetFunction: 'deleteMusicAlbum',
-      parameter: deleteMusicAlbumArgs.serialize(),
-    } as ICallData)
-  spinner.succeed(
-    `Delete Music Album operation ID: ${deleteMusicAlbumCallOperationId}`
-  )
-
-  // await finalization
-  await awaitTxConfirmation(web3Client, deleteMusicAlbumCallOperationId)
-
-  // =========================================
-  // make a smart contract call: create a new music album
-  spinner = ora(
-    `Calling a set function on the deployed smart contract...`
-  ).start()
-  const newMusicAlbum = new MusicAlbum(
-    '1',
-    'CD',
-    'The Beatles',
-    'Let It Be',
-    1970
-  )
-  const createMusicAlbumCallArgs = new Args(newMusicAlbum.serialize())
-  const createMusicAlbumCallOperationId = await web3Client
-    .smartContracts()
-    .callSmartContract({
-      fee: 0n,
+      targetFunction: 'getMusicAlbum',
+      parameter: args.serialize(),
       coins: 0n,
-      targetAddress: scAddress,
-      targetFunction: 'addMusicAlbum',
-      parameter: createMusicAlbumCallArgs.serialize(),
-    } as ICallData)
-  spinner.succeed(
-    `Create Music Album Operation ID: ${createMusicAlbumCallOperationId}`
-  )
+      fee: 0n,
+    })
 
-  // await finalization
-  await awaitTxConfirmation(web3Client, createMusicAlbumCallOperationId)
-
-  // =========================================
-  // read value from store: read music album content
-  spinner = ora(
-    `Reading Music Album from the deployed smart contract storage...`
-  ).start()
-  const scStorage = await web3Client.publicApi().getDatastoreEntries([
-    {
-      address: scAddress,
-      key: strToBytes(`MUSIC_ALBUM_KEY_1`),
-    } as IDatastoreEntryInput,
-  ])
-  if (!scStorage[0].final_value) {
-    spinner.fail(`Storage contains null for that key. Something is wrong`)
-  } else {
-    const res = new Args(scStorage[0].final_value, 0)
+    const res = new Args(result.returnValue, 0)
     const musicAlbum = res.nextSerializable(MusicAlbum)
     spinner.succeed(
-      `Music Album from Storage: ${JSON.stringify(musicAlbum, null, 4)}`
+      `Function Return Value: ${JSON.stringify(musicAlbum, null, 4)}`
     )
-  }
 
-  // =========================================
-  // read contract balance
-  spinner = ora(`Getting deployed smart contract balance...`).start()
-  const contractBalance = await web3Client
-    .smartContracts()
-    .getContractBalance(scAddress)
-  spinner.succeed(
-    `Deployed smart contract balance (candidate, final) = $(${toMAS(
-      contractBalance?.candidate.toString() as string
-    )},${toMAS(contractBalance?.final.toString() as string)})`
-  )
-  process.exit(0)
-} catch (ex) {
-  console.error(ex)
-  const msg = chalk.red(`Error = ${ex}`)
-  if (spinner) spinner.fail(msg)
-  process.exit(-1)
-}
+    // =========================================
+    // make a smart contract call: delete the music album
+    spinner = ora(
+      `Calling a set function on the deployed smart contract...`
+    ).start()
+    const deleteMusicAlbumArgs = new Args().addString('1')
+    const deleteMusicAlbumCallOperationId = await web3Client
+      .smartContracts()
+      .callSmartContract({
+        fee: 0n,
+        coins: 0n,
+        targetAddress: scAddress,
+        targetFunction: 'deleteMusicAlbum',
+        parameter: deleteMusicAlbumArgs.serialize(),
+      } as ICallData)
+    spinner.succeed(
+      `Delete Music Album operation ID: ${deleteMusicAlbumCallOperationId}`
+    )
+
+    // await finalization
+    await awaitTxConfirmation(web3Client, deleteMusicAlbumCallOperationId)
+
+    // =========================================
+    // make a smart contract call: create a new music album
+    spinner = ora(
+      `Calling a set function on the deployed smart contract...`
+    ).start()
+    const newMusicAlbum = new MusicAlbum(
+      '1',
+      'CD',
+      'The Beatles',
+      'Let It Be',
+      1970
+    )
+    const createMusicAlbumCallArgs = new Args(newMusicAlbum.serialize())
+    const createMusicAlbumCallOperationId = await web3Client
+      .smartContracts()
+      .callSmartContract({
+        fee: 0n,
+        coins: 0n,
+        targetAddress: scAddress,
+        targetFunction: 'addMusicAlbum',
+        parameter: createMusicAlbumCallArgs.serialize(),
+      } as ICallData)
+    spinner.succeed(
+      `Create Music Album Operation ID: ${createMusicAlbumCallOperationId}`
+    )
+
+    // await finalization
+    await awaitTxConfirmation(web3Client, createMusicAlbumCallOperationId)
+
+    // =========================================
+    // read value from store: read music album content
+    spinner = ora(
+      `Reading Music Album from the deployed smart contract storage...`
+    ).start()
+    const scStorage = await web3Client.publicApi().getDatastoreEntries([
+      {
+        address: scAddress,
+        key: strToBytes(`MUSIC_ALBUM_KEY_1`),
+      } as IDatastoreEntryInput,
+    ])
+    if (!scStorage[0].final_value) {
+      spinner.fail(`Storage contains null for that key. Something is wrong`)
+    } else {
+      const res = new Args(scStorage[0].final_value, 0)
+      const musicAlbum = res.nextSerializable(MusicAlbum)
+      spinner.succeed(
+        `Music Album from Storage: ${JSON.stringify(musicAlbum, null, 4)}`
+      )
+    }
+
+    // =========================================
+    // read contract balance
+    spinner = ora(`Getting deployed smart contract balance...`).start()
+    const contractBalance = await web3Client
+      .smartContracts()
+      .getContractBalance(scAddress)
+    spinner.succeed(
+      `Deployed smart contract balance (candidate, final) = $(${toMAS(
+        contractBalance?.candidate.toString() as string
+      )},${toMAS(contractBalance?.final.toString() as string)})`
+    )
+    process.exit(0)
+  } catch (ex) {
+    console.error(ex)
+    const msg = chalk.red(`Error = ${ex}`)
+    if (spinner) spinner.fail(msg)
+    process.exit(-1)
+  }
+})()
