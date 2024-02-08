@@ -37,6 +37,7 @@ import { wait } from '../utils/time'
 
 const WAIT_STATUS_TIMEOUT = 60000
 const TX_POLL_INTERVAL_MS = 1000
+const BASE_INSTANCE_CREATION_GAS_COST = 2100000
 
 /**
  * The key name (as a string) to look for when we are retrieving the proto file from a contract
@@ -147,7 +148,7 @@ export class SmartContractsClient
 
     if (callData.maxGas === null || callData.maxGas === undefined) {
       const reponse = await this.readSmartContract({
-        maxGas: BigInt(2_100_000),
+        maxGas: BigInt(BASE_INSTANCE_CREATION_GAS_COST),
         targetAddress: callData.targetAddress,
         targetFunction: callData.targetFunction,
         parameter: callData.parameter,
