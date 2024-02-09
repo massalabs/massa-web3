@@ -1,12 +1,16 @@
 {
+    "navigation": {
+        "includeGroups": true
+    },
     "sidebarLinks": {
-        "Wallet operations": "classes/WalletClient.html",
-        "Smart contracts operations": "classes/SmartContractsClient.html",
-        "Events": "classes/EventPoller.html",
-        "Public API": "classes/PublicApiClient.html",
-        "Private API": "classes/PrivateApiClient.html",
+        "Wallet operations": "https://web3.docs.massa.net/classes/WalletClient.html",
+        "Smart contracts operations": "https://web3.docs.massa.net/classes/SmartContractsClient.html",
+        "Events": "https://web3.docs.massa.net/classes/EventPoller.html",
+        "Public API": "https://web3.docs.massa.net/classes/PublicApiClient.html",
+        "Private API": "https://web3.docs.massa.net/classes/PrivateApiClient.html"
     },
     "navigationLinks": {
         "Main documentation": "https://docs.massa.net/"
-    }
+    },
+    "entryPoints": ["src"]
 }
