@@ -148,12 +148,8 @@ export class SmartContractsClient
 
     if (callData.maxGas === null || callData.maxGas === undefined) {
       const reponse = await this.readSmartContract({
+        ...callData,
         maxGas: BigInt(BASE_INSTANCE_CREATION_GAS_COST),
-        targetAddress: callData.targetAddress,
-        targetFunction: callData.targetFunction,
-        parameter: callData.parameter,
-        coins: callData.coins,
-        fee: callData.fee,
       })
       callData.maxGas = BigInt(reponse.info.gas_cost)
     }
