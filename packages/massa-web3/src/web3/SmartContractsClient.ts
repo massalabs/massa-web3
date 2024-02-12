@@ -37,7 +37,6 @@ import { wait } from '../utils/time'
 
 const WAIT_STATUS_TIMEOUT = 60000
 const TX_POLL_INTERVAL_MS = 1000
-const BASE_INSTANCE_CREATION_GAS_COST = 2100000
 
 /**
  * The key name (as a string) to look for when we are retrieving the proto file from a contract
@@ -147,10 +146,7 @@ export class SmartContractsClient
     }
 
     if (callData.maxGas === null || callData.maxGas === undefined) {
-      const reponse = await this.readSmartContract({
-        ...callData,
-        maxGas: BigInt(BASE_INSTANCE_CREATION_GAS_COST),
-      })
+      const reponse = await this.readSmartContract(callData)
       callData.maxGas = BigInt(reponse.info.gas_cost)
     }
 
@@ -173,6 +169,10 @@ export class SmartContractsClient
       throw new Error(
         `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`
       )
+    }
+
+    if (readData.maxGas === null || readData.maxGas === undefined) {
+      readData.maxGas = BigInt(MAX_GAS_CALL)
     }
 
     if (readData.parameter instanceof Args)
