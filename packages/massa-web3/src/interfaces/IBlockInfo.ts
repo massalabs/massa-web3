@@ -37,7 +37,7 @@ export interface IBlockInfo {
           sender_public_key: string
         }
         signature: string
-      },
+      }
     ]
   }
   is_final: boolean
