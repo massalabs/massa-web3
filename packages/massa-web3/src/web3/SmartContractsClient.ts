@@ -144,6 +144,18 @@ export class SmartContractsClient
         `The sender ${sender.address()} does not have enough balance to pay for the coins`
       )
     }
+
+    if (callData.maxGas === null || callData.maxGas === undefined) {
+      try {
+        const reponse = await this.readSmartContract(callData)
+        callData.maxGas = BigInt(reponse.info.gas_cost)
+      } catch (error) {
+        throw new Error(
+          `Operation failed: Max gas unspecified and auto-estimation failed. Error details: ${error.message}`
+        )
+      }
+    }
+
     return await sender.callSmartContract(callData)
   }
 
@@ -163,6 +175,10 @@ export class SmartContractsClient
       throw new Error(
         `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`
       )
+    }
+
+    if (readData.maxGas === null || readData.maxGas === undefined) {
+      readData.maxGas = BigInt(MAX_GAS_CALL)
     }
 
     if (readData.parameter instanceof Args)

@@ -6,5 +6,6 @@ module.exports = {
     camelcase: "off",
     "@typescript-eslint/no-unused-vars": "error",
     'no-console': 'warn',
+    "comma-dangle": "off"
   },
 };
