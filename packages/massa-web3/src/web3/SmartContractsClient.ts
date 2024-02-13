@@ -16,7 +16,6 @@ import { IContractData } from '../interfaces/IContractData'
 import { IEventFilter } from '../interfaces/IEventFilter'
 import { IExecuteReadOnlyData } from '../interfaces/IExecuteReadOnlyData'
 import { IExecuteReadOnlyResponse } from '../interfaces/IExecuteReadOnlyResponse'
-import { IOperationData } from '../interfaces/IOperationData'
 import { IReadData } from '../interfaces/IReadData'
 import { ISmartContractsClient } from '../interfaces/ISmartContractsClient'
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods'
@@ -34,6 +33,15 @@ import {
   MAX_GAS_CALL,
 } from '@massalabs/web3-utils'
 import { wait } from '../utils/time'
+import {
+  isAwaitingInclusion,
+  isFinalError,
+  isFinalSuccess,
+  isIncludedPending,
+  isSpeculativeError,
+  isSpeculativeSuccess,
+  isUnexecutedOrExpired,
+} from './helpers/operationStatus'
 
 const WAIT_STATUS_TIMEOUT = 60000
 const TX_POLL_INTERVAL_MS = 1000
@@ -338,29 +346,39 @@ export class SmartContractsClient
    * @returns A promise that resolves to the status of the operation.
    */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
-    const operationData: Array<IOperationData> =
-      await this.publicApiClient.getOperations([opId])
+    const [operation] = await this.publicApiClient.getOperations([opId])
 
-    if (!operationData?.length) return EOperationStatus.NOT_FOUND
-
-    const { is_operation_final, op_exec_status, in_pool, in_blocks } =
-      operationData[0]
-
-    if (is_operation_final === null && op_exec_status === null)
-      return EOperationStatus.UNEXECUTED_OR_EXPIRED
-
-    if (in_pool) return EOperationStatus.AWAITING_INCLUSION
-
-    if (is_operation_final) {
-      if (op_exec_status) return EOperationStatus.FINAL_SUCCESS
-      // We explicitly check for false here because null means that the operation was not executed
-      if (op_exec_status === false) return EOperationStatus.FINAL_ERROR
-    } else {
-      if (op_exec_status) return EOperationStatus.SPECULATIVE_SUCCESS
-      if (op_exec_status === false) return EOperationStatus.SPECULATIVE_ERROR
+    if (!operation) {
+      return EOperationStatus.NOT_FOUND
     }
 
-    if (in_blocks.length > 0) return EOperationStatus.INCLUDED_PENDING
+    if (isUnexecutedOrExpired(operation)) {
+      return EOperationStatus.UNEXECUTED_OR_EXPIRED
+    }
+
+    if (isAwaitingInclusion(operation)) {
+      return EOperationStatus.AWAITING_INCLUSION
+    }
+
+    if (isSpeculativeError(operation)) {
+      return EOperationStatus.SPECULATIVE_ERROR
+    }
+
+    if (isSpeculativeSuccess(operation)) {
+      return EOperationStatus.SPECULATIVE_SUCCESS
+    }
+
+    if (isFinalSuccess(operation)) {
+      return EOperationStatus.FINAL_SUCCESS
+    }
+
+    if (isFinalError(operation)) {
+      return EOperationStatus.FINAL_ERROR
+    }
+
+    if (isIncludedPending(operation)) {
+      return EOperationStatus.INCLUDED_PENDING
+    }
 
     return EOperationStatus.INCONSISTENT
   }
