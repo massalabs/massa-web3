@@ -32,6 +32,7 @@ import {
   Args,
   fromMAS,
   MAX_GAS_CALL,
+  toMAS,
 } from '@massalabs/web3-utils'
 import { wait } from '../utils/time'
 
@@ -195,7 +196,7 @@ export class SmartContractsClient
       target_function: readData.targetFunction,
       parameter: readData.parameter,
       caller_address: readData.callerAddress || baseAccountSignerAddress,
-      coins: readData.coins?.toString(),
+      coins: toMAS(readData.coins || BigInt(0)).toString(),
       fee: readData.fee?.toString(),
     }
     // returns operation ids
