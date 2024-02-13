@@ -273,6 +273,28 @@ describe('SmartContractsClient', () => {
       spy.mockRestore()
     })
 
+    test('should throw custom error if maxGas is not provided and readSmartContract fails', async () => {
+      const error = 'Some error'
+
+      ;(smartContractsClient as any).sendJsonRPCRequest = jest
+        .fn()
+        .mockRejectedValue(new Error(error))
+
+      const mockCallDataWithoutMaxGas = {
+        ...mockCallData,
+        maxGas: undefined,
+      }
+
+      await expect(
+        smartContractsClient.callSmartContract(
+          mockCallDataWithoutMaxGas,
+          mockDeployerAccount
+        )
+      ).rejects.toThrow(
+        `Operation failed: Max gas unspecified and auto-estimation failed. Error details: ${error}`
+      )
+    })
+
     test('should return the correct result', async () => {
       const result = await smartContractsClient.callSmartContract(
         mockCallData,

@@ -146,8 +146,14 @@ export class SmartContractsClient
     }
 
     if (callData.maxGas === null || callData.maxGas === undefined) {
-      const reponse = await this.readSmartContract(callData)
-      callData.maxGas = BigInt(reponse.info.gas_cost)
+      try {
+        const reponse = await this.readSmartContract(callData)
+        callData.maxGas = BigInt(reponse.info.gas_cost)
+      } catch (error) {
+        throw new Error(
+          `Operation failed: Max gas unspecified and auto-estimation failed. Error details: ${error.message}`
+        )
+      }
     }
 
     return await sender.callSmartContract(callData)
