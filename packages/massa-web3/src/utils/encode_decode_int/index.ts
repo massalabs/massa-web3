@@ -20,7 +20,6 @@
  * - encode
  * - decode
  *
- * @module
  */
 export * as signedBigIntUtils from './signed'
 export * as unsignedBigIntUtils from './unsigned'
