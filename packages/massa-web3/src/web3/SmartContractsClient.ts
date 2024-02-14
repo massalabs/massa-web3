@@ -44,6 +44,7 @@ import {
 } from './helpers/operationStatus'
 
 const WAIT_STATUS_TIMEOUT = 60000
+const WAIT_OPERATION_TIMEOUT = 160000
 const TX_POLL_INTERVAL_MS = 1000
 
 /**
@@ -421,6 +422,37 @@ export class SmartContractsClient
       timeout,
       (currentStatus) => requiredStatuses.includes(currentStatus)
     )
+  }
+
+  public async watchOperationStatus(
+    opId: string,
+    callback: (status: EOperationStatus) => void,
+    interval = TX_POLL_INTERVAL_MS,
+    timeout = Date.now() + WAIT_OPERATION_TIMEOUT
+  ): Promise<void> {
+    let status = await this.getOperationStatus(opId)
+    callback(status)
+
+    const clean = setInterval(async () => {
+      try {
+        const newStatus = await this.getOperationStatus(opId)
+
+        if (newStatus !== status) {
+          status = newStatus
+          callback(status)
+        }
+
+        if (
+          status === EOperationStatus.FINAL_SUCCESS ||
+          status === EOperationStatus.FINAL_ERROR ||
+          Date.now() > timeout
+        ) {
+          clearInterval(clean)
+        }
+      } catch (error) {
+        console.warn(error)
+      }
+    }, interval)
   }
 
   /**

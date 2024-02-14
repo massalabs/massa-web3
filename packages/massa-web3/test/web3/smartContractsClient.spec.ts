@@ -578,6 +578,58 @@ describe('SmartContractsClient', () => {
     })
   })
 
+  describe('watch for operation status', () => {
+    it('should trigger the callback when the operation status changes', async () => {
+      const opId = mockOpIds[0]
+      const callback = jest.fn()
+      const interval = 10
+      const status = EOperationStatus
+
+      jest
+        .spyOn(smartContractsClient, 'getOperationStatus')
+        .mockResolvedValueOnce(status.NOT_FOUND)
+        .mockResolvedValueOnce(status.SPECULATIVE_SUCCESS)
+        .mockResolvedValueOnce(status.FINAL_SUCCESS)
+
+      smartContractsClient.watchOperationStatus(opId, callback, interval)
+
+      // Wait enough time for all intervals to be executed
+      await new Promise((resolve) => setTimeout(resolve, 40))
+
+      expect(callback).toHaveBeenCalledTimes(3)
+      expect(callback).toHaveBeenNthCalledWith(1, status.NOT_FOUND)
+      expect(callback).toHaveBeenNthCalledWith(2, status.SPECULATIVE_SUCCESS)
+      expect(callback).toHaveBeenNthCalledWith(3, status.FINAL_SUCCESS)
+    })
+  })
+
+  // if getOperationStatus throws an error, the watching continue
+
+  it('should continue watching if getOperationStatus throws an error', async () => {
+    const opId = mockOpIds[0]
+    const callback = jest.fn()
+    const interval = 10
+    const status = EOperationStatus
+
+    jest
+      .spyOn(smartContractsClient, 'getOperationStatus')
+      .mockResolvedValueOnce(status.NOT_FOUND)
+      .mockRejectedValueOnce(new Error('Error'))
+      .mockResolvedValueOnce(status.FINAL_SUCCESS)
+
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+    smartContractsClient.watchOperationStatus(opId, callback, interval)
+
+    // Wait enough time for all intervals to be executed
+    await new Promise((resolve) => setTimeout(resolve, 40))
+
+    expect(callback).toHaveBeenCalledTimes(2)
+    expect(callback).toHaveBeenNthCalledWith(1, status.NOT_FOUND)
+    expect(callback).toHaveBeenNthCalledWith(2, status.FINAL_SUCCESS)
+    expect(consoleSpy).toHaveBeenCalled()
+  })
+
   describe('getContractBalance', () => {
     const expectedBalance: IBalance = {
       candidate: fromMAS(mockAddressesInfo[0].candidate_balance),
