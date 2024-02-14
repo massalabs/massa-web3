@@ -427,34 +427,37 @@ export class SmartContractsClient
   public async watchOperationStatus(
     opId: string,
     callback: (status: EOperationStatus) => void,
-    interval = TX_POLL_INTERVAL_MS,
+    timeInterval = TX_POLL_INTERVAL_MS,
     timeout = Date.now() + WAIT_OPERATION_TIMEOUT
   ): Promise<() => void> {
-    let status = await this.getOperationStatus(opId)
-    callback(status)
+    let lastStatus = await this.getOperationStatus(opId)
+    callback(lastStatus)
 
-    const clean = setInterval(async () => {
+    const interval = setInterval(async () => {
+      if (Date.now() > timeout) {
+        clearInterval(interval)
+        return
+      }
+
       try {
         const newStatus = await this.getOperationStatus(opId)
-
-        if (newStatus !== status) {
-          status = newStatus
-          callback(status)
+        if (newStatus !== lastStatus) {
+          lastStatus = newStatus
+          callback(newStatus)
         }
 
         if (
-          status === EOperationStatus.FINAL_SUCCESS ||
-          status === EOperationStatus.FINAL_ERROR ||
-          Date.now() > timeout
+          newStatus === EOperationStatus.FINAL_SUCCESS ||
+          newStatus === EOperationStatus.FINAL_ERROR
         ) {
-          clearInterval(clean)
+          clearInterval(interval)
         }
       } catch (error) {
         console.warn(error)
       }
-    }, interval)
+    }, timeInterval)
 
-    return () => clearInterval(clean)
+    return () => clearInterval(interval)
   }
 
   /**
