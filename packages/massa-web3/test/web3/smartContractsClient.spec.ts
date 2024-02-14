@@ -579,6 +579,14 @@ describe('SmartContractsClient', () => {
   })
 
   describe('watch for operation status', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
+    })
+
     it('should trigger the callback when the operation status changes', async () => {
       const opId = mockOpIds[0]
       const callback = jest.fn()
@@ -593,41 +601,43 @@ describe('SmartContractsClient', () => {
 
       smartContractsClient.watchOperationStatus(opId, callback, interval)
 
-      // Wait enough time for all intervals to be executed
-      await new Promise((resolve) => setTimeout(resolve, 40))
+      for (let i = 0; i < 3; i++) {
+        jest.advanceTimersByTime(20)
+        // allow any pending jobs in the PromiseJobs queue to run more information :
+        // https://stackoverflow.com/questions/52177631/jest-timer-and-promise-dont-work-well-settimeout-and-async-function
+        await Promise.resolve()
+      }
 
-      expect(callback).toHaveBeenCalledTimes(3)
       expect(callback).toHaveBeenNthCalledWith(1, status.NOT_FOUND)
       expect(callback).toHaveBeenNthCalledWith(2, status.SPECULATIVE_SUCCESS)
       expect(callback).toHaveBeenNthCalledWith(3, status.FINAL_SUCCESS)
     })
-  })
 
-  // if getOperationStatus throws an error, the watching continue
+    it('should continue watching if getOperationStatus throws an error', async () => {
+      const opId = mockOpIds[0]
+      const callback = jest.fn()
+      const interval = 5
+      const status = EOperationStatus
 
-  it('should continue watching if getOperationStatus throws an error', async () => {
-    const opId = mockOpIds[0]
-    const callback = jest.fn()
-    const interval = 10
-    const status = EOperationStatus
+      jest
+        .spyOn(smartContractsClient, 'getOperationStatus')
+        .mockResolvedValueOnce(status.NOT_FOUND)
+        .mockRejectedValueOnce(new Error('Error'))
+        .mockResolvedValueOnce(status.FINAL_SUCCESS)
 
-    jest
-      .spyOn(smartContractsClient, 'getOperationStatus')
-      .mockResolvedValueOnce(status.NOT_FOUND)
-      .mockRejectedValueOnce(new Error('Error'))
-      .mockResolvedValueOnce(status.FINAL_SUCCESS)
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
-    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+      smartContractsClient.watchOperationStatus(opId, callback, interval)
 
-    smartContractsClient.watchOperationStatus(opId, callback, interval)
+      for (let i = 0; i < 3; i++) {
+        jest.advanceTimersByTime(20)
+        await Promise.resolve()
+      }
 
-    // Wait enough time for all intervals to be executed
-    await new Promise((resolve) => setTimeout(resolve, 40))
-
-    expect(callback).toHaveBeenCalledTimes(2)
-    expect(callback).toHaveBeenNthCalledWith(1, status.NOT_FOUND)
-    expect(callback).toHaveBeenNthCalledWith(2, status.FINAL_SUCCESS)
-    expect(consoleSpy).toHaveBeenCalled()
+      expect(callback).toHaveBeenNthCalledWith(1, status.NOT_FOUND)
+      expect(callback).toHaveBeenNthCalledWith(2, status.FINAL_SUCCESS)
+      expect(consoleSpy).toHaveBeenCalled()
+    })
   })
 
   describe('getContractBalance', () => {

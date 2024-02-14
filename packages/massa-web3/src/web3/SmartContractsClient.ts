@@ -429,7 +429,7 @@ export class SmartContractsClient
     callback: (status: EOperationStatus) => void,
     interval = TX_POLL_INTERVAL_MS,
     timeout = Date.now() + WAIT_OPERATION_TIMEOUT
-  ): Promise<void> {
+  ): Promise<() => void> {
     let status = await this.getOperationStatus(opId)
     callback(status)
 
@@ -453,6 +453,8 @@ export class SmartContractsClient
         console.warn(error)
       }
     }, interval)
+
+    return () => clearInterval(clean)
   }
 
   /**
