@@ -349,7 +349,7 @@ export class SmartContractsClient
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
     const operations = await this.publicApiClient.getOperations([opId])
 
-    if (operations.length > 0) {
+    if (!operations.length) {
       return EOperationStatus.NOT_FOUND
     }
 
