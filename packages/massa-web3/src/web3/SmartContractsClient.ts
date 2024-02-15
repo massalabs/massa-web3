@@ -347,11 +347,13 @@ export class SmartContractsClient
    * @returns A promise that resolves to the status of the operation.
    */
   public async getOperationStatus(opId: string): Promise<EOperationStatus> {
-    const [operation] = await this.publicApiClient.getOperations([opId])
+    const operations = await this.publicApiClient.getOperations([opId])
 
-    if (!operation) {
+    if (operations.length > 0) {
       return EOperationStatus.NOT_FOUND
     }
+
+    const operation = operations[0]
 
     if (isUnexecutedOrExpired(operation)) {
       return EOperationStatus.UNEXECUTED_OR_EXPIRED
