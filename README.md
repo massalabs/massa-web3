@@ -5,7 +5,7 @@ Welcome to the Massa Web3 Workspace. This space houses a collection of projects 
 ## Projects within the Workspace
 
 ### 1. **Massa-web3**
-   
+
 ![check-code-coverage](https://img.shields.io/badge/coverage-94.69%25-green)
 
 **Description:**  
@@ -13,7 +13,7 @@ Massa-web3 is a TypeScript library that facilitates communication with the Massa
 
 - [📖 Read the full `Massa-web3` README](./packages/massa-web3/README.md) for detailed installation instructions, prerequisites, and additional resources.
 
-### 2. **Web3-Utils** 
+### 2. **Web3-Utils**
 
 ![check-code-coverage](https://img.shields.io/badge/coverage-93.15%25-green)
 
@@ -31,4 +31,3 @@ If you would like to contribute to `massa-web3`, please read the [CONTRIBUTING f
 ## License
 
 All projects within the Massa Web3 Workspace are released under the [MIT License](LICENSE).
-

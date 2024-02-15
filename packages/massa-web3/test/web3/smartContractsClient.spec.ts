@@ -2,7 +2,7 @@
 import { IBalance } from '../../src/interfaces/IBalance'
 import { JSON_RPC_REQUEST_METHOD } from '../../src/interfaces/JsonRpcMethods'
 import { EOperationStatus } from '../../src/interfaces/EOperationStatus'
-import { fromMAS, MAX_GAS_CALL } from '@massalabs/web3-utils'
+import { fromMAS, MAX_GAS_CALL, toMAS } from '@massalabs/web3-utils'
 import { PublicApiClient } from '../../src/web3/PublicApiClient'
 import { SmartContractsClient } from '../../src/web3/SmartContractsClient'
 import { WalletClient } from '../../src/web3/WalletClient'
@@ -403,7 +403,7 @@ describe('SmartContractsClient', () => {
             target_function: mockReadData.targetFunction,
             parameter: mockReadData.parameter,
             caller_address: mockReadData.callerAddress,
-            coins: mockReadData.coins?.toString(),
+            coins: toMAS(mockReadData.coins || 0n).toString(),
             fee: mockReadData.fee?.toString(),
           },
         ],
@@ -476,7 +476,7 @@ describe('SmartContractsClient', () => {
             target_function: mockReadData.targetFunction,
             parameter: mockReadData.parameter,
             caller_address: mockReadData.callerAddress,
-            coins: mockReadData.coins?.toString(),
+            coins: toMAS(mockReadData.coins || 0n).toString(),
             fee: mockReadData.fee?.toString(),
           },
         ],

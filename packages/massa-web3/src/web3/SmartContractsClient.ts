@@ -32,6 +32,7 @@ import {
   Args,
   fromMAS,
   MAX_GAS_CALL,
+  toMAS,
 } from '@massalabs/web3-utils'
 import { wait } from '../utils/time'
 
@@ -95,7 +96,7 @@ export class SmartContractsClient
   ): Promise<string> {
     const sender = executor || this.walletClient.getBaseAccount()
     if (!sender) {
-      throw new Error(`No tx sender available`)
+      throw new Error('No tx sender available')
     }
     return await sender.deploySmartContract(contractData)
   }
@@ -118,7 +119,7 @@ export class SmartContractsClient
   ): Promise<string> {
     const sender = executor || this.walletClient.getBaseAccount()
     if (!sender) {
-      throw new Error(`No tx sender available`)
+      throw new Error('No tx sender available')
     }
     // check the max. allowed gas
     if (callData.maxGas > MAX_GAS_CALL) {
@@ -147,8 +148,8 @@ export class SmartContractsClient
 
     if (callData.maxGas === null || callData.maxGas === undefined) {
       try {
-        const reponse = await this.readSmartContract(callData)
-        callData.maxGas = BigInt(reponse.info.gas_cost)
+        const response = await this.readSmartContract(callData)
+        callData.maxGas = BigInt(response.info.gas_cost)
       } catch (error) {
         throw new Error(
           `Operation failed: Max gas unspecified and auto-estimation failed. Error details: ${error.message}`
@@ -195,9 +196,10 @@ export class SmartContractsClient
       target_function: readData.targetFunction,
       parameter: readData.parameter,
       caller_address: readData.callerAddress || baseAccountSignerAddress,
-      coins: readData.coins?.toString(),
+      coins: toMAS(readData.coins || BigInt(0)).toString(),
       fee: readData.fee?.toString(),
     }
+
     // returns operation ids
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.EXECUTE_READ_ONLY_CALL
     let jsonRpcCallResult: Array<IContractReadOperationData> = []
@@ -213,7 +215,7 @@ export class SmartContractsClient
 
     if (jsonRpcCallResult.length <= 0) {
       throw new Error(
-        `Read operation bad response. No results array in json rpc response. Inspect smart contract`
+        'Read operation bad response. No results array in json rpc response. Inspect smart contract'
       )
     }
     if (jsonRpcCallResult[0].result.Error) {
@@ -303,11 +305,11 @@ export class SmartContractsClient
     contractData: IContractData
   ): Promise<IExecuteReadOnlyResponse> {
     if (!contractData.contractDataBinary) {
-      throw new Error(`Expected non-null contract bytecode, but received null.`)
+      throw new Error('Expected non-null contract bytecode, but received null.')
     }
 
     if (!contractData.address) {
-      throw new Error(`Expected contract address, but received null.`)
+      throw new Error('Expected contract address, but received null.')
     }
 
     const data = {
