@@ -438,7 +438,7 @@ export class SmartContractsClient
    */
   public async watchOperationStatus(
     opId: string,
-    callback: (status: EOperationStatus) => void,
+    callback: (status: EOperationStatus, error?: Error) => void,
     timeInterval = TX_POLL_INTERVAL_MS,
     timeout = Date.now() + WAIT_OPERATION_TIMEOUT
   ): Promise<() => void> {
@@ -465,7 +465,7 @@ export class SmartContractsClient
           clearInterval(interval)
         }
       } catch (error) {
-        console.warn(error)
+        callback(lastStatus, error)
       }
     }, timeInterval)
 

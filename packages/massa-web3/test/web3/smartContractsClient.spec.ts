@@ -618,14 +618,13 @@ describe('SmartContractsClient', () => {
       const callback = jest.fn()
       const interval = 5
       const status = EOperationStatus
+      const error = new Error('Error')
 
       jest
         .spyOn(smartContractsClient, 'getOperationStatus')
         .mockResolvedValueOnce(status.NOT_FOUND)
-        .mockRejectedValueOnce(new Error('Error'))
+        .mockRejectedValueOnce(error)
         .mockResolvedValueOnce(status.FINAL_SUCCESS)
-
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       smartContractsClient.watchOperationStatus(opId, callback, interval)
 
@@ -635,8 +634,8 @@ describe('SmartContractsClient', () => {
       }
 
       expect(callback).toHaveBeenNthCalledWith(1, status.NOT_FOUND)
-      expect(callback).toHaveBeenNthCalledWith(2, status.FINAL_SUCCESS)
-      expect(consoleSpy).toHaveBeenCalled()
+      expect(callback).toHaveBeenNthCalledWith(2, status.NOT_FOUND, error)
+      expect(callback).toHaveBeenNthCalledWith(3, status.FINAL_SUCCESS)
     })
   })
 
