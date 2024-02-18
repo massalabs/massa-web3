@@ -10,15 +10,25 @@ import { ITransactionData } from '../interfaces/ITransactionData'
 import { OperationTypeId } from '../interfaces/OperationTypes'
 import { IRollsData } from '../interfaces/IRollsData'
 import { ICallData } from '../interfaces/ICallData'
+import { ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX } from '..'
 
-// encode a string address to bytes.
-const encodeAddressToBytes = (
-  address: string,
-  isSmartContract = false
-): Buffer => {
+const encodeAddressToBytes = (address: string): Buffer => {
+  let addressTypeEcoded: Buffer
+
+  if (address.startsWith(ADDRESS_USER_PREFIX)) {
+    Buffer.from([0])
+  } else if (address.startsWith(ADDRESS_CONTRACT_PREFIX)) {
+    Buffer.from([1])
+  } else {
+    throw new Error(
+      'Invalid address prefix. Address must start with "AU" for users or "AS" for smart contracts.'
+    )
+  }
+
   let targetAddressEncoded = base58Decode(address.slice(2))
+
   targetAddressEncoded = Buffer.concat([
-    isSmartContract ? Buffer.from([1]) : Buffer.from([0]),
+    addressTypeEcoded,
     targetAddressEncoded,
   ])
 
@@ -281,18 +291,15 @@ export class BaseClient {
 
     switch (opTypeId) {
       case OperationTypeId.ExecuteSC: {
-        // get sc data binary
-        const scBinaryCode = (data as IContractData).contractDataBinary
+        const contractData = data as IContractData
+
+        const scBinaryCode = contractData.contractDataBinary
 
         // max gas
-        const maxGasEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxGas)
-        )
+        const maxGasEncoded = Buffer.from(varintEncode(contractData.maxGas))
 
         // max coins amount
-        const maxCoinEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxCoins)
-        )
+        const maxCoinEncoded = Buffer.from(varintEncode(contractData.maxCoins))
 
         // contract data
         const contractDataEncoded = Buffer.from(scBinaryCode)
@@ -301,9 +308,8 @@ export class BaseClient {
         )
 
         // smart contract operation datastore
-        const datastoreKeyMap = (data as IContractData).datastore
-          ? (data as IContractData).datastore
-          : new Map<Uint8Array, Uint8Array>()
+        const datastoreKeyMap =
+          contractData.datastore || new Map<Uint8Array, Uint8Array>()
         let datastoreSerializedBuffer = Buffer.from(new Uint8Array())
         for (const [key, value] of datastoreKeyMap) {
           const encodedKeyBytes = Buffer.from(key)
@@ -325,20 +331,8 @@ export class BaseClient {
         const datastoreSerializedBufferLen = Buffer.from(
           varintEncode(datastoreKeyMap.size)
         )
-        if (datastoreSerializedBuffer.length === 0) {
-          return Buffer.concat([
-            feeEncoded,
-            expirePeriodEncoded,
-            typeIdEncoded,
-            maxGasEncoded,
-            maxCoinEncoded,
-            dataLengthEncoded,
-            contractDataEncoded,
-            datastoreSerializedBufferLen,
-          ])
-        }
 
-        return Buffer.concat([
+        let buffers = [
           feeEncoded,
           expirePeriodEncoded,
           typeIdEncoded,
@@ -347,8 +341,13 @@ export class BaseClient {
           dataLengthEncoded,
           contractDataEncoded,
           datastoreSerializedBufferLen,
-          datastoreSerializedBuffer,
-        ])
+        ]
+
+        if (datastoreSerializedBuffer.length !== 0) {
+          buffers.push(datastoreSerializedBuffer)
+        }
+
+        return Buffer.concat(buffers)
       }
       case OperationTypeId.CallSC: {
         // max gas
@@ -363,8 +362,7 @@ export class BaseClient {
 
         // target address
         const targetAddressEncoded = encodeAddressToBytes(
-          (data as ICallData).targetAddress,
-          true
+          (data as ICallData).targetAddress
         )
 
         // target function name and name length
@@ -407,8 +405,7 @@ export class BaseClient {
         const transferAmountEncoded = Buffer.from(varintEncode(amount))
         // recipient
         const recipientAddressEncoded = encodeAddressToBytes(
-          (data as ITransactionData).recipientAddress,
-          false
+          (data as ITransactionData).recipientAddress
         )
 
         return Buffer.concat([
