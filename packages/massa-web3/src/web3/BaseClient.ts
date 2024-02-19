@@ -1,7 +1,7 @@
 import { IProvider, ProviderType } from '../interfaces/IProvider'
 import { IClientConfig } from '../interfaces/IClientConfig'
 import { Buffer } from 'buffer'
-import { base58Decode, varintEncode } from '../utils/Xbqcrypto'
+import { varintEncode } from '../utils/Xbqcrypto'
 import { IContractData } from '../interfaces/IContractData'
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData'
 import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios'
@@ -10,30 +10,7 @@ import { ITransactionData } from '../interfaces/ITransactionData'
 import { OperationTypeId } from '../interfaces/OperationTypes'
 import { IRollsData } from '../interfaces/IRollsData'
 import { ICallData } from '../interfaces/ICallData'
-import { ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX } from '..'
-
-const encodeAddressToBytes = (address: string): Buffer => {
-  let addressTypeEcoded: Buffer
-
-  if (address.startsWith(ADDRESS_USER_PREFIX)) {
-    Buffer.from([0])
-  } else if (address.startsWith(ADDRESS_CONTRACT_PREFIX)) {
-    Buffer.from([1])
-  } else {
-    throw new Error(
-      'Invalid address prefix. Address must start with "AU" for users or "AS" for smart contracts.'
-    )
-  }
-
-  let targetAddressEncoded = base58Decode(address.slice(2))
-
-  targetAddressEncoded = Buffer.concat([
-    addressTypeEcoded,
-    targetAddressEncoded,
-  ])
-
-  return targetAddressEncoded
-}
+import { Address } from '../utils/keyAndAddresses'
 
 export type DataType = IContractData | ITransactionData | IRollsData | ICallData
 
@@ -360,11 +337,9 @@ export class BaseClient {
           varintEncode((data as ICallData).coins)
         )
 
-        // target address
-        const targetAddressEncoded = encodeAddressToBytes(
-          (data as ICallData).targetAddress
-        )
+        const targetAddress = (data as ICallData).targetAddress
 
+        const targetAddressEncoded = new Address(targetAddress).toBytes()
         // target function name and name length
         const targetFunctionEncoded = new Uint8Array(
           Buffer.from((data as ICallData).targetFunction, 'utf8')
@@ -403,10 +378,9 @@ export class BaseClient {
         // transfer amount
         const amount = (data as ITransactionData).amount
         const transferAmountEncoded = Buffer.from(varintEncode(amount))
-        // recipient
-        const recipientAddressEncoded = encodeAddressToBytes(
-          (data as ITransactionData).recipientAddress
-        )
+        const recipientAddress = (data as ITransactionData).recipientAddress
+
+        const recipientAddressEncoded = new Address(recipientAddress).toBytes()
 
         return Buffer.concat([
           feeEncoded,

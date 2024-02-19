@@ -94,10 +94,12 @@ export class PublicKey {
  */
 export class Address {
   base58Encode: string
-  private version: number
-  private prefix: string
-  private versionBytesLength: number
-  private versionAndAddressBytes: Uint8Array
+  private _version: number
+  private _prefix: string
+  private _versionBytesLength: number
+  private _versionAndAddressBytes: Uint8Array
+  private _isUser = false
+  private _isContract = false
 
   constructor(base58Encoded: string) {
     this.base58Encode = base58Encoded
@@ -105,8 +107,8 @@ export class Address {
     this.setDecodedVersionAndAddressBytes()
     this.setVersion()
 
-    const addressBytes = this.versionAndAddressBytes.slice(
-      this.versionBytesLength
+    const addressBytes = this._versionAndAddressBytes.slice(
+      this._versionBytesLength
     )
 
     if (addressBytes.length !== 32) {
@@ -117,25 +119,29 @@ export class Address {
   }
 
   private setPrefix(): void {
-    this.prefix = this.base58Encode.slice(0, ADDRESS_PREFIX_LENGTH)
-    if (![ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX].includes(this.prefix)) {
+    this._prefix = this.base58Encode.slice(0, ADDRESS_PREFIX_LENGTH)
+    if (this._prefix === ADDRESS_USER_PREFIX) {
+      this._isUser = true
+    } else if (this.prefix === ADDRESS_CONTRACT_PREFIX) {
+      this._isContract = true
+    } else {
       throw new Error(`Invalid address prefix: ${this.prefix}`)
     }
   }
 
   private setDecodedVersionAndAddressBytes(): void {
     const versionAndAddress = this.base58Encode.slice(ADDRESS_PREFIX_LENGTH)
-    this.versionAndAddressBytes = new Uint8Array(
+    this._versionAndAddressBytes = new Uint8Array(
       base58Decode(versionAndAddress)
     )
   }
 
   private setVersion(): void {
     const { value, bytes: versionBytesLength } = varintDecode(
-      this.versionAndAddressBytes
+      this._versionAndAddressBytes
     )
-    this.version = value
-    this.versionBytesLength = versionBytesLength
+    this._version = value
+    this._versionBytesLength = versionBytesLength
   }
 
   static fromPublicKey(publicKey: PublicKey): Address {
@@ -152,7 +158,38 @@ export class Address {
     return new Address(base58Encoded)
   }
 
+  public toBytes = (): Buffer => {
+    let addressTypeEcoded: Buffer
+
+    if (this._isUser) {
+      addressTypeEcoded = Buffer.from([0])
+    } else if (this._isContract) {
+      addressTypeEcoded = Buffer.from([1])
+    }
+
+    let targetAddressEncoded = base58Decode(this.base58Encode.slice(2))
+
+    targetAddressEncoded = Buffer.concat([
+      addressTypeEcoded,
+      targetAddressEncoded,
+    ])
+
+    return targetAddressEncoded
+  }
+
   get versionNumber(): number {
-    return this.version
+    return this._version
+  }
+
+  get prefix(): string {
+    return this._prefix
+  }
+
+  get isUser(): boolean {
+    return this._isUser
+  }
+
+  get isContract(): boolean {
+    return this._isContract
   }
 }

@@ -22,6 +22,7 @@ import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses'
 import { IBaseAccount } from '../interfaces/IBaseAccount'
 import { Web3Account } from './accounts/Web3Account'
 import {
+  ADDRESS_USER_PREFIX,
   KEYS_VERSION_NUMBER,
   SECRET_KEY_PREFIX,
   fromMAS,
@@ -512,7 +513,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
     txData: ITransactionData,
     executor?: IBaseAccount
   ): Promise<Array<string>> {
-    // check sender account
+    if (!new Address(txData.recipientAddress).isUser) {
+      throw new Error(
+        `Invalid recipient address: "${txData.recipientAddress}". The address must be a user address, starting with "${ADDRESS_USER_PREFIX}".`
+      )
+    }
+
     const sender: IBaseAccount = executor || this.getBaseAccount()
     if (!sender) {
       throw new Error('No tx sender available')
