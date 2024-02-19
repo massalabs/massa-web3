@@ -268,25 +268,19 @@ export class BaseClient {
 
     switch (opTypeId) {
       case OperationTypeId.ExecuteSC: {
-        const contractData = data as IContractData
+        const { contractDataBinary, maxGas, maxCoins, datastore } =
+          data as IContractData
+        const maxGasEncoded = Buffer.from(varintEncode(maxGas))
+        const maxCoinEncoded = Buffer.from(varintEncode(maxCoins))
 
-        const scBinaryCode = contractData.contractDataBinary
-
-        // max gas
-        const maxGasEncoded = Buffer.from(varintEncode(contractData.maxGas))
-
-        // max coins amount
-        const maxCoinEncoded = Buffer.from(varintEncode(contractData.maxCoins))
-
-        // contract data
-        const contractDataEncoded = Buffer.from(scBinaryCode)
+        const contractDataEncoded = Buffer.from(contractDataBinary)
         const dataLengthEncoded = Buffer.from(
           varintEncode(contractDataEncoded.length)
         )
 
         // smart contract operation datastore
-        const datastoreKeyMap =
-          contractData.datastore || new Map<Uint8Array, Uint8Array>()
+        const datastoreKeyMap = datastore || new Map<Uint8Array, Uint8Array>()
+
         let datastoreSerializedBuffer = Buffer.from(new Uint8Array())
         for (const [key, value] of datastoreKeyMap) {
           const encodedKeyBytes = Buffer.from(key)
@@ -327,35 +321,27 @@ export class BaseClient {
         return Buffer.concat(buffers)
       }
       case OperationTypeId.CallSC: {
-        // max gas
-        const maxGasEncoded = Buffer.from(
-          varintEncode((data as ICallData).maxGas)
-        )
+        const { maxGas, coins, targetAddress, targetFunction, parameter } =
+          data as ICallData
 
-        // coins to send
-        const coinsEncoded = Buffer.from(
-          varintEncode((data as ICallData).coins)
-        )
-
-        const targetAddress = (data as ICallData).targetAddress
-
+        const maxGasEncoded = Buffer.from(varintEncode(maxGas))
+        const coinsEncoded = Buffer.from(varintEncode(coins))
         const targetAddressEncoded = new Address(targetAddress).toBytes()
-        // target function name and name length
         const targetFunctionEncoded = new Uint8Array(
-          Buffer.from((data as ICallData).targetFunction, 'utf8')
+          Buffer.from(targetFunction, 'utf8')
         )
         const targetFunctionLengthEncoded = Buffer.from(
           varintEncode(targetFunctionEncoded.length)
         )
 
-        // parameter
-        const param = (data as ICallData).parameter
-        let serializedParam: number[] // serialized parameter
-        if (param instanceof Array) {
-          serializedParam = param
+        let serializedParam: number[]
+
+        if (parameter instanceof Array) {
+          serializedParam = parameter
         } else {
-          serializedParam = param.serialize()
+          serializedParam = parameter.serialize()
         }
+
         const parametersEncoded = new Uint8Array(serializedParam)
         const parametersLengthEncoded = Buffer.from(
           varintEncode(parametersEncoded.length)
@@ -375,11 +361,9 @@ export class BaseClient {
         ])
       }
       case OperationTypeId.Transaction: {
-        // transfer amount
-        const amount = (data as ITransactionData).amount
-        const transferAmountEncoded = Buffer.from(varintEncode(amount))
-        const recipientAddress = (data as ITransactionData).recipientAddress
+        const { amount, recipientAddress } = data as ITransactionData
 
+        const transferAmountEncoded = Buffer.from(varintEncode(amount))
         const recipientAddressEncoded = new Address(recipientAddress).toBytes()
 
         return Buffer.concat([
@@ -392,10 +376,8 @@ export class BaseClient {
       }
       case OperationTypeId.RollBuy:
       case OperationTypeId.RollSell: {
-        // rolls amount
-        const rollsAmountEncoded = Buffer.from(
-          varintEncode((data as IRollsData).amount)
-        )
+        const { amount } = data as IRollsData
+        const rollsAmountEncoded = Buffer.from(varintEncode(amount))
 
         return Buffer.concat([
           feeEncoded,

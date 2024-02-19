@@ -115,7 +115,9 @@ export class Address {
     } else if (this._prefix === ADDRESS_CONTRACT_PREFIX) {
       this._isContract = true
     } else {
-      throw new Error(`Invalid address prefix: ${this._prefix}`)
+      throw new Error(
+        `Invalid address prefix '${this._prefix}'. Expected '${ADDRESS_USER_PREFIX}' for users or '${ADDRESS_CONTRACT_PREFIX}' for contracts.`
+      )
     }
   }
 
