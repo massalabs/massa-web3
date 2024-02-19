@@ -178,47 +178,22 @@ export class SmartContractsClient
       )
     }
 
-    interface ContractReadOperationData {
-      max_gas?: number
-      target_address: string
-      target_function: string
-      parameter?: number[]
-      caller_address?: string
-      coins?: string
-      fee?: string
-    }
-
-    const data: ContractReadOperationData = {
+    const data = {
+      max_gas:
+        readData.maxGas === null || readData.maxGas === undefined
+          ? Number(MAX_GAS_CALL)
+          : Number(readData.maxGas),
       target_address: readData.targetAddress,
       target_function: readData.targetFunction,
-    }
-
-    if (readData.callerAddress) {
-      data.caller_address = readData.callerAddress
-    } else {
-      if (this.walletClient.getBaseAccount()) {
-        data.caller_address = this.walletClient.getBaseAccount().address()
-      }
-    }
-
-    if (readData.parameter instanceof Args) {
-      data.parameter = readData.parameter.serialize()
-    } else {
-      data.parameter = readData.parameter
-    }
-
-    if (readData.maxGas === null || readData.maxGas === undefined) {
-      data.max_gas = Number(MAX_GAS_CALL)
-    } else {
-      data.max_gas = Number(readData.maxGas)
-    }
-
-    if (readData.coins) {
-      data.coins = toMAS(readData.coins).toString()
-    }
-
-    if (readData.fee) {
-      data.fee = readData.fee.toString()
+      parameter:
+        readData.parameter instanceof Args
+          ? readData.parameter.serialize()
+          : readData.parameter,
+      caller_address: readData.callerAddress
+        ? readData.callerAddress
+        : this.walletClient.getBaseAccount()?.address(),
+      coins: readData.coins ? toMAS(readData.coins).toString() : undefined,
+      fee: readData.fee?.toString(),
     }
 
     // returns operation ids
