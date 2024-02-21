@@ -21,7 +21,7 @@ describe('SecretKey', () => {
 
     expect(publicKey.version).toEqual(mockPublicKeyObject.version)
     expect(publicKey.bytes).toEqual(mockPublicKeyObject.bytes)
-    expect(publicKey.base58Encode).toEqual(mockPublicKeyObject.base58Encoded)
+    expect(publicKey.base58Encoded).toEqual(mockPublicKeyObject.base58Encoded)
   })
 
   it('should sign the digest correctly', async () => {
@@ -49,7 +49,7 @@ describe('PublicKey', () => {
 
     expect(publicKey.bytes).toEqual(bytes)
     expect(publicKey.version).toEqual(version)
-    expect(publicKey.base58Encode).toEqual(expectedBase58Encode)
+    expect(publicKey.base58Encoded).toEqual(expectedBase58Encode)
   })
 })
 
@@ -62,14 +62,14 @@ describe('Address', () => {
 
     const addressObject: Address = Address.fromPublicKey(publicKeyObject)
 
-    expect(addressObject.versionNumber).toEqual(mockAddressResult.version)
-    expect(addressObject.base58Encode).toEqual(mockAddressResult.base58Encoded)
+    expect(addressObject.version).toEqual(mockAddressResult.version)
+    expect(addressObject.base58Encoded).toEqual(mockAddressResult.base58Encoded)
   })
 
   it('should construct Address correctly with version', async () => {
     for (let addressObject of mockAddressVersion) {
       const address = new Address(addressObject.base58Encoded)
-      expect(address.versionNumber).toEqual(addressObject.version)
+      expect(address.version).toEqual(addressObject.version)
     }
   })
 

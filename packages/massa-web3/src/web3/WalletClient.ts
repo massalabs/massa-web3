@@ -22,6 +22,7 @@ import { Address, SecretKey, PublicKey } from '../utils/keyAndAddresses'
 import { IBaseAccount } from '../interfaces/IBaseAccount'
 import { Web3Account } from './accounts/Web3Account'
 import {
+  ADDRESS_USER_PREFIX,
   KEYS_VERSION_NUMBER,
   SECRET_KEY_PREFIX,
   fromMAS,
@@ -161,11 +162,11 @@ export class WalletClient extends BaseClient implements IWalletClient {
       const publicKey: PublicKey = await secretKey.getPublicKey()
       const address: Address = Address.fromPublicKey(publicKey)
 
-      if (!this.getWalletAccountByAddress(address.base58Encode)) {
+      if (!this.getWalletAccountByAddress(address.base58Encoded)) {
         accountsToCreate.push({
           secretKey: secretKeyBase58Encoded,
-          publicKey: publicKey.base58Encode,
-          address: address.base58Encode,
+          publicKey: publicKey.base58Encoded,
+          address: address.base58Encoded,
         } as IAccount)
       }
     }
@@ -211,7 +212,7 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
       // create the public key object
       const publicKey: PublicKey = await secretKey.getPublicKey()
-      if (account.publicKey && account.publicKey !== publicKey.base58Encode) {
+      if (account.publicKey && account.publicKey !== publicKey.base58Encoded) {
         throw new Error(
           'Public key does not correspond the the private key submitted'
         )
@@ -219,17 +220,17 @@ export class WalletClient extends BaseClient implements IWalletClient {
 
       // get wallet account address
       const address: Address = Address.fromPublicKey(publicKey)
-      if (account.address && account.address !== address.base58Encode) {
+      if (account.address && account.address !== address.base58Encoded) {
         throw new Error(
           'Account address not correspond the the address submitted'
         )
       }
 
-      if (!this.getWalletAccountByAddress(address.base58Encode)) {
+      if (!this.getWalletAccountByAddress(address.base58Encoded)) {
         accountsAdded.push({
-          address: address.base58Encode,
+          address: address.base58Encoded,
           secretKey: secretKeyBase58Encoded,
-          publicKey: publicKey.base58Encode,
+          publicKey: publicKey.base58Encoded,
         } as IAccount)
       }
     }
@@ -306,9 +307,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const address: Address = Address.fromPublicKey(publicKey)
 
     return {
-      address: address.base58Encode,
+      address: address.base58Encoded,
       secretKey: secretKeyBase58Encoded,
-      publicKey: publicKey.base58Encode,
+      publicKey: publicKey.base58Encoded,
     } as IAccount
   }
 
@@ -331,9 +332,9 @@ export class WalletClient extends BaseClient implements IWalletClient {
     const address: Address = Address.fromPublicKey(publicKey)
 
     return {
-      address: address.base58Encode,
+      address: address.base58Encoded,
       secretKey: secretKeyBase58,
-      publicKey: publicKey.base58Encode,
+      publicKey: publicKey.base58Encoded,
     } as IAccount
   }
 
@@ -512,7 +513,12 @@ export class WalletClient extends BaseClient implements IWalletClient {
     txData: ITransactionData,
     executor?: IBaseAccount
   ): Promise<Array<string>> {
-    // check sender account
+    if (!new Address(txData.recipientAddress).isUser) {
+      throw new Error(
+        `Invalid recipient address: "${txData.recipientAddress}". The address must be a user address, starting with "${ADDRESS_USER_PREFIX}".`
+      )
+    }
+
     const sender: IBaseAccount = executor || this.getBaseAccount()
     if (!sender) {
       throw new Error('No tx sender available')

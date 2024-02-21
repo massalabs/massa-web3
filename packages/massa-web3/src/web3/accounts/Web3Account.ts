@@ -124,7 +124,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     const publicKey: PublicKey = await secretKey.getPublicKey()
     if (
       this.account.publicKey &&
-      this.account.publicKey !== publicKey.base58Encode
+      this.account.publicKey !== publicKey.base58Encoded
     ) {
       throw new Error(
         'Public key does not correspond the the private key submitted'
@@ -133,7 +133,10 @@ export class Web3Account extends BaseClient implements IBaseAccount {
 
     // get wallet account address
     const address: Address = Address.fromPublicKey(publicKey)
-    if (this.account.address && this.account.address !== address.base58Encode) {
+    if (
+      this.account.address &&
+      this.account.address !== address.base58Encoded
+    ) {
       throw new Error(
         'Account address not correspond the the address submitted'
       )

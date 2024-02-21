@@ -1,7 +1,7 @@
 import { IProvider, ProviderType } from '../interfaces/IProvider'
 import { IClientConfig } from '../interfaces/IClientConfig'
 import { Buffer } from 'buffer'
-import { base58Decode, varintEncode } from '../utils/Xbqcrypto'
+import { varintEncode } from '../utils/Xbqcrypto'
 import { IContractData } from '../interfaces/IContractData'
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData'
 import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios'
@@ -10,20 +10,7 @@ import { ITransactionData } from '../interfaces/ITransactionData'
 import { OperationTypeId } from '../interfaces/OperationTypes'
 import { IRollsData } from '../interfaces/IRollsData'
 import { ICallData } from '../interfaces/ICallData'
-
-// encode a string address to bytes.
-const encodeAddressToBytes = (
-  address: string,
-  isSmartContract = false
-): Buffer => {
-  let targetAddressEncoded = base58Decode(address.slice(2))
-  targetAddressEncoded = Buffer.concat([
-    isSmartContract ? Buffer.from([1]) : Buffer.from([0]),
-    targetAddressEncoded,
-  ])
-
-  return targetAddressEncoded
-}
+import { Address } from '../utils/keyAndAddresses'
 
 export type DataType = IContractData | ITransactionData | IRollsData | ICallData
 
@@ -281,29 +268,19 @@ export class BaseClient {
 
     switch (opTypeId) {
       case OperationTypeId.ExecuteSC: {
-        // get sc data binary
-        const scBinaryCode = (data as IContractData).contractDataBinary
+        const { contractDataBinary, maxGas, maxCoins, datastore } =
+          data as IContractData
+        const maxGasEncoded = Buffer.from(varintEncode(maxGas))
+        const maxCoinEncoded = Buffer.from(varintEncode(maxCoins))
 
-        // max gas
-        const maxGasEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxGas)
-        )
-
-        // max coins amount
-        const maxCoinEncoded = Buffer.from(
-          varintEncode((data as IContractData).maxCoins)
-        )
-
-        // contract data
-        const contractDataEncoded = Buffer.from(scBinaryCode)
+        const contractDataEncoded = Buffer.from(contractDataBinary)
         const dataLengthEncoded = Buffer.from(
           varintEncode(contractDataEncoded.length)
         )
 
         // smart contract operation datastore
-        const datastoreKeyMap = (data as IContractData).datastore
-          ? (data as IContractData).datastore
-          : new Map<Uint8Array, Uint8Array>()
+        const datastoreKeyMap = datastore || new Map<Uint8Array, Uint8Array>()
+
         let datastoreSerializedBuffer = Buffer.from(new Uint8Array())
         for (const [key, value] of datastoreKeyMap) {
           const encodedKeyBytes = Buffer.from(key)
@@ -325,20 +302,8 @@ export class BaseClient {
         const datastoreSerializedBufferLen = Buffer.from(
           varintEncode(datastoreKeyMap.size)
         )
-        if (datastoreSerializedBuffer.length === 0) {
-          return Buffer.concat([
-            feeEncoded,
-            expirePeriodEncoded,
-            typeIdEncoded,
-            maxGasEncoded,
-            maxCoinEncoded,
-            dataLengthEncoded,
-            contractDataEncoded,
-            datastoreSerializedBufferLen,
-          ])
-        }
 
-        return Buffer.concat([
+        let buffers = [
           feeEncoded,
           expirePeriodEncoded,
           typeIdEncoded,
@@ -347,42 +312,36 @@ export class BaseClient {
           dataLengthEncoded,
           contractDataEncoded,
           datastoreSerializedBufferLen,
-          datastoreSerializedBuffer,
-        ])
+        ]
+
+        if (datastoreSerializedBuffer.length !== 0) {
+          buffers.push(datastoreSerializedBuffer)
+        }
+
+        return Buffer.concat(buffers)
       }
       case OperationTypeId.CallSC: {
-        // max gas
-        const maxGasEncoded = Buffer.from(
-          varintEncode((data as ICallData).maxGas)
-        )
+        const { maxGas, coins, targetAddress, targetFunction, parameter } =
+          data as ICallData
 
-        // coins to send
-        const coinsEncoded = Buffer.from(
-          varintEncode((data as ICallData).coins)
-        )
-
-        // target address
-        const targetAddressEncoded = encodeAddressToBytes(
-          (data as ICallData).targetAddress,
-          true
-        )
-
-        // target function name and name length
+        const maxGasEncoded = Buffer.from(varintEncode(maxGas))
+        const coinsEncoded = Buffer.from(varintEncode(coins))
+        const targetAddressEncoded = new Address(targetAddress).toBytes()
         const targetFunctionEncoded = new Uint8Array(
-          Buffer.from((data as ICallData).targetFunction, 'utf8')
+          Buffer.from(targetFunction, 'utf8')
         )
         const targetFunctionLengthEncoded = Buffer.from(
           varintEncode(targetFunctionEncoded.length)
         )
 
-        // parameter
-        const param = (data as ICallData).parameter
-        let serializedParam: number[] // serialized parameter
-        if (param instanceof Array) {
-          serializedParam = param
+        let serializedParam: number[]
+
+        if (parameter instanceof Array) {
+          serializedParam = parameter
         } else {
-          serializedParam = param.serialize()
+          serializedParam = parameter.serialize()
         }
+
         const parametersEncoded = new Uint8Array(serializedParam)
         const parametersLengthEncoded = Buffer.from(
           varintEncode(parametersEncoded.length)
@@ -402,14 +361,10 @@ export class BaseClient {
         ])
       }
       case OperationTypeId.Transaction: {
-        // transfer amount
-        const amount = (data as ITransactionData).amount
+        const { amount, recipientAddress } = data as ITransactionData
+
         const transferAmountEncoded = Buffer.from(varintEncode(amount))
-        // recipient
-        const recipientAddressEncoded = encodeAddressToBytes(
-          (data as ITransactionData).recipientAddress,
-          false
-        )
+        const recipientAddressEncoded = new Address(recipientAddress).toBytes()
 
         return Buffer.concat([
           feeEncoded,
@@ -421,10 +376,8 @@ export class BaseClient {
       }
       case OperationTypeId.RollBuy:
       case OperationTypeId.RollSell: {
-        // rolls amount
-        const rollsAmountEncoded = Buffer.from(
-          varintEncode((data as IRollsData).amount)
-        )
+        const { amount } = data as IRollsData
+        const rollsAmountEncoded = Buffer.from(varintEncode(amount))
 
         return Buffer.concat([
           feeEncoded,

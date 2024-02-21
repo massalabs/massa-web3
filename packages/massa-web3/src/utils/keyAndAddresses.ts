@@ -56,7 +56,7 @@ export class SecretKey {
  */
 export class PublicKey {
   version: number
-  base58Encode: string
+  base58Encoded: string
   bytes: Uint8Array
 
   constructor(bytes: Uint8Array, version: number) {
@@ -65,7 +65,7 @@ export class PublicKey {
     const versionBuffer = Buffer.from(varintEncode(this.version))
 
     // Generate base58 encoded public key
-    this.base58Encode =
+    this.base58Encoded =
       PUBLIC_KEY_PREFIX +
       base58Encode(Buffer.concat([versionBuffer, Buffer.from(this.bytes)]))
   }
@@ -93,56 +93,51 @@ export class PublicKey {
  * - bytes is not an attribute of the address object because it is not needed.
  */
 export class Address {
-  base58Encode: string
-  private version: number
-  private prefix: string
-  private versionBytesLength: number
-  private versionAndAddressBytes: Uint8Array
+  base58Encoded = ''
+  version = 0
+  isUser = false
 
   constructor(base58Encoded: string) {
-    this.base58Encode = base58Encoded
-    this.setPrefix()
-    this.setDecodedVersionAndAddressBytes()
-    this.setVersion()
+    this.base58Encoded = base58Encoded
+    this._initialize()
+  }
 
-    const addressBytes = this.versionAndAddressBytes.slice(
-      this.versionBytesLength
-    )
+  _initialize() {
+    this.checkPrefixAndSetUserFlag()
+    this.decodeVersionAndAddressBytes()
+  }
 
-    if (addressBytes.length !== 32) {
+  private checkPrefixAndSetUserFlag() {
+    const prefix = this.base58Encoded.slice(0, ADDRESS_PREFIX_LENGTH)
+    if (![ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX].includes(prefix)) {
       throw new Error(
-        `Expected address to be 32 bytes long not ${addressBytes.length}`
+        `Invalid address prefix '${prefix}'. Expected '${ADDRESS_USER_PREFIX}' for users or '${ADDRESS_CONTRACT_PREFIX}' for contracts.`
       )
     }
+    this.isUser = prefix === ADDRESS_USER_PREFIX
   }
 
-  private setPrefix(): void {
-    this.prefix = this.base58Encode.slice(0, ADDRESS_PREFIX_LENGTH)
-    if (![ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX].includes(this.prefix)) {
-      throw new Error(`Invalid address prefix: ${this.prefix}`)
-    }
-  }
-
-  private setDecodedVersionAndAddressBytes(): void {
-    const versionAndAddress = this.base58Encode.slice(ADDRESS_PREFIX_LENGTH)
-    this.versionAndAddressBytes = new Uint8Array(
+  private decodeVersionAndAddressBytes(): void {
+    const versionAndAddress = this.base58Encoded.slice(ADDRESS_PREFIX_LENGTH)
+    const versionAndAddressBytes = new Uint8Array(
       base58Decode(versionAndAddress)
     )
+
+    this.version = varintDecode(versionAndAddressBytes).value
   }
 
-  private setVersion(): void {
-    const { value, bytes: versionBytesLength } = varintDecode(
-      this.versionAndAddressBytes
+  toBytes() {
+    const addressCategory = Buffer.from([this.isUser ? 0 : 1])
+    const addressContents = base58Decode(
+      this.base58Encoded.slice(ADDRESS_PREFIX_LENGTH)
     )
-    this.version = value
-    this.versionBytesLength = versionBytesLength
+    return Buffer.concat([addressCategory, addressContents])
   }
 
   static fromPublicKey(publicKey: PublicKey): Address {
     const versionBuffer = Buffer.from(varintEncode(publicKey.version))
     const versionAndPublicKey = Buffer.concat([versionBuffer, publicKey.bytes])
 
-    // Generate base58 encoded address
     const base58Encoded =
       ADDRESS_USER_PREFIX +
       base58Encode(
@@ -150,9 +145,5 @@ export class Address {
       )
 
     return new Address(base58Encoded)
-  }
-
-  get versionNumber(): number {
-    return this.version
   }
 }
