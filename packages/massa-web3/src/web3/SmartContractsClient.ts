@@ -178,25 +178,21 @@ export class SmartContractsClient
       )
     }
 
-    if (readData.maxGas === null || readData.maxGas === undefined) {
-      readData.maxGas = BigInt(MAX_GAS_CALL)
-    }
-
-    if (readData.parameter instanceof Args)
-      readData.parameter = readData.parameter.serialize()
-
-    // request data
-    let baseAccountSignerAddress: string | null = null
-    if (this.walletClient.getBaseAccount()) {
-      baseAccountSignerAddress = this.walletClient.getBaseAccount().address()
-    }
     const data = {
-      max_gas: Number(readData.maxGas),
+      max_gas:
+        readData.maxGas === null || readData.maxGas === undefined
+          ? Number(MAX_GAS_CALL)
+          : Number(readData.maxGas),
       target_address: readData.targetAddress,
       target_function: readData.targetFunction,
-      parameter: readData.parameter,
-      caller_address: readData.callerAddress || baseAccountSignerAddress,
-      coins: toMAS(readData.coins || BigInt(0)).toString(),
+      parameter:
+        readData.parameter instanceof Args
+          ? readData.parameter.serialize()
+          : readData.parameter,
+      caller_address: readData.callerAddress
+        ? readData.callerAddress
+        : this.walletClient.getBaseAccount()?.address(),
+      coins: readData.coins ? toMAS(readData.coins).toString() : undefined,
       fee: readData.fee?.toString(),
     }
 
