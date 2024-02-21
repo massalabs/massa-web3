@@ -14,6 +14,7 @@ import { JSON_RPC_REQUEST_METHOD } from '../../interfaces/JsonRpcMethods'
 import { ICallData } from '../../interfaces/ICallData'
 import { IContractData } from '../../interfaces/IContractData'
 import { trySafeExecute } from '../../utils/retryExecuteFunction'
+import { ITransactionData } from '../../interfaces/ITransactionData'
 
 function getOperationBufferToSign(
   chainId: bigint,
@@ -217,7 +218,7 @@ export class Web3Account extends BaseClient implements IBaseAccount {
     return this.executeOperation(txData, OperationTypeId.RollBuy)
   }
 
-  public async sendTransaction(txData: IRollsData): Promise<string> {
+  public async sendTransaction(txData: ITransactionData): Promise<string> {
     return this.executeOperation(txData, OperationTypeId.Transaction)
   }
 
