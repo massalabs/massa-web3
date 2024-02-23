@@ -440,13 +440,16 @@ export class SmartContractsClient
     opId: string,
     callback: (status: EOperationStatus, error?: Error) => void,
     timeInterval = TX_POLL_INTERVAL_MS,
-    timeout = Date.now() + WAIT_OPERATION_TIMEOUT
+    timeout = WAIT_OPERATION_TIMEOUT
   ): Promise<() => void> {
     let lastStatus = await this.getOperationStatus(opId)
     callback(lastStatus)
 
+    const startTime = Date.now()
+
     const interval = setInterval(async () => {
-      if (Date.now() > timeout) {
+      if (Date.now() > startTime + timeout) {
+        callback(lastStatus, new Error('Operation timed out'))
         clearInterval(interval)
         return
       }
