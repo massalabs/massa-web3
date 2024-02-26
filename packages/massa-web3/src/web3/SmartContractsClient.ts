@@ -430,9 +430,9 @@ export class SmartContractsClient
    * Watches the status of an operation and invokes a callback function when the status changes.
    *
    * @param opId - The ID of the operation to watch.
-   * @param callback - The function to call when the operation status changes. It receives the new status as a parameter.
-   * @param timeInterval - The interval in milliseconds at which to check the operation status. Defaults to `TX_POLL_INTERVAL_MS`.
-   * @param timeout - The time at which to stop checking the operation status. Defaults to the current time plus `WAIT_OPERATION_TIMEOUT`.
+   * @param callback - The function to call when the operation status changes. It receives the new status and a potential error as a parameter.
+   * @param timeInterval - The interval in milliseconds at which to check the operation status. Defaults to 1000 ms.
+   * @param timeout - The time at which to stop checking the operation status. Defaults is 16000 ms.
    *
    * @returns A Promise that resolves to a function that can be called to stop watching the operation status.
    */
