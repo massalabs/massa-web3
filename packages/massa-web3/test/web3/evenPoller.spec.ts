@@ -170,6 +170,7 @@ describe('EventPoller', () => {
       expect(eventPoller).toBeInstanceOf(EventPoller)
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(1)
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(1)
+      eventPoller.stopPolling()
     })
 
     test('should start events polling and set onData only when onError is not provided', () => {
@@ -183,6 +184,7 @@ describe('EventPoller', () => {
       expect(eventPoller).toBeInstanceOf(EventPoller)
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(1)
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(0)
+      eventPoller.stopPolling()
     })
 
     test('should start events polling and set onError only when onData is not provided', () => {
@@ -197,6 +199,7 @@ describe('EventPoller', () => {
       expect(eventPoller).toBeInstanceOf(EventPoller)
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_DATA)).toBe(0)
       expect(eventPoller.listenerCount(ON_MASSA_EVENT_ERROR)).toBe(1)
+      eventPoller.stopPolling()
     })
   })
 
