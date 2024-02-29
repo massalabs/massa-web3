@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-const MASSA_SCALING_FACTOR = 9
+export const MASSA_SCALING_FACTOR = 9
 
 /**
  * Convert any value expressed in Massa back to nanoMassa (the smallest unit of Massa).
