@@ -52,7 +52,7 @@
         "@noble/hashes": "^1.2.0",
         "@types/ws": "^8.5.4",
         "@web3pack/base58-check": "^1.0.3",
-        "axios": "^0.26.1",
+        "axios": "^0.28.0",
         "bignumber.js": "^9.1.1",
         "bip39": "^3.0.4",
         "bs58check": "^3.0.1",
