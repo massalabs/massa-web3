@@ -32,6 +32,7 @@ import {
   fromMAS,
   MAX_GAS_CALL,
   toMAS,
+  MASSA_SCALING_FACTOR,
 } from '@massalabs/web3-utils'
 import { wait } from '../utils/time'
 import {
@@ -201,8 +202,12 @@ export class SmartContractsClient
       caller_address: readData.callerAddress
         ? readData.callerAddress
         : this.walletClient.getBaseAccount()?.address(),
-      coins: readData.coins ? toMAS(readData.coins).toString() : undefined,
-      fee: readData.fee?.toString(),
+      coins: readData.coins
+        ? toMAS(readData.coins).toFixed(MASSA_SCALING_FACTOR)
+        : undefined,
+      fee: readData.fee
+        ? toMAS(readData.fee).toFixed(MASSA_SCALING_FACTOR)
+        : undefined,
     }
 
     // returns operation ids
