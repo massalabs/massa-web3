@@ -15,7 +15,7 @@ import { IDatastoreEntryInput } from '../interfaces/IDatastoreEntryInput'
 import { IGetGraphInterval } from '../interfaces/IGetGraphInterval'
 import { IGraphInterval } from '../interfaces/IGraphInterval'
 import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot'
-import { ISlot, MASSA_SCALING_FACTOR } from '@massalabs/web3-utils'
+import { ISlot, fromMAS } from '@massalabs/web3-utils'
 
 /**
  * Public API client for interacting with a Massa node.
@@ -152,7 +152,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
       )
       fees = result.minimal_fees || '0'
     }
-    return BigInt(parseFloat(fees) * 10 ** MASSA_SCALING_FACTOR)
+    return fromMAS(fees)
   }
 
   /**
