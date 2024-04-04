@@ -1,0 +1,3733 @@
+{
+    "openrpc": "1.2.4",
+    "info": {
+        "title": "Massa OpenRPC Specification",
+        "version": "MAIN.2.1",
+        "description": "Massa OpenRPC Specification document. Find more information on https://docs.massa.net/docs/build/api/jsonrpc",
+        "termsOfService": "https://open-rpc.org",
+        "contact": {
+            "name": "Massa Team",
+            "url": "https://massa.net",
+            "email": "info@massa.net"
+        }
+    },
+    "servers": [
+        {
+            "name": "Massa public buildnet API",
+            "url": "https://buildnet.massa.net/api/v2",
+            "description": "Massa public buildnet url"
+        },
+        {
+            "name": "Massa public testnet API",
+            "url": "https://test.massa.net/api/v2",
+            "description": "Massa public testnet url"
+        },
+        {
+            "name": "Massa public mainnet API",
+            "url": "https://mainnet.massa.net/api/v2",
+            "description": "Massa public mainnet url"
+        }
+    ],
+    "methods": [
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ReadOnlyBytecodeExecution",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ReadOnlyBytecodeExecution"
+                        }
+                    }
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/ExecuteReadOnlyResponse"
+                    }
+                },
+                "name": "ExecuteReadOnlyResponses"
+            },
+            "name": "execute_read_only_bytecode",
+            "summary": "Execute a smart contract in a read only context",
+            "description": "Execute a smart contract in a read only context. The changes on the ledger will not be applied and directly drop after the context of the execution. All the events generated will be returned."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ReadOnlyCall",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ReadOnlyCall"
+                        }
+                    }
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/ExecuteReadOnlyResponse"
+                    }
+                },
+                "name": "ExecuteReadOnlyResponses"
+            },
+            "name": "execute_read_only_call",
+            "summary": "Call a function of a contract in a read only context",
+            "description": "Call a function of a contract in a read only context. The changes on the ledger will not be applied and directly drop after the context of the execution. All the events generated will be returned."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "address",
+                    "description": "Need to provide at least one valid address",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Address"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "AddressInfo",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/AddressInfo"
+                    }
+                }
+            },
+            "name": "get_addresses",
+            "summary": "To check when your address is selected to stake.",
+            "description": "To check when your address is selected to stake, run this command and look at the “next draws” section.\nAlso check that your balance increases, for each block or endorsement that you create you should get a small reward."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "addressFilter",
+                    "description": "Need to provide at least one valid address filter",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AddressFilter"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "byte"
+                    }
+                },
+                "name": "Addresses bytecode array"
+            },
+            "name": "get_addresses_bytecode",
+            "summary": "Returns the bytecode of the given addresses.",
+            "description": "Returns the bytecode of the given addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "blockId",
+                    "description": "Need to provide at least one valid block id",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BlockId"
+                        }
+                    },
+                    "summary": "string",
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/BlockInfo"
+                    }
+                },
+                "name": "BlockInfo"
+            },
+            "name": "get_blocks",
+            "summary": "Get blocks",
+            "description": "Get blocks."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "slot",
+                    "description": "Slot of the block",
+                    "schema": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/Block"
+                },
+                "name": "Block"
+            },
+            "name": "get_blockclique_block_by_slot",
+            "summary": "Get a block in the blockclique",
+            "description": "Get the block in the blockclique that is associated to the slot"
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/Clique"
+                    }
+                },
+                "name": "Cliques"
+            },
+            "name": "get_cliques",
+            "summary": "Get cliques",
+            "description": "Returns information about cliques."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "DatastoreEntryInputs",
+                    "description": "Datastore entry input",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DatastoreEntryInput"
+                        }
+                    }
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/DataStoreEntryOutput"
+                    }
+                },
+                "name": "DataStoreEntryOutputs"
+            },
+            "name": "get_datastore_entries",
+            "summary": "Get a data entry both at the latest final and active executed slots for the given addresses.",
+            "description": "Get a data entry both at the latest final and active executed slots for the given addresses.\n\nIf an existing final entry (final_value) is found in the active history, it will return its final value in active_value field. If it was deleted in the active history, it will return null in active_value field."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "slots",
+                    "description": "Precise the slots you want to gather the transfers from",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Slot"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "SlotsTransfers",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Transfer"
+                        }
+                    }
+                }
+            },
+            "name": "get_slots_transfers",
+            "summary": "Get transfers for specified slots",
+            "description": "Get transfers for specified slots"
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "endorsementId",
+                    "description": "Need to provide at least one valid endorsement id",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/EndorsementInfo"
+                    }
+                },
+                "name": "EndorsementInfos"
+            },
+            "name": "get_endorsements",
+            "summary": "Get endorsements",
+            "description": "Get endorsements."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "EventFilter",
+                    "schema": {
+                        "$ref": "#/components/schemas/EventFilter"
+                    }
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/SCOutputEvent"
+                    }
+                },
+                "name": "SCOutputEvents"
+            },
+            "name": "get_filtered_sc_output_event",
+            "summary": "Returns events optionally filtered",
+            "description": "Returns events optionally filtered by: start slot, end slot, emitter address, original caller address, operation id."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "TimeInterval",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "start": {
+                                "type": "number"
+                            },
+                            "end": {
+                                "type": "number"
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/GraphInterval"
+                    }
+                },
+                "name": "GraphInterval"
+            },
+            "name": "get_graph_interval",
+            "summary": "Get graph interval",
+            "description": "Get graph interval."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "operationId",
+                    "description": "Need to provide at least one valid operation id",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/OperationInfo"
+                    }
+                },
+                "name": "OperationInfos"
+            },
+            "name": "get_operations",
+            "summary": "Get operations",
+            "description": "Get operations."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "schema": {
+                        "$ref": "#/components/schemas/PageRequest"
+                    },
+                    "name": "PageRequest"
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/Staker"
+                    }
+                },
+                "name": "PagedStakers"
+            },
+            "name": "get_stakers",
+            "summary": "Get stakers",
+            "description": "Returns the active stakers and their roll counts for the current cycle."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "name": "NodeStatus",
+                "description": "Node status",
+                "schema": {
+                    "$ref": "#/components/schemas/NodeStatus"
+                }
+            },
+            "name": "get_status",
+            "summary": "Summary of the current state",
+            "description": "Summary of the current state: time, last final blocks (hash, thread, slot, timestamp), clique count, connected nodes count."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "SecretKeys",
+                    "description": "The strings must be secret(private) keys",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PrivateKey"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "add_staking_secret_keys",
+            "summary": "Add a vec of new secret(private) keys for the node to use to stake",
+            "description": "Add a vec of new secret keys(private) for the node to use to stake."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "description": "Address",
+                        "$ref": "#/components/schemas/Address"
+                    }
+                },
+                "description": "The strings are addresses.",
+                "name": "Addresses"
+            },
+            "name": "get_staking_addresses",
+            "summary": "Return hashset of staking addresses",
+            "description": "Return hashset of staking addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_add_to_bootstrap_blacklist",
+            "summary": "Add to bootstrap blacklist given IP addresses",
+            "description": "Add to bootstrap blacklist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_add_to_bootstrap_whitelist",
+            "summary": "Add to bootstrap whitelist given IP addresses",
+            "description": "Add to bootstrap whitelist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_add_to_peers_whitelist",
+            "summary": "Add to peers whitelist given IP addresses",
+            "description": "Add to peers whitelist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "id",
+                    "description": "The strings are nodes ids.",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_ban_by_id",
+            "summary": "Ban given ids",
+            "description": "Ban given ids."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings are IP addresses.",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_ban_by_ip",
+            "summary": "Ban given IP addresses",
+            "description": "Ban given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "name": "ip",
+                "description": "The strings must be IP addresses",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "description": "Ip address",
+                        "$ref": "#/components/schemas/IpAddress"
+                    }
+                }
+            },
+            "name": "node_bootstrap_blacklist",
+            "summary": "Returns bootstrap blacklist IP addresses",
+            "description": "Returns bootstrap blacklist IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "name": "ip",
+                "description": "The strings must be IP addresses",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "description": "Ip address",
+                        "$ref": "#/components/schemas/IpAddress"
+                    }
+                }
+            },
+            "name": "node_bootstrap_whitelist",
+            "summary": "Returns bootstrap whitelist IP addresses",
+            "description": "Returns bootstrap whitelist IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_bootstrap_whitelist_allow_all",
+            "summary": "Allow everyone to bootstrap from the node",
+            "description": "Allow everyone to bootstrap from the node. Remove bootstrap whitelist configuration file."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "name": "ip",
+                "description": "The strings must be IP addresses",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "description": "Ip address",
+                        "$ref": "#/components/schemas/IpAddress"
+                    }
+                }
+            },
+            "name": "node_peers_whitelist",
+            "summary": "Returns peers whitelist IP addresses",
+            "description": "Returns peers whitelist IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_remove_from_bootstrap_blacklist",
+            "summary": "Remove from bootstrap blacklist given IP addresses",
+            "description": "Remove from bootstrap blacklist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_remove_from_bootstrap_whitelist",
+            "summary": "Remove from bootstrap whitelist given IP addresses",
+            "description": "Remove from bootstrap whitelist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_remove_from_peers_whitelist",
+            "summary": "Remove from peers whitelist given IP addresses",
+            "description": "Remove from peers whitelist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_remove_from_whitelist",
+            "summary": "Remove from whitelist given IP addresses",
+            "description": "Remove from whitelist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "addresses",
+                    "description": "The strings must addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Address",
+                            "$ref": "#/components/schemas/Address"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "remove_staking_addresses",
+            "summary": "Remove a vec of addresses used to stake",
+            "description": "Remove a vec of addresses used to stake."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "message",
+                    "description": "Message to be signed in byte array",
+                    "schema": {
+                        "format": "byte",
+                        "type": "string"
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/PubkeySig"
+                },
+                "name": "PubkeySig"
+            },
+            "name": "node_sign_message",
+            "summary": "Sign message with node’s key",
+            "description": "Sign message with node’s key."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "stop_node",
+            "summary": "Gracefully stop the node",
+            "description": "Gracefully stop the node."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "id",
+                    "description": "The strings are nodes ids.",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_unban_by_id",
+            "summary": "Unban given ids",
+            "description": "Unban given ids."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings are IP addresses.",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "Ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_unban_by_ip",
+            "summary": "Unban given IP addresses",
+            "description": "Unban given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "private",
+                    "description": "Massa private api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "ip",
+                    "description": "The strings must be IP addresses",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "description": "ip address",
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "name": "No return",
+                "description": "No return.",
+                "schema": false
+            },
+            "name": "node_whitelist",
+            "summary": "Whitelist given IP addresses",
+            "description": "Whitelist given IP addresses."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "OperationInput",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OperationInput"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/OperationId"
+                    }
+                },
+                "name": "Operations"
+            },
+            "name": "send_operations",
+            "summary": "Adds operations to pool",
+            "description": "Adds operations to pool. Returns operations that were ok and sent to pool."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                }
+            ],
+            "params": [
+                {
+                    "schema": {
+                        "$ref": "#/components/schemas/ApiRequest"
+                    },
+                    "name": "ApiRequest",
+                    "description": "Optional api request"
+                }
+            ],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/PagedVecStaker"
+                },
+                "name": "PagedVecStaker"
+            },
+            "name": "get_largest_stakers",
+            "summary": "Get largest stakers",
+            "description": "Returns the active stakers and their active roll counts for the current cycle sorted by largest roll counts."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/BlockParent"
+                    }
+                },
+                "name": "NextBlockBestParents"
+            },
+            "name": "get_next_block_best_parents",
+            "summary": "Get next block best parents",
+            "description": "Returns the ids of best parents for the next block to be produced along with their period"
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/Version"
+                },
+                "name": "Version",
+                "description": "Node version"
+            },
+            "name": "get_version",
+            "summary": "Get Massa node version",
+            "description": "Get Massa node version."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/BlockInfo"
+                },
+                "name": "BlockInfo"
+            },
+            "name": "subscribe_new_blocks",
+            "summary": "New produced blocks",
+            "description": "New produced blocks."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/WrappedHeader"
+                },
+                "name": "BlockHeader"
+            },
+            "name": "subscribe_new_blocks_headers",
+            "summary": "New produced blocks headers",
+            "description": "New produced blocks headers."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/FilledBlockInfo"
+                },
+                "name": "FilledBlockInfo"
+            },
+            "name": "subscribe_new_filled_blocks",
+            "summary": "New produced blocks with operations content",
+            "description": "New produced blocks with operations content."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [],
+            "result": {
+                "schema": {
+                    "$ref": "#/components/schemas/Operation"
+                },
+                "name": "Operation"
+            },
+            "name": "subscribe_new_operations",
+            "summary": "Subscribe to new operations",
+            "description": "Subscribe to new operations."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [
+                {
+                    "name": "subscriptionId",
+                    "description": "Subscription id",
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "boolean"
+                },
+                "name": "unsubscribe result",
+                "description": "unsubscribe success message"
+            },
+            "name": "unsubscribe_new_blocks",
+            "summary": "Unsubscribe from new produced blocks",
+            "description": "Unsubscribe from new produced blocks."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [
+                {
+                    "name": "subscriptionId",
+                    "description": "Subscription id",
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "boolean"
+                },
+                "name": "unsubscribe result",
+                "description": "unsubscribe success message"
+            },
+            "name": "unsubscribe_new_blocks_headers",
+            "summary": "Unsubscribe from new produced blocks headers",
+            "description": "Unsubscribe from new produced blocks headers."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [
+                {
+                    "name": "subscriptionId",
+                    "description": "Subscription id",
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "boolean"
+                },
+                "name": "unsubscribe result",
+                "description": "unsubscribe success message"
+            },
+            "name": "unsubscribe_new_filled_blocks",
+            "summary": "Unsubscribe from new produced filled blocks",
+            "description": "Unsubscribe from new produced filled blocks."
+        },
+        {
+            "tags": [
+                {
+                    "name": "api",
+                    "description": "Massa api V2"
+                },
+                {
+                    "name": "experimental",
+                    "description": "Experimental APIs. They might disappear, and they will change"
+                },
+                {
+                    "name": "websocket",
+                    "description": "WebSocket subscription"
+                }
+            ],
+            "params": [
+                {
+                    "name": "subscriptionId",
+                    "description": "Subscription id",
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "boolean"
+                },
+                "name": "unsubscribe result",
+                "description": "unsubscribe success message"
+            },
+            "name": "unsubscribe_new_operations",
+            "summary": "Unsubscribe from new received operations",
+            "description": "Unsubscribe from new received operations."
+        }
+    ],
+    "components": {
+        "schemas": {
+            "Address": {
+                "title": "Address",
+                "description": "Address",
+                "type": "string"
+            },
+            "AddressFilter": {
+                "title": "AddressFilter",
+                "description": "Address filter",
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "$ref": "#/components/schemas/Address",
+                        "description": "The address"
+                    },
+                    "is_final": {
+                        "type": "boolean",
+                        "description": "true means final, false means candidate"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AddressInfo": {
+                "title": "AddressInfo",
+                "required": [
+                    "address",
+                    "thread",
+                    "final_balance",
+                    "final_roll_count",
+                    "final_datastore_keys",
+                    "candidate_balance",
+                    "candidate_roll_count",
+                    "candidate_datastore_keys",
+                    "deferred_credits",
+                    "next_block_draws",
+                    "next_endorsement_draws",
+                    "created_blocks",
+                    "created_operations",
+                    "created_endorsements",
+                    "cycle_infos"
+                ],
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "$ref": "#/components/schemas/Address",
+                        "description": "The address"
+                    },
+                    "thread": {
+                        "description": "The thread the address belongs to",
+                        "type": "number"
+                    },
+                    "final_balance": {
+                        "description": "The final balance",
+                        "type": "string"
+                    },
+                    "final_roll_count": {
+                        "description": "The final roll count",
+                        "type": "number"
+                    },
+                    "final_datastore_keys": {
+                        "description": "The final datastore keys",
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "candidate_balance": {
+                        "description": "The candidate balance",
+                        "type": "string"
+                    },
+                    "candidate_roll_count": {
+                        "description": "The candidate roll count",
+                        "type": "number"
+                    },
+                    "candidate_datastore_keys": {
+                        "description": "The candidate datastore keys",
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "deferred_credits": {
+                        "description": "The deferred credits",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "slot": {
+                                    "$ref": "#/components/schemas/Slot",
+                                    "type": "object"
+                                },
+                                "amount": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "minItems": 0
+                    },
+                    "next_block_draws": {
+                        "description": "The next block draws",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Slot",
+                            "type": "object"
+                        }
+                    },
+                    "next_endorsement_draws": {
+                        "description": "The next endorsement draws",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "slot": {
+                                    "$ref": "#/components/schemas/Slot",
+                                    "type": "object"
+                                },
+                                "index": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
+                    "created_blocks": {
+                        "description": "BlockIds of created blocks",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BlockId",
+                            "type": "string"
+                        },
+                        "minItems": 0
+                    },
+                    "created_operations": {
+                        "description": "OperationIds of created operations",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OperationId",
+                            "type": "string"
+                        },
+                        "minItems": 0
+                    },
+                    "created_endorsements": {
+                        "description": "EndorsementIds of created endorsements",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EndorsementId",
+                            "type": "string"
+                        },
+                        "minItems": 0
+                    },
+                    "cycle_infos": {
+                        "description": "Cycle infos",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ExecutionAddressCycleInfo",
+                            "type": "object"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ApiRequest": {
+                "title": "ApiRequest",
+                "description": "ApiRequest for apiV2",
+                "type": "object",
+                "properties": {
+                    "page_request": {
+                        "$ref": "#/components/schemas/PageRequest",
+                        "description": "Optional page request"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Balance": {
+                "title": "Balance",
+                "required": [
+                    "candidate_balance",
+                    "final_balance",
+                    "locked_balance"
+                ],
+                "type": "object",
+                "properties": {
+                    "candidate_balance": {
+                        "description": "Represent an Amount in coins",
+                        "type": "string"
+                    },
+                    "final_balance": {
+                        "description": "Represent an Amount in coins",
+                        "type": "string"
+                    },
+                    "locked_balance": {
+                        "description": "Represent an Amount in coins",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Block": {
+                "title": "Block",
+                "required": [
+                    "header",
+                    "operations"
+                ],
+                "type": "object",
+                "properties": {
+                    "header": {
+                        "$ref": "#/components/schemas/WrappedHeader",
+                        "description": "signed header"
+                    },
+                    "operations": {
+                        "description": "Operations",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "BlockId": {
+                "title": "BlockId",
+                "description": "Block identifier",
+                "type": "string"
+            },
+            "BlockInfo": {
+                "title": "BlockInfo",
+                "required": [
+                    "id"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "$ref": "#/components/schemas/BlockInfoContent"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "BlockInfoContent": {
+                "title": "BlockInfoContent",
+                "required": [
+                    "block",
+                    "is_final",
+                    "is_in_blockclique",
+                    "is_candidate"
+                ],
+                "type": "object",
+                "properties": {
+                    "is_final": {
+                        "description": "true if final",
+                        "type": "boolean"
+                    },
+                    "is_candidate": {
+                        "description": "true if candidate",
+                        "type": "boolean"
+                    },
+                    "is_discarded": {
+                        "description": "true if discarded",
+                        "type": "boolean"
+                    },
+                    "is_in_blockclique": {
+                        "description": "true if in the greatest clique",
+                        "type": "boolean"
+                    },
+                    "block": {
+                        "$ref": "#/components/schemas/Block",
+                        "description": "block"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "BlockParent": {
+                "title": "BlockParent",
+                "description": "A tuple which contains (BlockId, period)",
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "BlockId": {
+                            "$ref": "#/components/schemas/BlockId"
+                        },
+                        "period": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "example": {
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1": "Number",
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx2": "Number"
+                }
+            },
+            "CallSC": {
+                "title": "CallSC",
+                "description": "Call Smart Contract",
+                "required": [
+                    "max_gas",
+                    "param",
+                    "coins",
+                    "target_addr",
+                    "target_func"
+                ],
+                "type": "object",
+                "properties": {
+                    "target_addr": {
+                        "$ref": "#/components/schemas/Address",
+                        "description": "Address"
+                    },
+                    "target_func": {
+                        "description": "Function name",
+                        "type": "string"
+                    },
+                    "param": {
+                        "description": "Parameter to pass to the function",
+                        "type": "string"
+                    },
+                    "max_gas": {
+                        "type": "number"
+                    },
+                    "coins": {
+                        "description": "Amount",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Clique": {
+                "title": "Clique",
+                "description": "Clique",
+                "required": [
+                    "block_ids",
+                    "is_blockclique",
+                    "fitness"
+                ],
+                "type": "object",
+                "properties": {
+                    "block_ids": {
+                        "description": "The block ids of the blocks in that clique",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BlockId"
+                        }
+                    },
+                    "fitness": {
+                        "description": "Depends on descendants and endorsement count",
+                        "type": "number"
+                    },
+                    "is_blockclique": {
+                        "description": "True if it is the clique of higher fitness",
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CompactConfig": {
+                "title": "Config",
+                "description": "Compact configuration",
+                "required": [
+                    "block_reward",
+                    "delta_f0",
+                    "genesis_timestamp",
+                    "operation_validity_periods",
+                    "periods_per_cycle",
+                    "roll_price",
+                    "t0",
+                    "thread_count",
+                    "execution_stats"
+                ],
+                "type": "object",
+                "properties": {
+                    "block_reward": {
+                        "description": "Represent an Amount in coins",
+                        "type": "string"
+                    },
+                    "delta_f0": {
+                        "description": "Used to compute finality threshold",
+                        "type": "number"
+                    },
+                    "end_timestamp": {
+                        "description": "(Only in tesnets)\nTime in milliseconds when the blockclique started.",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    },
+                    "genesis_timestamp": {
+                        "description": "Time in milliseconds when the blockclique started.",
+                        "type": "number"
+                    },
+                    "max_block_size": {
+                        "description": "Maximum size (in bytes) of a block",
+                        "type": "number"
+                    },
+                    "operation_validity_periods": {
+                        "description": "Maximum operation validity period count",
+                        "type": "number"
+                    },
+                    "periods_per_cycle": {
+                        "description": "cycle duration in periods",
+                        "type": "number"
+                    },
+                    "roll_price": {
+                        "description": "Represent an Amount in coins",
+                        "type": "string"
+                    },
+                    "t0": {
+                        "description": "Time between the periods in the same thread.",
+                        "type": "number"
+                    },
+                    "thread_count": {
+                        "description": "Number of threads",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ConnectedNodes": {
+                "title": "ConnectedNodes",
+                "description": "Connected nodes",
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "node_id": {
+                            "type": "string"
+                        },
+                        "ip_address": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "example": {
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1": "String",
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx2": "String"
+                }
+            },
+            "ConsensusStats": {
+                "title": "ConsensusStats",
+                "description": "Consensus stats",
+                "required": [
+                    "clique_count",
+                    "end_timespan",
+                    "final_block_count",
+                    "stale_block_count",
+                    "start_timespan"
+                ],
+                "type": "object",
+                "properties": {
+                    "clique_count": {
+                        "type": "number"
+                    },
+                    "end_timespan": {
+                        "description": "Stats time interval, millis since 1970-01-01",
+                        "type": "number"
+                    },
+                    "final_block_count": {
+                        "type": "number"
+                    },
+                    "stale_block_count": {
+                        "type": "number"
+                    },
+                    "start_timespan": {
+                        "description": "Stats time interval, millis since 1970-01-01",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DataStore": {
+                "title": "Datastore",
+                "description": "A tuple which contains (entry, bytes)",
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "entry": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        },
+                        "bytes": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "example": [
+                    [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    [
+                        5,
+                        6,
+                        7,
+                        9,
+                        10
+                    ]
+                ]
+            },
+            "DataStoreEntry": {
+                "title": "DatastoreEntry",
+                "description": "Datastore entry",
+                "type": "object",
+                "properties": {
+                    "candidate_value": {
+                        "description": "",
+                        "type": "string"
+                    },
+                    "final_value": {
+                        "description": "",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DatastoreEntryInput": {
+                "title": "DatastoreEntryInput",
+                "description": "",
+                "required": [
+                    "address",
+                    "key"
+                ],
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "$ref": "#/components/schemas/Address"
+                    },
+                    "key": {
+                        "description": "",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DataStoreEntryOutput": {
+                "title": "DatastoreEntryOutput",
+                "description": "Datastore entry",
+                "type": "object",
+                "properties": {
+                    "candidate_value": {
+                        "description": "",
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "final_value": {
+                        "description": "",
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Denunciation": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/EndorsementDenunciation"
+                    },
+                    {
+                        "$ref": "#/components/schemas/BlockHeaderDenunciation"
+                    }
+                ]
+            },
+            "EndorsementDenunciation": {
+                "type": "object",
+                "properties": {
+                    "public_key": {
+                        "type": "string"
+                    },
+                    "slot": {
+                        "type": "integer"
+                    },
+                    "index": {
+                        "type": "integer"
+                    },
+                    "hash_1": {
+                        "type": "string"
+                    },
+                    "hash_2": {
+                        "type": "string"
+                    },
+                    "signature_1": {
+                        "type": "string"
+                    },
+                    "signature_2": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BlockHeaderDenunciation": {
+                "type": "object",
+                "properties": {
+                    "public_key": {
+                        "type": "string"
+                    },
+                    "slot": {
+                        "type": "integer"
+                    },
+                    "hash_1": {
+                        "type": "string"
+                    },
+                    "hash_2": {
+                        "type": "string"
+                    },
+                    "signature_1": {
+                        "type": "string"
+                    },
+                    "signature_2": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Endorsement": {
+                "title": "Endorsement",
+                "description": "Endorsement",
+                "required": [
+                    "content",
+                    "content_creator_pub_key",
+                    "signature"
+                ],
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "$ref": "#/components/schemas/EndorsementContent"
+                    },
+                    "content_creator_pub_key": {
+                        "$ref": "#/components/schemas/PublicKey"
+                    },
+                    "content_creator_address": {
+                        "$ref": "#/components/schemas/Address"
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/EndorsementId"
+                    },
+                    "signature": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ExecutionStats": {
+                "title": "ExecutionStats",
+                "description": "Execution stats",
+                "required": [
+                    "time_window_start",
+                    "time_window_end",
+                    "final_block_count",
+                    "final_executed_operations_count",
+                    "active_cursor",
+                    "final_cursor"
+                ],
+                "type": "object",
+                "properties": {
+                    "time_window_start": {
+                        "description": "Time window start",
+                        "type": "number"
+                    },
+                    "time_window_end": {
+                        "description": "Time window end",
+                        "type": "number"
+                    },
+                    "final_block_count": {
+                        "description": "number of final blocks in the time window",
+                        "type": "number"
+                    },
+                    "final_executed_operations_count": {
+                        "description": "number of final executed operations in the time window",
+                        "type": "number"
+                    },
+                    "active_cursor": {
+                        "descritpion": "active execution cursor slot",
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "final_cursor": {
+                        "description": "final execution cursor slot",
+                        "$ref": "#/components/schemas/Slot"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EndorsementContent": {
+                "title": "EndorsementContent",
+                "description": "Endorsement content",
+                "required": [
+                    "endorsed_block",
+                    "index",
+                    "slot"
+                ],
+                "type": "object",
+                "properties": {
+                    "slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "index": {
+                        "type": "number"
+                    },
+                    "endorsed_block": {
+                        "$ref": "#/components/schemas/BlockId"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EndorsementDraw": {
+                "title": "EndorsementDraw",
+                "required": [
+                    "index",
+                    "slot"
+                ],
+                "type": "object",
+                "properties": {
+                    "slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "index": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EndorsementId": {
+                "title": "EndorsementId",
+                "description": "Endorsement id",
+                "type": "string"
+            },
+            "EndorsementInfo": {
+                "title": "EndorsementInfo",
+                "description": "Endorsement info",
+                "required": [
+                    "endorsement",
+                    "id",
+                    "in_blocks",
+                    "in_pool",
+                    "is_final"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/EndorsementId"
+                    },
+                    "in_pool": {
+                        "type": "boolean"
+                    },
+                    "in_blocks": {
+                        "description": "Block Id",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BlockId"
+                        }
+                    },
+                    "is_final": {
+                        "type": "boolean"
+                    },
+                    "endorsement": {
+                        "$ref": "#/components/schemas/Endorsement",
+                        "description": "Endorsement"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ExecutedAt": {
+                "title": "ExecuteAt",
+                "required": [
+                    "period",
+                    "thread"
+                ],
+                "type": "object",
+                "properties": {
+                    "period": {
+                        "type": "number"
+                    },
+                    "thread": {
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ExecuteReadOnlyResponse": {
+                "title": "ExecuteReadOnlyResponse",
+                "required": [
+                    "executed_at",
+                    "output_events",
+                    "result",
+                    "gas_cost",
+                    "state_changes"
+                ],
+                "type": "object",
+                "properties": {
+                    "executed_at": {
+                        "$ref": "#/components/schemas/ExecutedAt"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/ReadOnlyResult"
+                    },
+                    "output_events": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SCOutputEvent"
+                        }
+                    },
+                    "gas_cost": {
+                        "description": "The gas cost for the execution",
+                        "type": "number"
+                    },
+                    "state_changes": {
+                        "$ref": "#/components/schemas/StateChanges"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ExecuteSC": {
+                "title": "ExecuteSC",
+                "description": "Execute Smart Contract",
+                "required": [
+                    "data",
+                    "max_gas",
+                    "datastore"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "description": "Vec of bytes to execute",
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "max_gas": {
+                        "description": "Maximum amount of gas that the execution of the contract is allowed to cost.",
+                        "type": "number"
+                    },
+                    "datastore": {
+                        "$ref": "#/components/schemas/DataStore",
+                        "description": "A tuple which contains (key, value)"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ExecutionAddressCycleInfo": {
+                "title": "ExecutionAddressCycleInfo",
+                "required": [
+                    "cycle",
+                    "is_final",
+                    "ok_count",
+                    "nok_count"
+                ],
+                "type": "object",
+                "properties": {
+                    "cycle": {
+                        "type": "number"
+                    },
+                    "is_final": {
+                        "type": "boolean"
+                    },
+                    "ok_count": {
+                        "type": "number"
+                    },
+                    "nok_count": {
+                        "type": "number"
+                    },
+                    "active_rolls": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EventFilter": {
+                "title": "EventFilter",
+                "description": "Event filter",
+                "required": [],
+                "type": "object",
+                "properties": {
+                    "start": {
+                        "$ref": "#/components/schemas/Slot",
+                        "description": "Optional start slot\nWill use by default Slot(0,0)"
+                    },
+                    "end": {
+                        "$ref": "#/components/schemas/Slot",
+                        "description": "Optional end slot\nWill use by default Slot(0,0)"
+                    },
+                    "emitter_address": {
+                        "description": "Optional emitter address",
+                        "type": "string"
+                    },
+                    "original_caller_address": {
+                        "description": "Optional caller address",
+                        "type": "string"
+                    },
+                    "original_operation_id": {
+                        "description": "Optional operation id",
+                        "type": "string"
+                    },
+                    "is_final": {
+                        "description": "Optional filter to filter only candidate or final events",
+                        "type": "boolean"
+                    },
+                    "is_error": {
+                        "description": "Optional filter to retrieve events generated in a failed execution",
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EventId": {
+                "title": "EventId",
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "context": {
+                            "$ref": "#/components/schemas/SCOEContext"
+                        },
+                        "data": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "EventExecutionContext": {
+                "title": "EventExecutionContext",
+                "description": "Context of the event (not generated by the user)",
+                "required": [
+                    "call_stack",
+                    "index_in_slot",
+                    "read_only",
+                    "slot",
+                    "is_final"
+                ],
+                "type": "object",
+                "properties": {
+                    "slot": {
+                        "$ref": "#/components/schemas/Slot",
+                        "description": "When was it generated"
+                    },
+                    "block": {
+                        "$ref": "#/components/schemas/BlockId",
+                        "description": "Block Id"
+                    },
+                    "read_only": {
+                        "description": "Wether the event was generated during  read only call",
+                        "type": "boolean"
+                    },
+                    "call_stack": {
+                        "description": "Addresses, most recent at the end",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Address"
+                        }
+                    },
+                    "index_in_slot": {
+                        "description": "Index of the event in the slot",
+                        "type": "number"
+                    },
+                    "origin_operation_id": {
+                        "$ref": "#/components/schemas/OperationId",
+                        "description": "Origin operation id"
+                    },
+                    "is_final": {
+                        "description": "Whether the event is final",
+                        "type": "boolean"
+                    },
+                    "is_error": {
+                        "description": "Whether the event was generated in a failed executed or not",
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "IpAddress": {
+                "title": "IpAddress",
+                "description": "Ipv4 or Ipv6 address",
+                "type": "string"
+            },
+            "FilledBlock": {
+                "title": "FilledBlock",
+                "required": [
+                    "header",
+                    "operations"
+                ],
+                "type": "object",
+                "properties": {
+                    "header": {
+                        "$ref": "#/components/schemas/WrappedHeader",
+                        "description": "signed header"
+                    },
+                    "operations": {
+                        "description": "Operations",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OperationInfo"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FilledBlockInfo": {
+                "title": "FilledBlockInfo",
+                "required": [
+                    "id"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "$ref": "#/components/schemas/FilledBlockInfoContent"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FilledBlockInfoContent": {
+                "title": "FilledBlockInfoContent",
+                "required": [
+                    "block",
+                    "is_final",
+                    "is_in_blockclique",
+                    "is_stale"
+                ],
+                "type": "object",
+                "properties": {
+                    "is_final": {
+                        "description": "true if final",
+                        "type": "boolean"
+                    },
+                    "is_stale": {
+                        "description": "true if incompatible with a final block",
+                        "type": "boolean"
+                    },
+                    "is_in_blockclique": {
+                        "description": "true if in the greatest clique",
+                        "type": "boolean"
+                    },
+                    "block": {
+                        "$ref": "#/components/schemas/FilledBlock",
+                        "description": "filled block"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "GraphInterval": {
+                "title": "GraphInterval",
+                "required": [
+                    "creator",
+                    "id",
+                    "is_final",
+                    "is_in_blockclique",
+                    "is_stale",
+                    "parents",
+                    "slot"
+                ],
+                "type": "object",
+                "properties": {
+                    "creator": {
+                        "description": "Public key",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "Block Id",
+                        "type": "string"
+                    },
+                    "is_final": {
+                        "type": "boolean"
+                    },
+                    "is_in_blockclique": {
+                        "type": "boolean"
+                    },
+                    "is_stale": {
+                        "type": "boolean"
+                    },
+                    "parents": {
+                        "description": "As many block Ids as there are threads",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Header": {
+                "title": "Header",
+                "required": [
+                    "operation_merkle_root",
+                    "parents",
+                    "slot"
+                ],
+                "type": "object",
+                "properties": {
+                    "current_version": {
+                        "description": "Current version",
+                        "type": "number"
+                    },
+                    "announced_version": {
+                        "description": "Announced version",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    },
+                    "operation_merkle_root": {
+                        "type": "string"
+                    },
+                    "parents": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "endorsements": {
+                        "description": "Endorsements",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "content": {
+                                    "$ref": "#/components/schemas/EndorsementContent"
+                                },
+                                "signature": {
+                                    "type": "string"
+                                },
+                                "content_creator_pub_key": {
+                                    "$ref": "#/components/schemas/PublicKey"
+                                },
+                                "content_creator_address": {
+                                    "$ref": "#/components/schemas/Address"
+                                },
+                                "id": {
+                                    "$ref": "#/components/schemas/EndorsementId"
+                                }
+                            }
+                        }
+                    },
+                    "denunciations": {
+                        "description": "Denunciations",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Denunciation"
+                        },
+                        "minItems": 0
+                    }
+                },
+                "additionalProperties": false
+            },
+            "LedgerInfo": {
+                "title": "SceLedgerInfo",
+                "required": [
+                    "balance",
+                    "datastore"
+                ],
+                "type": "object",
+                "properties": {
+                    "balance": {
+                        "description": "Represent an amount",
+                        "type": "string"
+                    },
+                    "module": {
+                        "description": "Stored bytecode",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "datastore": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DataStore"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "NetworkStats": {
+                "title": "NetworkStats",
+                "description": "Network stats",
+                "required": [
+                    "active_node_count",
+                    "banned_peer_count",
+                    "in_connection_count",
+                    "known_peer_count",
+                    "out_connection_count"
+                ],
+                "type": "object",
+                "properties": {
+                    "active_node_count": {
+                        "description": "Active node count",
+                        "type": "number"
+                    },
+                    "banned_peer_count": {
+                        "description": "Banned node count",
+                        "type": "number"
+                    },
+                    "in_connection_count": {
+                        "description": "In connections count",
+                        "type": "number"
+                    },
+                    "known_peer_count": {
+                        "description": "Total known peers count",
+                        "type": "number"
+                    },
+                    "out_connection_count": {
+                        "description": "Out connections count",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "NodeStatus": {
+                "title": "NodeStatus",
+                "description": "Node status",
+                "required": [
+                    "config",
+                    "connected_nodes",
+                    "consensus_stats",
+                    "current_cycle",
+                    "current_time",
+                    "current_cycle_time",
+                    "next_cycle_time",
+                    "network_stats",
+                    "next_slot",
+                    "node_id",
+                    "pool_stats",
+                    "version",
+                    "execution_stats",
+                    "chain_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "config": {
+                        "$ref": "#/components/schemas/CompactConfig",
+                        "description": "Compact configuration"
+                    },
+                    "connected_nodes": {
+                        "$ref": "#/components/schemas/ConnectedNodes",
+                        "description": "Connected nodes (node id, ip address, true if the connection is outgoing, false if incoming)"
+                    },
+                    "consensus_stats": {
+                        "$ref": "#/components/schemas/ConsensusStats",
+                        "description": "Consensus stats"
+                    },
+                    "current_cycle": {
+                        "description": "Current cycle",
+                        "type": "number"
+                    },
+                    "current_time": {
+                        "description": "Time in milliseconds since 1970-01-01",
+                        "type": "number"
+                    },
+                    "current_cycle_time": {
+                        "description": "current cycle starting time in milliseconds since 1970-01-01",
+                        "type": "number"
+                    },
+                    "next_cycle_time": {
+                        "description": "next cycle starting time in milliseconds since 1970-01-01",
+                        "type": "number"
+                    },
+                    "last_slot": {
+                        "$ref": "#/components/schemas/Slot",
+                        "description": "Latest slot, none if now is before genesis timestamp"
+                    },
+                    "network_stats": {
+                        "$ref": "#/components/schemas/NetworkStats",
+                        "description": "Network stats"
+                    },
+                    "next_slot": {
+                        "$ref": "#/components/schemas/Slot",
+                        "description": "Next slot"
+                    },
+                    "node_id": {
+                        "description": "Our node id",
+                        "type": "string"
+                    },
+                    "node_ip": {
+                        "description": "Optional node ip if provided",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "pool_stats": {
+                        "$ref": "#/components/schemas/PoolStats",
+                        "description": "Pool stats"
+                    },
+                    "version": {
+                        "$ref": "#/components/schemas/Version",
+                        "description": "Node Version"
+                    },
+                    "execution_stats": {
+                        "$ref": "#/components/schemas/ExecutionStats",
+                        "description": "Execution stats"
+                    },
+                    "chain_id": {
+                        "description": "Chain id",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Operation": {
+                "title": "Operation",
+                "description": "Operation",
+                "required": [
+                    "fee",
+                    "expire_period",
+                    "op"
+                ],
+                "type": "object",
+                "properties": {
+                    "fee": {
+                        "description": "the fee they have decided for this operation",
+                        "type": "string"
+                    },
+                    "expire_period": {
+                        "description": "after `expire_period` slot the operation won't be included in a block",
+                        "type": "number"
+                    },
+                    "op": {
+                        "$ref": "#/components/schemas/OperationType",
+                        "description": "the type specific operation part"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "OperationId": {
+                "title": "OperationId",
+                "description": "Operation id",
+                "type": "string"
+            },
+            "OperationInfo": {
+                "title": "OperationInfo",
+                "description": "Operation info",
+                "required": [
+                    "id",
+                    "in_blocks",
+                    "in_pool",
+                    "is_operation_final",
+                    "thread",
+                    "operation"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "Operation id",
+                        "type": "string"
+                    },
+                    "in_blocks": {
+                        "description": "Block ids\nThe operation appears in `in_blocks`\nIf it appears in multiple blocks, these blocks are in different cliques",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BlockId"
+                        }
+                    },
+                    "in_pool": {
+                        "description": "True if operation is still in pool",
+                        "type": "boolean"
+                    },
+                    "is_operation_final": {
+                        "description": "True if the operation is final (for example in a final block)",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "boolean"
+                            }
+                        ]
+                    },
+                    "thread": {
+                        "description": "Thread in which the operation can be included",
+                        "type": "number"
+                    },
+                    "operation": {
+                        "$ref": "#/components/schemas/WrappedOperation",
+                        "description": "The operation itself"
+                    },
+                    "op_exec_status": {
+                        "description": "true if the operation execution succeeded, false if failed, None means unknown",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "boolean"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "OperationInput": {
+                "title": "OperationInput",
+                "description": "Operation input",
+                "required": [
+                    "creator_public_key",
+                    "signature",
+                    "serialized_content"
+                ],
+                "type": "object",
+                "properties": {
+                    "creator_public_key": {
+                        "$ref": "#/components/schemas/PublicKey",
+                        "description": "the content creator public key"
+                    },
+                    "signature": {
+                        "$ref": "#/components/schemas/Signature",
+                        "description": "The signature of the operation"
+                    },
+                    "serialized_content": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "OperationType": {
+                "title": "OperationType",
+                "description": "Type specific operation content.",
+                "type": "object",
+                "properties": {
+                    "Transaction": {
+                        "$ref": "#/components/schemas/Transaction",
+                        "description": "transfer coins from sender to recipient"
+                    },
+                    "ExecutSC": {
+                        "$ref": "#/components/schemas/ExecuteSC",
+                        "description": "Execute a smart contract."
+                    },
+                    "CallSC": {
+                        "$ref": "#/components/schemas/CallSC",
+                        "description": "Calls an exported function from a stored smart contract"
+                    },
+                    "RollBuy": {
+                        "$ref": "#/components/schemas/RollBuy",
+                        "description": "the sender buys `roll_count` rolls. Roll price is defined in configuration"
+                    },
+                    "RollSell": {
+                        "$ref": "#/components/schemas/RollSell",
+                        "description": "the sender sells `roll_count` rolls. Roll price is defined in configuration"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PageRequest": {
+                "title": "Pagination",
+                "description": "An PageRequest object, which contains limit (max elements par page) and a page offset.",
+                "type": "object",
+                "required": [
+                    "limit",
+                    "offset"
+                ],
+                "properties": {
+                    "limit": {
+                        "type": "number"
+                    },
+                    "offset": {
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PagedVecStaker": {
+                "title": "PagedVecStaker",
+                "description": "PagedVec of stakers for apiV2",
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Staker"
+                        }
+                    },
+                    "total_count": {
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PoolStats": {
+                "title": "PoolStats",
+                "description": "Pool stats",
+                "type": "array",
+                "items": {
+                    "type": "number"
+                }
+            },
+            "PrivateKey": {
+                "title": "PrivateKey",
+                "description": "`PrivateKey` is used for signature and decryption",
+                "type": "string"
+            },
+            "ProductionStat": {
+                "title": "ProductionStat",
+                "required": [
+                    "cycle",
+                    "is_final",
+                    "nok_count",
+                    "ok_count"
+                ],
+                "type": "object",
+                "properties": {
+                    "cycle": {
+                        "type": "integer"
+                    },
+                    "is_final": {
+                        "type": "boolean"
+                    },
+                    "nok_count": {
+                        "type": "integer"
+                    },
+                    "ok_count": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PublicKey": {
+                "title": "PublicKey",
+                "description": "Public key used to check if a message was encoded by the corresponding `PublicKey`.\nGenerated from the `KeyPair` using `SignatureEngine`",
+                "type": "string"
+            },
+            "PubkeySig": {
+                "title": "PubkeySig",
+                "description": "Public key and a signature it has produced used for serialization/deserialization purpose",
+                "required": [
+                    "public_key",
+                    "signature"
+                ],
+                "type": "object",
+                "properties": {
+                    "public_key": {
+                        "description": "public key",
+                        "type": "string"
+                    },
+                    "signature": {
+                        "description": "signature",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ReadOnlyBytecodeExecution": {
+                "title": "ReadOnlyBytecodeExecution",
+                "description": "Read only bytecode execution",
+                "required": [
+                    "max_gas",
+                    "bytecode"
+                ],
+                "type": "object",
+                "properties": {
+                    "max_gas": {
+                        "description": "Max available gas",
+                        "type": "number"
+                    },
+                    "bytecode": {
+                        "description": "Bytecode to execute",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "address": {
+                        "$ref": "#/components/schemas/Address",
+                        "description": "caller's address"
+                    },
+                    "operation_datastore": {
+                        "description": "An operation datastore",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "is_final": {
+                        "description": "Whether to start execution from final or active state",
+                        "type": "boolean"
+                    },
+                    "coins": {
+                        "description": "Amount in coins, optional",
+                        "type": "number"
+                    },
+                    "fee": {
+                        "description": "Fee, optional",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ReadOnlyCall": {
+                "title": "ReadOnlyCall",
+                "description": "Read only call",
+                "required": [
+                    "max_gas",
+                    "target_address",
+                    "target_function",
+                    "parameter",
+                    "caller_address",
+                    "coins",
+                    "fee"
+                ],
+                "type": "object",
+                "properties": {
+                    "max_gas": {
+                        "description": "Max available gas",
+                        "type": "number"
+                    },
+                    "target_address": {
+                        "description": "Target address",
+                        "type": "string"
+                    },
+                    "target_function": {
+                        "description": "Target function",
+                        "type": "string"
+                    },
+                    "parameter": {
+                        "description": "Function parameter",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "caller_address": {
+                        "description": "Caller's address, optional",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "coins": {
+                        "description": "Amount in coins, optional",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    },
+                    "fee": {
+                        "description": "Fee, optional",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ReadOnlyResult": {
+                "title": "ReadOnlyResult",
+                "description": "The result of a read-only execution",
+                "type": "object",
+                "properties": {
+                    "Ok": {
+                        "description": "Included in case of success. The result of the execution",
+                        "type": "array",
+                        "items": {
+                            "format": "byte",
+                            "type": "string"
+                        }
+                    },
+                    "Error": {
+                        "description": "Included in case of error. The error message",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Roll": {
+                "title": "Roll",
+                "description": "Roll",
+                "required": [
+                    "roll_count"
+                ],
+                "type": "object",
+                "properties": {
+                    "roll_count": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "RollBuy": {
+                "title": "RollBuy",
+                "description": "the sender buys `roll_count` rolls. Roll price is defined in configuration",
+                "required": [
+                    "roll_count"
+                ],
+                "type": "object",
+                "properties": {
+                    "roll_count": {
+                        "description": "roll count",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "RollsInfo": {
+                "title": "RollsInfo",
+                "required": [
+                    "active_rolls",
+                    "candidate_rolls",
+                    "final_rolls"
+                ],
+                "type": "object",
+                "properties": {
+                    "active_rolls": {
+                        "type": "integer"
+                    },
+                    "candidate_rolls": {
+                        "type": "integer"
+                    },
+                    "final_rolls": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "RollSell": {
+                "title": "RollSell",
+                "description": "the sender sells `roll_count` rolls. Roll price is defined in configuration",
+                "required": [
+                    "roll_count"
+                ],
+                "type": "object",
+                "properties": {
+                    "roll_count": {
+                        "description": "roll count",
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "SCOEContext": {
+                "title": "SCOEContext",
+                "required": [
+                    "call_stack",
+                    "index_in_slot",
+                    "read_only",
+                    "slot"
+                ],
+                "type": "object",
+                "properties": {
+                    "slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "block": {
+                        "description": "Block Id",
+                        "type": "string"
+                    },
+                    "read_only": {
+                        "description": "Wether the event was generated during  read only call",
+                        "type": "boolean"
+                    },
+                    "call_stack": {
+                        "description": "Addresses",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "index_in_slot": {
+                        "type": "number"
+                    },
+                    "origin_operation_id": {
+                        "description": "Operation id",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "SCOutputEvent": {
+                "title": "SCOutputEvent",
+                "required": [
+                    "context",
+                    "data"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "description": "String of the event you sended",
+                        "type": "string"
+                    },
+                    "context": {
+                        "$ref": "#/components/schemas/EventExecutionContext",
+                        "description": "Context generated by the execution context"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Signature": {
+                "title": "Signature",
+                "description": "Signature generated from a message and a `KeyPair`.",
+                "type": "string"
+            },
+            "Slot": {
+                "title": "Slot",
+                "description": "Slot",
+                "required": [
+                    "period",
+                    "thread"
+                ],
+                "type": "object",
+                "properties": {
+                    "period": {
+                        "type": "number"
+                    },
+                    "thread": {
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Staker": {
+                "title": "Staker",
+                "description": "A tuple which contains (address, active_rolls)",
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "address": {
+                            "$ref": "#/components/schemas/Address"
+                        },
+                        "active_rolls": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "example": {
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1": "Number",
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx2": "Number"
+                }
+            },
+            "StateChanges": {
+                "title": "StateChanges",
+                "required": [
+                    "async_pool_changes",
+                    "executed_ops_changes",
+                    "ledger_changes",
+                    "pos_changes",
+                    "executed_denunciations_changes",
+                    "execution_trail_hash_change"
+                ],
+                "type": "object",
+                "properties": {
+                    "ledger_changes": {
+                        "description": "ledger changes",
+                        "type": "object"
+                    },
+                    "async_pool_changes": {
+                        "description": "async pool changes",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "pos_changes": {
+                        "description": "pos changes",
+                        "type": "object"
+                    },
+                    "executed_ops_changes": {
+                        "description": "executed operations changes",
+                        "type": "object"
+                    },
+                    "executed_denunciations_changes": {
+                        "description": "executed denunciation changes",
+                        "type": "object"
+                    },
+                    "execution_trail_hash_change": {
+                        "description": "execution trail hash change",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Transaction": {
+                "title": "Transaction",
+                "description": "Transation",
+                "required": [
+                    "amount",
+                    "recipient_address"
+                ],
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "description": "Represent an Amount in coins",
+                        "type": "string"
+                    },
+                    "recipient_address": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Transfer": {
+                "title": "Transfer",
+                "description": "Describe a transfer of MAS",
+                "required": [
+                    "from",
+                    "to",
+                    "amount",
+                    "effective_amount_received",
+                    "context",
+                    "succeed",
+                    "fee",
+                    "block_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "from": {
+                        "description": "Address of the sender",
+                        "type": "string"
+                    },
+                    "to": {
+                        "description": "Address of the receiver",
+                        "type": "string"
+                    },
+                    "amount": {
+                        "description": "Amount transferred",
+                        "type": "integer"
+                    },
+                    "effective_amount_received": {
+                        "description": "Amount received by the receiver",
+                        "type": "integer"
+                    },
+                    "context": {
+                        "description": "Context of the transfer : operation or asyncronous execution",
+                        "type": "object"
+                    },
+                    "succeed": {
+                        "description": "True if the operation succeed otherwise false",
+                        "type": "boolean"
+                    },
+                    "fee": {
+                        "description": "Fees passed to the operation",
+                        "type": "number"
+                    },
+                    "block_id": {
+                        "description": "ID of the block in which the operation is included",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Version": {
+                "title": "Version",
+                "description": "Application version, checked during handshakes",
+                "type": "string"
+            },
+            "WrappedHeader": {
+                "title": "WrappedHeader",
+                "description": "signed operation",
+                "required": [
+                    "content",
+                    "signature",
+                    "content_creator_pub_key",
+                    "content_creator_address"
+                ],
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "$ref": "#/components/schemas/Header",
+                        "description": "header type"
+                    },
+                    "signature": {
+                        "$ref": "#/components/schemas/Signature",
+                        "description": "signature"
+                    },
+                    "content_creator_pub_key": {
+                        "$ref": "#/components/schemas/PublicKey",
+                        "description": "the content creator public key"
+                    },
+                    "content_creator_address": {
+                        "$ref": "#/components/schemas/Address",
+                        "description": "the content creator address"
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/BlockId"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WrappedOperation": {
+                "title": "WrappedOperation",
+                "description": "signed operation",
+                "required": [
+                    "content",
+                    "signature",
+                    "creator_public_key",
+                    "creator_address"
+                ],
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "$ref": "#/components/schemas/Operation"
+                    },
+                    "signature": {
+                        "$ref": "#/components/schemas/Signature",
+                        "description": "signature"
+                    },
+                    "content_creator_pub_key": {
+                        "$ref": "#/components/schemas/PublicKey",
+                        "description": "the content creator public key"
+                    },
+                    "content_creator_address": {
+                        "$ref": "#/components/schemas/Address",
+                        "description": "the content creator address"
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/OperationId"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "contentDescriptors": {
+            "Address": {
+                "name": "Address",
+                "summary": "Address",
+                "description": "A Address object",
+                "schema": {
+                    "$ref": "#/components/schemas/Address"
+                }
+            },
+            "AddressFilter": {
+                "name": "AddressFilter",
+                "summary": "Address filter",
+                "description": "A AddressFilter object",
+                "schema": {
+                    "$ref": "#/components/schemas/AddressFilter"
+                }
+            },
+            "AddressInfo": {
+                "name": "AddressInfo",
+                "summary": "Address information",
+                "description": "A AddressInfo object",
+                "schema": {
+                    "$ref": "#/components/schemas/AddressInfo"
+                }
+            },
+            "BlockId": {
+                "name": "BlockId",
+                "summary": "BlockId",
+                "description": "A BlockId object",
+                "schema": {
+                    "$ref": "#/components/schemas/BlockId"
+                }
+            },
+            "BlockInfo": {
+                "name": "BlockInfo",
+                "summary": "BlockInfo",
+                "description": "A BlockInfo object",
+                "schema": {
+                    "$ref": "#/components/schemas/BlockInfo"
+                }
+            },
+            "BlockHeader": {
+                "name": "BlockHeader",
+                "summary": "BlockHeader",
+                "description": "A BlockHeader object",
+                "schema": {
+                    "$ref": "#/components/schemas/WrappedHeader"
+                }
+            },
+            "Clique": {
+                "name": "Clique",
+                "summary": "Clique",
+                "description": "A Clique object",
+                "schema": {
+                    "$ref": "#/components/schemas/Clique"
+                }
+            },
+            "DataStoreEntry": {
+                "name": "DataStoreEntry",
+                "summary": "DataStoreEntry",
+                "description": "A DataStoreEntry object",
+                "schema": {
+                    "$ref": "#/components/schemas/DataStoreEntry"
+                }
+            },
+            "DatastoreEntryInput": {
+                "name": "DatastoreEntryInput",
+                "summary": "DatastoreEntryInput",
+                "description": "A DatastoreEntryInput object",
+                "schema": {
+                    "$ref": "#/components/schemas/DatastoreEntryInput"
+                }
+            },
+            "DataStoreEntryOutput": {
+                "name": "DataStoreEntryOutput",
+                "summary": "DataStoreEntryOutput",
+                "description": "A DataStoreEntryOutput object",
+                "schema": {
+                    "$ref": "#/components/schemas/DataStoreEntryOutput"
+                }
+            },
+            "EndorsementInfo": {
+                "name": "EndorsementInfo",
+                "summary": "EndorsementInfo",
+                "description": "A EndorsementInfo object",
+                "schema": {
+                    "$ref": "#/components/schemas/EndorsementInfo"
+                }
+            },
+            "ExecuteReadOnlyResponse": {
+                "name": "ExecuteReadOnlyResponse",
+                "summary": "ExecuteReadOnlyResponse",
+                "description": "A ExecuteReadOnlyResponse object",
+                "schema": {
+                    "$ref": "#/components/schemas/ExecuteReadOnlyResponse"
+                }
+            },
+            "EventFilter": {
+                "name": "EventFilter",
+                "summary": "EventFilter",
+                "description": "A EventFilter object",
+                "schema": {
+                    "$ref": "#/components/schemas/EventFilter"
+                }
+            },
+            "FilledBlockInfo": {
+                "name": "FilledBlockInfo",
+                "summary": "FilledBlockInfo",
+                "description": "A FilledBlockInfo object",
+                "schema": {
+                    "$ref": "#/components/schemas/FilledBlockInfo"
+                }
+            },
+            "GraphInterval": {
+                "name": "GraphInterval",
+                "summary": "GraphInterval",
+                "description": "A GraphInterval object",
+                "schema": {
+                    "$ref": "#/components/schemas/GraphInterval"
+                }
+            },
+            "NodeStatus": {
+                "name": "NodeStatus",
+                "summary": "Node status",
+                "description": "A NodeStatus object",
+                "schema": {
+                    "$ref": "#/components/schemas/NodeStatus"
+                }
+            },
+            "Operation": {
+                "name": "Operation",
+                "summary": "Operation",
+                "description": "A Operation object",
+                "schema": {
+                    "$ref": "#/components/schemas/Operation"
+                }
+            },
+            "OperationId": {
+                "name": "OperationId",
+                "summary": "OperationId",
+                "description": "A OperationId object",
+                "schema": {
+                    "$ref": "#/components/schemas/OperationId"
+                }
+            },
+            "OperationInput": {
+                "name": "OperationInput",
+                "summary": "OperationInput",
+                "description": "A OperationInput object",
+                "schema": {
+                    "$ref": "#/components/schemas/OperationInput"
+                }
+            },
+            "OperationInfo": {
+                "name": "OperationInfo",
+                "summary": "OperationInfo",
+                "description": "A OperationInfo object",
+                "schema": {
+                    "$ref": "#/components/schemas/OperationInfo"
+                }
+            },
+            "OperationType": {
+                "name": "OperationType",
+                "summary": "OperationType",
+                "description": "A OperationType object",
+                "schema": {
+                    "$ref": "#/components/schemas/OperationType"
+                }
+            },
+            "PagedVecStaker": {
+                "name": "PagedVecStaker",
+                "summary": "PagedVecStaker",
+                "description": "A PagedVecStaker object",
+                "schema": {
+                    "$ref": "#/components/schemas/PagedVecStaker"
+                }
+            },
+            "PageRequest": {
+                "name": "PageRequest",
+                "summary": "PageRequest",
+                "description": "An Page request parameter, which contains limit and offset properties.",
+                "schema": {
+                    "$ref": "#/components/schemas/PageRequest"
+                }
+            },
+            "PubkeySig": {
+                "name": "PubkeySig",
+                "summary": "PubkeySig",
+                "description": "A PubkeySig object",
+                "schema": {
+                    "$ref": "#/components/schemas/PubkeySig"
+                }
+            },
+            "PrivateKey": {
+                "name": "PrivateKey",
+                "summary": "PrivateKey",
+                "description": "A PrivateKey object",
+                "schema": {
+                    "$ref": "#/components/schemas/PrivateKey"
+                }
+            },
+            "ReadOnlyCall": {
+                "name": "ReadOnlyCall",
+                "summary": "ReadOnlyCall",
+                "description": "A ReadOnlyCall object",
+                "schema": {
+                    "$ref": "#/components/schemas/ReadOnlyCall"
+                }
+            },
+            "SCOutputEvent": {
+                "name": "SCOutputEvent",
+                "summary": "SCOutputEvent",
+                "description": "A SCOutputEvent object",
+                "schema": {
+                    "$ref": "#/components/schemas/SCOutputEvent"
+                }
+            },
+            "Staker": {
+                "name": "Staker",
+                "summary": "Staker",
+                "description": "A Staker object. A tuple which contains (address, active_rolls)",
+                "schema": {
+                    "$ref": "#/components/schemas/Staker"
+                }
+            },
+            "Version": {
+                "name": "Version",
+                "summary": "Version",
+                "description": "A Version object",
+                "schema": {
+                    "$ref": "#/components/schemas/Version"
+                }
+            }
+        }
+    }
+}

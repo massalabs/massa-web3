@@ -1,0 +1,12 @@
+{
+    "openrpcDocument": "open_rpc/massa.api.json",
+    "old": "https://raw.githubusercontent.com/massalabs/massa/a2dfcab8e19220e736d1351f49f54d03b7b23d7a/massa-node/base_config/openrpc.json",
+    "outDir": "tmp/",
+    "components": [
+        {
+            "type": "client",
+            "name": "massa-client",
+            "language": "typescript"
+        } 
+    ]
+}
