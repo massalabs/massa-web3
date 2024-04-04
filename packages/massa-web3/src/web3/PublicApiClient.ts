@@ -134,7 +134,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
   /**
    * Retrieves the minimal fees for operations to be accepted by the API provider.
    *
-   * @returns The minimal fees as a string (in nano-MAS).
+   * @returns The minimal fees as a bigint (in nano-MAS).
    */
   public async getMinimalFees(): Promise<bigint> {
     const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS
