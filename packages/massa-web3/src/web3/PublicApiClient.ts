@@ -15,7 +15,7 @@ import { IDatastoreEntryInput } from '../interfaces/IDatastoreEntryInput'
 import { IGetGraphInterval } from '../interfaces/IGetGraphInterval'
 import { IGraphInterval } from '../interfaces/IGraphInterval'
 import { IBlockcliqueBlockBySlot } from '../interfaces/IBlockcliqueBlockBySlot'
-import { ISlot } from '@massalabs/web3-utils'
+import { ISlot, MASSA_SCALING_FACTOR } from '@massalabs/web3-utils'
 
 /**
  * Public API client for interacting with a Massa node.
@@ -41,6 +41,7 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
 
     // public api methods
     this.getNodeStatus = this.getNodeStatus.bind(this)
+    this.getMinimalFees = this.getMinimalFees.bind(this)
     this.getAddresses = this.getAddresses.bind(this)
     this.getBlocks = this.getBlocks.bind(this)
     this.getEndorsements = this.getEndorsements.bind(this)
@@ -128,6 +129,30 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
     // convert chain_id to BigInt
     return { ...nodeStatus, chain_id: BigInt(nodeStatus.chain_id) }
+  }
+
+  /**
+   * Retrieves the minimal fees for operations to be accepted by the API provider.
+   *
+   * @returns The minimal fees as a string (in nano-MAS).
+   */
+  public async getMinimalFees(): Promise<bigint> {
+    const jsonRpcRequestMethod = JSON_RPC_REQUEST_METHOD.GET_STATUS
+    let fees: string = '0'
+    if (this.clientConfig.retryStrategyOn) {
+      let result = await trySafeExecute<INodeStatus>(this.sendJsonRPCRequest, [
+        jsonRpcRequestMethod,
+        [],
+      ])
+      fees = result.minimal_fees || '0'
+    } else {
+      let result = await this.sendJsonRPCRequest<INodeStatus>(
+        jsonRpcRequestMethod,
+        []
+      )
+      fees = result.minimal_fees || '0'
+    }
+    return BigInt(parseFloat(fees) * 10 ** MASSA_SCALING_FACTOR)
   }
 
   /**

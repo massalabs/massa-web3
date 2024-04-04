@@ -71,4 +71,5 @@ export interface INodeStatus {
   pool_stats: { endorsement_count: number; operation_count: number }
   version: string
   chain_id: bigint
+  minimal_fees?: string
 }

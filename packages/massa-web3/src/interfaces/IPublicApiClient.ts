@@ -115,4 +115,11 @@ export interface IPublicApiClient extends BaseClient {
   getGraphInterval(
     graphInterval: IGetGraphInterval
   ): Promise<Array<IGraphInterval>>
+
+  /**
+   * Get the minimal fees required for your operation to be accepted by the API provider
+   *
+   * @returns The minimal fees as bigint (in nano-MAS).
+   */
+  getMinimalFees(): Promise<bigint>
 }
