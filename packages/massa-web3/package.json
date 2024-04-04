@@ -13,6 +13,7 @@
         "build-esm": "tsc --project tsconfig.esm.json",
         "build-commonjs": "tsc --project tsconfig.commonjs.json",
         "build": "npm-run-all clean-dist build-*",
+        "generate": "open-rpc-generator generate -c open_rpc/openrpc.config.json && mv tmp/client/typescript/src/index.ts src/experimental/generated/client.ts && rm -r tmp",
         "test": "jest --detectOpenHandles --forceExit",
         "test:all": "npm run test && npm run test-smart-contract-example && npm run test-wallet",
         "test:watch": "jest --watch",
@@ -50,6 +51,7 @@
         "@massalabs/web3-utils": "^1.4.9-dev",
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
+        "@open-rpc/client-js": "^1.8.1",
         "@types/ws": "^8.5.4",
         "@web3pack/base58-check": "^1.0.3",
         "axios": "^0.26.1",
@@ -67,6 +69,7 @@
     },
     "devDependencies": {
         "@babel/preset-env": "^7.22.15",
+        "@open-rpc/generator": "^1.22.3",
         "@types/bn.js": "^5.1.1",
         "@types/jest": "^29.5.5",
         "@types/node": "^18.13.0",
