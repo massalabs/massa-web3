@@ -59,9 +59,9 @@ export class PublicAPI {
   async executeReadOnlyBytecode(
     ReadOnlyBytecodeExecution: ReadOnlyBytecodeExecution
   ): Promise<ExecuteReadOnlyResponse> {
-    return this.connector.execute_read_only_bytecode([
-      ReadOnlyBytecodeExecution,
-    ])[0]
+    return this.connector
+      .execute_read_only_bytecode([ReadOnlyBytecodeExecution])
+      .then((r) => r[0])
   }
 
   async executeMultipleReadOnlyBytecode(
@@ -73,7 +73,9 @@ export class PublicAPI {
   async executeReadOnlyCall(
     ReadOnlyCall: ReadOnlyCall
   ): Promise<ExecuteReadOnlyResponse> {
-    return this.connector.execute_read_only_call([ReadOnlyCall])[0]
+    return this.connector
+      .execute_read_only_call([ReadOnlyCall])
+      .then((r) => r[0])
   }
 
   async executeMultipleReadOnlyCall(
@@ -83,7 +85,7 @@ export class PublicAPI {
   }
 
   async getAddressInfo(address: string): Promise<AddressInfo> {
-    return this.connector.get_addresses([address])[0]
+    return this.connector.get_addresses([address]).then((r) => r[0])
   }
 
   async getMultipleAddressInfo(addresses: string[]): Promise<AddressInfo[]> {
@@ -91,7 +93,9 @@ export class PublicAPI {
   }
 
   async getAddressesBytecode(address_filter: AddressFilter): Promise<string> {
-    return this.connector.get_addresses_bytecode([address_filter])[0]
+    return this.connector
+      .get_addresses_bytecode([address_filter])
+      .then((r) => r[0])
   }
 
   async executeMultipleGetAddressesBytecode(
@@ -101,7 +105,7 @@ export class PublicAPI {
   }
 
   async getBlock(blockId: BlockId): Promise<BlockInfo> {
-    return this.connector.get_blocks([blockId])[0]
+    return this.connector.get_blocks([blockId]).then((r) => r[0])
   }
 
   // todo should return an array of blockInfo, right?
@@ -122,7 +126,9 @@ export class PublicAPI {
   async getDatastoreEntries(
     DatastoreEntryInput: DatastoreEntryInput
   ): Promise<DatastoreEntryOutput> {
-    return this.connector.get_datastore_entries([DatastoreEntryInput])[0]
+    return this.connector
+      .get_datastore_entries([DatastoreEntryInput])
+      .then((r) => r[0])
   }
 
   // why it's not a 2d array?
@@ -140,7 +146,7 @@ export class PublicAPI {
   }
 
   async getSlotTransfers(slot: Slot): Promise<Transfer[]> {
-    return this.connector.get_slots_transfers([slot])[0]
+    return this.connector.get_slots_transfers([slot]).then((r) => r[0])
   }
 
   async getMultipleSlotTransfers(slots: Slot[]): Promise<Transfer[][]> {
@@ -148,7 +154,7 @@ export class PublicAPI {
   }
 
   async getEndorsement(endorsementId: string): Promise<EndorsementInfo> {
-    return this.connector.get_endorsements([endorsementId])[0]
+    return this.connector.get_endorsements([endorsementId]).then((r) => r[0])
   }
 
   async getMultipleEndorsements(
@@ -168,7 +174,7 @@ export class PublicAPI {
   }
 
   async getOperations(operationId: string): Promise<OperationInfo> {
-    return this.connector.get_operations([operationId])[0]
+    return this.connector.get_operations([operationId]).then((r) => r[0])
   }
 
   async getMultipleOperations(
@@ -187,7 +193,7 @@ export class PublicAPI {
   }
 
   async sendOperation(data: OperationInput): Promise<OperationId> {
-    return this.connector.send_operations([data])[0]
+    return this.connector.send_operations([data]).then((r) => r[0])
   }
 
   async sendMultipleOperations(data: OperationInput[]): Promise<OperationId[]> {
