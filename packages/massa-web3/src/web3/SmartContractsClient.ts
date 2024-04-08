@@ -209,9 +209,7 @@ export class SmartContractsClient
         : undefined,
       fee: readData.fee
         ? toMAS(readData.fee).toFixed(MASSA_SCALING_FACTOR)
-        : minimalFees
-          ? toMAS(minimalFees).toFixed(MASSA_SCALING_FACTOR)
-          : undefined,
+        : toMAS(minimalFees).toFixed(MASSA_SCALING_FACTOR),
     }
 
     // returns operation ids
