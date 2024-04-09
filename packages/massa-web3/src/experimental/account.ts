@@ -4,7 +4,9 @@ import blake3 from './blake3'
 import ed25519 from './ed25519'
 import Serialization from './interfaces/serialization'
 import base58 from './base58'
-import { varintDecode } from '../utils/Xbqcrypto'
+import { varintDecode, varintEncode } from '../utils/Xbqcrypto'
+import Seal from './interfaces/seal'
+import { PasswordSeal } from './passwordSeal'
 
 const PRIVATE_KEY_PREFIX = 'S'
 const PUBLIC_KEY_PREFIX = 'P'
@@ -344,6 +346,20 @@ export class Address {
     address.isEOA = isEOA
     return address
   }
+
+  /**
+   * Encode the address to a string
+   *
+   * @returns The encoded string representing the address.
+   */
+  toString(): string {
+    const versionBytes = varintEncode(this.version)
+    return `${ADDRESS_PREFIX}${
+      this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
+    }${this.serialization.encodeToString(
+      new Uint8Array([...versionBytes, ...this.bytes])
+    )}`
+  }
 }
 
 export class Signature {
@@ -476,5 +492,95 @@ export class Account {
     preHashed?: boolean
   ): Promise<boolean> {
     return this.publicKey.verify(signature, message, preHashed)
+  }
+
+  /**
+   * Return a sealed private key.
+   * @param seal - The seal object to seal the private key.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async seal(seal: Seal): Promise<any> {
+    return seal.seal(this.privateKey.bytes)
+  }
+
+  /**
+   * Unseal a sealed private key.
+   * @param sealedPrivateKey - The sealed private key to unseal.
+   * @param seal - The seal object to unseal the private key.
+   * @param version - The version of the private key by default is 0.
+   */
+  static async unseal(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sealedPrivateKey: any,
+    seal: Seal,
+    version?: Version
+  ): Promise<Account> {
+    const privateKeyBytes = await seal.unseal(sealedPrivateKey)
+    return Account.fromPrivateKey(
+      PrivateKey.fromBytes(privateKeyBytes, version || Version.V0)
+    )
+  }
+
+  /**
+   * Encode the account to a keystore object following the Massa standard format
+   * https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async toKeyStore(password: string): Promise<any> {
+    switch (this.version) {
+      case Version.V0: {
+        const passwordSeal = new PasswordSeal(password)
+        const privateKeySealed = await passwordSeal.seal(this.privateKey.bytes)
+        return {
+          address: this.address.toString(),
+          version: this.version.toString(),
+          nickname: '',
+          salt: privateKeySealed.salt,
+          nonce: privateKeySealed.nonce,
+          cipheredData: privateKeySealed.data,
+          publicKey: new Uint8Array([
+            ...varintEncode(this.publicKey.version),
+            ...this.publicKey.bytes,
+          ]),
+        }
+      }
+      default:
+        throw new Error(`Unsupported version: ${this.version}`)
+    }
+  }
+
+  /**
+   * Decode a keystore object following the Massa standard format
+   * https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md
+   * @param keystore - The keystore object to decode.
+   * @param password - The password to unseal the private key.
+   *
+   * @returns A new account object.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static async fromKeyStore(keystore: any, password: string): Promise<Account> {
+    const version = parseInt(keystore.version)
+    switch (version) {
+      case Version.V0: {
+        const passwordSeal = new PasswordSeal(password, {
+          salt: keystore.salt,
+          nonce: keystore.nonce,
+        })
+        const privateKeyBytes = await passwordSeal.unseal({
+          data: keystore.cipheredData,
+          salt: keystore.salt,
+          nonce: keystore.nonce,
+        })
+        const privateKey = PrivateKey.fromBytes(privateKeyBytes, version)
+        const publicKey = PublicKey.fromBytes(
+          keystore.publicKey.subarray(1),
+          version
+        )
+        const address = publicKey.getAddress()
+        return new Account(privateKey, publicKey, address, version)
+      }
+      default:
+        throw new Error(`Unsupported version: ${version}`)
+    }
   }
 }
