@@ -77,6 +77,9 @@ describe('SmartContractsClient', () => {
     mockPublicApiClient.getNodeStatus = jest
       .fn()
       .mockResolvedValue(mockNodeStatusInfo)
+
+    // Mock the getMinimalFees function
+    mockPublicApiClient.getMinimalFees = jest.fn().mockResolvedValue(BigInt(0))
     // Mock the getBaseAccount function
     mockWalletClient.getBaseAccount = jest
       .fn()
