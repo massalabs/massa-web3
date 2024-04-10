@@ -188,8 +188,6 @@ export class SmartContractsClient
       )
     }
 
-    const minimalFees = await this.publicApiClient.getMinimalFees()
-
     const data = {
       max_gas:
         readData.maxGas === null || readData.maxGas === undefined
@@ -209,7 +207,7 @@ export class SmartContractsClient
         : undefined,
       fee: readData.fee
         ? toMAS(readData.fee).toFixed(MASSA_SCALING_FACTOR)
-        : toMAS(minimalFees).toFixed(MASSA_SCALING_FACTOR),
+        : undefined,
     }
 
     // returns operation ids
