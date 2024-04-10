@@ -1,66 +1,80 @@
-import { pbkdf2Sync } from 'pbkdf2'
-import Seal from './interfaces/seal'
-import { createCipheriv, createDecipheriv } from 'crypto'
-export type PasswordSealOpts = {
-  salt?: Uint8Array
-  nonce?: Uint8Array
+import Sealer from './interfaces/seal'
+import randomUint8Array from 'secure-random'
+
+import { PBKDF2Options, aesGCMDecrypt, aesGCMEncrypt, pbkdf2 } from './crypto'
+
+function createKey(password: string, salt: Buffer): Promise<Uint8Array> {
+  const opts: PBKDF2Options = {
+    iterations: 600000,
+    keyLength: 32,
+    hash: 'SHA-256',
+  }
+  return pbkdf2(password, salt, opts)
 }
 
-export type PasswordSealedData = {
-  data: Uint8Array
-  salt: Uint8Array
-  nonce: Uint8Array
-}
-
-export class PasswordSeal implements Seal {
-  // TODO: Make a real password hashing function
+export class PasswordSeal implements Sealer {
   private password: string
-  private salt: Uint8Array
-  private nonce: Uint8Array
+  public salt: Uint8Array
+  public nonce: Uint8Array
 
-  constructor(password: string, opts?: PasswordSealOpts) {
+  constructor(password: string, salt?: Uint8Array, nonce?: Uint8Array) {
+    if (salt === undefined) {
+      this.salt = randomUint8Array(16)
+    } else if (salt.length !== 16) {
+      throw new Error('Salt must be 16 bytes')
+    } else {
+      this.salt = salt
+    }
+
+    if (nonce === undefined) {
+      this.nonce = randomUint8Array(12)
+    } else if (nonce.length !== 12) {
+      throw new Error('Nonce must be 12 bytes')
+    } else {
+      this.nonce = nonce
+    }
+
     this.password = password
-    if (opts?.salt && opts.salt.length !== 16) {
+  }
+
+  private validate(): void {
+    if (!this.salt || this.salt.length !== 16) {
       throw new Error('Salt must be 16 bytes')
     }
-    this.salt = opts?.salt || new Uint8Array(0)
-    if (opts?.nonce && opts.nonce.length !== 12) {
+    if (!this.nonce || this.nonce.length !== 12) {
       throw new Error('Nonce must be 12 bytes')
     }
-    this.nonce = opts?.nonce || new Uint8Array(0)
   }
 
-  async seal(data: Uint8Array): Promise<PasswordSealedData> {
-    if (this.salt.length === 0) {
-      this.salt = new Uint8Array(16)
-      crypto.getRandomValues(this.salt)
-    }
-    if (this.nonce.length === 0) {
-      this.nonce = new Uint8Array(12)
-      crypto.getRandomValues(this.nonce)
-    }
-    const key = pbkdf2Sync(this.password, this.salt, 600000, 32)
-    const cipher = createCipheriv('aes-256-gcm', key, this.nonce)
-    const encrypted = Buffer.concat([cipher.update(data), cipher.final()])
-    const tag = cipher.getAuthTag()
-    const fullEncrypted = Buffer.concat([encrypted, tag])
-    return {
-      data: fullEncrypted,
-      salt: this.salt,
-      nonce: this.nonce,
-    }
+  async seal(data: Uint8Array): Promise<Uint8Array> {
+    this.validate()
+    const key = await createKey(this.password, Buffer.from(this.salt))
+    return aesGCMEncrypt(data, key, Buffer.from(this.nonce))
   }
 
-  async unseal(data: PasswordSealedData): Promise<Uint8Array> {
-    const key = pbkdf2Sync(this.password, data.salt, 600000, 32)
-    const tag = data.data.slice(data.data.length - 16)
-    const encrypted = data.data.slice(0, data.data.length - 16)
-    const decipher = createDecipheriv('aes-256-gcm', key, data.nonce)
-    decipher.setAuthTag(tag)
-    const decrypted = Buffer.concat([
-      decipher.update(encrypted),
-      decipher.final(),
-    ])
-    return new Uint8Array(decrypted)
+  async unseal(data: Uint8Array): Promise<Uint8Array> {
+    this.validate()
+    const key = await createKey(this.password, Buffer.from(this.salt))
+    return aesGCMDecrypt(data, key, Buffer.from(this.nonce))
+  }
+
+  static fromEnv(): Sealer {
+    const pwd = process.env.PASSWORD
+    if (!pwd) {
+      throw new Error('Missing PASSWORD environment variable')
+    }
+    const salt = process.env.SALT
+      ? Uint8Array.from(Buffer.from(process.env.SALT, 'base64'))
+      : undefined
+    if (!salt) {
+      throw new Error('Missing base64 encoded SALT in .env file')
+    }
+    const nonce = process.env.NONCE
+      ? Uint8Array.from(Buffer.from(process.env.NONCE, 'base64'))
+      : undefined
+    if (!nonce) {
+      throw new Error('Missing base64 encoded NONCE in .env file')
+    }
+    return new PasswordSeal(pwd, salt, nonce)
   }
 }

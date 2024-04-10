@@ -16,6 +16,7 @@ const ADDRESS_CONTRACT_PREFIX = 'S'
 
 export enum Version {
   V0 = 0,
+  V1 = 1,
 }
 
 export class PrivateKey {
@@ -71,7 +72,7 @@ export class PrivateKey {
   ): PrivateKey {
     const prefix = privateKeyBase58Encoded.slice(0, PRIVATE_KEY_PREFIX.length)
 
-    if (!(prefix == PRIVATE_KEY_PREFIX)) {
+    if (prefix != PRIVATE_KEY_PREFIX) {
       throw new Error(
         `Invalid private key prefix: "${prefix}". The private key should start with "${PRIVATE_KEY_PREFIX}". Please verify your private key and try again.`
       )
@@ -150,7 +151,7 @@ export class PrivateKey {
 export class PublicKey {
   public crypto: Crypto
   public hash: Hash
-  public serialization: Serialization
+  public serializer: Serialization
   public bytes: Uint8Array
   public version: Version
 
@@ -162,7 +163,7 @@ export class PublicKey {
   ) {
     this.hash = hash
     this.crypto = crypto
-    this.serialization = serialization
+    this.serializer = serialization
     this.bytes = new Uint8Array()
     this.version = version
   }
@@ -195,13 +196,13 @@ export class PublicKey {
   ): PublicKey {
     const prefix = publicKeyBase58Encoded.slice(0, PUBLIC_KEY_PREFIX.length)
 
-    if (!(prefix == PUBLIC_KEY_PREFIX)) {
+    if (prefix != PUBLIC_KEY_PREFIX) {
       throw new Error(
         `Invalid public key prefix: "${prefix}". The public key should start with "${PUBLIC_KEY_PREFIX}". Please verify your public key and try again.`
       )
     }
     const publicKey = PublicKey.initFromVersion(version || Version.V0)
-    const publicKeyBase58Decoded = publicKey.serialization.decodeFromString(
+    const publicKeyBase58Decoded = publicKey.serializer.decodeFromString(
       publicKeyBase58Encoded.slice(PUBLIC_KEY_PREFIX.length)
     )
     const { value, bytes } = varintDecode(publicKeyBase58Decoded)
@@ -252,6 +253,12 @@ export class PublicKey {
     const hash: Uint8Array = preHashed ? data : this.hash.hash(data)
     return await this.crypto.verify(this.bytes, hash, signature.bytes)
   }
+
+  public toString(): string {
+    return `${PUBLIC_KEY_PREFIX}${this.serializer.encodeToString(
+      new Uint8Array([...varintEncode(this.version), ...this.bytes])
+    )}`
+  }
 }
 
 export class Address {
@@ -293,7 +300,7 @@ export class Address {
   ): Address {
     const prefix = addressBase58Encoded.slice(0, ADDRESS_PREFIX.length)
 
-    if (!(prefix == ADDRESS_PREFIX)) {
+    if (prefix != ADDRESS_PREFIX) {
       throw new Error(
         `Invalid address prefix: "${prefix}". The address should start with "${ADDRESS_PREFIX}". Please verify your address and try again.`
       )
@@ -427,17 +434,18 @@ export class Account {
   private privateKey: PrivateKey
   public publicKey: PublicKey
   public version: Version
+  public sealer: Seal
 
   private constructor(
     privateKey: PrivateKey,
     publicKey: PublicKey,
     address: Address,
-    version?: Version
+    version: Version
   ) {
     this.privateKey = privateKey
     this.publicKey = publicKey
     this.address = address
-    this.version = version || Version.V0
+    this.version = version
   }
 
   /**
@@ -456,7 +464,9 @@ export class Account {
     }
     const publicKey = await privateKey.getPublicKey()
     const address = publicKey.getAddress()
-    return new Account(privateKey, publicKey, address, version)
+    version = version || Version.V1
+
+    return new Account(privateKey, publicKey, address, version || Version.V1)
   }
 
   /**
@@ -487,38 +497,11 @@ export class Account {
    * @param preHashed - A boolean indicating whether the message is already hashed.
    */
   verify(
-    signature: Signature,
     message: Uint8Array,
+    signature: Signature,
     preHashed?: boolean
   ): Promise<boolean> {
     return this.publicKey.verify(signature, message, preHashed)
-  }
-
-  /**
-   * Return a sealed private key.
-   * @param seal - The seal object to seal the private key.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async seal(seal: Seal): Promise<any> {
-    return seal.seal(this.privateKey.bytes)
-  }
-
-  /**
-   * Unseal a sealed private key.
-   * @param sealedPrivateKey - The sealed private key to unseal.
-   * @param seal - The seal object to unseal the private key.
-   * @param version - The version of the private key by default is 0.
-   */
-  static async unseal(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sealedPrivateKey: any,
-    seal: Seal,
-    version?: Version
-  ): Promise<Account> {
-    const privateKeyBytes = await seal.unseal(sealedPrivateKey)
-    return Account.fromPrivateKey(
-      PrivateKey.fromBytes(privateKeyBytes, version || Version.V0)
-    )
   }
 
   /**
@@ -526,26 +509,58 @@ export class Account {
    * https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async toKeyStore(password: string): Promise<any> {
+  async toKeyStore(
+    password?: string,
+    salt?: Uint8Array,
+    nonce?: Uint8Array
+  ): Promise<AccountKeyStore> {
     switch (this.version) {
       case Version.V0: {
-        const passwordSeal = new PasswordSeal(password)
-        const privateKeySealed = await passwordSeal.seal(this.privateKey.bytes)
+        if (!password) {
+          throw new Error('Password is required for V0 keystore')
+        }
+        const passwordSeal = new PasswordSeal(password, salt, nonce)
         return {
           address: this.address.toString(),
-          version: this.version.toString(),
+          Version: this.version,
           nickname: '',
-          salt: privateKeySealed.salt,
-          nonce: privateKeySealed.nonce,
-          cipheredData: privateKeySealed.data,
-          publicKey: new Uint8Array([
-            ...varintEncode(this.publicKey.version),
-            ...this.publicKey.bytes,
-          ]),
+          salt: passwordSeal.salt, // new PasswordSeal initializes salt if not provided
+          nonce: passwordSeal.nonce, // new PasswordSeal initializes nonce if not provided
+          cipheredData: await passwordSeal
+            .seal(this.privateKey.bytes)
+            .then((a) => Array.from(a)),
+          publicKey: Array.from(
+            new Uint8Array([
+              ...varintEncode(this.publicKey.version),
+              ...this.publicKey.bytes,
+            ])
+          ),
+        } as AccountV0KeyStore
+      }
+      case Version.V1: {
+        if (!password) {
+          throw new Error('Password is required for V0 keystore')
         }
+        const passwordSeal = new PasswordSeal(password, salt, nonce)
+        return {
+          Address: this.address.toString(),
+          Version: this.version,
+          Nickname: '',
+          Salt: passwordSeal.salt, // new PasswordSeal initializes salt if not provided
+          Nonce: passwordSeal.nonce, // new PasswordSeal initializes nonce if not provided
+          CipheredData: await passwordSeal
+            .seal(this.privateKey.bytes)
+            .then((a) => Array.from(a)),
+          PublicKey: Array.from(
+            new Uint8Array([
+              ...varintEncode(this.publicKey.version),
+              ...this.publicKey.bytes,
+            ])
+          ),
+        } as AccountV1KeyStore
       }
       default:
-        throw new Error(`Unsupported version: ${this.version}`)
+        throw new Error(`Unsupported version`)
     }
   }
 
@@ -558,29 +573,75 @@ export class Account {
    * @returns A new account object.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async fromKeyStore(keystore: any, password: string): Promise<Account> {
-    const version = parseInt(keystore.version)
-    switch (version) {
+  static async fromKeyStore(
+    keystore: AccountKeyStore,
+    password?: string
+  ): Promise<Account> {
+    switch (keystore.Version) {
       case Version.V0: {
-        const passwordSeal = new PasswordSeal(password, {
-          salt: keystore.salt,
-          nonce: keystore.nonce,
-        })
-        const privateKeyBytes = await passwordSeal.unseal({
-          data: keystore.cipheredData,
-          salt: keystore.salt,
-          nonce: keystore.nonce,
-        })
-        const privateKey = PrivateKey.fromBytes(privateKeyBytes, version)
+        if (!password) {
+          throw new Error('Password is required for V0 keystore')
+        }
+        const passwordSeal = new PasswordSeal(
+          password,
+          keystore.salt,
+          keystore.nonce
+        )
+        const privateKeyBytes = await passwordSeal.unseal(keystore.cipheredData)
+        const privateKey = PrivateKey.fromBytes(privateKeyBytes, Version.V0)
         const publicKey = PublicKey.fromBytes(
-          keystore.publicKey.subarray(1),
-          version
+          new Uint8Array(keystore.publicKey).subarray(1),
+          Version.V0
         )
         const address = publicKey.getAddress()
-        return new Account(privateKey, publicKey, address, version)
+        // TODO: add a consistency check with the address in the keystore
+
+        return new Account(privateKey, publicKey, address, keystore.Version)
+      }
+      case Version.V1: {
+        if (!password) {
+          throw new Error('Password is required for V1 keystore')
+        }
+        const passwordSeal = new PasswordSeal(
+          password,
+          keystore.Salt,
+          keystore.Nonce
+        )
+        // TODO remove varint prefix
+        const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
+        const privateKey = PrivateKey.fromBytes(privateKeyBytes, Version.V0)
+        const publicKey = PublicKey.fromBytes(
+          new Uint8Array(keystore.PublicKey).subarray(1),
+          Version.V0
+        )
+        const address = publicKey.getAddress()
+        // TODO: add a consistency check with the address in the keystore
+        return new Account(privateKey, publicKey, address, keystore.Version)
       }
       default:
-        throw new Error(`Unsupported version: ${version}`)
+        throw new Error(`Unsupported version`)
     }
   }
+}
+
+type AccountKeyStore = AccountV0KeyStore | AccountV1KeyStore
+
+export interface AccountV0KeyStore {
+  address: string
+  Version: Version.V0
+  nickname: string
+  salt: Uint8Array
+  nonce: Uint8Array
+  cipheredData: Uint8Array
+  publicKey: number[]
+}
+
+export interface AccountV1KeyStore {
+  Address: string
+  Version: Version.V1
+  Nickname: string
+  Salt: Uint8Array
+  Nonce: Uint8Array
+  CipheredData: Uint8Array
+  PublicKey: number[]
 }
