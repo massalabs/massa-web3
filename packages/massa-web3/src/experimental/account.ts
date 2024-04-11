@@ -19,7 +19,6 @@ function extractData(
   data: string,
   expectedVersion: Version
 ): Uint8Array {
-  console.log('expectedVersion', expectedVersion)
   const raw: Uint8Array = serializer.deserialize(data)
   const { value: version, bytes: nbBytes } = varintDecode(raw)
   if (version !== expectedVersion) {
