@@ -22,7 +22,7 @@ export enum Version {
 export class PrivateKey {
   private hash: Hash
   private crypto: Crypto
-  private serialization: Serialization
+  private serializer: Serialization
   public bytes: Uint8Array
   public version: Version
 
@@ -34,7 +34,7 @@ export class PrivateKey {
   ) {
     this.hash = hash
     this.crypto = crypto
-    this.serialization = serialization
+    this.serializer = serialization
     this.bytes = new Uint8Array()
     this.version = version
   }
@@ -79,7 +79,7 @@ export class PrivateKey {
     }
     const privateKey = PrivateKey.initFromVersion(version || Version.V0)
     const privateKeyBase58Decoded: Uint8Array =
-      privateKey.serialization.decodeFromString(
+      privateKey.serializer.decodeFromString(
         privateKeyBase58Encoded.slice(PRIVATE_KEY_PREFIX.length)
       )
     const { value, bytes } = varintDecode(privateKeyBase58Decoded)
@@ -145,6 +145,12 @@ export class PrivateKey {
       await this.crypto.sign(this.bytes, hash),
       this.version
     )
+  }
+
+  public toString(): string {
+    return `${PRIVATE_KEY_PREFIX}${this.serializer.encodeToString(
+      new Uint8Array([...varintEncode(this.version), ...this.bytes])
+    )}`
   }
 }
 
@@ -234,7 +240,13 @@ export class PublicKey {
    * @returns A new address object.
    */
   public getAddress(): Address {
-    return Address.fromBytes(this.hash.hash(this.bytes), true, this.version)
+    return Address.fromBytes(
+      this.hash.hash(
+        new Uint8Array([...varintEncode(this.version), ...this.bytes])
+      ),
+      true,
+      this.version
+    )
   }
 
   /**
@@ -460,7 +472,7 @@ export class Account {
     version?: Version
   ): Promise<Account> {
     if (typeof privateKey === 'string') {
-      privateKey = PrivateKey.fromString(privateKey)
+      privateKey = PrivateKey.fromString(privateKey, version)
     }
     const publicKey = await privateKey.getPublicKey()
     const address = publicKey.getAddress()
@@ -527,7 +539,12 @@ export class Account {
           salt: passwordSeal.salt, // new PasswordSeal initializes salt if not provided
           nonce: passwordSeal.nonce, // new PasswordSeal initializes nonce if not provided
           cipheredData: await passwordSeal
-            .seal(this.privateKey.bytes)
+            .seal(
+              new Uint8Array([
+                ...varintEncode(this.privateKey.version),
+                ...this.privateKey.bytes,
+              ])
+            )
             .then((a) => Array.from(a)),
           publicKey: Array.from(
             new Uint8Array([
@@ -549,7 +566,12 @@ export class Account {
           Salt: passwordSeal.salt, // new PasswordSeal initializes salt if not provided
           Nonce: passwordSeal.nonce, // new PasswordSeal initializes nonce if not provided
           CipheredData: await passwordSeal
-            .seal(this.privateKey.bytes)
+            .seal(
+              new Uint8Array([
+                ...varintEncode(this.privateKey.version),
+                ...this.privateKey.bytes,
+              ])
+            )
             .then((a) => Array.from(a)),
           PublicKey: Array.from(
             new Uint8Array([
@@ -609,7 +631,13 @@ export class Account {
         )
         // TODO remove varint prefix
         const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
-        const privateKey = PrivateKey.fromBytes(privateKeyBytes, Version.V0)
+        const { value, bytes } = varintDecode(privateKeyBytes)
+        // Value number to version variant
+        const version = value as Version
+        const privateKey = PrivateKey.fromBytes(
+          privateKeyBytes.slice(bytes),
+          version
+        )
         const publicKey = PublicKey.fromBytes(
           new Uint8Array(keystore.PublicKey).subarray(1),
           Version.V0
