@@ -1,3 +1,10 @@
+/* This module contains cryptographic functions federating between Node.js and the browser.
+ * @packageDocumentation
+ *
+ * @privateRemarks
+ * If you extend this module, please check that the functions are working in both Node.js and the browser.
+ */
+
 function isNode(): boolean {
   // inspired from secure-random.js
   // we check for process.pid to prevent browserify from tricking us
@@ -6,12 +13,6 @@ function isNode(): boolean {
     typeof process.pid === 'number' &&
     typeof process.versions?.node === 'string'
   )
-}
-
-export interface PBKDF2Options {
-  iterations: number
-  keyLength: number
-  hash: string
 }
 
 async function pbkdf2Node(
@@ -64,13 +65,28 @@ async function pbkdf2Browser(
     },
     keyMaterial,
     { name: 'AES-GCM', length: keyLength * 8 },
-    false, // whether the derived key is extractable
+    false,
     ['encrypt', 'decrypt']
   )
 
   return Buffer.from(crypto.subtle.exportKey('raw', derivedKey))
 }
 
+export interface PBKDF2Options {
+  iterations: number
+  keyLength: number
+  hash: string
+}
+
+/**
+ * Derives a cryptographic key using PBKDF2.
+ *
+ * @param password - The password from which to derive the key.
+ * @param salt - The cryptographic salt.
+ * @param  opts - Options for the derivation.
+ *
+ * @returns  The derived key.
+ */
 export async function pbkdf2(
   password: string,
   salt: Buffer,
@@ -83,11 +99,29 @@ export async function pbkdf2(
   }
 }
 
+/**
+ * Seals data using AES-256-GCM encryption.
+ *
+ * @param data - The data to encrypt.
+ * @param key - The 32-byte secret key.
+ * @param iv - The 12-byte initialization vector.
+ *
+ * @throws If the key is not 32 bytes.
+ * @throws If the iv is not 12 bytes.
+ *
+ * @returns The sealed data.
+ */
 export async function aesGCMEncrypt(
   data: Uint8Array,
   key: Uint8Array,
   iv: Uint8Array
 ): Promise<Uint8Array> {
+  if (key.length !== 32) {
+    throw new Error('key must be 32 bytes')
+  }
+  if (iv.length !== 12) {
+    throw new Error('iv must be 12 bytes')
+  }
   if (isNode()) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const crypto = require('crypto')
@@ -115,11 +149,32 @@ export async function aesGCMEncrypt(
   }
 }
 
+/**
+ * Unseals data using AES-256-GCM decryption.
+ *
+ * @remarks
+ * The authentication tag shall be appended to the encryptedData.
+ *
+ * @param encryptedData - The data to decrypt.
+ * @param key - The 32-byte secret key.
+ * @param iv - The 12-byte initialization vector.
+ *
+ * @throws If the key is not 32 bytes.
+ * @throws If the iv is not 12 bytes.
+ *
+ * @returns The sealed data.
+ */
 export async function aesGCMDecrypt(
   encryptedData: Uint8Array,
   key: Uint8Array,
   iv: Uint8Array
 ): Promise<Uint8Array> {
+  if (key.length !== 32) {
+    throw new Error('key must be 32 bytes')
+  }
+  if (iv.length !== 12) {
+    throw new Error('iv must be 12 bytes')
+  }
   if (isNode()) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const crypto = require('crypto')

@@ -1,12 +1,12 @@
-import Hash from './interfaces/hash'
-import Crypto from './interfaces/crypto'
-import blake3 from './blake3'
-import ed25519 from './ed25519'
-import Serialization from './interfaces/serialization'
-import base58 from './base58'
+import Hasher from './crypto/interfaces/hasher'
+import Signer from './crypto/interfaces/signer'
+import Blake3 from './crypto/blake3'
+import Ed25519 from './crypto/ed25519'
+import Serializer from './crypto/interfaces/serializer'
+import Base58 from './crypto/base58'
 import { varintDecode, varintEncode } from '../utils/Xbqcrypto'
-import Seal from './interfaces/seal'
-import { PasswordSeal } from './passwordSeal'
+import Seal from './crypto/interfaces/sealer'
+import { PasswordSeal } from './crypto/passwordSeal'
 
 const PRIVATE_KEY_PREFIX = 'S'
 const PUBLIC_KEY_PREFIX = 'P'
@@ -14,22 +14,63 @@ const ADDRESS_PREFIX = 'A'
 const ADDRESS_USER_PREFIX = 'U'
 const ADDRESS_CONTRACT_PREFIX = 'S'
 
+function extractData(
+  serializer: Serializer,
+  data: string,
+  expectedVersion: Version
+): Uint8Array {
+  console.log('expectedVersion', expectedVersion)
+  const raw: Uint8Array = serializer.deserialize(data)
+  const { value: version, bytes: nbBytes } = varintDecode(raw)
+  if (version !== expectedVersion) {
+    throw new Error(
+      `invalid version: ${version}. ${expectedVersion} was expected.`
+    )
+  }
+  return raw.subarray(nbBytes)
+}
+
+function checkPrefix(str: string, ...expected: string[]): void {
+  const prefix = str.slice(0, expected[0].length)
+  if (!expected.includes(prefix)) {
+    throw new Error(
+      `Invalid prefix: ${prefix}. ${expected.length > 1 ? 'One of ' : ''}${expected.join(' or ')} was expected.`
+    )
+  }
+}
+
+/**
+ * Versionning for PrivateKey, PublicKey, Address, Signature, and Account.
+ */
 export enum Version {
   V0 = 0,
   V1 = 1,
 }
 
+/**
+ * A class representing a private key.
+ *
+ * @remarks
+ * The private key is used to sign operations during interactions with the blockchain.
+ *
+ * @privateRemarks
+ * Interfaces are used to make the code more modular. To add a new version, you simply need to
+ * extend the `initFromVersion` method:
+ * - Add a new case in the switch statement with the new algorithms to use.
+ * - Add a new default version matching the last version.
+ * - Voila! The code will automatically handle the new version.
+ */
 export class PrivateKey {
-  private hash: Hash
-  private crypto: Crypto
-  private serializer: Serialization
+  private hash: Hasher
+  private crypto: Signer
+  private serializer: Serializer
   public bytes: Uint8Array
   public version: Version
 
   protected constructor(
-    hash: Hash,
-    crypto: Crypto,
-    serialization: Serialization,
+    hash: Hasher,
+    crypto: Signer,
+    serialization: Serializer,
     version: Version
   ) {
     this.hash = hash
@@ -40,18 +81,20 @@ export class PrivateKey {
   }
 
   /**
-   * Initialize a new private key object from a version.
-   * @param version - The version of the private key.
+   * Initializes a new private key object from a version.
    *
-   * @returns A new private key object.
+   * @param version - The version of the private key. If not defined, the last version will be used.
+   *
+   * @returns A new private key instance.
    */
-  protected static initFromVersion(version: Version): PrivateKey {
+  protected static initFromVersion(version?: Version): PrivateKey {
+    version = version || Version.V0
     switch (version) {
       case Version.V0:
         return new PrivateKey(
-          new blake3(),
-          new ed25519(),
-          new base58(),
+          new Blake3(),
+          new Ed25519(),
+          new Base58(),
           version
         )
       default:
@@ -60,111 +103,127 @@ export class PrivateKey {
   }
 
   /**
-   * Initialize a new private key object from a base58 encoded string.
-   * @param privateKeyBase58Encoded - The base58 encoded string representing the private key.
-   * @param version - The version of the private key, default is 0.
+   * Initializes a new private key object from a serialized string.
    *
-   * @returns A new private key object.
+   * @param keyStr - The serialized private key string.
+   * @param version - The version of the private key. If not defined, the last version will be used.
+   *
+   * @returns A new private key instance.
+   *
+   * @throws If the private key prefix is invalid.
    */
-  public static fromString(
-    privateKeyBase58Encoded: string,
-    version?: Version
-  ): PrivateKey {
-    const prefix = privateKeyBase58Encoded.slice(0, PRIVATE_KEY_PREFIX.length)
+  public static fromString(keyStr: string, version?: Version): PrivateKey {
+    const privateKey = PrivateKey.initFromVersion(version)
 
-    if (prefix != PRIVATE_KEY_PREFIX) {
-      throw new Error(
-        `Invalid private key prefix: "${prefix}". The private key should start with "${PRIVATE_KEY_PREFIX}". Please verify your private key and try again.`
+    try {
+      checkPrefix(keyStr, PRIVATE_KEY_PREFIX)
+      privateKey.bytes = extractData(
+        privateKey.serializer,
+        keyStr.slice(PRIVATE_KEY_PREFIX.length),
+        privateKey.version
       )
+    } catch (e) {
+      throw new Error(`Invalid private key string: ${e.message}`)
     }
-    const privateKey = PrivateKey.initFromVersion(version || Version.V0)
-    const privateKeyBase58Decoded: Uint8Array =
-      privateKey.serializer.decodeFromString(
-        privateKeyBase58Encoded.slice(PRIVATE_KEY_PREFIX.length)
-      )
-    const { value, bytes } = varintDecode(privateKeyBase58Decoded)
-    if (value !== privateKey.version) {
-      throw new Error(
-        `Invalid private key version: ${value}. The private key version should be ${privateKey.version}. Please verify your private key and try again.`
-      )
-    }
-    privateKey.bytes = privateKeyBase58Decoded.subarray(bytes)
     return privateKey
   }
 
   /**
-   * Initialize a new private key object from a raw byte array and a version.
-   * @param bytes - The raw byte array representing the private key.
-   * @param version - The version of the private key.
+   * Initializes a new private key object from a raw byte array and a version.
    *
-   * @returns A new private key object.
+   * @param bytes - The raw bytes without any prefix version.
+   * @param version - The version of the private key. If not defined, the last version will be used.
+   *
+   * @returns A new private key instance.
    */
-  public static fromBytes(bytes: Uint8Array, version: Version): PrivateKey {
+  public static fromBytes(bytes: Uint8Array, version?: Version): PrivateKey {
     const privateKey = PrivateKey.initFromVersion(version)
     privateKey.bytes = bytes
     return privateKey
   }
 
   /**
-   * Initialize a random private key.
-   * @param version - The version of the private key.
+   * Initializes a random private key.
    *
-   * @returns A new private key object.
+   * @param version - The version of the private key. If not defined, the last version will be used.
+   *
+   * @returns A new private key instance.
    */
   public static generate(version?: Version): PrivateKey {
-    const privateKey = PrivateKey.initFromVersion(version || Version.V0)
+    const privateKey = PrivateKey.initFromVersion(version)
     privateKey.bytes = privateKey.crypto.generatePrivateKey()
     return privateKey
   }
 
   /**
-   * Get the public key from the private key.
+   * Returns the public key matching to the current private key.
    *
-   * @returns A new public key object.
+   * @returns A new public key instance.
    */
   public async getPublicKey(): Promise<PublicKey> {
-    const publicKeyArray: Uint8Array = await this.crypto.getPublicKey(
-      this.bytes
-    )
-    return PublicKey.fromBytes(publicKeyArray, this.version)
+    return PublicKey.fromPrivateKey(this)
   }
 
   /**
-   * Sign a byte array with the private key.
+   * Signs the message with the private key.
+   *
+   * @remarks
+   * This function signs a byte-encoded message. The message is first hashed and then signed.
+   * Do not pass a digest to this function as it will be hashed twice.
+   *
    * @param message - The byte array to sign.
-   * @param preHashed - A boolean indicating whether the message is already hashed.
    *
    * @returns The signature byte array.
    */
-  public async sign(
-    message: Uint8Array,
-    preHashed?: boolean
-  ): Promise<Signature> {
-    const hash: Uint8Array = preHashed ? message : this.hash.hash(message)
+  public async sign(message: Uint8Array): Promise<Signature> {
     return Signature.fromBytes(
-      await this.crypto.sign(this.bytes, hash),
+      await this.crypto.sign(this.bytes, this.hash.hash(message)),
       this.version
     )
   }
 
+  /**
+   * Serializes the private key to a string.
+   *
+   * @remarks
+   * A private key is serialized as follows:
+   * - The version is serialized as a varint and prepended to the private key bytes.
+   * - The result is then sent to the serializer.
+   *
+   * @returns The serialized private key string.
+   */
   public toString(): string {
-    return `${PRIVATE_KEY_PREFIX}${this.serializer.encodeToString(
+    return `${PRIVATE_KEY_PREFIX}${this.serializer.serialize(
       new Uint8Array([...varintEncode(this.version), ...this.bytes])
     )}`
   }
 }
 
+/**
+ * A class representing a public key.
+ *
+ * @remarks
+ * The public key is an essential component of asymmetric cryptography. It is intrinsically linked to the private key.
+ *
+ * @privateRemarks
+ * Interfaces are used to make the code more modular. To add a new version, you simply need to:
+ * - extend the `initFromVersion` method:
+ *   - Add a new case in the switch statement with the new algorithms to use.
+ *   - Add a new default version matching the last version.
+ * - check the `fromPrivateKey` method to potentially adapt how a public key is derived from a private key.
+ * - Voila! The code will automatically handle the new version.
+ */
 export class PublicKey {
-  public crypto: Crypto
-  public hash: Hash
-  public serializer: Serialization
+  public crypto: Signer
+  public hash: Hasher
+  public serializer: Serializer
   public bytes: Uint8Array
   public version: Version
 
   protected constructor(
-    hash: Hash,
-    crypto: Crypto,
-    serialization: Serialization,
+    hash: Hasher,
+    crypto: Signer,
+    serialization: Serializer,
     version: Version
   ) {
     this.hash = hash
@@ -175,62 +234,77 @@ export class PublicKey {
   }
 
   /**
-   * Initialize a new public key object from a version.
-   * @param version - The version of the public key.
+   * Initializes a new public key object from a version.
    *
-   * @returns A new public key object.
-   * */
-  protected static initFromVersion(version: Version): PublicKey {
+   * @param version - The version of the private key. If not defined, the last version will be used.
+   *
+   * @returns A new public key instance.
+   *
+   * @throws If the version is not supported.
+   */
+  protected static initFromVersion(version?: Version): PublicKey {
+    version = version || Version.V0
     switch (version) {
       case Version.V0:
-        return new PublicKey(new blake3(), new ed25519(), new base58(), version)
+        return new PublicKey(new Blake3(), new Ed25519(), new Base58(), version)
       default:
         throw new Error(`Unsupported version: ${version}`)
     }
   }
 
   /**
-   * Initialize a new public key object from a base58 encoded string.
-   * @param publicKeyBase58Encoded - The base58 encoded string representing the public key.
-   * @param version - The version of the public key.
+   * Initializes a new public key object from a serialized string.
    *
-   * @returns A new public key object.
+   * @param keyStr - The serialized public key string.
+   * @param version - The version of the public key. If not defined, the last version will be used.
+   *
+   * @returns A new public key instance.
+   *
+   * @throws If the public key string is invalid.
    */
-  public static fromString(
-    publicKeyBase58Encoded: string,
-    version?: Version
-  ): PublicKey {
-    const prefix = publicKeyBase58Encoded.slice(0, PUBLIC_KEY_PREFIX.length)
+  public static fromString(keyStr: string, version?: Version): PublicKey {
+    const publicKey = PublicKey.initFromVersion(version)
 
-    if (prefix != PUBLIC_KEY_PREFIX) {
-      throw new Error(
-        `Invalid public key prefix: "${prefix}". The public key should start with "${PUBLIC_KEY_PREFIX}". Please verify your public key and try again.`
+    try {
+      checkPrefix(keyStr, PUBLIC_KEY_PREFIX)
+      publicKey.bytes = extractData(
+        publicKey.serializer,
+        keyStr.slice(PUBLIC_KEY_PREFIX.length),
+        publicKey.version
       )
+    } catch (e) {
+      throw new Error(`Invalid public key string: ${e.message}`)
     }
-    const publicKey = PublicKey.initFromVersion(version || Version.V0)
-    const publicKeyBase58Decoded = publicKey.serializer.decodeFromString(
-      publicKeyBase58Encoded.slice(PUBLIC_KEY_PREFIX.length)
-    )
-    const { value, bytes } = varintDecode(publicKeyBase58Decoded)
-    if (value !== publicKey.version) {
-      throw new Error(
-        `Invalid public key version: ${value}. The public key version should be ${publicKey.version}. Please verify your public key and try again.`
-      )
-    }
-    publicKey.bytes = publicKeyBase58Decoded.subarray(bytes)
+
     return publicKey
   }
 
   /**
-   * Initialize a new public key from a raw byte array and a version.
-   * @param bytes - The raw byte array representing the public key.
-   * @param version - The version of the public key.
+   * Initializes a new public key object from a raw byte array and a version.
    *
-   * @returns A new public key object.
+   * @param bytes - The raw bytes without any prefix version.
+   * @param version - The version of the public key. If not defined, the last version will be used.
+   *
+   * @returns A new public key instance.
    */
-  public static fromBytes(bytes: Uint8Array, version: Version): PublicKey {
+  public static fromBytes(bytes: Uint8Array, version?: Version): PublicKey {
     const publicKey = PublicKey.initFromVersion(version)
     publicKey.bytes = bytes
+    return publicKey
+  }
+
+  /**
+   * Initializes a new public key object from a private key.
+   *
+   * @param privateKey - The private key to derive the public key from.
+   *
+   * @returns A new public key instance.
+   */
+  public static async fromPrivateKey(
+    privateKey: PrivateKey
+  ): Promise<PublicKey> {
+    const publicKey = PublicKey.initFromVersion()
+    publicKey.bytes = await publicKey.crypto.getPublicKey(privateKey.bytes)
     return publicKey
   }
 
@@ -240,125 +314,138 @@ export class PublicKey {
    * @returns A new address object.
    */
   public getAddress(): Address {
-    return Address.fromBytes(
-      this.hash.hash(
-        new Uint8Array([...varintEncode(this.version), ...this.bytes])
-      ),
-      true,
-      this.version
-    )
+    return Address.fromPublicKey(this)
   }
 
   /**
-   * Verify a signature with the public key.
+   * Checks the message signature with the public key.
+   *
+   * @remarks
+   * This function very a byte-encoded message. The message is first hashed and then verified.
+   * Do not pass a digest to this function as it will be hashed twice.
+   *
    * @param signature - The signature to verify.
    * @param data - The data signed by the signature.
-   * @param preHashed - A boolean indicating whether the data is already hashed.
    *
    * @returns A boolean indicating whether the signature is valid.
    */
   public async verify(
-    signature: Signature,
     data: Uint8Array,
-    preHashed?: boolean
+    signature: Signature
   ): Promise<boolean> {
-    const hash: Uint8Array = preHashed ? data : this.hash.hash(data)
-    return await this.crypto.verify(this.bytes, hash, signature.bytes)
+    return await this.crypto.verify(
+      this.bytes,
+      this.hash.hash(data),
+      signature.bytes
+    )
   }
 
+  /**
+   * Serializes the public key to a string.
+   *
+   * @remarks
+   * A public key is serialized as follows:
+   * - The version is serialized as a varint and prepended to the public key bytes.
+   * - The result is then sent to the serializer.
+   *
+   * @returns The serialized public key string.
+   */
   public toString(): string {
-    return `${PUBLIC_KEY_PREFIX}${this.serializer.encodeToString(
+    return `${PUBLIC_KEY_PREFIX}${this.serializer.serialize(
       new Uint8Array([...varintEncode(this.version), ...this.bytes])
     )}`
   }
 }
 
+/**
+ * A class representing an address.
+ *
+ * @remarks
+ * For now, an address is intrinsically linked (to be understood as a digest of) to the public key.
+ *
+ * @privateRemarks
+ * Interfaces are used to make the code more modular. To add a new version, you simply need to:
+ * - extend the `initFromVersion` method:
+ *   - Add a new case in the switch statement with the new algorithms to use.
+ *   - Add a new default version matching the last version.
+ * - check the `fromPublicKey` method to potentially adapt how an address is derived from a public key.
+ * - Voila! The code will automatically handle the new version.
+ */
 export class Address {
   public bytes: Uint8Array
   public isEOA: boolean
   public version: Version
-  private serialization: Serialization
+  private serializer: Serializer
 
-  protected constructor(serialization: Serialization, version: Version) {
-    this.serialization = serialization
+  protected constructor(serializer: Serializer, version: Version) {
+    this.serializer = serializer
     this.version = version
   }
 
   /**
    * Initialize a new address object from a version.
+   *
    * @param version - The version of the address.
    *
-   * @returns A new address object.
+   * @returns A new address instance.
+   *
+   * @throws If the version is not supported.
    */
-  protected static initFromVersion(version: Version): Address {
+  protected static initFromVersion(version?: Version): Address {
+    version = version || Version.V0
     switch (version) {
       case Version.V0:
-        return new Address(new base58(), version)
+        return new Address(new Base58(), version)
       default:
         throw new Error(`Unsupported version: ${version}`)
     }
   }
 
   /**
-   * Initialize a new address object from a base58 encoded string.
-   * @param addressBase58Encoded - The base58 encoded string representing the address.
-   * @param version - The version of the address.
+   * Initializes a new address object from a serialized string.
    *
-   * @returns A new address object.
+   * @param str - The serialized address string.
+   * @param version - The version of the address. If not defined, the last version will be used.
+   *
+   * @returns A new address instance.
+   *
+   * @throws If the address string is invalid.
    */
-  public static fromString(
-    addressBase58Encoded: string,
-    version?: Version
-  ): Address {
-    const prefix = addressBase58Encoded.slice(0, ADDRESS_PREFIX.length)
+  public static fromString(str: string, version?: Version): Address {
+    const address = Address.initFromVersion(version)
 
-    if (prefix != ADDRESS_PREFIX) {
-      throw new Error(
-        `Invalid address prefix: "${prefix}". The address should start with "${ADDRESS_PREFIX}". Please verify your address and try again.`
+    try {
+      checkPrefix(
+        str,
+        ADDRESS_PREFIX + ADDRESS_USER_PREFIX,
+        ADDRESS_PREFIX + ADDRESS_CONTRACT_PREFIX
       )
-    }
-    const address = Address.initFromVersion(version || Version.V0)
-
-    switch (addressBase58Encoded[ADDRESS_PREFIX.length]) {
-      case ADDRESS_USER_PREFIX:
-        address.isEOA = true
-        break
-      case ADDRESS_CONTRACT_PREFIX:
-        address.isEOA = false
-        break
-      default:
-        throw new Error(
-          `Invalid address prefix: "${addressBase58Encoded[ADDRESS_PREFIX.length]}". 
-          The address should start with "${ADDRESS_PREFIX}U" for EOA or "${ADDRESS_PREFIX}S" for smart contract. 
-          Please verify your address and try again.`
-        )
-    }
-
-    const addressBase58Decoded = address.serialization.decodeFromString(
-      addressBase58Encoded.slice(ADDRESS_PREFIX.length)
-    )
-    const { value, bytes } = varintDecode(addressBase58Decoded)
-    if (value !== address.version) {
-      throw new Error(
-        `Invalid address version: ${value}. The address version should be ${address.version}. Please verify your address and try again.`
+      address.isEOA = str[ADDRESS_PREFIX.length] === ADDRESS_USER_PREFIX
+      address.bytes = extractData(
+        address.serializer,
+        str.slice(ADDRESS_PREFIX.length),
+        address.version
       )
+    } catch (e) {
+      throw new Error(`Invalid address string: ${e.message}`)
     }
-    address.bytes = addressBase58Decoded.subarray(bytes)
+
     return address
   }
 
   /**
-   * Initialize a new address object from a raw byte array, a boolean indicating whether the address is an EOA, and a version.
-   * @param bytes - The raw byte array representing the address.
+   * Initializes a new address object from a raw byte array.
+   *
+   * @param bytes - The address raw bytes.
    * @param isEOA - A boolean indicating whether the address is an EOA.
-   * @param version - The version of the address.
+   * @param version - The version of the address. If not defined, the last version will be used.
    *
    * @returns A new address object.
    */
   public static fromBytes(
     bytes: Uint8Array,
     isEOA: boolean,
-    version: Version
+    version?: Version
   ): Address {
     const address = Address.initFromVersion(version)
     address.bytes = bytes
@@ -367,80 +454,115 @@ export class Address {
   }
 
   /**
-   * Encode the address to a string
+   * Initializes a new address object from a public key.
    *
-   * @returns The encoded string representing the address.
+   * @param publicKey - The public key to derive the address from.
+   *
+   * @returns A new address object.
+   */
+  public static fromPublicKey(publicKey: PublicKey): Address {
+    const address = Address.initFromVersion()
+    address.bytes = publicKey.hash.hash(
+      new Uint8Array([...varintEncode(publicKey.version), ...publicKey.bytes])
+    )
+    address.isEOA = true
+    return address
+  }
+
+  /**
+   * Serializes the address to a string.
+   *
+   * @remarks
+   * A address is serialized as follows:
+   * - The version is serialized as a varint and prepended to the address bytes.
+   * - The result is then sent to the serializer.
+   *
+   * @returns The serialized address string.
    */
   toString(): string {
     const versionBytes = varintEncode(this.version)
     return `${ADDRESS_PREFIX}${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
-    }${this.serialization.encodeToString(
+    }${this.serializer.serialize(
       new Uint8Array([...versionBytes, ...this.bytes])
     )}`
   }
 }
 
+/**
+ * A class representing a signature.
+ */
 export class Signature {
   public bytes: Uint8Array
   public version: Version
-  private serialization: Serialization
+  private serializer: Serializer
 
-  protected constructor(serialization: Serialization, version: Version) {
+  protected constructor(serializer: Serializer, version: Version) {
     this.version = version
-    this.serialization = serialization
+    this.serializer = serializer
   }
 
   /**
-   * Initialize a new signature object from a version.
+   * Initializes a new signature object from a version.
+   *
    * @param version - The version of the signature.
    *
-   * @returns A new signature object.
+   * @returns A new signature instance.
    */
-  protected static initFromVersion(version: Version): Signature {
+  protected static initFromVersion(version?: Version): Signature {
+    version = version || Version.V0
     switch (version) {
       case Version.V0:
-        return new Signature(new base58(), version)
+        return new Signature(new Base58(), version)
       default:
         throw new Error(`Unsupported version: ${version}`)
     }
   }
 
   /**
-   * Initialize a new signature object from a base58 encoded string.
-   * @param signatureBase58Encoded - The base58 encoded string representing the signature.
+   * Initializes a new signature object from a serialized string.
    *
-   * @returns A new signature object.
+   * @param str - The serialized signature string.
+   * @param version - The version of the signature. If not defined, the last version will be used.
+   *
+   * @returns A new signature instance.
+   *
+   * @throws If the signature string is invalid.
    */
-  public static fromString(signatureBase58Encoded: string): Signature {
-    const signature = Signature.initFromVersion(Version.V0)
-    const signatureBase58Decoded = signature.serialization.decodeFromString(
-      signatureBase58Encoded
-    )
-    const { value, bytes } = varintDecode(signatureBase58Decoded)
-    if (value !== signature.version) {
-      throw new Error(
-        `Invalid signature version: ${value}. The signature version should be ${signature.version}. Please verify your signature and try again.`
+  public static fromString(str: string, version?: Version): Signature {
+    const signature = Signature.initFromVersion(version)
+
+    try {
+      signature.bytes = extractData(
+        signature.serializer,
+        str,
+        signature.version
       )
+    } catch (e) {
+      throw new Error(`Invalid signature string: ${e.message}`)
     }
-    signature.bytes = signatureBase58Decoded.subarray(bytes)
+
     return signature
   }
 
   /**
-   * Initialize a new signature object from a raw byte array and a version.
-   * @param bytes - The raw byte array representing the signature.
-   * @param version - The version of the signature.
+   * Initializes a signature object from a raw byte array.
    *
-   * @returns A new signature object.
+   * @param bytes - The signature raw bytes.
+   * @param version - The version of the signature. If not defined, the last version will be used.
+   *
+   * @returns A signature object.
    */
-  public static fromBytes(bytes: Uint8Array, version: Version): Signature {
+  public static fromBytes(bytes: Uint8Array, version?: Version): Signature {
     const signature = Signature.initFromVersion(version)
     signature.bytes = bytes
     return signature
   }
 }
 
+/**
+ * A class representing an account.
+ */
 export class Account {
   public address: Address
   private privateKey: PrivateKey
@@ -461,18 +583,19 @@ export class Account {
   }
 
   /**
-   * Initialize a new account object with a private key.
+   * Initializes a new account object from a private key.
+   *
    * @param privateKey - The private key of the account.
    * @param version - The version of the account.
    *
-   * @returns A new account object.
+   * @returns A new instance of the Account class.
    */
   public static async fromPrivateKey(
     privateKey: string | PrivateKey,
     version?: Version
   ): Promise<Account> {
     if (typeof privateKey === 'string') {
-      privateKey = PrivateKey.fromString(privateKey, version)
+      privateKey = PrivateKey.fromString(privateKey)
     }
     const publicKey = await privateKey.getPublicKey()
     const address = publicKey.getAddress()
@@ -482,45 +605,68 @@ export class Account {
   }
 
   /**
-   * Initialize a new account object with a newly generated private key.
+   * Generates a new account object.
+   *
    * @param privateKey - The private key of the account.
    * @param version - The version of the account.
    *
-   * @returns A new account object.
+   * @returns A new instance of the Account class.
    */
   public static async generate(version?: Version): Promise<Account> {
-    const privateKey = PrivateKey.generate(version)
+    const privateKey = PrivateKey.generate()
     return Account.fromPrivateKey(privateKey, version)
   }
 
   /**
-   * Sign a message with the account's private key.
-   * @param message - The message to sign.
-   * @param preHashed - A boolean indicating whether the message is already hashed.
+   * Signs a message.
+   *
+   * @remarks
+   * This function signs a byte-encoded message with the account private key.
+   * The message is first hashed and then signed.
+   * Do not pass a digest to this function as it will be hashed twice.
+   *
+   * @param message - The byte array to sign.
+   *
+   * @returns A signature object.
    */
-  sign(message: Uint8Array, preHashed?: boolean): Promise<Signature> {
-    return this.privateKey.sign(message, preHashed)
+  sign(message: Uint8Array): Promise<Signature> {
+    return this.privateKey.sign(message)
   }
 
   /**
-   * Verify a signature with the account's public key.
+   * Verifies a message signature.
+   *
+   * @remarks
+   * This function verifies a byte-encoded message signature using the account's public key.
+   * The message is first hashed and then the signature is verified against the hashed message.
+   * Do not pass a digest to this function as it will be hashed twice.
+   *
    * @param signature - The signature to verify.
-   * @param message - The message signed by the signature.
-   * @param preHashed - A boolean indicating whether the message is already hashed.
+   * @param message - The byte array that was signed.
+   *
+   * @returns A boolean indicating whether the signature is valid.
    */
-  verify(
-    message: Uint8Array,
-    signature: Signature,
-    preHashed?: boolean
-  ): Promise<boolean> {
-    return this.publicKey.verify(signature, message, preHashed)
+  verify(message: Uint8Array, signature: Signature): Promise<boolean> {
+    return this.publicKey.verify(message, signature)
   }
 
   /**
-   * Encode the account to a keystore object following the Massa standard format
-   * https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md
+   * Encodes the account to a serializable object.
+   *
+   * @remarks
+   * The serializable object can be serialized to any format (JSON, YAML, XML, etc.) on any support (file, database, browser storage, etc.).
+   * The keystore format is defined in the Massa standard format document:
+   * [Massa Standard Format](https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md)
+   *
+   * @param password - The password to encrypt the private key.
+   * @param salt - The salt to use for the encryption. If not provided, a random salt will be generated.
+   * @param nonce - The nonce to use for the encryption. If not provided, a random nonce will be generated.
+   *
+   * @returns A serializable object.
+   *
+   * @throws If the password is not provided for V0 and V1 keystores.
+   * @throws If the version is not supported.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async toKeyStore(
     password?: string,
     salt?: Uint8Array,
@@ -536,8 +682,8 @@ export class Account {
           address: this.address.toString(),
           Version: this.version,
           nickname: '',
-          salt: passwordSeal.salt, // new PasswordSeal initializes salt if not provided
-          nonce: passwordSeal.nonce, // new PasswordSeal initializes nonce if not provided
+          salt: passwordSeal.salt,
+          nonce: passwordSeal.nonce,
           cipheredData: await passwordSeal
             .seal(
               new Uint8Array([
@@ -556,15 +702,15 @@ export class Account {
       }
       case Version.V1: {
         if (!password) {
-          throw new Error('Password is required for V0 keystore')
+          throw new Error('Password is required for V1 keystore')
         }
         const passwordSeal = new PasswordSeal(password, salt, nonce)
         return {
           Address: this.address.toString(),
           Version: this.version,
           Nickname: '',
-          Salt: passwordSeal.salt, // new PasswordSeal initializes salt if not provided
-          Nonce: passwordSeal.nonce, // new PasswordSeal initializes nonce if not provided
+          Salt: passwordSeal.salt,
+          Nonce: passwordSeal.nonce,
           CipheredData: await passwordSeal
             .seal(
               new Uint8Array([
@@ -587,14 +733,21 @@ export class Account {
   }
 
   /**
-   * Decode a keystore object following the Massa standard format
-   * https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md
-   * @param keystore - The keystore object to decode.
-   * @param password - The password to unseal the private key.
+   * Decodes the account from a serializable object.
    *
-   * @returns A new account object.
+   * @remarks
+   * The serializable object can be serialized to any format (JSON, YAML, XML, etc.) on any support (file, database, browser storage, etc.).
+   * The keystore format is defined in the Massa standard format document:
+   * [Massa Standard Format](https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md)
+   *
+   * @param password - The password to decrypt the private key.
+   * @param keystore - The serializable object to decode.
+   *
+   * @returns A new Account instance.
+   *
+   * @throws If the password is not provided for V0 and V1 keystores.
+   * @throws If the version is not supported.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static async fromKeyStore(
     keystore: AccountKeyStore,
     password?: string

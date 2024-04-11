@@ -1,7 +1,10 @@
 import { blake3 as hashBlake3 } from '@noble/hashes/blake3'
-import Hash from './interfaces/hash'
+import Hasher from './interfaces/hasher'
 
-export default class blake3 implements Hash {
+/**
+ * Blake3 implementation of the Hasher interface.
+ */
+export default class Blake3 implements Hasher {
   hash(data: Buffer | Uint8Array | string): Uint8Array {
     return hashBlake3(data)
   }

@@ -1,7 +1,10 @@
 import * as ed from '@noble/ed25519'
-import Crypto from './interfaces/crypto'
+import Signer from './interfaces/signer'
 
-export default class ed25519 implements Crypto {
+/**
+ * Ed25519 implementation of the Signer interface.
+ */
+export default class Ed25519 implements Signer {
   generatePrivateKey(): Uint8Array {
     return ed.utils.randomPrivateKey()
   }

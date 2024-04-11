@@ -1,7 +1,12 @@
-import Sealer from './interfaces/seal'
+import Sealer from './interfaces/sealer'
 import randomUint8Array from 'secure-random'
 
-import { PBKDF2Options, aesGCMDecrypt, aesGCMEncrypt, pbkdf2 } from './crypto'
+import {
+  PBKDF2Options,
+  aesGCMDecrypt,
+  aesGCMEncrypt,
+  pbkdf2,
+} from './cross-browser'
 
 function createKey(password: string, salt: Buffer): Promise<Uint8Array> {
   const opts: PBKDF2Options = {
@@ -12,6 +17,9 @@ function createKey(password: string, salt: Buffer): Promise<Uint8Array> {
   return pbkdf2(password, salt, opts)
 }
 
+/**
+ * Password-based implementation of the Sealer interface.
+ */
 export class PasswordSeal implements Sealer {
   private password: string
   public salt: Uint8Array
@@ -46,18 +54,43 @@ export class PasswordSeal implements Sealer {
     }
   }
 
+  /**
+   * Seals data using password-based PKDF2 AES-256-GCM encryption.
+   *
+   * @param data - The data to encrypt.
+   *
+   * @returns Protected data.
+   */
   async seal(data: Uint8Array): Promise<Uint8Array> {
     this.validate()
     const key = await createKey(this.password, Buffer.from(this.salt))
     return aesGCMEncrypt(data, key, Buffer.from(this.nonce))
   }
 
+  /**
+   * Unseals data using password-based PKDF2 AES-256-GCM decryption.
+   *
+   * @param data - The encrypted data.
+   *
+   * @returns Clear data.
+   */
   async unseal(data: Uint8Array): Promise<Uint8Array> {
     this.validate()
     const key = await createKey(this.password, Buffer.from(this.salt))
     return aesGCMDecrypt(data, key, Buffer.from(this.nonce))
   }
 
+  /**
+   * Creates a Sealer from environment variables.
+   *
+   * @remarks
+   * The expected envrionment variables are:
+   * - PASSWORD,
+   * - SALT - base64 encoded, and
+   * - NONCE - base64 encoded.
+   *
+   * @returns A password-based sealer instance.
+   */
   static fromEnv(): Sealer {
     const pwd = process.env.PASSWORD
     if (!pwd) {
