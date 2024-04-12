@@ -83,7 +83,7 @@ export interface PBKDF2Options {
  *
  * @param password - The password from which to derive the key.
  * @param salt - The cryptographic salt.
- * @param  opts - Options for the derivation.
+ * @param opts - Options for the derivation.
  *
  * @returns  The derived key.
  */
@@ -109,7 +109,7 @@ export async function pbkdf2(
  * @throws If the key is not 32 bytes.
  * @throws If the iv is not 12 bytes.
  *
- * @returns The sealed data.
+ * @returns The encrypted data.
  */
 export async function aesGCMEncrypt(
   data: Uint8Array,
@@ -162,7 +162,7 @@ export async function aesGCMEncrypt(
  * @throws If the key is not 32 bytes.
  * @throws If the iv is not 12 bytes.
  *
- * @returns The sealed data.
+ * @returns The decrypted data.
  */
 export async function aesGCMDecrypt(
   encryptedData: Uint8Array,

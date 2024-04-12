@@ -1,10 +1,7 @@
 import { readFileSync } from 'fs'
 import { load } from 'js-yaml'
-import {
-  Account,
-  Version,
-  AccountV1KeyStore,
-} from '../../src/experimental/account'
+import { Account, AccountV1KeyStore } from '../../src/experimental/account'
+import { Version } from '../../src/experimental/crypto/interfaces/versioner'
 import path from 'path'
 
 describe('Basic use cases', () => {

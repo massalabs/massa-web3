@@ -1,8 +1,8 @@
 import Hasher from './crypto/interfaces/hasher'
 import Signer from './crypto/interfaces/signer'
 import Serializer from './crypto/interfaces/serializer'
-import Versioner from './crypto/interfaces/versioner'
-import Seal from './crypto/interfaces/sealer'
+import { Versioner, Version } from './crypto/interfaces/versioner'
+import Sealer from './crypto/interfaces/sealer'
 import Blake3 from './crypto/blake3'
 import Ed25519 from './crypto/ed25519'
 import Base58 from './crypto/base58'
@@ -22,7 +22,7 @@ function extractData(
   expectedVersion: Version
 ): Uint8Array {
   const raw: Uint8Array = serializer.deserialize(data)
-  const { data: extractedData, version } = versioner.split(raw)
+  const { data: extractedData, version } = versioner.extract(raw)
   if (version !== expectedVersion) {
     throw new Error(
       `invalid version: ${version}. ${expectedVersion} was expected.`
@@ -35,17 +35,9 @@ function checkPrefix(str: string, ...expected: string[]): void {
   const prefix = str.slice(0, expected[0].length)
   if (!expected.includes(prefix)) {
     throw new Error(
-      `Invalid prefix: ${prefix}. ${expected.length > 1 ? 'One of ' : ''}${expected.join(' or ')} was expected.`
+      `invalid prefix: ${prefix}. ${expected.length > 1 ? 'one of ' : ''}${expected.join(' or ')} was expected.`
     )
   }
-}
-
-/**
- * Versionning for PrivateKey, PublicKey, Address, Signature, and Account.
- */
-export enum Version {
-  V0 = 0,
-  V1 = 1,
 }
 
 /**
@@ -62,8 +54,8 @@ export enum Version {
  * - Voila! The code will automatically handle the new version.
  */
 export class PrivateKey {
-  public hash: Hasher
-  public crypto: Signer
+  public hasher: Hasher
+  public signer: Signer
   public serializer: Serializer
   public versioner: Versioner
   public bytes: Uint8Array
@@ -71,13 +63,13 @@ export class PrivateKey {
 
   protected constructor(
     hash: Hasher,
-    crypto: Signer,
+    signer: Signer,
     serialization: Serializer,
     versioner: Versioner,
     version: Version
   ) {
-    this.hash = hash
-    this.crypto = crypto
+    this.hasher = hash
+    this.signer = signer
     this.serializer = serialization
     this.versioner = versioner
     this.bytes = new Uint8Array()
@@ -103,33 +95,33 @@ export class PrivateKey {
           version
         )
       default:
-        throw new Error(`Unsupported version: ${version}`)
+        throw new Error(`unsupported version: ${version}`)
     }
   }
 
   /**
    * Initializes a new private key object from a serialized string.
    *
-   * @param keyStr - The serialized private key string.
+   * @param str - The serialized private key string.
    * @param version - The version of the private key. If not defined, the last version will be used.
    *
    * @returns A new private key instance.
    *
    * @throws If the private key prefix is invalid.
    */
-  public static fromString(keyStr: string, version?: Version): PrivateKey {
+  public static fromString(str: string, version?: Version): PrivateKey {
     const privateKey = PrivateKey.initFromVersion(version)
 
     try {
-      checkPrefix(keyStr, PRIVATE_KEY_PREFIX)
+      checkPrefix(str, PRIVATE_KEY_PREFIX)
       privateKey.bytes = extractData(
         privateKey.serializer,
         privateKey.versioner,
-        keyStr.slice(PRIVATE_KEY_PREFIX.length),
+        str.slice(PRIVATE_KEY_PREFIX.length),
         privateKey.version
       )
     } catch (e) {
-      throw new Error(`Invalid private key string: ${e.message}`)
+      throw new Error(`invalid private key string: ${e.message}`)
     }
     return privateKey
   }
@@ -157,7 +149,7 @@ export class PrivateKey {
    */
   public static generate(version?: Version): PrivateKey {
     const privateKey = PrivateKey.initFromVersion(version)
-    privateKey.bytes = privateKey.crypto.generatePrivateKey()
+    privateKey.bytes = privateKey.signer.generatePrivateKey()
     return privateKey
   }
 
@@ -183,9 +175,18 @@ export class PrivateKey {
    */
   public async sign(message: Uint8Array): Promise<Signature> {
     return Signature.fromBytes(
-      await this.crypto.sign(this.bytes, this.hash.hash(message)),
+      await this.signer.sign(this.bytes, this.hasher.hash(message)),
       this.version
     )
+  }
+
+  /**
+   * Versions the private key bytes.
+   *
+   * @returns The versioned private key bytes.
+   */
+  public versionedBytes(): Uint8Array {
+    return this.versioner.attach(this.version, this.bytes)
   }
 
   /**
@@ -199,9 +200,7 @@ export class PrivateKey {
    * @returns The serialized private key string.
    */
   public toString(): string {
-    return `${PRIVATE_KEY_PREFIX}${this.serializer.serialize(
-      this.versioner.concat(this.bytes, this.version)
-    )}`
+    return `${PRIVATE_KEY_PREFIX}${this.serializer.serialize(this.versionedBytes())}`
   }
 }
 
@@ -220,22 +219,22 @@ export class PrivateKey {
  * - Voila! The code will automatically handle the new version.
  */
 export class PublicKey {
-  public crypto: Signer
-  public hash: Hasher
+  public signer: Signer
+  public hasher: Hasher
   public serializer: Serializer
   public versioner: Versioner
   public bytes: Uint8Array
   public version: Version
 
   protected constructor(
-    hash: Hasher,
-    crypto: Signer,
+    hasher: Hasher,
+    signer: Signer,
     serialization: Serializer,
     versioner: Versioner,
     version: Version
   ) {
-    this.hash = hash
-    this.crypto = crypto
+    this.hasher = hasher
+    this.signer = signer
     this.serializer = serialization
     this.versioner = versioner
     this.bytes = new Uint8Array()
@@ -263,29 +262,29 @@ export class PublicKey {
           version
         )
       default:
-        throw new Error(`Unsupported version: ${version}`)
+        throw new Error(`unsupported version: ${version}`)
     }
   }
 
   /**
    * Initializes a new public key object from a serialized string.
    *
-   * @param keyStr - The serialized public key string.
+   * @param str - The serialized public key string.
    * @param version - The version of the public key. If not defined, the last version will be used.
    *
    * @returns A new public key instance.
    *
    * @throws If the public key string is invalid.
    */
-  public static fromString(keyStr: string, version?: Version): PublicKey {
+  public static fromString(str: string, version?: Version): PublicKey {
     const publicKey = PublicKey.initFromVersion(version)
 
     try {
-      checkPrefix(keyStr, PUBLIC_KEY_PREFIX)
+      checkPrefix(str, PUBLIC_KEY_PREFIX)
       publicKey.bytes = extractData(
         publicKey.serializer,
         publicKey.versioner,
-        keyStr.slice(PUBLIC_KEY_PREFIX.length),
+        str.slice(PUBLIC_KEY_PREFIX.length),
         publicKey.version
       )
     } catch (e) {
@@ -320,7 +319,7 @@ export class PublicKey {
     privateKey: PrivateKey
   ): Promise<PublicKey> {
     const publicKey = PublicKey.initFromVersion()
-    publicKey.bytes = await publicKey.crypto.getPublicKey(privateKey.bytes)
+    publicKey.bytes = await publicKey.signer.getPublicKey(privateKey.bytes)
     return publicKey
   }
 
@@ -349,11 +348,20 @@ export class PublicKey {
     data: Uint8Array,
     signature: Signature
   ): Promise<boolean> {
-    return await this.crypto.verify(
+    return await this.signer.verify(
       this.bytes,
-      this.hash.hash(data),
+      this.hasher.hash(data),
       signature.bytes
     )
+  }
+
+  /**
+   * Versions the public key bytes.
+   *
+   * @returns The versioned public key bytes.
+   */
+  public versionedBytes(): Uint8Array {
+    return this.versioner.attach(this.version, this.bytes)
   }
 
   /**
@@ -368,7 +376,7 @@ export class PublicKey {
    */
   public toString(): string {
     return `${PUBLIC_KEY_PREFIX}${this.serializer.serialize(
-      this.versioner.concat(this.bytes, this.version)
+      this.versionedBytes()
     )}`
   }
 }
@@ -450,7 +458,7 @@ export class Address {
         address.version
       )
     } catch (e) {
-      throw new Error(`Invalid address string: ${e.message}`)
+      throw new Error(`invalid address string: ${e.message}`)
     }
 
     return address
@@ -485,11 +493,18 @@ export class Address {
    */
   public static fromPublicKey(publicKey: PublicKey): Address {
     const address = Address.initFromVersion()
-    address.bytes = publicKey.hash.hash(
-      address.versioner.concat(publicKey.bytes, publicKey.version)
-    )
+    address.bytes = publicKey.hasher.hash(publicKey.versionedBytes())
     address.isEOA = true
     return address
+  }
+
+  /**
+   * Versions the address key bytes.
+   *
+   * @returns The versioned address key bytes.
+   */
+  public versionedBytes(): Uint8Array {
+    return this.versioner.attach(this.version, this.bytes)
   }
 
   /**
@@ -505,9 +520,7 @@ export class Address {
   toString(): string {
     return `${ADDRESS_PREFIX}${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
-    }${this.serializer.serialize(
-      this.versioner.concat(this.bytes, this.version)
-    )}`
+    }${this.serializer.serialize(this.versionedBytes())}`
   }
 }
 
@@ -543,7 +556,7 @@ export class Signature {
       case Version.V0:
         return new Signature(new Base58(), new VarintVersioner(), version)
       default:
-        throw new Error(`Unsupported version: ${version}`)
+        throw new Error(`unsupported version: ${version}`)
     }
   }
 
@@ -568,7 +581,7 @@ export class Signature {
         signature.version
       )
     } catch (e) {
-      throw new Error(`Invalid signature string: ${e.message}`)
+      throw new Error(`invalid signature string: ${e.message}`)
     }
 
     return signature
@@ -587,56 +600,55 @@ export class Signature {
     signature.bytes = bytes
     return signature
   }
+
+  /**
+   * Versions the Signature key bytes.
+   *
+   * @returns The versioned signature key bytes.
+   */
+  public versionedBytes(): Uint8Array {
+    return this.versioner.attach(this.version, this.bytes)
+  }
 }
 
 /**
  * A class representing an account.
  */
 export class Account {
-  public address: Address
-  private privateKey: PrivateKey
-  public publicKey: PublicKey
-  public version: Version
-  public sealer: Seal
+  public sealer: Sealer
 
   private constructor(
-    privateKey: PrivateKey,
-    publicKey: PublicKey,
-    address: Address,
-    version: Version
-  ) {
-    this.privateKey = privateKey
-    this.publicKey = publicKey
-    this.address = address
-    this.version = version
-  }
+    private privateKey: PrivateKey,
+    public publicKey: PublicKey,
+    public address: Address,
+    public version: Version
+  ) {}
 
   /**
    * Initializes a new account object from a private key.
    *
-   * @param privateKey - The private key of the account.
+   * @param key - The private key of the account.
    * @param version - The version of the account.
    *
    * @returns A new instance of the Account class.
    */
   public static async fromPrivateKey(
-    privateKey: string | PrivateKey,
+    key: string | PrivateKey,
     version?: Version
   ): Promise<Account> {
-    if (typeof privateKey === 'string') {
-      privateKey = PrivateKey.fromString(privateKey)
+    if (typeof key === 'string') {
+      key = PrivateKey.fromString(key)
     }
-    const publicKey = await privateKey.getPublicKey()
+    const publicKey = await key.getPublicKey()
     const address = publicKey.getAddress()
     version = version || Version.V1
 
-    return new Account(privateKey, publicKey, address, version || Version.V1)
+    return new Account(key, publicKey, address, version || Version.V1)
   }
 
   /**
    * Generates a new account object.
    *
-   * @param privateKey - The private key of the account.
    * @param version - The version of the account.
    *
    * @returns A new instance of the Account class.
@@ -714,19 +726,9 @@ export class Account {
           salt: passwordSeal.salt,
           nonce: passwordSeal.nonce,
           cipheredData: await passwordSeal
-            .seal(
-              this.privateKey.versioner.concat(
-                this.privateKey.bytes,
-                this.privateKey.version
-              )
-            )
+            .seal(this.privateKey.versionedBytes())
             .then((a) => Array.from(a)),
-          publicKey: Array.from(
-            this.publicKey.versioner.concat(
-              this.publicKey.bytes,
-              this.publicKey.version
-            )
-          ),
+          publicKey: Array.from(this.publicKey.versionedBytes()),
         } as AccountV0KeyStore
       }
       case Version.V1: {
@@ -741,19 +743,9 @@ export class Account {
           Salt: passwordSeal.salt,
           Nonce: passwordSeal.nonce,
           CipheredData: await passwordSeal
-            .seal(
-              this.privateKey.versioner.concat(
-                this.privateKey.bytes,
-                this.privateKey.version
-              )
-            )
+            .seal(this.privateKey.versionedBytes())
             .then((a) => Array.from(a)),
-          PublicKey: Array.from(
-            this.publicKey.versioner.concat(
-              this.publicKey.bytes,
-              this.publicKey.version
-            )
-          ),
+          PublicKey: Array.from(this.publicKey.versionedBytes()),
         } as AccountV1KeyStore
       }
       default:
@@ -815,7 +807,7 @@ export class Account {
         const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
         const varintVersioner = new VarintVersioner()
         const { data: bytes, version: numberVersion } =
-          varintVersioner.split(privateKeyBytes)
+          varintVersioner.extract(privateKeyBytes)
         // Value number to version variant
         const version = numberVersion as Version
         const privateKey = PrivateKey.fromBytes(bytes, version)
