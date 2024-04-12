@@ -55,7 +55,6 @@ describe('Basic use cases', () => {
   })
 
   test('Account - from file', async () => {
-    // private key is S12jWf59Yzf2LimL89soMnAP2VEBDBpfCbZLoEFo36CxEL3j92rZ
     const walletPath = path.join(__dirname, 'wallet_test_version_1.yaml')
     const ks = load(readFileSync(walletPath, 'utf8'))
     expect(ks.Version).toBe(Version.V1)
