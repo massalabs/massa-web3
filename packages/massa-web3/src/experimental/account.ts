@@ -1,11 +1,12 @@
 import Hasher from './crypto/interfaces/hasher'
 import Signer from './crypto/interfaces/signer'
+import Serializer from './crypto/interfaces/serializer'
+import Versioner from './crypto/interfaces/versioner'
+import Seal from './crypto/interfaces/sealer'
 import Blake3 from './crypto/blake3'
 import Ed25519 from './crypto/ed25519'
-import Serializer from './crypto/interfaces/serializer'
 import Base58 from './crypto/base58'
-import { varintDecode, varintEncode } from '../utils/Xbqcrypto'
-import Seal from './crypto/interfaces/sealer'
+import VarintVersioner from './crypto/varintVersioner'
 import { PasswordSeal } from './crypto/passwordSeal'
 
 const PRIVATE_KEY_PREFIX = 'S'
@@ -16,17 +17,18 @@ const ADDRESS_CONTRACT_PREFIX = 'S'
 
 function extractData(
   serializer: Serializer,
+  versioner: Versioner,
   data: string,
   expectedVersion: Version
 ): Uint8Array {
   const raw: Uint8Array = serializer.deserialize(data)
-  const { value: version, bytes: nbBytes } = varintDecode(raw)
+  const { data: extractedData, version } = versioner.split(raw)
   if (version !== expectedVersion) {
     throw new Error(
       `invalid version: ${version}. ${expectedVersion} was expected.`
     )
   }
-  return raw.subarray(nbBytes)
+  return extractedData
 }
 
 function checkPrefix(str: string, ...expected: string[]): void {
@@ -60,9 +62,10 @@ export enum Version {
  * - Voila! The code will automatically handle the new version.
  */
 export class PrivateKey {
-  private hash: Hasher
-  private crypto: Signer
-  private serializer: Serializer
+  public hash: Hasher
+  public crypto: Signer
+  public serializer: Serializer
+  public versioner: Versioner
   public bytes: Uint8Array
   public version: Version
 
@@ -70,11 +73,13 @@ export class PrivateKey {
     hash: Hasher,
     crypto: Signer,
     serialization: Serializer,
+    versioner: Versioner,
     version: Version
   ) {
     this.hash = hash
     this.crypto = crypto
     this.serializer = serialization
+    this.versioner = versioner
     this.bytes = new Uint8Array()
     this.version = version
   }
@@ -94,6 +99,7 @@ export class PrivateKey {
           new Blake3(),
           new Ed25519(),
           new Base58(),
+          new VarintVersioner(),
           version
         )
       default:
@@ -118,6 +124,7 @@ export class PrivateKey {
       checkPrefix(keyStr, PRIVATE_KEY_PREFIX)
       privateKey.bytes = extractData(
         privateKey.serializer,
+        privateKey.versioner,
         keyStr.slice(PRIVATE_KEY_PREFIX.length),
         privateKey.version
       )
@@ -193,7 +200,7 @@ export class PrivateKey {
    */
   public toString(): string {
     return `${PRIVATE_KEY_PREFIX}${this.serializer.serialize(
-      new Uint8Array([...varintEncode(this.version), ...this.bytes])
+      this.versioner.concat(this.bytes, this.version)
     )}`
   }
 }
@@ -216,6 +223,7 @@ export class PublicKey {
   public crypto: Signer
   public hash: Hasher
   public serializer: Serializer
+  public versioner: Versioner
   public bytes: Uint8Array
   public version: Version
 
@@ -223,11 +231,13 @@ export class PublicKey {
     hash: Hasher,
     crypto: Signer,
     serialization: Serializer,
+    versioner: Versioner,
     version: Version
   ) {
     this.hash = hash
     this.crypto = crypto
     this.serializer = serialization
+    this.versioner = versioner
     this.bytes = new Uint8Array()
     this.version = version
   }
@@ -245,7 +255,13 @@ export class PublicKey {
     version = version || Version.V0
     switch (version) {
       case Version.V0:
-        return new PublicKey(new Blake3(), new Ed25519(), new Base58(), version)
+        return new PublicKey(
+          new Blake3(),
+          new Ed25519(),
+          new Base58(),
+          new VarintVersioner(),
+          version
+        )
       default:
         throw new Error(`Unsupported version: ${version}`)
     }
@@ -268,6 +284,7 @@ export class PublicKey {
       checkPrefix(keyStr, PUBLIC_KEY_PREFIX)
       publicKey.bytes = extractData(
         publicKey.serializer,
+        publicKey.versioner,
         keyStr.slice(PUBLIC_KEY_PREFIX.length),
         publicKey.version
       )
@@ -351,7 +368,7 @@ export class PublicKey {
    */
   public toString(): string {
     return `${PUBLIC_KEY_PREFIX}${this.serializer.serialize(
-      new Uint8Array([...varintEncode(this.version), ...this.bytes])
+      this.versioner.concat(this.bytes, this.version)
     )}`
   }
 }
@@ -371,13 +388,19 @@ export class PublicKey {
  * - Voila! The code will automatically handle the new version.
  */
 export class Address {
+  public serializer: Serializer
+  public versioner: Versioner
   public bytes: Uint8Array
   public isEOA: boolean
   public version: Version
-  private serializer: Serializer
 
-  protected constructor(serializer: Serializer, version: Version) {
+  protected constructor(
+    serializer: Serializer,
+    versioner: Versioner,
+    version: Version
+  ) {
     this.serializer = serializer
+    this.versioner = versioner
     this.version = version
   }
 
@@ -394,7 +417,7 @@ export class Address {
     version = version || Version.V0
     switch (version) {
       case Version.V0:
-        return new Address(new Base58(), version)
+        return new Address(new Base58(), new VarintVersioner(), version)
       default:
         throw new Error(`Unsupported version: ${version}`)
     }
@@ -422,6 +445,7 @@ export class Address {
       address.isEOA = str[ADDRESS_PREFIX.length] === ADDRESS_USER_PREFIX
       address.bytes = extractData(
         address.serializer,
+        address.versioner,
         str.slice(ADDRESS_PREFIX.length),
         address.version
       )
@@ -462,7 +486,7 @@ export class Address {
   public static fromPublicKey(publicKey: PublicKey): Address {
     const address = Address.initFromVersion()
     address.bytes = publicKey.hash.hash(
-      new Uint8Array([...varintEncode(publicKey.version), ...publicKey.bytes])
+      address.versioner.concat(publicKey.bytes, publicKey.version)
     )
     address.isEOA = true
     return address
@@ -479,11 +503,10 @@ export class Address {
    * @returns The serialized address string.
    */
   toString(): string {
-    const versionBytes = varintEncode(this.version)
     return `${ADDRESS_PREFIX}${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
     }${this.serializer.serialize(
-      new Uint8Array([...versionBytes, ...this.bytes])
+      this.versioner.concat(this.bytes, this.version)
     )}`
   }
 }
@@ -492,13 +515,19 @@ export class Address {
  * A class representing a signature.
  */
 export class Signature {
+  public serializer: Serializer
+  public versioner: Versioner
   public bytes: Uint8Array
   public version: Version
-  private serializer: Serializer
 
-  protected constructor(serializer: Serializer, version: Version) {
-    this.version = version
+  protected constructor(
+    serializer: Serializer,
+    versioner: Versioner,
+    version: Version
+  ) {
     this.serializer = serializer
+    this.versioner = versioner
+    this.version = version
   }
 
   /**
@@ -512,7 +541,7 @@ export class Signature {
     version = version || Version.V0
     switch (version) {
       case Version.V0:
-        return new Signature(new Base58(), version)
+        return new Signature(new Base58(), new VarintVersioner(), version)
       default:
         throw new Error(`Unsupported version: ${version}`)
     }
@@ -534,6 +563,7 @@ export class Signature {
     try {
       signature.bytes = extractData(
         signature.serializer,
+        signature.versioner,
         str,
         signature.version
       )
@@ -685,17 +715,17 @@ export class Account {
           nonce: passwordSeal.nonce,
           cipheredData: await passwordSeal
             .seal(
-              new Uint8Array([
-                ...varintEncode(this.privateKey.version),
-                ...this.privateKey.bytes,
-              ])
+              this.privateKey.versioner.concat(
+                this.privateKey.bytes,
+                this.privateKey.version
+              )
             )
             .then((a) => Array.from(a)),
           publicKey: Array.from(
-            new Uint8Array([
-              ...varintEncode(this.publicKey.version),
-              ...this.publicKey.bytes,
-            ])
+            this.publicKey.versioner.concat(
+              this.publicKey.bytes,
+              this.publicKey.version
+            )
           ),
         } as AccountV0KeyStore
       }
@@ -712,17 +742,17 @@ export class Account {
           Nonce: passwordSeal.nonce,
           CipheredData: await passwordSeal
             .seal(
-              new Uint8Array([
-                ...varintEncode(this.privateKey.version),
-                ...this.privateKey.bytes,
-              ])
+              this.privateKey.versioner.concat(
+                this.privateKey.bytes,
+                this.privateKey.version
+              )
             )
             .then((a) => Array.from(a)),
           PublicKey: Array.from(
-            new Uint8Array([
-              ...varintEncode(this.publicKey.version),
-              ...this.publicKey.bytes,
-            ])
+            this.publicKey.versioner.concat(
+              this.publicKey.bytes,
+              this.publicKey.version
+            )
           ),
         } as AccountV1KeyStore
       }
@@ -783,13 +813,12 @@ export class Account {
         )
         // TODO remove varint prefix
         const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
-        const { value, bytes } = varintDecode(privateKeyBytes)
+        const varintVersioner = new VarintVersioner()
+        const { data: bytes, version: numberVersion } =
+          varintVersioner.split(privateKeyBytes)
         // Value number to version variant
-        const version = value as Version
-        const privateKey = PrivateKey.fromBytes(
-          privateKeyBytes.slice(bytes),
-          version
-        )
+        const version = numberVersion as Version
+        const privateKey = PrivateKey.fromBytes(bytes, version)
         const publicKey = PublicKey.fromBytes(
           new Uint8Array(keystore.PublicKey).subarray(1),
           Version.V0
