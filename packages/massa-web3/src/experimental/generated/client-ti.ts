@@ -666,8 +666,6 @@ export const ExecutionStats = t.iface([], {
 
 export const NumberBte4OVdF = t.name("number");
 
-export const StringD6LIFF8F = t.name("string");
-
 export const AlwaysFalse = t.name("any");
 
 export const IpAddress = t.name("string");
@@ -782,7 +780,6 @@ export const NodeStatus = t.iface([], {
   "version": "Version",
   "execution_stats": "ExecutionStats",
   "chain_id": "NumberBte4OVdF",
-  "minimal_fees": "StringD6LIFF8F",
 });
 
 export const UnorderedSetOfIpAddressWpGgzO6M = t.array("IpAddress");
@@ -1104,7 +1101,6 @@ const exportedTypeSuite: t.ITypeSuite = {
   NumberJ4Dz6P30,
   ExecutionStats,
   NumberBte4OVdF,
-  StringD6LIFF8F,
   AlwaysFalse,
   IpAddress,
   StringTPMT1Yxd,
