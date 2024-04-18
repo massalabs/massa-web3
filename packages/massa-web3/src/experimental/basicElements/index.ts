@@ -1,3 +1,5 @@
 export * from './address'
 export * from './signature'
 export * from './keys'
+export * from './operationManager'
+export * from './operation'
