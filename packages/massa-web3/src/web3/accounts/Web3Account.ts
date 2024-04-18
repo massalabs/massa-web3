@@ -16,7 +16,7 @@ import { IContractData } from '../../interfaces/IContractData'
 import { trySafeExecute } from '../../utils/retryExecuteFunction'
 import { ITransactionData } from '../../interfaces/ITransactionData'
 
-function getOperationBufferToSign(
+export function getOperationBufferToSign(
   chainId: bigint,
   bytesPublicKey: Uint8Array,
   bytesCompact: Buffer
