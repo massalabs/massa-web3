@@ -257,7 +257,7 @@ export class BaseClient {
    *
    * @returns The compacted bytes payload.
    */
-  protected compactBytesForOperation(
+  compactBytesForOperation(
     data: DataType,
     opTypeId: OperationTypeId,
     expirePeriod: number
