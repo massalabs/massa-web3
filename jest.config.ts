@@ -19,6 +19,7 @@ const config: Config.InitialOptions = {
     '<rootDir>/packages/*/dist/',
   ],
   modulePathIgnorePatterns: ['experimental/integration'],
+  transformIgnorePatterns: ['/node_modules/(?!big-varint).+\\.js$'],
 }
 
 export default config
