@@ -109,6 +109,9 @@ export class PrivateKey {
    * @returns A new private key instance.
    */
   public static fromEnv(): PrivateKey {
+    if (!process.env.PRIVATE_KEY) {
+      throw new Error('missing `PRIVATE_KEY` environment variable')
+    }
     return PrivateKey.fromString(process.env.PRIVATE_KEY)
   }
 
