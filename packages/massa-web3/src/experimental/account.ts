@@ -140,6 +140,10 @@ export class PrivateKey {
     return privateKey
   }
 
+  public static fromEnv(): PrivateKey {
+    return PrivateKey.fromString(process.env.PRIVATE_KEY)
+  }
+
   /**
    * Initializes a random private key.
    *
@@ -454,7 +458,7 @@ export class Address {
       address.bytes = extractData(
         address.serializer,
         address.versioner,
-        str.slice(ADDRESS_PREFIX.length),
+        str.slice(ADDRESS_PREFIX.length + ADDRESS_USER_PREFIX.length),
         address.version
       )
     } catch (e) {
@@ -609,6 +613,15 @@ export class Signature {
   public versionedBytes(): Uint8Array {
     return this.versioner.attach(this.version, this.bytes)
   }
+
+  /**
+   * Serializes the signature to a string.
+   *
+   * @returns The serialized signature string.
+   */
+  public toString(): string {
+    return this.serializer.serialize(this.versionedBytes())
+  }
 }
 
 /**
@@ -618,7 +631,7 @@ export class Account {
   public sealer: Sealer
 
   private constructor(
-    private privateKey: PrivateKey,
+    public privateKey: PrivateKey,
     public publicKey: PublicKey,
     public address: Address,
     public version: Version
@@ -822,6 +835,25 @@ export class Account {
       default:
         throw new Error(`Unsupported version`)
     }
+  }
+
+  /**
+   * Uses the environment variables to create an account.
+   *
+   * @remarks
+   * The following variables are required:
+   * - PRIVATE_KEY: The private key of the account.
+   *
+   * @returns An account instance.
+   */
+  static async fromEnv(): Promise<Account> {
+    const pk = process.env.PRIVATE_KEY
+    if (!pk) {
+      throw new Error('PRIVATE_KEY environment variable is required.')
+    }
+
+    const privateKey = PrivateKey.fromString(process.env.PRIVATE_KEY)
+    return Account.fromPrivateKey(privateKey)
   }
 }
 
