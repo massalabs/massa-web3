@@ -38,6 +38,7 @@ export enum Transport {
 
 export class PublicAPI {
   connector: MassaOpenRPCSpecification
+  status: NodeStatus
 
   constructor(
     transport: Transport,
@@ -89,8 +90,13 @@ export class PublicAPI {
     return this.getMultipleAddressInfo([address]).then((r) => r[0])
   }
 
-  async getBalance(address: string, speculative: boolean=false): Promise<number> {
-    return this.getAddressInfo(address).then((r) => Number(speculative ? r.candidate_balance: r.final_balance))
+  async getBalance(
+    address: string,
+    speculative: boolean = false
+  ): Promise<number> {
+    return this.getAddressInfo(address).then((r) =>
+      Number(speculative ? r.candidate_balance : r.final_balance)
+    )
   }
 
   async getMultipleAddressInfo(addresses: string[]): Promise<AddressInfo[]> {
@@ -195,21 +201,23 @@ export class PublicAPI {
 
     if (op.op_exec_status === null) {
       if (op.is_operation_final === null) {
-        return OperationStatus.NotFound;
+        return OperationStatus.NotFound
       }
 
-      throw new Error('unexpected status');
+      throw new Error('unexpected status')
     }
 
     if (op.in_pool) {
-      return OperationStatus.PendingInclusion;
+      return OperationStatus.PendingInclusion
     }
 
     if (!op.is_operation_final) {
-      return op.op_exec_status ? OperationStatus.SpeculativeSuccess : OperationStatus.SpeculativeError;
+      return op.op_exec_status
+        ? OperationStatus.SpeculativeSuccess
+        : OperationStatus.SpeculativeError
     }
 
-    return op.op_exec_status ? OperationStatus.Success : OperationStatus.Error;
+    return op.op_exec_status ? OperationStatus.Success : OperationStatus.Error
   }
 
   // todo rename PageRequest pagination
@@ -222,14 +230,20 @@ export class PublicAPI {
   }
 
   async fetchChainId(): Promise<number> {
+    if (this.status) {
+      return this.status.chain_id
+    }
+
     return this.getStatus().then((r) => r.chain_id)
   }
-  
+
   async fetchPeriod(): Promise<number> {
     return this.getStatus().then((r) => r.last_slot.period)
   }
 
-  private static convertOperationInput(data: SendOperationInput): OperationInput {
+  private static convertOperationInput(
+    data: SendOperationInput
+  ): OperationInput {
     return {
       serialized_content: Array.from(data.data),
       creator_public_key: data.publicKey,
@@ -242,7 +256,9 @@ export class PublicAPI {
   }
 
   async sendOperations(data: SendOperationInput[]): Promise<OperationId[]> {
-    return this.connector.send_operations(data.map(e => PublicAPI.convertOperationInput(e)))
+    return this.connector.send_operations(
+      data.map((e) => PublicAPI.convertOperationInput(e))
+    )
   }
 
   async sendMultipleOperations(data: OperationInput[]): Promise<OperationId[]> {
