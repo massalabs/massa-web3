@@ -119,12 +119,27 @@ export class Address {
   }
 
   /**
+   * Initializes a new address object from versioned bytes.
+   *
+   * @param bytes - The versioned bytes.
+   *
+   * @returns A new address object.
+   */
+  public static fromVersionedBytes(bytes: Uint8Array): Address {
+    const isEOA = bytes[0] === 0
+    const { version, data } = new VarintVersioner().extract(bytes.slice(1))
+    return Address.fromBytes(data, isEOA, version)
+  }
+
+  /**
    * Versions the address key bytes.
    *
    * @returns The versioned address key bytes.
    */
   public versionedBytes(): Uint8Array {
-    return this.versioner.attach(this.version, this.bytes)
+    const eoaPrefix = new Uint8Array(this.isEOA ? [0] : [1])
+    const bytes = this.versioner.attach(this.version, this.bytes)
+    return Uint8Array.from([...eoaPrefix, ...bytes])
   }
 
   /**
@@ -140,6 +155,6 @@ export class Address {
   toString(): string {
     return `${ADDRESS_PREFIX}${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
-    }${this.serializer.serialize(this.versionedBytes())}`
+    }${this.serializer.serialize(this.versionedBytes().slice(1))}`
   }
 }

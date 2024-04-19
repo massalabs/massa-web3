@@ -100,9 +100,6 @@ export class OperationManager {
     switch (operation.type) {
       case OperationType.Transaction:
         operation = operation as TransferOperation
-        components.push(
-          new Uint8Array(operation.recipientAddress.isEOA ? [0] : [1])
-        )
         components.push(operation.recipientAddress.versionedBytes())
         components.push(unsigned.encode(BigInt(operation.amount)))
         break
@@ -165,13 +162,10 @@ export class OperationManager {
 
     switch (operationDetails.type) {
       case OperationType.Transaction: {
-        const isEOA = data[offset] === 0
-        offset += 1
-        const recipientAddress = Address.fromBytes(
-          data.slice(offset, offset + 32),
-          isEOA
+        const recipientAddress = Address.fromVersionedBytes(
+          data.slice(offset, offset + 33)
         )
-        offset += 32
+        offset += 33
         const amount = decodeNext()
         return {
           ...operationDetails,
