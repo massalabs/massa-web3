@@ -137,15 +137,14 @@ describe('unit tests', () => {
 
   test.skip('sendOperation', async () => {
     const operation = await api.sendOperation({
-      creator_public_key:
-        'P12QDzMvr1SNNwJWmdpA9XQY9PqCDqdLaqiQDFZKQh8dPGSxagTh',
+      publicKey: 'P12QDzMvr1SNNwJWmdpA9XQY9PqCDqdLaqiQDFZKQh8dPGSxagTh',
       signature:
         '1JhEaikbcebpJKPd7q6VsA2iWcnuL1iho6vcbpAsJJkp5SjFo7nD8xCJwxTXh7oiKH3bQ95DH7DK1kNzu5Xw5somQxbeiA',
-      serialized_content: [
+      data: Uint8Array.from([
         128, 173, 226, 4, 160, 194, 30, 0, 0, 0, 159, 203, 100, 23, 219, 54,
         253, 245, 197, 164, 216, 135, 68, 99, 245, 229, 167, 22, 210, 46, 194,
         89, 114, 243, 208, 0, 237, 205, 111, 189, 24, 65, 0,
-      ],
+      ]),
     })
     expect(operation.length > 0)
   })
