@@ -2,7 +2,7 @@
   "name": "massa-web3-workspace",
   "version": "1.0.0",
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "npx is-ci || husky install",
     "test:browser": "jest --config=jest.browser.config.js",
     "test": "jest --forceExit --detectOpenHandles",
     "test:cov": "npm run test:cov --ws --if-present",
@@ -25,6 +25,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsdoc": "^48.0.4",
     "husky": "^8.0.0",
+    "is-ci": "^3.0.1",
     "jest-puppeteer": "^10.0.1",
     "lint-staged": "^15.0.1",
     "prettier": "^3.2.4",
