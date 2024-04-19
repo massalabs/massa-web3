@@ -1,5 +1,5 @@
 import { OperationStatus } from './basicElements'
-import { SendOperationInput } from './client'
+import { SendOperationInput, EventFilter as EvtFilter } from './client'
 import {
   OperationInput,
   Pagination,
@@ -176,10 +176,20 @@ export class PublicAPI {
     return this.connector.get_endorsements(endorsementIds)
   }
 
-  async getFilteredScOutputEvent(
-    filter: EventFilter
-  ): Promise<SCOutputEvent[]> {
-    return this.connector.get_filtered_sc_output_event(filter)
+  async getEvents(filter: EvtFilter): Promise<SCOutputEvent[]> {
+    filter = {
+      start: filter.start,
+      end: filter.end,
+      emitter_address: filter.smartContractAddress,
+      original_caller_address: filter.callerAddress,
+      original_operation_id: filter.operationId,
+      is_final: filter.isFinal,
+      is_error: filter.isError,
+    } as EventFilter
+
+    const events = await this.connector.get_filtered_sc_output_event(filter)
+
+    return events
   }
 
   async getGraphInterval(

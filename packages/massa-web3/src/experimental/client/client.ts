@@ -1,4 +1,5 @@
 import { OperationStatus } from '../basicElements'
+import { Slot } from '../generated/client'
 
 export interface SendOperationInput {
   data: Uint8Array
@@ -8,6 +9,16 @@ export interface SendOperationInput {
 
 export interface SCOutputEvent {
   data: string
+}
+
+export interface EventFilter {
+  start?: Slot
+  end?: Slot
+  smartContractAddress?: string
+  callerAddress?: string
+  operationId?: string
+  isFinal?: boolean
+  isError?: boolean
 }
 
 /*
