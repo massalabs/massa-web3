@@ -1,0 +1,26 @@
+name: (workspace) Integration tests
+
+on:
+  schedule:
+    # Every day at 00:00 UTC
+    - cron: "0 0 * * *"
+  workflow_call:
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
+
+      - name: Run integration tests
+        env:
+          WALLET_SECRET_KEY: ${{ secrets.WALLET_SECRET_KEY }}
+        run: npm run test:integration
