@@ -4,10 +4,10 @@ import {
   ReadOnlyBytecodeExecution,
   ReadOnlyCall,
   Slot,
-} from '../../src/experimental/generated/client'
-import { PublicAPI, Transport } from '../../src/experimental/publicAPI'
+} from '../../../src/experimental/generated/client'
+import { PublicAPI, Transport } from '../../../src/experimental/publicAPI'
 import { createCheckers } from 'ts-interface-checker'
-import validator from '../../src/experimental/generated/client-ti'
+import validator from '../../../src/experimental/generated/client-ti'
 
 const {
   NodeStatus,

@@ -6,6 +6,7 @@ const config: Config.InitialOptions = {
   rootDir: '../..',
   displayName: 'massa-web3',
   testMatch: ['<rootDir>/packages/massa-web3/test/**/*.(spec|test).ts?(x)'],
+  modulePathIgnorePatterns: [],
 }
 
 export default config
