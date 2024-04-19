@@ -1,3 +1,5 @@
+import { OperationStatus } from './basicElements'
+import { SendOperationInput } from './client'
 import {
   OperationInput,
   Pagination,
@@ -85,6 +87,10 @@ export class PublicAPI {
 
   async getAddressInfo(address: string): Promise<AddressInfo> {
     return this.getMultipleAddressInfo([address]).then((r) => r[0])
+  }
+
+  async getBalance(address: string, speculative: boolean=false): Promise<number> {
+    return this.getAddressInfo(address).then((r) => Number(speculative ? r.candidate_balance: r.final_balance))
   }
 
   async getMultipleAddressInfo(addresses: string[]): Promise<AddressInfo[]> {
@@ -184,6 +190,28 @@ export class PublicAPI {
     return this.getOperations([operationId]).then((r) => r[0])
   }
 
+  async getOperationStatus(operationId: string): Promise<OperationStatus> {
+    const op = await this.getOperation(operationId)
+
+    if (op.op_exec_status === null) {
+      if (op.is_operation_final === null) {
+        return OperationStatus.NotFound;
+      }
+
+      throw new Error('unexpected status');
+    }
+
+    if (op.in_pool) {
+      return OperationStatus.PendingInclusion;
+    }
+
+    if (!op.is_operation_final) {
+      return op.op_exec_status ? OperationStatus.SpeculativeSuccess : OperationStatus.SpeculativeError;
+    }
+
+    return op.op_exec_status ? OperationStatus.Success : OperationStatus.Error;
+  }
+
   // todo rename PageRequest pagination
   async getStakers(pagination: Pagination): Promise<Staker[]> {
     return this.connector.get_stakers(pagination)
@@ -193,12 +221,28 @@ export class PublicAPI {
     return this.connector.get_status()
   }
 
-  async sendOperation(data: OperationInput): Promise<OperationId> {
+  async fetchChainId(): Promise<number> {
+    return this.getStatus().then((r) => r.chain_id)
+  }
+  
+  async fetchPeriod(): Promise<number> {
+    return this.getStatus().then((r) => r.last_slot.period)
+  }
+
+  private static convertOperationInput(data: SendOperationInput): OperationInput {
+    return {
+      serialized_content: Array.from(data.data),
+      creator_public_key: data.publicKey,
+      signature: data.signature,
+    }
+  }
+
+  async sendOperation(data: SendOperationInput): Promise<OperationId> {
     return this.sendOperations([data]).then((r) => r[0])
   }
 
-  async sendOperations(data: OperationInput[]): Promise<OperationId[]> {
-    return this.connector.send_operations(data)
+  async sendOperations(data: SendOperationInput[]): Promise<OperationId[]> {
+    return this.connector.send_operations(data.map(e => PublicAPI.convertOperationInput(e)))
   }
 
   async sendMultipleOperations(data: OperationInput[]): Promise<OperationId[]> {
