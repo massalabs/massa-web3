@@ -7,6 +7,7 @@
     "test": "jest --forceExit --detectOpenHandles",
     "test:cov": "npm run test:cov --ws --if-present",
     "test:all": "npm run test:all --ws --if-present",
+    "test:integration": "npm run test:integration --ws --if-present",
     "build": "npm run build --ws --if-present",
     "lint": "eslint . && npm run check-types --ws",
     "lint:fix": "eslint . --fix && npm run check-types --ws",

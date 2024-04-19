@@ -18,6 +18,7 @@ const config: Config.InitialOptions = {
     '<rootDir>/node_modules/',
     '<rootDir>/packages/*/dist/',
   ],
+  modulePathIgnorePatterns: ['experimental/integration'],
 }
 
 export default config
