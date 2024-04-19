@@ -1,6 +1,5 @@
 import {
   AddressFilter,
-  EventFilter,
   ReadOnlyBytecodeExecution,
   ReadOnlyCall,
   Slot,
@@ -8,6 +7,7 @@ import {
 import { PublicAPI, Transport } from '../../../src/experimental/publicAPI'
 import { createCheckers } from 'ts-interface-checker'
 import validator from '../../../src/experimental/generated/client-ti'
+import { EventFilter } from '../../../src/experimental/client'
 
 const {
   NodeStatus,
@@ -167,9 +167,10 @@ describe('unit tests', () => {
     AddressInfo.strictCheck(info[0])
   })
 
-  test.skip('getFilteredScOutputEvent', async () => {
-    const event = await api.getFilteredScOutputEvent({
-      emitter_address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+  test.skip('getEvents', async () => {
+    const event = await api.getEvents({
+      smartContractAddress:
+        'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
     } as EventFilter)
     expect(event.length > 1).toBeTruthy()
     SCOutputEvent.strictCheck(event[0])
