@@ -100,7 +100,7 @@ export class OperationManager {
     switch (operation.type) {
       case OperationType.Transaction:
         operation = operation as TransferOperation
-        components.push(operation.recipientAddress.versionedBytes())
+        components.push(operation.recipientAddress.toBytes())
         components.push(unsigned.encode(operation.amount))
         break
       case OperationType.RollBuy:
@@ -162,7 +162,7 @@ export class OperationManager {
 
     switch (operationDetails.type) {
       case OperationType.Transaction: {
-        const recipientAddress = Address.fromVersionedBytes(
+        const recipientAddress = Address.fromBytes(
           data.slice(offset, offset + 33)
         )
         offset += 33
@@ -204,7 +204,7 @@ export class OperationManager {
     view.setBigUint64(0, chainId, false)
 
     const data = OperationManager.serialize(operation)
-    const publicKeyBytes = key.versionedBytes()
+    const publicKeyBytes = key.toBytes()
     return Uint8Array.from([...networkId, ...publicKeyBytes, ...data])
   }
 

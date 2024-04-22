@@ -78,7 +78,7 @@ export class Signature {
    *
    * @returns The versioned signature key bytes.
    */
-  public versionedBytes(): Uint8Array {
+  public toBytes(): Uint8Array {
     return this.versioner.attach(this.version, this.bytes)
   }
 
@@ -88,6 +88,6 @@ export class Signature {
    * @returns The serialized signature string.
    */
   public toString(): string {
-    return this.serializer.serialize(this.versionedBytes())
+    return this.serializer.serialize(this.toBytes())
   }
 }
