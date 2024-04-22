@@ -21,19 +21,26 @@ export class AccountOperation {
   ) {}
 
   private async rollOperation(
-    amount: number,
+    type: OperationType,
+    amount: bigint,
     opts?: OptOpDetails
   ): Promise<string> {
+    if (type !== OperationType.RollBuy && type !== OperationType.RollSell) {
+      throw new Error('Invalid roll operation type.')
+    }
+    if (amount <= 0) {
+      throw new Error('amount of rolls must be a positive non-zero value.')
+    }
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: RollOperation = {
       // Todo: change with fetchMinimalFees once ready
-      fee: opts?.fee ?? 0,
+      fee: opts?.fee ?? 0n,
       expirePeriod: await calculateExpirePeriod(
         this.client,
         opts?.periodToLive
       ),
-      type: amount > 0 ? OperationType.RollBuy : OperationType.RollSell,
-      amount: Math.abs(amount),
+      type,
+      amount,
     }
 
     return operation.send(details)
@@ -42,43 +49,27 @@ export class AccountOperation {
   /**
    * Buys rolls.
    *
-   * @param client - The client to connect to the desired blockchain.
    * @param amount - The number of rolls to buy.
    * @param opts - Optional operation details.
    *
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async buyRolls(
-    client: BlockchainClient,
-    amount: number,
-    opts?: OptOpDetails
-  ): Promise<string> {
-    if (amount <= 0) {
-      throw new Error('amount of rolls must be a positive non-zero value.')
-    }
-    return this.rollOperation(amount, opts)
+  async buyRolls(amount: bigint, opts?: OptOpDetails): Promise<string> {
+    return this.rollOperation(OperationType.RollBuy, amount, opts)
   }
 
   /**
    * Sells rolls.
    *
-   * @param client - The client to connect to the desired blockchain.
    * @param amount - The number of rolls to sell.
    * @param opts - Optional operation details.
    *
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async sellRolls(
-    client: BlockchainClient,
-    amount: number,
-    opts?: OptOpDetails
-  ): Promise<Operation> {
-    if (amount <= 0) {
-      throw new Error('amount of rolls must be a positive non-zero value.')
-    }
-    return new Operation(this.client, await this.rollOperation(-amount, opts))
+  async sellRolls(amount: bigint, opts?: OptOpDetails): Promise<string> {
+    return this.rollOperation(OperationType.RollSell, amount, opts)
   }
 
   /**
@@ -93,7 +84,7 @@ export class AccountOperation {
    */
   async transfer(
     to: Address | string,
-    amount: number,
+    amount: bigint,
     opts?: OptOpDetails
   ): Promise<Operation> {
     if (amount <= 0) {
@@ -107,13 +98,13 @@ export class AccountOperation {
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: TransferOperation = {
       // Todo: change with fetchMinimalFees once ready
-      fee: opts?.fee || 0,
+      fee: opts?.fee ?? 0n,
       expirePeriod: await calculateExpirePeriod(
         this.client,
         opts?.periodToLive
       ),
       type: OperationType.Transaction,
-      amount: amount,
+      amount,
       recipientAddress: to,
     }
 
@@ -127,7 +118,7 @@ export class AccountOperation {
    *
    * @returns The balance of the account.
    */
-  async fetchBalance(speculative: boolean = false): Promise<number> {
+  async fetchBalance(speculative: boolean = false): Promise<bigint> {
     return this.client.getBalance(this.account.address.toString(), speculative)
   }
 }
