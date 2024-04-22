@@ -15,8 +15,8 @@ export interface SCOutputEvent {
  */
 export interface BlockchainClient {
   sendOperation(data: SendOperationInput): Promise<string>
-  fetchChainId(): Promise<number>
+  fetchChainId(): Promise<bigint>
   fetchPeriod(): Promise<number>
   getOperationStatus(operationId: string): Promise<OperationStatus>
-  getBalance(address: string, speculative?: boolean): Promise<number>
+  getBalance(address: string, speculative?: boolean): Promise<bigint>
 }

@@ -93,10 +93,11 @@ export class PublicAPI {
   async getBalance(
     address: string,
     speculative: boolean = false
-  ): Promise<number> {
-    return this.getAddressInfo(address).then((r) =>
-      Number(speculative ? r.candidate_balance : r.final_balance)
-    )
+  ): Promise<bigint> {
+    return this.getAddressInfo(address).then((r) => {
+      console.log('getAddressInfo', r)
+      return BigInt(speculative ? r.candidate_balance : r.final_balance)
+    })
   }
 
   async getMultipleAddressInfo(addresses: string[]): Promise<AddressInfo[]> {
@@ -229,12 +230,12 @@ export class PublicAPI {
     return this.connector.get_status()
   }
 
-  async fetchChainId(): Promise<number> {
+  async fetchChainId(): Promise<bigint> {
     if (this.status) {
-      return this.status.chain_id
+      return BigInt(this.status.chain_id)
     }
 
-    return this.getStatus().then((r) => r.chain_id)
+    return this.getStatus().then((r) => BigInt(r.chain_id))
   }
 
   async fetchPeriod(): Promise<number> {

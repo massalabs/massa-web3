@@ -29,30 +29,30 @@ export enum OperationType {
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
  */
 export interface OptOpDetails {
-  fee?: number
+  fee?: bigint
   periodToLive?: number
 }
 
 interface BaseOperation {
-  fee: number
+  fee: bigint
   expirePeriod: number
   type: OperationType
 }
 
 export interface RollOperation extends BaseOperation {
   type: OperationType.RollBuy | OperationType.RollSell
-  amount: number
+  amount: bigint
 }
 
 export interface TransferOperation extends BaseOperation {
   type: OperationType.Transaction
-  amount: number
+  amount: bigint
   recipientAddress: Address
 }
 
 interface BaseSmartContractOperation extends BaseOperation {
-  maxGas: number
-  coins: number
+  maxGas: bigint
+  coins: bigint
 }
 
 export interface CallOperation extends BaseSmartContractOperation {
@@ -92,7 +92,7 @@ export class OperationManager {
   static serialize(operation: OperationDetails): Uint8Array {
     // TODO: check that unsigned.encode is equivalent to varint.encode
     const components = [
-      unsigned.encode(BigInt(operation.fee)),
+      unsigned.encode(operation.fee),
       unsigned.encode(BigInt(operation.expirePeriod)),
       unsigned.encode(BigInt(operation.type)),
     ]
@@ -101,17 +101,17 @@ export class OperationManager {
       case OperationType.Transaction:
         operation = operation as TransferOperation
         components.push(operation.recipientAddress.versionedBytes())
-        components.push(unsigned.encode(BigInt(operation.amount)))
+        components.push(unsigned.encode(operation.amount))
         break
       case OperationType.RollBuy:
       case OperationType.RollSell:
         operation = operation as RollOperation
-        components.push(unsigned.encode(BigInt(operation.amount)))
+        components.push(unsigned.encode(operation.amount))
         break
       case OperationType.ExecuteSmartContractBytecode:
         operation = operation as ExecuteOperation
-        components.push(unsigned.encode(BigInt(operation.maxGas)))
-        components.push(unsigned.encode(BigInt(operation.coins)))
+        components.push(unsigned.encode(operation.maxGas))
+        components.push(unsigned.encode(operation.coins))
         components.push(
           unsigned.encode(BigInt(operation.contractDataBinary.length))
         )
@@ -151,13 +151,13 @@ export class OperationManager {
     const decodeNext = () => {
       const value = unsigned.decode(data, offset)
       offset += unsigned.encodingLength(value)
-      return Number(value)
+      return value
     }
 
     let operationDetails: BaseOperation = {
       fee: decodeNext(),
-      expirePeriod: decodeNext(),
-      type: decodeNext(),
+      expirePeriod: Number(decodeNext()),
+      type: Number(decodeNext()),
     }
 
     switch (operationDetails.type) {
@@ -166,23 +166,18 @@ export class OperationManager {
           data.slice(offset, offset + 33)
         )
         offset += 33
-        const amount = decodeNext()
         return {
           ...operationDetails,
           recipientAddress,
-          amount,
+          amount: decodeNext(),
         } as TransferOperation
-
-        break
       }
       case OperationType.RollBuy:
       case OperationType.RollSell: {
-        const amount = decodeNext()
         return {
           ...operationDetails,
-          amount,
+          amount: decodeNext(),
         } as RollOperation
-        break
       }
       default:
         throw new Error('Operation type not supported')
@@ -199,14 +194,14 @@ export class OperationManager {
    * @returns The formatted operation ready for signing.
    */
   static canonicalize(
-    chainId: number,
+    chainId: bigint,
     operation: OperationDetails,
     key: PublicKey
   ): Uint8Array {
     // u64ToBytes is little endian
     const networkId = new Uint8Array(8)
     const view = new DataView(networkId.buffer)
-    view.setBigUint64(0, BigInt(chainId), false)
+    view.setBigUint64(0, chainId, false)
 
     const data = OperationManager.serialize(operation)
     const publicKeyBytes = key.versionedBytes()
@@ -224,7 +219,7 @@ export class OperationManager {
    *
    * @returns A signature of the operation.
    */
-  async sign(chainId: number, operation: OperationDetails): Promise<Signature> {
+  async sign(chainId: bigint, operation: OperationDetails): Promise<Signature> {
     return this.privateKey.sign(
       OperationManager.canonicalize(
         chainId,

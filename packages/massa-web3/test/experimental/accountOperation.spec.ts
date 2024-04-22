@@ -16,7 +16,7 @@ describe('Basic use cases', () => {
     const accountOperation = new AccountOperation(account, client)
     const transfer = await accountOperation.transfer(
       'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-      1
+      1n
     )
     expect(await transfer.getStatus()).toBe(OperationStatus.NotFound)
   })

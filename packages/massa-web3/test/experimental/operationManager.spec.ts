@@ -33,10 +33,10 @@ const clientConfig: IClientConfig = {
 describe('Unit tests', () => {
   test('serialize - transfer', async () => {
     const transfer: TransferOperation = {
-      fee: 1,
+      fee: 1n,
       type: OperationType.Transaction,
       expirePeriod: 2,
-      amount: 3,
+      amount: 3n,
       recipientAddress: XPAddress.fromString(
         'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
       ),
@@ -61,16 +61,16 @@ describe('Unit tests', () => {
 
   test('canonicalize', async () => {
     const transfer: TransferOperation = {
-      fee: 1,
+      fee: 1n,
       type: OperationType.Transaction,
       expirePeriod: 2,
-      amount: 3,
+      amount: 3n,
       recipientAddress: XPAddress.fromString(
         'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
       ),
     }
     const publicKey = await PrivateKey.fromEnv().getPublicKey()
-    expect(OperationManager.canonicalize(1, transfer, publicKey)).toEqual(
+    expect(OperationManager.canonicalize(1n, transfer, publicKey)).toEqual(
       Uint8Array.from(
         getOperationBufferToSign(
           1n,
