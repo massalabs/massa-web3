@@ -1,7 +1,4 @@
-import {
-  varintDecode,
-  varintEncode,
-} from '@massalabs/massa-web3/utils/Xbqcrypto'
+import varint from 'varint'
 import { Versioner, Version } from './interfaces/versioner'
 
 /**
@@ -17,7 +14,7 @@ export default class VarintVersioner implements Versioner {
    * @returns The versioned data.
    */
   attach(version: Version, data: Uint8Array): Uint8Array {
-    const versionArray = varintEncode(version)
+    const versionArray = varint.encode(version)
     return new Uint8Array([...versionArray, ...data])
   }
 
@@ -29,7 +26,7 @@ export default class VarintVersioner implements Versioner {
    * @returns The version and the data.
    */
   extract(data: Uint8Array): { version: Version; data: Uint8Array } {
-    const { value: version, bytes: nbBytes } = varintDecode(data)
-    return { data: data.slice(nbBytes), version }
+    const version = varint.decode(data)
+    return { data: data.slice(varint.decode.bytes), version }
   }
 }
