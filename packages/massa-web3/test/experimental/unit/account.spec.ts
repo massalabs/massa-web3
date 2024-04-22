@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import { load } from 'js-yaml'
-import { Account, AccountV1KeyStore } from '../../../src/experimental/account'
+import { Account, AccountKeyStore } from '../../../src/experimental/account'
 import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
 import path from 'path'
 
@@ -16,15 +16,17 @@ describe('Basic use cases', () => {
       'P126AtzfcSJwdi6xsAmXbzXhhwVhS9d1hRjFNT4PfrDogt3nAihj'
     )
     expect(account.version).toBe(Version.V1)
+    expect(account.address.version).toBe(Version.V0)
+    expect(account.address.isEOA).toBe(true)
 
-    const ks = (await account.toKeyStore(
+    const ks = await account.toKeyStore(
       'unsecurePassword',
       new Uint8Array([
         146, 63, 151, 136, 93, 135, 105, 113, 124, 41, 189, 207, 86, 124, 17,
         152,
       ]),
       new Uint8Array([250, 104, 81, 250, 235, 79, 110, 84, 243, 225, 144, 242])
-    )) as AccountV1KeyStore
+    )
     expect(ks.Version).toBe(Version.V1)
     expect(ks.Address).toBe(
       'AU126tkwrhXn9gEG5JPtrNy8NNLbVMwywokgLKshSYyzP8qusqXZL'
@@ -54,9 +56,10 @@ describe('Basic use cases', () => {
     expect(ks).toStrictEqual(ks2)
   })
 
-  test('Account - from file', async () => {
+  test('Account - from keystore', async () => {
     const walletPath = path.join(__dirname, 'wallet_test_version_1.yaml')
-    const ks = load(readFileSync(walletPath, 'utf8'))
+    const ks = load(readFileSync(walletPath, 'utf8')) as AccountKeyStore
+
     expect(ks.Version).toBe(Version.V1)
     expect(ks.Address).toBe(
       'AU126tkwrhXn9gEG5JPtrNy8NNLbVMwywokgLKshSYyzP8qusqXZL'
@@ -70,5 +73,22 @@ describe('Basic use cases', () => {
       'P126AtzfcSJwdi6xsAmXbzXhhwVhS9d1hRjFNT4PfrDogt3nAihj'
     )
     expect(account.version).toBe(Version.V1)
+    expect(account.address.version).toBe(Version.V0)
+    expect(account.address.isEOA).toBe(true)
+  })
+
+  test('Account - from yaml file', async () => {
+    const walletPath = path.join(__dirname, 'wallet_test_version_1.yaml')
+
+    const account = await Account.fromYaml(walletPath, 'unsecurePassword')
+    expect(account.address.toString()).toBe(
+      'AU126tkwrhXn9gEG5JPtrNy8NNLbVMwywokgLKshSYyzP8qusqXZL'
+    )
+    expect(account.publicKey.toString()).toBe(
+      'P126AtzfcSJwdi6xsAmXbzXhhwVhS9d1hRjFNT4PfrDogt3nAihj'
+    )
+    expect(account.version).toBe(Version.V1)
+    expect(account.address.version).toBe(Version.V0)
+    expect(account.address.isEOA).toBe(true)
   })
 })

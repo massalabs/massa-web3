@@ -28,41 +28,42 @@ export enum OperationType {
  * If no fee is provided, 0 is used.
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
  */
-export interface OptOpDetails {
+export type OptOpDetails = {
   fee?: bigint
   periodToLive?: number
 }
 
-interface BaseOperation {
+type BaseOperation = {
   fee: bigint
   expirePeriod: number
   type: OperationType
 }
 
-export interface RollOperation extends BaseOperation {
+export type RollOperation = BaseOperation & {
   type: OperationType.RollBuy | OperationType.RollSell
   amount: bigint
 }
 
-export interface TransferOperation extends BaseOperation {
+export type TransferOperation = BaseOperation & {
   type: OperationType.Transaction
   amount: bigint
   recipientAddress: Address
 }
 
-interface BaseSmartContractOperation extends BaseOperation {
+export type BaseSmartContractOperation = BaseOperation & {
   maxGas: bigint
   coins: bigint
 }
 
-export interface CallOperation extends BaseSmartContractOperation {
+export type CallOperation = BaseSmartContractOperation & {
   type: OperationType.CallSmartContractFunction
   address: string
   functionName: string
   parameter: Uint8Array
 }
 
-export interface ExecuteOperation extends BaseSmartContractOperation {
+export type ExecuteOperation = BaseSmartContractOperation & {
+  type: OperationType.ExecuteSmartContractBytecode
   contractDataBinary: Uint8Array
   datastore?: Map<Uint8Array, Uint8Array>
 }

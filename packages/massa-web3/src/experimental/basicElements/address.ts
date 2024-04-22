@@ -135,8 +135,9 @@ export class Address {
    * @returns The serialized address string.
    */
   toString(): string {
+    const versionedBytes = this.versioner.attach(this.version, this.bytes)
     return `${ADDRESS_PREFIX}${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
-    }${this.serializer.serialize(this.toBytes().slice(1))}`
+    }${this.serializer.serialize(versionedBytes)}`
   }
 }
