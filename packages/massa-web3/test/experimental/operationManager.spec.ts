@@ -74,7 +74,7 @@ describe('Unit tests', () => {
       Uint8Array.from(
         getOperationBufferToSign(
           1n,
-          publicKey.versionedBytes(),
+          publicKey.toBytes(),
           Buffer.from(
             new BaseClient(clientConfig).compactBytesForOperation(
               {

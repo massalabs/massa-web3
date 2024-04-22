@@ -85,26 +85,6 @@ export class Address {
   }
 
   /**
-   * Initializes a new address object from a raw byte array.
-   *
-   * @param bytes - The address raw bytes.
-   * @param isEOA - A boolean indicating whether the address is an EOA.
-   * @param version - The version of the address. If not defined, the last version will be used.
-   *
-   * @returns A new address object.
-   */
-  public static fromBytes(
-    bytes: Uint8Array,
-    isEOA: boolean,
-    version?: Version
-  ): Address {
-    const address = Address.initFromVersion(version)
-    address.bytes = bytes
-    address.isEOA = isEOA
-    return address
-  }
-
-  /**
    * Initializes a new address object from a public key.
    *
    * @param publicKey - The public key to derive the address from.
@@ -113,7 +93,7 @@ export class Address {
    */
   public static fromPublicKey(publicKey: PublicKey): Address {
     const address = Address.initFromVersion()
-    address.bytes = publicKey.hasher.hash(publicKey.versionedBytes())
+    address.bytes = publicKey.hasher.hash(publicKey.toBytes())
     address.isEOA = true
     return address
   }
@@ -125,10 +105,12 @@ export class Address {
    *
    * @returns A new address object.
    */
-  public static fromVersionedBytes(bytes: Uint8Array): Address {
-    const isEOA = bytes[0] === 0
+  public static fromBytes(bytes: Uint8Array): Address {
     const { version, data } = new VarintVersioner().extract(bytes.slice(1))
-    return Address.fromBytes(data, isEOA, version)
+    const address = Address.initFromVersion(version)
+    address.bytes = data
+    address.isEOA = bytes[0] === 0
+    return address
   }
 
   /**
@@ -136,7 +118,7 @@ export class Address {
    *
    * @returns The versioned address key bytes.
    */
-  public versionedBytes(): Uint8Array {
+  public toBytes(): Uint8Array {
     const eoaPrefix = new Uint8Array(this.isEOA ? [0] : [1])
     const bytes = this.versioner.attach(this.version, this.bytes)
     return Uint8Array.from([...eoaPrefix, ...bytes])
@@ -155,6 +137,6 @@ export class Address {
   toString(): string {
     return `${ADDRESS_PREFIX}${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
-    }${this.serializer.serialize(this.versionedBytes().slice(1))}`
+    }${this.serializer.serialize(this.toBytes().slice(1))}`
   }
 }

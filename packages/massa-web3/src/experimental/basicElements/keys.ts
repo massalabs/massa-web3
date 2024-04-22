@@ -160,7 +160,7 @@ export class PrivateKey {
    *
    * @returns The versioned private key bytes.
    */
-  public versionedBytes(): Uint8Array {
+  public toBytes(): Uint8Array {
     return this.versioner.attach(this.version, this.bytes)
   }
 
@@ -175,7 +175,7 @@ export class PrivateKey {
    * @returns The serialized private key string.
    */
   public toString(): string {
-    return `${PRIVATE_KEY_PREFIX}${this.serializer.serialize(this.versionedBytes())}`
+    return `${PRIVATE_KEY_PREFIX}${this.serializer.serialize(this.toBytes())}`
   }
 }
 
@@ -322,7 +322,7 @@ export class PublicKey {
    *
    * @returns The versioned public key bytes.
    */
-  public versionedBytes(): Uint8Array {
+  public toBytes(): Uint8Array {
     return this.versioner.attach(this.version, this.bytes)
   }
 
@@ -337,8 +337,6 @@ export class PublicKey {
    * @returns The serialized public key string.
    */
   public toString(): string {
-    return `${PUBLIC_KEY_PREFIX}${this.serializer.serialize(
-      this.versionedBytes()
-    )}`
+    return `${PUBLIC_KEY_PREFIX}${this.serializer.serialize(this.toBytes())}`
   }
 }

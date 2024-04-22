@@ -118,9 +118,9 @@ export class Account {
           salt: passwordSeal.salt,
           nonce: passwordSeal.nonce,
           cipheredData: await passwordSeal
-            .seal(this.privateKey.versionedBytes())
+            .seal(this.privateKey.toBytes())
             .then((a) => Array.from(a)),
-          publicKey: Array.from(this.publicKey.versionedBytes()),
+          publicKey: Array.from(this.publicKey.toBytes()),
         } as AccountV0KeyStore
       }
       case Version.V1: {
@@ -135,9 +135,9 @@ export class Account {
           Salt: passwordSeal.salt,
           Nonce: passwordSeal.nonce,
           CipheredData: await passwordSeal
-            .seal(this.privateKey.versionedBytes())
+            .seal(this.privateKey.toBytes())
             .then((a) => Array.from(a)),
-          PublicKey: Array.from(this.publicKey.versionedBytes()),
+          PublicKey: Array.from(this.publicKey.toBytes()),
         } as AccountV1KeyStore
       }
       default:
