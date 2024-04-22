@@ -3,6 +3,8 @@ import Sealer from './crypto/interfaces/sealer'
 import VarintVersioner from './crypto/varintVersioner'
 import { PasswordSeal } from './crypto/passwordSeal'
 import { Address, PrivateKey, PublicKey, Signature } from './basicElements'
+import { readFileSync, existsSync } from 'fs'
+import yaml from 'js-yaml'
 
 /**
  * A class representing an account.
@@ -112,15 +114,15 @@ export class Account {
         }
         const passwordSeal = new PasswordSeal(password, salt, nonce)
         return {
-          address: this.address.toString(),
+          Address: this.address.toString(),
           Version: this.version,
-          nickname: '',
-          salt: passwordSeal.salt,
-          nonce: passwordSeal.nonce,
-          cipheredData: await passwordSeal
+          Nickname: '',
+          Salt: passwordSeal.salt,
+          Nonce: passwordSeal.nonce,
+          CipheredData: await passwordSeal
             .seal(this.privateKey.toBytes())
             .then((a) => Array.from(a)),
-          publicKey: Array.from(this.publicKey.toBytes()),
+          PublicKey: Array.from(this.publicKey.toBytes()),
         } as AccountV0KeyStore
       }
       case Version.V1: {
@@ -172,13 +174,13 @@ export class Account {
         }
         const passwordSeal = new PasswordSeal(
           password,
-          keystore.salt,
-          keystore.nonce
+          keystore.Salt,
+          keystore.Nonce
         )
-        const privateKeyBytes = await passwordSeal.unseal(keystore.cipheredData)
+        const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
         const privateKey = PrivateKey.fromBytes(privateKeyBytes, Version.V0)
         const publicKey = PublicKey.fromBytes(
-          new Uint8Array(keystore.publicKey).subarray(1),
+          new Uint8Array(keystore.PublicKey).subarray(1),
           Version.V0
         )
         const address = publicKey.getAddress()
@@ -224,26 +226,33 @@ export class Account {
   static async fromEnv(): Promise<Account> {
     return Account.fromPrivateKey(PrivateKey.fromEnv())
   }
+
+  /**
+   * Uses the environment variables to create an account.
+   *
+   * @returns An account instance.
+   */
+  static async fromYaml(path: string, password: string): Promise<Account> {
+    // check that file exists
+    if (!existsSync(path)) {
+      throw new Error(`Wallet file "${path}" does not exist.`)
+    }
+
+    const ks = yaml.load(readFileSync(path, 'utf8')) as AccountKeyStore
+    return Account.fromKeyStore(ks, password)
+  }
 }
 
-type AccountKeyStore = AccountV0KeyStore | AccountV1KeyStore
-
-export interface AccountV0KeyStore {
-  address: string
-  Version: Version.V0
-  nickname: string
-  salt: Uint8Array
-  nonce: Uint8Array
-  cipheredData: Uint8Array
-  publicKey: number[]
-}
-
-export interface AccountV1KeyStore {
+// keys are uppercased to match the yaml keystore file format
+export type AccountKeyStoreBase = {
   Address: string
-  Version: Version.V1
   Nickname: string
   Salt: Uint8Array
   Nonce: Uint8Array
   CipheredData: Uint8Array
   PublicKey: number[]
 }
+
+export type AccountV0KeyStore = AccountKeyStoreBase & { Version: Version.V0 }
+export type AccountV1KeyStore = AccountKeyStoreBase & { Version: Version.V1 }
+export type AccountKeyStore = AccountV0KeyStore | AccountV1KeyStore

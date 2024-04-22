@@ -24,7 +24,7 @@ export class AccountOperation {
     type: OperationType,
     amount: bigint,
     opts?: OptOpDetails
-  ): Promise<string> {
+  ): Promise<Operation> {
     if (type !== OperationType.RollBuy && type !== OperationType.RollSell) {
       throw new Error('Invalid roll operation type.')
     }
@@ -43,7 +43,7 @@ export class AccountOperation {
       amount,
     }
 
-    return operation.send(details)
+    return new Operation(this.client, await operation.send(details))
   }
 
   /**
@@ -55,7 +55,7 @@ export class AccountOperation {
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async buyRolls(amount: bigint, opts?: OptOpDetails): Promise<string> {
+  async buyRolls(amount: bigint, opts?: OptOpDetails): Promise<Operation> {
     return this.rollOperation(OperationType.RollBuy, amount, opts)
   }
 
@@ -68,7 +68,7 @@ export class AccountOperation {
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async sellRolls(amount: bigint, opts?: OptOpDetails): Promise<string> {
+  async sellRolls(amount: bigint, opts?: OptOpDetails): Promise<Operation> {
     return this.rollOperation(OperationType.RollSell, amount, opts)
   }
 
