@@ -1,8 +1,9 @@
 import { unsigned } from 'big-varint'
-import { Address } from './address'
+import { Address, BLAKE3_HASH_BYTELENGTH } from './address'
 import { PrivateKey, PublicKey } from './keys'
 import { BlockchainClient } from '../client'
 import { Signature } from './signature'
+import varint from 'varint'
 
 /**
  * Operation types.
@@ -149,35 +150,37 @@ export class OperationManager {
    */
   static deserialize(data: Uint8Array): OperationDetails {
     let offset = 0
-    const decodeNext = () => {
+    const nextVarInt = () => {
       const value = unsigned.decode(data, offset)
       offset += unsigned.encodingLength(value)
       return value
     }
 
     let operationDetails: BaseOperation = {
-      fee: decodeNext(),
-      expirePeriod: Number(decodeNext()),
-      type: Number(decodeNext()),
+      fee: nextVarInt(),
+      expirePeriod: Number(nextVarInt()),
+      type: Number(nextVarInt()),
     }
 
     switch (operationDetails.type) {
       case OperationType.Transaction: {
+        // decode address type to get encoded size
+        varint.decode(data, offset)
         const recipientAddress = Address.fromBytes(
-          data.slice(offset, offset + 33)
+          data.slice(offset, varint.decode.bytes + BLAKE3_HASH_BYTELENGTH)
         )
-        offset += 33
+        offset += varint.decode.bytes + BLAKE3_HASH_BYTELENGTH
         return {
           ...operationDetails,
           recipientAddress,
-          amount: decodeNext(),
+          amount: nextVarInt(),
         } as TransferOperation
       }
       case OperationType.RollBuy:
       case OperationType.RollSell: {
         return {
           ...operationDetails,
-          amount: decodeNext(),
+          amount: nextVarInt(),
         } as RollOperation
       }
       default:

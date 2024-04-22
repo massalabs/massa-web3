@@ -4,11 +4,12 @@ import { Version, Versioner } from '../crypto/interfaces/versioner'
 import VarintVersioner from '../crypto/varintVersioner'
 import { checkPrefix, extractData } from './internal'
 import { PublicKey } from './keys'
+import varint from 'varint'
 
 const ADDRESS_PREFIX = 'A'
 const ADDRESS_USER_PREFIX = 'U'
 const ADDRESS_CONTRACT_PREFIX = 'S'
-
+export const BLAKE3_HASH_BYTELENGTH = 32
 /**
  * A class representing an address.
  *
@@ -106,10 +107,13 @@ export class Address {
    * @returns A new address object.
    */
   public static fromBytes(bytes: Uint8Array): Address {
-    const { version, data } = new VarintVersioner().extract(bytes.slice(1))
+    const addressType = varint.decode(bytes)
+    const { version, data } = new VarintVersioner().extract(
+      bytes.slice(varint.decode.bytes)
+    )
     const address = Address.initFromVersion(version)
     address.bytes = data
-    address.isEOA = bytes[0] === 0
+    address.isEOA = !!addressType
     return address
   }
 
@@ -119,9 +123,9 @@ export class Address {
    * @returns The versioned address key bytes.
    */
   public toBytes(): Uint8Array {
-    const eoaPrefix = new Uint8Array(this.isEOA ? [0] : [1])
+    const eoaPrefix = this.isEOA ? 0 : 1
     const bytes = this.versioner.attach(this.version, this.bytes)
-    return Uint8Array.from([...eoaPrefix, ...bytes])
+    return Uint8Array.from([eoaPrefix, ...bytes])
   }
 
   /**
