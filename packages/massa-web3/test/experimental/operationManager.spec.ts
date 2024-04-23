@@ -63,11 +63,11 @@ describe('Unit tests', () => {
 
   test('serialize - execute', async () => {
     const execute: ExecuteOperation = {
-      fee: 1,
+      fee: 1n,
       type: OperationType.ExecuteSmartContractBytecode,
       expirePeriod: 2,
-      maxGas: 3,
-      coins: 4,
+      maxGas: 3n,
+      coins: 4n,
       contractDataBinary: new Uint8Array([1, 2, 3, 4]),
       datastore: new Map<Uint8Array, Uint8Array>([
         [new Uint8Array([1, 2, 3, 4]), new Uint8Array([1, 2, 3, 4])],
@@ -130,11 +130,11 @@ describe('Unit tests', () => {
 
   test('canonicalize - execute', async () => {
     const execute: ExecuteOperation = {
-      fee: 1,
+      fee: 1n,
       type: OperationType.ExecuteSmartContractBytecode,
       expirePeriod: 2,
-      maxGas: 3,
-      coins: 4,
+      maxGas: 3n,
+      coins: 4n,
       contractDataBinary: new Uint8Array([1, 2, 3, 4]),
       datastore: new Map<Uint8Array, Uint8Array>([
         [new Uint8Array([1, 2, 3, 4]), new Uint8Array([1, 2, 3, 4])],
@@ -152,11 +152,11 @@ describe('Unit tests', () => {
     }
 
     const publicKey = await PrivateKey.fromEnv().getPublicKey()
-    expect(OperationManager.canonicalize(1, execute, publicKey)).toEqual(
+    expect(OperationManager.canonicalize(1n, execute, publicKey)).toEqual(
       Uint8Array.from(
         getOperationBufferToSign(
           1n,
-          publicKey.versionedBytes(),
+          publicKey.toBytes(),
           Buffer.from(
             new BaseClient(clientConfig).compactBytesForOperation(
               contractData,
