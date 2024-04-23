@@ -33,8 +33,7 @@ export class AccountOperation {
     }
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: RollOperation = {
-      // Todo: change with fetchMinimalFees once ready
-      fee: opts?.fee ?? 0n,
+      fee: opts?.fee ?? (await this.client.getMinimalFee()),
       expirePeriod: await calculateExpirePeriod(
         this.client,
         opts?.periodToLive
@@ -97,8 +96,7 @@ export class AccountOperation {
 
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: TransferOperation = {
-      // Todo: change with fetchMinimalFees once ready
-      fee: opts?.fee ?? 0n,
+      fee: opts?.fee ?? (await this.client.getMinimalFee()),
       expirePeriod: await calculateExpirePeriod(
         this.client,
         opts?.periodToLive

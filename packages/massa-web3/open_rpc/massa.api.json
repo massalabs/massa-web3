@@ -2765,6 +2765,10 @@
                     "chain_id": {
                         "description": "Chain id",
                         "type": "number"
+                    },
+                    "minimal_fees": {
+                        "description": "Minimal fee",
+                        "type": "string"
                     }
                 },
                 "additionalProperties": false
