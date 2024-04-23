@@ -4,7 +4,7 @@ import {
   ReadOnlyCall,
   Slot,
 } from '../../../src/experimental/generated/client'
-import { PublicAPI, Transport } from '../../../src/experimental/publicAPI'
+import { JsonRPCClient } from '../../../src/experimental/jsonRPCClient'
 import { createCheckers } from 'ts-interface-checker'
 import validator from '../../../src/experimental/generated/client-ti'
 import { EventFilter } from '../../../src/experimental/client'
@@ -24,7 +24,7 @@ const {
   ExecuteReadOnlyResponse,
 } = createCheckers(validator)
 
-const api = new PublicAPI(Transport.https, 'buildnet.massa.net', 443, '/api/v2')
+const api = new JsonRPCClient('https://buildnet.massa.net/api/v2')
 
 let lastSlot: Slot = { period: 0, thread: 0 }
 let someEndorsement: string[]
