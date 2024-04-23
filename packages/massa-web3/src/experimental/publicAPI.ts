@@ -8,7 +8,6 @@ import {
   DatastoreEntryInput,
   ExecuteReadOnlyResponse,
   MassaOpenRPCSpecification,
-  Options,
   ReadOnlyCall,
   ReadOnlyBytecodeExecution,
   AddressInfo,
@@ -50,12 +49,12 @@ export class PublicAPI {
     this.connector = new MassaOpenRPCSpecification({
       transport: {
         type: transport,
-        host: host,
-        port: port,
-        path: path,
-        protocol: protocol,
+        host,
+        port,
+        path,
+        protocol,
       },
-    } as Options)
+    })
   }
 
   async executeReadOnlyBytecode(
