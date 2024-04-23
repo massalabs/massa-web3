@@ -5,20 +5,20 @@ import {
   ITransactionData,
   OperationTypeId,
   ProviderType,
-} from '../../src/index'
-import { getOperationBufferToSign } from '../../src/web3/accounts/Web3Account'
-import { BaseClient, PERIOD_OFFSET } from '../../src/web3/BaseClient'
+} from '../../../src/index'
+import { getOperationBufferToSign } from '../../../src/web3/accounts/Web3Account'
+import { BaseClient, PERIOD_OFFSET } from '../../../src/web3/BaseClient'
 
 import {
   ExecuteOperation,
   OperationManager,
   OperationType,
   TransferOperation,
-} from '../../src/experimental/basicElements'
+} from '../../../src/experimental/basicElements'
 import {
   PrivateKey,
   Address as XPAddress,
-} from '../../src/experimental/basicElements'
+} from '../../../src/experimental/basicElements'
 import 'dotenv/config'
 
 const clientConfig: IClientConfig = {
