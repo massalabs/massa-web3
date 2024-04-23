@@ -1,5 +1,5 @@
 import { unsigned } from 'big-varint'
-import { Address, BLAKE3_HASH_BYTELENGTH } from './address'
+import { Address } from './address'
 import { PrivateKey, PublicKey } from './keys'
 import { BlockchainClient } from '../client'
 import { Signature } from './signature'
@@ -95,8 +95,8 @@ export class OperationManager {
     // TODO: check that unsigned.encode is equivalent to varint.encode
     const components = [
       unsigned.encode(operation.fee),
-      unsigned.encode(BigInt(operation.expirePeriod)),
-      unsigned.encode(BigInt(operation.type)),
+      varint.encode(operation.expirePeriod),
+      varint.encode(operation.type),
     ]
 
     switch (operation.type) {
@@ -164,12 +164,11 @@ export class OperationManager {
 
     switch (operationDetails.type) {
       case OperationType.Transaction: {
-        // decode address type to get encoded size
-        varint.decode(data, offset)
+        const addrLen = Address.getByteLength(data.slice(offset))
         const recipientAddress = Address.fromBytes(
-          data.slice(offset, varint.decode.bytes + BLAKE3_HASH_BYTELENGTH)
+          data.slice(offset, offset + addrLen)
         )
-        offset += varint.decode.bytes + BLAKE3_HASH_BYTELENGTH
+        offset += addrLen
         return {
           ...operationDetails,
           recipientAddress,

@@ -9,7 +9,7 @@ import varint from 'varint'
 const ADDRESS_PREFIX = 'A'
 const ADDRESS_USER_PREFIX = 'U'
 const ADDRESS_CONTRACT_PREFIX = 'S'
-export const BLAKE3_HASH_BYTELENGTH = 32
+const UNDERLYING_HASH_LEN = 32
 /**
  * A class representing an address.
  *
@@ -113,7 +113,7 @@ export class Address {
     )
     const address = Address.initFromVersion(version)
     address.bytes = data
-    address.isEOA = !!addressType
+    address.isEOA = addressType === 0
     return address
   }
 
@@ -143,5 +143,22 @@ export class Address {
     return `${ADDRESS_PREFIX}${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
     }${this.serializer.serialize(versionedBytes)}`
+  }
+
+  /**
+   * Get byte length of address in binary format .
+   *
+   * @returns The address length in bytes.
+   */
+  static getByteLength(data: Uint8Array): number {
+    // addr type
+    varint.decode(data)
+    let addrByteLen = varint.decode.bytes
+    // version
+    varint.decode(data, addrByteLen)
+    addrByteLen += varint.decode.bytes
+
+    addrByteLen += UNDERLYING_HASH_LEN
+    return addrByteLen
   }
 }
