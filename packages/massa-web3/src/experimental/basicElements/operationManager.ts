@@ -26,7 +26,7 @@ export enum OperationType {
  * Period to live is the number of periods the operation is valid for.
  * This value must be positive and if it's too big, the node will (sliently?) reject the operation.
  *
- * If no fee is provided, 0 is used.
+ * If no fee is provided, minimal fee of connected node is used.
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
  */
 export type OptOpDetails = {
@@ -245,8 +245,8 @@ export class OperationManager {
       throw new Error('blockchainClient is mandatory to send operations')
     }
 
-    const networkId = await this.blockchainClient.fetchChainId()
-    const signature = await this.sign(networkId, operation)
+    const chainId = await this.blockchainClient.getChainId()
+    const signature = await this.sign(chainId, operation)
     const data = OperationManager.serialize(operation)
     const publicKey = await this.privateKey.getPublicKey()
 

@@ -56,7 +56,7 @@ export class ByteCode {
   ): Promise<Operation> {
     const operation = new OperationManager(privateKey, client)
     const details: ExecuteOperation = {
-      fee: opts?.fee ?? 0n,
+      fee: opts?.fee ?? (await client.getMinimalFee()),
       expirePeriod: await calculateExpirePeriod(client, opts?.periodToLive),
       type: OperationType.ExecuteSmartContractBytecode,
       coins: opts?.coins ?? 0n,
@@ -200,7 +200,7 @@ export class SmartContract {
       account.privateKey,
       byteCode,
       {
-        fee: opts?.fee,
+        fee: opts?.fee ?? (await client.getMinimalFee()),
         periodToLive: opts?.periodToLive,
         coins: opts?.coins,
         maxGas: opts?.maxGas,

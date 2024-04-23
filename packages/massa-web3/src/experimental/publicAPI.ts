@@ -26,6 +26,7 @@ import {
   OperationId,
   AddressFilter,
 } from './generated/client'
+import { toNanoMas } from './utils'
 
 export enum Transport {
   webSocket = 'websocket',
@@ -236,15 +237,22 @@ export class PublicAPI {
   }
 
   async getStatus(): Promise<NodeStatus> {
-    return this.connector.get_status()
+    this.status = await this.connector.get_status()
+    return this.status
   }
 
-  async fetchChainId(): Promise<bigint> {
-    if (this.status) {
-      return BigInt(this.status.chain_id)
+  async getMinimalFee(): Promise<bigint> {
+    if (!this.status) {
+      await this.getStatus()
     }
+    return toNanoMas(this.status.minimal_fees)
+  }
 
-    return this.getStatus().then((r) => BigInt(r.chain_id))
+  async getChainId(): Promise<bigint> {
+    if (!this.status) {
+      await this.getStatus()
+    }
+    return BigInt(this.status.chain_id)
   }
 
   async fetchPeriod(): Promise<number> {

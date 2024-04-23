@@ -1,4 +1,4 @@
-import { fromMAS } from '@massalabs/web3-utils'
+import { toNanoMas } from '../utils'
 
 /**
  * Calculates the cost of deploying a smart contract.
@@ -12,7 +12,7 @@ export class StorageCost {
    * @returns The cost in the smallest unit of the Massa currency.
    */
   static bytes(numberOfBytes: number): bigint {
-    return BigInt(numberOfBytes) * fromMAS(0.0001)
+    return BigInt(numberOfBytes) * toNanoMas(0.0001)
   }
 
   /**
@@ -21,7 +21,7 @@ export class StorageCost {
    * @returns The cost in the smallest unit of the Massa currency.
    */
   static account(): bigint {
-    return fromMAS(0.001)
+    return toNanoMas(0.001)
   }
 
   /**
