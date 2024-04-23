@@ -11,13 +11,13 @@ import {
 import { BlockchainClient } from './client'
 import { Account } from './account'
 
-export const MAX_GAS_EXECUTE = 3980167295
+export const MAX_GAS_EXECUTE = 3980167295n
 
 interface ExecuteOption {
-  fee?: number
+  fee?: bigint
   periodToLive?: number
-  coins?: number
-  maxGas?: number
+  coins?: bigint
+  maxGas?: bigint
   datastore?: Map<Uint8Array, Uint8Array>
 }
 
@@ -56,10 +56,10 @@ export class ByteCode {
   ): Promise<Operation> {
     const operation = new OperationManager(privateKey, client)
     const details: ExecuteOperation = {
-      fee: opts?.fee ?? 0,
+      fee: opts?.fee ?? 0n,
       expirePeriod: await calculateExpirePeriod(client, opts?.periodToLive),
       type: OperationType.ExecuteSmartContractBytecode,
-      coins: opts?.coins ?? 0,
+      coins: opts?.coins ?? 0n,
       // TODO: implement max gas
       maxGas: opts?.maxGas || MAX_GAS_EXECUTE,
       contractDataBinary: byteCode,
@@ -123,11 +123,11 @@ function populateDatastore(
 }
 
 interface DeployOptions {
-  smartContractCoins?: number
-  fee?: number
+  smartContractCoins?: bigint
+  fee?: bigint
   periodToLive?: number
-  coins?: number
-  maxGas?: number
+  coins?: bigint
+  maxGas?: bigint
   waitForSpeculativeExecution?: boolean
 }
 
@@ -178,7 +178,7 @@ export class SmartContract {
     opts: DeployOptions
   ): Promise<SmartContract> {
     const totalCost =
-      Number(StorageCost.smartContract(byteCode.length)) + opts.coins
+      BigInt(StorageCost.smartContract(byteCode.length)) + opts.coins
 
     if (
       (await client.getBalance(account.address.toString(), true)) < totalCost

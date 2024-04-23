@@ -14,10 +14,10 @@ describe('Basic use cases', () => {
     )
     const byteCode = new Uint8Array([1, 2, 3, 4])
     const opts = {
-      fee: 1,
+      fee: 1n,
       periodToLive: 2,
-      coins: 3,
-      maxGas: 4,
+      coins: 3n,
+      maxGas: 4n,
     }
     const contract = await ByteCode.execute(
       client,
