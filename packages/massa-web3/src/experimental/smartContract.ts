@@ -128,7 +128,7 @@ interface DeployOptions {
   periodToLive?: number
   coins?: bigint
   maxGas?: bigint
-  waitForSpeculativeExecution?: boolean
+  waitFinalExecution?: boolean
 }
 
 interface CallOptions {}
@@ -208,9 +208,9 @@ export class SmartContract {
       }
     )
 
-    const event = opts.waitForSpeculativeExecution
-      ? await operation.getSpeculativeEvents()
-      : await operation.getFinalEvents()
+    const event = opts.waitFinalExecution
+      ? await operation.getFinalEvents()
+      : await operation.getSpeculativeEvents()
 
     if (event.length === 0) {
       throw new Error('no event received.')
