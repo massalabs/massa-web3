@@ -235,7 +235,7 @@ export class Account {
   static async fromYaml(path: string, password: string): Promise<Account> {
     // check that file exists
     if (!existsSync(path)) {
-      throw new Error(`Wallet file "${path}" does not exist.`)
+      throw new Error(`wallet file "${path}" does not exist.`)
     }
 
     const ks = yaml.load(readFileSync(path, 'utf8')) as AccountKeyStore
