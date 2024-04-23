@@ -1,7 +1,7 @@
-import { Account } from '../../src/experimental/account'
-import { AccountOperation } from '../../src/experimental/accountOperation'
-import { OperationStatus } from '../../src/experimental/basicElements'
-import { PublicAPI, Transport } from '../../src/experimental/publicAPI'
+import { Account } from '../../../src/experimental/account'
+import { AccountOperation } from '../../../src/experimental/accountOperation'
+import { OperationStatus } from '../../../src/experimental/basicElements'
+import { PublicAPI, Transport } from '../../../src/experimental/publicAPI'
 import 'dotenv/config'
 
 describe('Basic use cases', () => {
