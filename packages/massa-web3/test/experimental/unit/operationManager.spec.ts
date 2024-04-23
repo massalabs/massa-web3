@@ -105,7 +105,7 @@ describe('Unit tests', () => {
         'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
       ),
     }
-    const publicKey = await PrivateKey.fromEnv().getPublicKey()
+    const publicKey = await PrivateKey.generate().getPublicKey()
     expect(OperationManager.canonicalize(1n, transfer, publicKey)).toEqual(
       Uint8Array.from(
         getOperationBufferToSign(
@@ -151,7 +151,7 @@ describe('Unit tests', () => {
       ]),
     }
 
-    const publicKey = await PrivateKey.fromEnv().getPublicKey()
+    const publicKey = await PrivateKey.generate().getPublicKey()
     expect(OperationManager.canonicalize(1n, execute, publicKey)).toEqual(
       Uint8Array.from(
         getOperationBufferToSign(
