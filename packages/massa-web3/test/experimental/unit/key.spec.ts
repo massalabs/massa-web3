@@ -4,18 +4,10 @@ import {
   PublicKey,
 } from '../../../src/experimental/basicElements/keys'
 import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
+import { SecretKey as LegacyPrivateKey } from '../../../src/utils/keyAndAddresses'
+import { Address as LegacyAddress } from '../../../src/utils/keyAndAddresses'
 
-class TestPublicKey extends PublicKey {
-  public static callInitFromVersion(version: Version) {
-    return this.initFromVersion(version)
-  }
-}
-
-class TestPrivateKey extends PrivateKey {
-  public static callInitFromVersion(version: Version) {
-    return this.initFromVersion(version)
-  }
-}
+const invalidVersion = -1 as Version
 
 describe('PrivateKey and PublicKey tests', () => {
   let privateKey: PrivateKey
@@ -27,22 +19,37 @@ describe('PrivateKey and PublicKey tests', () => {
   })
 
   describe('Conversion to and from Bytes', () => {
-    test('PrivateKey and PublicKey toBytes and fromBytes', async () => {
-      const privateKey = PrivateKey.generate()
-      const newPKeyBytes = PrivateKey.fromBytes(privateKey.bytes)
-      expect(newPKeyBytes.bytes).toEqual(privateKey.bytes)
-
+    test('PublicKey toBytes and fromBytes', async () => {
       const publicKey = await PublicKey.fromPrivateKey(privateKey)
       const newPubKeyBytes = PublicKey.fromBytes(publicKey.bytes)
       expect(newPubKeyBytes.bytes).toEqual(publicKey.bytes)
     })
+
+    test('PrivateKey toBytes and fromBytes', async () => {
+      const privateKey = PrivateKey.generate()
+      const newPKeyBytes = PrivateKey.fromBytes(privateKey.bytes)
+      expect(newPKeyBytes.bytes).toEqual(privateKey.bytes)
+    })
   })
 
   describe('Address Generation', () => {
-    test('PublicKey getAddress', () => {
-      // TODO be sure address is right
-      const address = publicKey.getAddress()
-      expect(address).toBeInstanceOf(Address)
+    test('PublicKey getAddress', async () => {
+      // Generate address from Legacy keys objects
+      const legacyPrivKey = new LegacyPrivateKey(
+        'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
+      )
+      const legacyPubKey = await legacyPrivKey.getPublicKey()
+      const legacyAddress = LegacyAddress.fromPublicKey(legacyPubKey)
+
+      // Generate address from new keys objects
+      const privKey = PrivateKey.fromString(
+        'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
+      )
+      const pubKey = await PublicKey.fromPrivateKey(privKey)
+      const address = Address.fromPublicKey(pubKey)
+
+      // Verify that the addresses are the same
+      expect(address.toString()).toBe(legacyAddress.base58Encoded)
     })
   })
 
@@ -74,16 +81,30 @@ describe('PrivateKey and PublicKey tests', () => {
     test('fromString throws error for invalid private key string', () => {
       const invalidPrivateKeyString = 'invalidPrivateKey'
       expect(() => PrivateKey.fromString(invalidPrivateKeyString)).toThrow(
-        /Invalid private key string/
+        /invalid private key string/
       )
     })
 
-    it('should throw an error when given an invalid string', () => {
+    test('fromString throws error for invalid public key string', () => {
       const invalidPublicKeyString = 'invalidPublicKey'
 
       expect(() =>
         PublicKey.fromString(invalidPublicKeyString, Version.V0)
-      ).toThrow(/Invalid public key string/)
+      ).toThrow(/invalid public key string/)
+    })
+
+    test('fromString throws error for invalid public key version', () => {
+      const publicKeyString = publicKey.toString()
+      expect(() =>
+        PublicKey.fromString(publicKeyString, invalidVersion)
+      ).toThrow(/unsupported version/)
+    })
+    test('fromString throws error for invalid private key version', () => {
+      const privateKeyString = privateKey.toString()
+
+      expect(() =>
+        PrivateKey.fromString(privateKeyString, invalidVersion)
+      ).toThrow(/unsupported version/)
     })
   })
 
@@ -91,7 +112,6 @@ describe('PrivateKey and PublicKey tests', () => {
     test('fromEnv returns PrivateKey when PRIVATE_KEY environment variable set', () => {
       process.env.PRIVATE_KEY = privateKey.toString()
       const key = PrivateKey.fromEnv()
-      expect(key).toBeInstanceOf(PrivateKey)
       expect(key.toString()).toBe(privateKey.toString())
     })
 
@@ -99,30 +119,6 @@ describe('PrivateKey and PublicKey tests', () => {
       delete process.env.PRIVATE_KEY
       expect(() => PrivateKey.fromEnv()).toThrow(
         'missing `PRIVATE_KEY` environment variable'
-      )
-    })
-  })
-
-  describe('From Version', () => {
-    test('initFromVersion returns correct PublicKey for supported version', () => {
-      const publicKey = TestPublicKey.callInitFromVersion(Version.V0)
-      expect(publicKey).toBeInstanceOf(PublicKey)
-      expect(publicKey.version).toEqual(Version.V0)
-    })
-
-    test('initFromVersion returns correct Private for supported version', () => {
-      const privateKey = TestPrivateKey.callInitFromVersion(Version.V0)
-      expect(privateKey).toBeInstanceOf(PrivateKey)
-      expect(privateKey.version).toEqual(Version.V0)
-    })
-
-    test('initFromVersion throws error for unsupported version', () => {
-      expect(() => TestPublicKey.callInitFromVersion(Version.V1)).toThrow(
-        'unsupported version: 1'
-      )
-
-      expect(() => TestPrivateKey.callInitFromVersion(Version.V1)).toThrow(
-        'unsupported version: 1'
       )
     })
   })

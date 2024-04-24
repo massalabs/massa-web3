@@ -143,7 +143,7 @@ export class Account {
         } as AccountV1KeyStore
       }
       default:
-        throw new Error(`Unsupported version`)
+        throw new Error(`unsupported version`)
     }
   }
 
@@ -214,7 +214,7 @@ export class Account {
         return new Account(privateKey, publicKey, address, keystore.Version)
       }
       default:
-        throw new Error(`Unsupported version`)
+        throw new Error(`unsupported version`)
     }
   }
 

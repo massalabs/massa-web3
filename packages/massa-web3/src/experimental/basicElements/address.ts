@@ -48,7 +48,7 @@ export class Address {
       case Version.V0:
         return new Address(new Base58(), new VarintVersioner(), version, false)
       default:
-        throw new Error(`Unsupported version: ${version}`)
+        throw new Error(`unsupported version: ${version}`)
     }
   }
 

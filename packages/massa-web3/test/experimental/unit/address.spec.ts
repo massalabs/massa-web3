@@ -1,16 +1,11 @@
 import { Account } from '../../../src/experimental/account'
 import { Address } from '../../../src/experimental/basicElements'
 import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
-
 import { Address as LegacyAddress } from '../../../src/utils/keyAndAddresses'
 
-const unsupported_version = -1 as Version
+const contractAddress = 'AS1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
+const invalidVersion = -1 as Version
 
-class TestAddress extends Address {
-  public static callInitFromVersion(version: Version = Version.V0): Address {
-    return this.initFromVersion(version)
-  }
-}
 describe('Address tests', () => {
   let account: Account
 
@@ -31,27 +26,25 @@ describe('Address tests', () => {
     expect(Address.fromBytes(bytes)).toStrictEqual(address)
   })
 
-  test('initFromVersion throws error for unsupported version', () => {
-    expect(() => TestAddress.callInitFromVersion(unsupported_version)).toThrow(
-      `Unsupported version: ${unsupported_version}`
+  test('fromString throws error for invalid address string', () => {
+    expect(() => Address.fromString('invalid_address_string')).toThrow(
+      /invalid address string:/
     )
   })
 
-  test('fromString throws error for invalid address string', () => {
-    expect(() => Address.fromString('invalid_address_string')).toThrow(
-      'invalid address string:'
-    )
+  test('fromString throws error for invalid version', () => {
+    expect(() =>
+      Address.fromString(account.address.toString(), invalidVersion)
+    ).toThrow(/unsupported version:/)
   })
 
   test('toString returns string with user prefix for EOA', () => {
     const address = Address.fromPublicKey(account.publicKey)
-    address.isEOA = true
     expect(address.toString()).toMatch(/^AU/)
   })
 
   test('toString returns string with contract prefix for contract account', () => {
-    const address = Address.fromPublicKey(account.publicKey)
-    address.isEOA = false
+    const address = Address.fromString(contractAddress)
     expect(address.toString()).toMatch(/^AS/)
   })
 
@@ -64,9 +57,7 @@ describe('Address tests', () => {
   })
 
   test('toBytes returns bytes with contract prefix for contract account', () => {
-    const address = Address.fromPublicKey(account.publicKey)
-    address.isEOA = false
-
+    const address = Address.fromString(contractAddress)
     const bytes = address.toBytes()
     // The first byte should be 1 for contract account
     expect(bytes[0]).toBe(1)
