@@ -12,7 +12,7 @@ export function extractData(
   data: string,
   expectedVersion: Version
 ): Uint8Array {
-  const raw: Uint8Array = serializer.deserialize(data)
+  const raw = serializer.deserialize(data)
   const { data: extractedData, version } = versioner.extract(raw)
   if (version !== expectedVersion) {
     throw new Error(
