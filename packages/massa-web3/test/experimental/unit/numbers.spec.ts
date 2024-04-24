@@ -1,4 +1,4 @@
-import { toNanoMas } from '../../../src/experimental/utils'
+import { toNanoMas, toMas } from '../../../src/experimental/utils'
 
 describe('amount format conversion tests', () => {
   it('MAS(string) => nMAS', () => {
@@ -35,5 +35,22 @@ describe('amount format conversion tests', () => {
     // see https://stackoverflow.com/questions/45929493/node-js-maximum-safe-floating-point-number
     amount = 8388607.123456789
     expect(toNanoMas(amount)).toStrictEqual(BigInt('8388607123456789'))
+  })
+
+  it('nanoMAS(bigint) => MAS(string', () => {
+    let amount = 0n
+    expect(toMas(amount)).toStrictEqual('0')
+
+    amount = 1523400000n
+    expect(toMas(amount)).toStrictEqual('1.5234')
+
+    amount = 123456789n
+    expect(toMas(amount)).toStrictEqual('0.123456789')
+
+    amount = 123456789000000000n
+    expect(toMas(amount)).toStrictEqual('123456789')
+
+    amount = 123456789123456789123456789n
+    expect(toMas(amount)).toStrictEqual('123456789123456789.123456789')
   })
 })

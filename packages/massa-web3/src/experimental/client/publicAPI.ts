@@ -90,13 +90,9 @@ export class PublicAPI {
     return this.getMultipleAddressInfo([address]).then((r) => r[0])
   }
 
-  async getBalance(
-    address: string,
-    speculative: boolean = false
-  ): Promise<bigint> {
+  async getBalance(address: string, final: boolean = true): Promise<bigint> {
     return this.getAddressInfo(address).then((r) => {
-      console.log('getAddressInfo', r)
-      return BigInt(speculative ? r.candidate_balance : r.final_balance)
+      return toNanoMas(final ? r.final_balance : r.candidate_balance)
     })
   }
 
