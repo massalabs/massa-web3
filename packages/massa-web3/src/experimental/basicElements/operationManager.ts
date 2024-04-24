@@ -164,11 +164,12 @@ export class OperationManager {
 
     switch (operationDetails.type) {
       case OperationType.Transaction: {
-        const addrLen = Address.getByteLength(data.slice(offset))
-        const recipientAddress = Address.fromBytes(
-          data.slice(offset, offset + addrLen)
+        const { data: addrBytes, length } = Address.extractFromBuffer(
+          data,
+          offset
         )
-        offset += addrLen
+        const recipientAddress = Address.fromBytes(addrBytes)
+        offset += length
         return {
           ...operationDetails,
           recipientAddress,

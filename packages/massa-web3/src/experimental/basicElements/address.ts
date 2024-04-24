@@ -1,14 +1,21 @@
 import Base58 from '../crypto/base58'
 import Serializer from '../crypto/interfaces/serializer'
-import { Version } from '../crypto/interfaces/versioner'
-import { checkPrefix } from './internal'
+import { Version, Versioner } from '../crypto/interfaces/versioner'
+import VarintVersioner from '../crypto/varintVersioner'
 import { PublicKey } from './keys'
 import varint from 'varint'
 
-const ADDRESS_PREFIX = 'A'
-const ADDRESS_USER_PREFIX = 'U'
-const ADDRESS_CONTRACT_PREFIX = 'S'
+const ADDRESS_USER_PREFIX = 'AU'
+const ADDRESS_CONTRACT_PREFIX = 'AS'
 const UNDERLYING_HASH_LEN = 32
+
+const DEFAULT_VERSION = Version.V0
+
+export enum AddressType {
+  EOA = 0,
+  Contract = 1,
+}
+
 /**
  * A class representing an address.
  *
@@ -17,19 +24,22 @@ const UNDERLYING_HASH_LEN = 32
  *
  * @privateRemarks
  * Interfaces are used to make the code more modular. To add a new version, you simply need to:
- * - extend the `initFromVersion` method:
- *   - Add a new case in the switch statement with the new algorithms to use.
- *   - Add a new default version matching the last version.
+ * - Add a new case in the switch statement with the new algorithms to use.
+ * - Change the DEFAULT_VERSION version matching the last version.
+ * - Change the getVersion method to detect the version from user input.
  * - check the `fromPublicKey` method to potentially adapt how an address is derived from a public key.
  * - Voila! The code will automatically handle the new version.
  */
 export class Address {
+  // The address in byte format. Address type and version included.
   private bytes: Uint8Array
+
+  public isEOA = false
 
   protected constructor(
     public serializer: Serializer,
-    public version: Version,
-    public isEOA: boolean
+    public versioner: Versioner,
+    public version: Version
   ) {}
 
   /**
@@ -41,13 +51,27 @@ export class Address {
    *
    * @throws If the version is not supported.
    */
-  protected static initFromVersion(version: Version = Version.V0): Address {
+  protected static initFromVersion(
+    version: Version = DEFAULT_VERSION
+  ): Address {
     switch (version) {
       case Version.V0:
-        return new Address(new Base58(), version, false)
+        return new Address(new Base58(), new VarintVersioner(), version)
       default:
         throw new Error(`unsupported version: ${version}`)
     }
+  }
+
+  private static getPrefix(str: string): string {
+    const expected = [ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX]
+    for (let prefix of expected) {
+      if (str.startsWith(prefix)) {
+        return prefix
+      }
+    }
+    throw new Error(
+      `invalid address prefix: one of ${expected.join(' or ')} was expected.`
+    )
   }
 
   /**
@@ -60,35 +84,31 @@ export class Address {
    * @throws If the address string is invalid.
    */
   public static fromString(str: string): Address {
-    const address = Address.initFromVersion()
-
     try {
-      const prefix = checkPrefix(
-        str,
-        ADDRESS_PREFIX + ADDRESS_USER_PREFIX,
-        ADDRESS_PREFIX + ADDRESS_CONTRACT_PREFIX
-      )
+      const version = Address.getVersion(str)
+      const address = Address.initFromVersion(version)
+      const prefix = Address.getPrefix(str)
 
-      address.isEOA = str[ADDRESS_PREFIX.length] === ADDRESS_USER_PREFIX
-      const versionedHash = address.serializer.deserialize(
+      address.isEOA = prefix === ADDRESS_USER_PREFIX
+      const versionedBytes = address.serializer.deserialize(
         str.slice(prefix.length)
       )
 
       address.bytes = Uint8Array.from([
-        ...varint.encode(address.isEOA ? 0 : 1),
-        ...versionedHash,
+        ...varint.encode(
+          address.isEOA ? AddressType.EOA : AddressType.Contract
+        ),
+        ...versionedBytes,
       ])
-      address.version = address.getVersion()
+      return address
     } catch (e) {
       throw new Error(`invalid address string: ${e.message}`)
     }
-
-    return address
   }
 
   /**
    * Get the address type from bytes.
-   *   *
+   *
    * @returns the address type enum.
    */
   private getType(): number {
@@ -99,16 +119,15 @@ export class Address {
   }
 
   /**
-   * Get the address version from bytes.
-   *   *
+   * Get the address version.
+   *
    * @returns the address type enum.
    */
-  private getVersion(): Version {
-    if (!this.bytes) {
-      throw new Error('address bytes is not initialized')
-    }
-    varint.decode(this.bytes)
-    return varint.decode(this.bytes, varint.decode.bytes)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private static getVersion(data: string | Uint8Array): Version {
+    // when a new version will come, implement the logic to detect version here
+    // This should be done without serializer and versionner as they are potentially not known at this point
+    return Version.V0
   }
 
   /**
@@ -119,12 +138,14 @@ export class Address {
    * @returns A new address object.
    */
   public static fromPublicKey(publicKey: PublicKey): Address {
-    const address = Address.initFromVersion()
-    const hash = publicKey.hasher.hash(publicKey.toBytes())
+    if (publicKey.version !== Version.V0) {
+      throw new Error(`unsupported public key version: ${publicKey.version}`)
+    }
+    const address = Address.initFromVersion(Version.V0)
+    const rawBytes = publicKey.hasher.hash(publicKey.toBytes())
     address.bytes = Uint8Array.from([
-      0 /* EOA*/,
-      ...varint.encode(address.version),
-      ...hash,
+      AddressType.EOA,
+      ...address.versioner.attach(Version.V0, rawBytes),
     ])
     address.isEOA = true
     return address
@@ -138,10 +159,10 @@ export class Address {
    * @returns A new address object.
    */
   public static fromBytes(bytes: Uint8Array): Address {
-    const address = Address.initFromVersion()
+    const version = Address.getVersion(bytes)
+    const address = Address.initFromVersion(version)
     address.bytes = bytes
-    address.isEOA = address.getType() === 0
-    address.version = address.getVersion()
+    address.isEOA = address.getType() === AddressType.EOA
     return address
   }
 
@@ -165,28 +186,33 @@ export class Address {
    * @returns The serialized address string.
    */
   toString(): string {
-    // decode version
-    varint.decode(this.bytes)
-    const versionedBytes = this.bytes.slice(varint.decode.bytes)
-    return `${ADDRESS_PREFIX}${
+    // skip address type bytes
+    const versionedBytes = this.bytes.slice(
+      varint.encodingLength(this.getType())
+    )
+    return `${
       this.isEOA ? ADDRESS_USER_PREFIX : ADDRESS_CONTRACT_PREFIX
     }${this.serializer.serialize(versionedBytes)}`
   }
 
   /**
-   * Get byte length of address in binary format .
+   * Get address in binary format from a bytes buffer.
    *
-   * @returns The address length in bytes.
+   * @returns The address in bytes format.
    */
-  static getByteLength(data: Uint8Array): number {
+  static extractFromBuffer(
+    data: Uint8Array,
+    offset = 0
+  ): { data: Uint8Array; length: number } {
     // addr type
-    varint.decode(data)
+    varint.decode(data, offset)
     let addrByteLen = varint.decode.bytes
     // version
-    varint.decode(data, addrByteLen)
+    varint.decode(data, offset + addrByteLen)
     addrByteLen += varint.decode.bytes
 
     addrByteLen += UNDERLYING_HASH_LEN
-    return addrByteLen
+    const extractedData = data.slice(offset, offset + addrByteLen)
+    return { data: extractedData, length: addrByteLen }
   }
 }

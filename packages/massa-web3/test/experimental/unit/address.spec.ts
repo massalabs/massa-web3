@@ -43,7 +43,6 @@ describe('Address tests', () => {
   test('toBytes returns bytes with EOA prefix for EOA', () => {
     const address = Address.fromPublicKey(account.publicKey)
     const bytes = address.toBytes()
-
     // The first byte should be 0 for EOA
     expect(bytes[0]).toBe(0)
   })
@@ -55,11 +54,12 @@ describe('Address tests', () => {
     expect(bytes[0]).toBe(1)
   })
 
-  test('getByteLength returns correct length', () => {
+  test('extractFromBuffer returns extracted address bytes', () => {
     const address = Address.fromPublicKey(account.publicKey)
-    const bytes = address.toBytes()
-    const byteLength = Address.getByteLength(bytes)
+    const buffer = Uint8Array.from([...address.toBytes(), 1, 2, 3, 4])
+    const { data, length } = Address.extractFromBuffer(buffer)
 
-    expect(byteLength).toBe(bytes.length)
+    expect(data).toStrictEqual(address.toBytes())
+    expect(length).toStrictEqual(address.toBytes().length)
   })
 })
