@@ -17,11 +17,12 @@ export function extractData(
   return extractedData
 }
 
-export function checkPrefix(str: string, ...expected: string[]): void {
+export function checkPrefix(str: string, ...expected: string[]): string {
   const prefix = str.slice(0, expected[0].length)
   if (!expected.includes(prefix)) {
     throw new Error(
       `invalid prefix: ${prefix}. ${expected.length > 1 ? 'one of ' : ''}${expected.join(' or ')} was expected.`
     )
   }
+  return prefix
 }
