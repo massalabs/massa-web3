@@ -3,7 +3,7 @@ export const MAS_DECIMALS = 9
 /**
  * Convert Mas float amount to 9 decimals bigint
  *
- * @param amount MAS amount in floating point representation
+ * @param amount - MAS amount in floating point representation
  * @returns amount in nanoMAS
  */
 export const toNanoMas = (amount: string | number): bigint => {
@@ -18,7 +18,7 @@ export const toNanoMas = (amount: string | number): bigint => {
 /**
  * Convert nanoMas bigint amount to floating point Mas string
  *
- * @param amount nanoMAS amount in bigint representation
+ * @param amount - nanoMAS amount in bigint representation
  * @returns amount in MAS
  */
 export const toMas = (amount: bigint): string => {

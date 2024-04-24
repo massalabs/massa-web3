@@ -17,7 +17,7 @@ export function extractData(
   return extractedData
 }
 
-export function checkPrefix(str: string, ...expected: string[]): string {
+export function mustExtractPrefix(str: string, ...expected: string[]): string {
   const prefix = str.slice(0, expected[0].length)
   if (!expected.includes(prefix)) {
     throw new Error(

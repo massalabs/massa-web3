@@ -1,6 +1,6 @@
 import {
   extractData,
-  checkPrefix,
+  mustExtractPrefix,
 } from '../../../src/experimental/basicElements/internal'
 import Base58 from '../../../src/experimental/crypto/base58'
 import VarintVersioner from '../../../src/experimental/crypto/varintVersioner'
@@ -23,12 +23,12 @@ describe('Internal functions tests', () => {
     expect(extractedData).toEqual(Uint8Array.from([1, 2, 3, 4]))
   })
 
-  test('checkPrefix throws error for invalid prefix', () => {
-    expect(() => checkPrefix('IP_invalid_prefix', 'AS')).toThrow(
+  test('mustExtractPrefix throws error for invalid prefix', () => {
+    expect(() => mustExtractPrefix('IP_invalid_prefix', 'AS')).toThrow(
       'invalid prefix: IP. AS was expected.'
     )
 
-    expect(() => checkPrefix('IP_invalid_prefix', 'AS', 'AU')).toThrow(
+    expect(() => mustExtractPrefix('IP_invalid_prefix', 'AS', 'AU')).toThrow(
       'invalid prefix: IP. one of AS or AU was expected.'
     )
   })

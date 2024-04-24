@@ -8,7 +8,7 @@ import Serializer from '../crypto/interfaces/serializer'
 import Signer from '../crypto/interfaces/signer'
 import { Version, Versioner } from '../crypto/interfaces/versioner'
 import VarintVersioner from '../crypto/varintVersioner'
-import { checkPrefix, extractData } from './internal'
+import { mustExtractPrefix, extractData } from './internal'
 
 const PRIVATE_KEY_PREFIX = 'S'
 const PUBLIC_KEY_PREFIX = 'P'
@@ -73,7 +73,7 @@ export class PrivateKey {
     const privateKey = PrivateKey.initFromVersion(version)
 
     try {
-      checkPrefix(str, PRIVATE_KEY_PREFIX)
+      mustExtractPrefix(str, PRIVATE_KEY_PREFIX)
       privateKey.bytes = extractData(
         privateKey.serializer,
         privateKey.versioner,
@@ -242,7 +242,7 @@ export class PublicKey {
     const publicKey = PublicKey.initFromVersion(version)
 
     try {
-      checkPrefix(str, PUBLIC_KEY_PREFIX)
+      mustExtractPrefix(str, PUBLIC_KEY_PREFIX)
       publicKey.bytes = extractData(
         publicKey.serializer,
         publicKey.versioner,

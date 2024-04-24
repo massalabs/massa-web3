@@ -1,5 +1,6 @@
 import { Account } from '../../../src/experimental/account'
 import { Address } from '../../../src/experimental/basicElements'
+import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
 import { Address as LegacyAddress } from '../../../src/utils/keyAndAddresses'
 
 const contractAddress = 'AS1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
@@ -30,6 +31,13 @@ describe('Address tests', () => {
     )
   })
 
+  test('fromPublicKey throws error for invalid version', () => {
+    const invalidVersion = -1 as Version
+    expect(() =>
+      Address.fromPublicKey(account.publicKey, invalidVersion)
+    ).toThrow(/unsupported version:/)
+  })
+
   test('toString returns string with user prefix for EOA', () => {
     const address = Address.fromPublicKey(account.publicKey)
     expect(address.toString()).toMatch(/^AU/)
@@ -43,7 +51,6 @@ describe('Address tests', () => {
   test('toBytes returns bytes with EOA prefix for EOA', () => {
     const address = Address.fromPublicKey(account.publicKey)
     const bytes = address.toBytes()
-
     // The first byte should be 0 for EOA
     expect(bytes[0]).toBe(0)
   })
@@ -55,11 +62,11 @@ describe('Address tests', () => {
     expect(bytes[0]).toBe(1)
   })
 
-  test('getByteLength returns correct length', () => {
+  test('extractFromBuffer returns extracted address bytes', () => {
     const address = Address.fromPublicKey(account.publicKey)
-    const bytes = address.toBytes()
-    const byteLength = Address.getByteLength(bytes)
+    const buffer = Uint8Array.from([...address.toBytes(), 1, 2, 3, 4])
+    const addressBytes = Address.extractFromBuffer(buffer)
 
-    expect(byteLength).toBe(bytes.length)
+    expect(addressBytes).toStrictEqual(address.toBytes())
   })
 })
