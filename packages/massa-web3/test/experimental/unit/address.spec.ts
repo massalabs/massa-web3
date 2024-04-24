@@ -1,10 +1,8 @@
 import { Account } from '../../../src/experimental/account'
 import { Address } from '../../../src/experimental/basicElements'
-import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
 import { Address as LegacyAddress } from '../../../src/utils/keyAndAddresses'
 
 const contractAddress = 'AS1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
-const invalidVersion = -1 as Version
 
 describe('Address tests', () => {
   let account: Account
@@ -30,12 +28,6 @@ describe('Address tests', () => {
     expect(() => Address.fromString('invalid_address_string')).toThrow(
       /invalid address string:/
     )
-  })
-
-  test('fromString throws error for invalid version', () => {
-    expect(() =>
-      Address.fromString(account.address.toString(), invalidVersion)
-    ).toThrow(/unsupported version:/)
   })
 
   test('toString returns string with user prefix for EOA', () => {

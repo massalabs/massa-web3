@@ -12,6 +12,7 @@ beforeAll(async () => {
   client = new JsonRPCClient('https://buildnet.massa.net/api/v2')
   account = await Account.fromEnv()
   accountOperation = new AccountOperation(account, client)
+  // eslint-disable-next-line no-console
   console.log(
     'Using account:',
     account.address.toString(),
