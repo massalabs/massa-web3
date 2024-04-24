@@ -1,5 +1,5 @@
-import { OperationStatus } from './basicElements'
-import { SendOperationInput, EventFilter as EvtFilter } from './client'
+import { OperationStatus } from '../basicElements'
+import { SendOperationInput, EventFilter as EvtFilter } from '.'
 import {
   OperationInput,
   Pagination,
@@ -25,8 +25,8 @@ import {
   Staker,
   OperationId,
   AddressFilter,
-} from './generated/client'
-import { toNanoMas } from './utils'
+} from '../generated/client'
+import { toNanoMas } from '../utils'
 
 export enum Transport {
   webSocket = 'websocket',
