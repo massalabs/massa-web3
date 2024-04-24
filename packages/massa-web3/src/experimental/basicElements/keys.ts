@@ -250,7 +250,7 @@ export class PublicKey {
         publicKey.version
       )
     } catch (e) {
-      throw new Error(`Invalid public key string: ${e.message}`)
+      throw new Error(`invalid public key string: ${e.message}`)
     }
 
     return publicKey
