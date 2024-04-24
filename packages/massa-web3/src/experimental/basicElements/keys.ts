@@ -149,9 +149,12 @@ export class PrivateKey {
    * @returns The signature byte array.
    */
   public async sign(message: Uint8Array): Promise<Signature> {
+    const signatureRawBytes = await this.signer.sign(
+      this.bytes,
+      this.hasher.hash(message)
+    )
     return Signature.fromBytes(
-      await this.signer.sign(this.bytes, this.hasher.hash(message)),
-      this.version
+      this.versioner.attach(this.version, signatureRawBytes)
     )
   }
 
@@ -310,10 +313,11 @@ export class PublicKey {
     data: Uint8Array,
     signature: Signature
   ): Promise<boolean> {
+    const { data: rawSignature } = this.versioner.extract(signature.toBytes())
     return await this.signer.verify(
       this.bytes,
       this.hasher.hash(data),
-      signature.bytes
+      rawSignature
     )
   }
 

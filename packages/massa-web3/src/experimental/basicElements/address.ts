@@ -17,6 +17,38 @@ export enum AddressType {
 }
 
 /**
+ * Get the address version.
+ *
+ * @returns the address version.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getVersion(data: string | Uint8Array): Version {
+  // when a new version will come, implement the logic to detect version here
+  // This should be done without serializer and versionner as they are potentially not known at this point
+  return Version.V0
+}
+
+/**
+ * Get the address prefix.
+ *
+ *  @remarks
+ * Throws an error if the prefix is not valid.
+ *
+ * @returns the address version.
+ */
+function getPrefix(str: string): string {
+  const expected = [ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX]
+  for (let prefix of expected) {
+    if (str.startsWith(prefix)) {
+      return prefix
+    }
+  }
+  throw new Error(
+    `invalid address prefix: one of ${expected.join(' or ')} was expected.`
+  )
+}
+
+/**
  * A class representing an address.
  *
  * @remarks
@@ -62,18 +94,6 @@ export class Address {
     }
   }
 
-  private static getPrefix(str: string): string {
-    const expected = [ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX]
-    for (let prefix of expected) {
-      if (str.startsWith(prefix)) {
-        return prefix
-      }
-    }
-    throw new Error(
-      `invalid address prefix: one of ${expected.join(' or ')} was expected.`
-    )
-  }
-
   /**
    * Initializes a new address object from a serialized string.
    *
@@ -85,14 +105,22 @@ export class Address {
    */
   public static fromString(str: string): Address {
     try {
-      const version = Address.getVersion(str)
+      const version = getVersion(str)
       const address = Address.initFromVersion(version)
-      const prefix = Address.getPrefix(str)
+      const prefix = getPrefix(str)
 
       address.isEOA = prefix === ADDRESS_USER_PREFIX
       const versionedBytes = address.serializer.deserialize(
         str.slice(prefix.length)
       )
+      const { version: extractedVersion } =
+        address.versioner.extract(versionedBytes)
+      // safety check
+      if (extractedVersion !== version) {
+        throw new Error(
+          `invalid version: ${version}. ${address.version} was expected.`
+        )
+      }
 
       address.bytes = Uint8Array.from([
         ...varint.encode(
@@ -116,18 +144,6 @@ export class Address {
       throw new Error('address bytes is not initialized')
     }
     return varint.decode(this.bytes)
-  }
-
-  /**
-   * Get the address version.
-   *
-   * @returns the address type enum.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private static getVersion(data: string | Uint8Array): Version {
-    // when a new version will come, implement the logic to detect version here
-    // This should be done without serializer and versionner as they are potentially not known at this point
-    return Version.V0
   }
 
   /**
@@ -159,10 +175,22 @@ export class Address {
    * @returns A new address object.
    */
   public static fromBytes(bytes: Uint8Array): Address {
-    const version = Address.getVersion(bytes)
+    const version = getVersion(bytes)
     const address = Address.initFromVersion(version)
     address.bytes = bytes
-    address.isEOA = address.getType() === AddressType.EOA
+
+    // safety check
+    const addressType = address.getType()
+    const versionedBytes = bytes.slice(varint.encodingLength(addressType))
+    const { version: extractedVersion } =
+      address.versioner.extract(versionedBytes)
+    if (extractedVersion !== version) {
+      throw new Error(
+        `invalid version: ${version}. ${address.version} was expected.`
+      )
+    }
+
+    address.isEOA = addressType === AddressType.EOA
     return address
   }
 
