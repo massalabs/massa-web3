@@ -1,20 +1,7 @@
-import { Account } from '../../../src/experimental/account'
-import { AccountOperation } from '../../../src/experimental/accountOperation'
 import { OperationStatus } from '../../../src/experimental/basicElements'
-import { JsonRPCClient } from '../../../src/experimental/jsonRPCClient'
-import 'dotenv/config'
+import { accountOperation } from './setup'
 
 describe('AccountOperation tests', () => {
-  let client: JsonRPCClient
-  let account: Account
-  let accountOperation: AccountOperation
-
-  beforeAll(async () => {
-    client = new JsonRPCClient('https://buildnet.massa.net/api/v2')
-    account = await Account.fromEnv()
-    accountOperation = new AccountOperation(account, client)
-  })
-
   test('transfer', async () => {
     const transfer = await accountOperation.transfer(
       'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',

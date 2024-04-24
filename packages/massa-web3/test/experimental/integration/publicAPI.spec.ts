@@ -4,10 +4,10 @@ import {
   ReadOnlyCall,
   Slot,
 } from '../../../src/experimental/generated/client'
-import { JsonRPCClient } from '../../../src/experimental/jsonRPCClient'
 import { createCheckers } from 'ts-interface-checker'
 import validator from '../../../src/experimental/generated/client-ti'
 import { EventFilter } from '../../../src/experimental/client'
+import { client } from './setup'
 
 const {
   NodeStatus,
@@ -24,48 +24,46 @@ const {
   ExecuteReadOnlyResponse,
 } = createCheckers(validator)
 
-const api = new JsonRPCClient('https://buildnet.massa.net/api/v2')
-
 let lastSlot: Slot = { period: 0, thread: 0 }
 let someEndorsement: string[]
 let someBlockIds: string[]
 let operationId: string
 
-describe('unit tests', () => {
+describe('client tests', () => {
   test('getStatus', async () => {
-    const status = await api.getStatus()
+    const status = await client.getStatus()
     lastSlot.period = status.last_slot!.period
     lastSlot.thread = status.last_slot!.thread
     NodeStatus.check(status)
   })
 
   test('getAddressInfo', async () => {
-    const info = await api.getAddressInfo(
+    const info = await client.getAddressInfo(
       'AU1Fp7uBP2TXxDty2HdTE3ZE3XQ4cNXnG3xuo8TkQLJtyxC7FKhx'
     )
     AddressInfo.strictCheck(info)
   })
 
   test('getCliques', async () => {
-    const cliques = await api.getCliques()
+    const cliques = await client.getCliques()
     someBlockIds = cliques[0].block_ids
     cliques.forEach((c) => Clique.strictCheck(c))
   })
 
   test('getGraphInterval', async () => {
     const now = Date.now()
-    const interval = await api.getGraphInterval(now - 2000, now)
+    const interval = await client.getGraphInterval(now - 2000, now)
     interval.forEach((i) => GraphInterval.strictCheck(i))
   })
 
   test('getStakers', async () => {
-    const stakers = await api.getStakers({ limit: 5, offset: 0 })
+    const stakers = await client.getStakers({ limit: 5, offset: 0 })
     stakers.forEach((s) => Staker.strictCheck(s))
     expect(stakers.length).toBeGreaterThan(0)
   })
 
   test('getBlockcliqueBlock', async () => {
-    const block = await api.getBlockcliqueBlock(lastSlot)
+    const block = await client.getBlockcliqueBlock(lastSlot)
     if (block.header.content.endorsements) {
       someEndorsement = block.header.content.endorsements.map((e) => e.id!)
     }
@@ -73,23 +71,23 @@ describe('unit tests', () => {
   })
 
   test('getBlock', async () => {
-    const block = await api.getBlock(someBlockIds[0])
+    const block = await client.getBlock(someBlockIds[0])
     BlockInfo.strictCheck(block)
     expect(block).toHaveProperty('content.block.header.content.endorsements')
   })
 
   test('getMultipleBlocks', async () => {
-    const blocks = await api.getMultipleBlocks(someBlockIds.slice(0, 2))
+    const blocks = await client.getMultipleBlocks(someBlockIds.slice(0, 2))
     BlockInfo.strictCheck(blocks[0])
   })
 
   test('getEndorsement', async () => {
-    const endorsement = await api.getEndorsement(someEndorsement[0]!)
+    const endorsement = await client.getEndorsement(someEndorsement[0]!)
     EndorsementInfo.strictCheck(endorsement)
   })
 
   test('getMultipleEndorsements', async () => {
-    const endorsements = await api.getMultipleEndorsements([
+    const endorsements = await client.getMultipleEndorsements([
       someEndorsement[1]!,
       someEndorsement[2]!,
     ])
@@ -97,7 +95,7 @@ describe('unit tests', () => {
   })
 
   test('getDatastoreEntry', async () => {
-    const entry = await api.getDatastoreEntry(
+    const entry = await client.getDatastoreEntry(
       '',
       'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP'
     )
@@ -107,7 +105,7 @@ describe('unit tests', () => {
   test('getDatastoreEntries', async () => {
     let str1 = ''
     let result = Array.from(str1, (char) => char.charCodeAt(0))
-    const entries = await api.getDatastoreEntries([
+    const entries = await client.getDatastoreEntries([
       {
         address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
         key: result,
@@ -118,7 +116,7 @@ describe('unit tests', () => {
   })
 
   test.skip('sendOperations', async () => {
-    const operations = await api.sendMultipleOperations([
+    const operations = await client.sendMultipleOperations([
       {
         creator_public_key:
           'P12QDzMvr1SNNwJWmdpA9XQY9PqCDqdLaqiQDFZKQh8dPGSxagTh',
@@ -136,7 +134,7 @@ describe('unit tests', () => {
   })
 
   test.skip('sendOperation', async () => {
-    const operation = await api.sendOperation({
+    const operation = await client.sendOperation({
       publicKey: 'P12QDzMvr1SNNwJWmdpA9XQY9PqCDqdLaqiQDFZKQh8dPGSxagTh',
       signature:
         '1JhEaikbcebpJKPd7q6VsA2iWcnuL1iho6vcbpAsJJkp5SjFo7nD8xCJwxTXh7oiKH3bQ95DH7DK1kNzu5Xw5somQxbeiA',
@@ -150,17 +148,17 @@ describe('unit tests', () => {
   })
 
   test.skip('getOperation', async () => {
-    const operation = await api.getOperation(operationId)
+    const operation = await client.getOperation(operationId)
     OperationInfo.strictCheck(operation)
   })
 
   test.skip('getMultipleOperations', async () => {
-    const operations = await api.getOperations([operationId, operationId])
+    const operations = await client.getOperations([operationId, operationId])
     expect(operations).toHaveLength(2)
   })
 
   test('getMultipleAddressInfo', async () => {
-    const info = await api.getMultipleAddressInfo([
+    const info = await client.getMultipleAddressInfo([
       'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
     ])
     expect(info).toHaveLength(1)
@@ -168,7 +166,7 @@ describe('unit tests', () => {
   })
 
   test.skip('getEvents', async () => {
-    const event = await api.getEvents({
+    const event = await client.getEvents({
       smartContractAddress:
         'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
     } as EventFilter)
@@ -177,7 +175,7 @@ describe('unit tests', () => {
   })
 
   test('executeReadOnlyBytecode', async () => {
-    const response = await api.executeReadOnlyBytecode({
+    const response = await client.executeReadOnlyBytecode({
       max_gas: 100000,
       bytecode: [65, 66],
       address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
@@ -191,12 +189,12 @@ describe('unit tests', () => {
       bytecode: [65, 66],
       address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
     } as ReadOnlyBytecodeExecution
-    const responses = await api.executeMultipleReadOnlyBytecode([req, req])
+    const responses = await client.executeMultipleReadOnlyBytecode([req, req])
     expect(responses).toHaveLength(2)
   })
 
   test.skip('getAddressesBytecode', async () => {
-    const bytecode = await api.getAddressesBytecode({
+    const bytecode = await client.getAddressesBytecode({
       address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
       is_final: true,
     } as AddressFilter)
@@ -208,7 +206,10 @@ describe('unit tests', () => {
       address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
       is_final: true,
     } as AddressFilter
-    const bytecodes = await api.executeMultipleGetAddressesBytecode([req, req])
+    const bytecodes = await client.executeMultipleGetAddressesBytecode([
+      req,
+      req,
+    ])
     expect(bytecodes).toHaveLength(2)
   })
 
@@ -222,7 +223,7 @@ describe('unit tests', () => {
       coins: null,
       fee: null,
     }
-    const response = await api.executeReadOnlyCall(arg as ReadOnlyCall)
+    const response = await client.executeReadOnlyCall(arg as ReadOnlyCall)
     expect(response).toHaveProperty('result')
     ExecuteReadOnlyResponse.strictCheck(response)
   })
@@ -237,7 +238,7 @@ describe('unit tests', () => {
       coins: null,
       fee: null,
     } as ReadOnlyCall
-    const responses = await api.executeMultipleReadOnlyCall([arg, arg])
+    const responses = await client.executeMultipleReadOnlyCall([arg, arg])
     expect(responses).toHaveLength(2)
     ExecuteReadOnlyResponse.strictCheck(responses[0])
     ExecuteReadOnlyResponse.strictCheck(responses[1])

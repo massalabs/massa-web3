@@ -28,7 +28,7 @@ export interface BlockchainClient {
   sendOperation(data: SendOperationInput): Promise<string>
   fetchPeriod(): Promise<number>
   getOperationStatus(operationId: string): Promise<OperationStatus>
-  getBalance(address: string, speculative?: boolean): Promise<bigint>
+  getBalance(address: string, final?: boolean): Promise<bigint>
   getEvents(filter: EventFilter): Promise<SCOutputEvent[]>
   getChainId(): Promise<bigint>
   getMinimalFee(): Promise<bigint>

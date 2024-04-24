@@ -181,7 +181,7 @@ export class SmartContract {
       BigInt(StorageCost.smartContract(byteCode.length)) + opts.coins
 
     if (
-      (await client.getBalance(account.address.toString(), true)) < totalCost
+      (await client.getBalance(account.address.toString(), false)) < totalCost
     ) {
       throw new Error('Insufficient balance')
     }

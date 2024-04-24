@@ -116,7 +116,7 @@ export class AccountOperation {
    *
    * @returns The balance of the account.
    */
-  async fetchBalance(speculative: boolean = false): Promise<bigint> {
-    return this.client.getBalance(this.account.address.toString(), speculative)
+  async fetchBalance(final: boolean = true): Promise<bigint> {
+    return this.client.getBalance(this.account.address.toString(), final)
   }
 }

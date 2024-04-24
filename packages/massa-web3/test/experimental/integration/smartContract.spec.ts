@@ -1,17 +1,7 @@
-import { Account } from '../../../src/experimental/account'
 import { ByteCode } from '../../../src/experimental/smartContract'
-import 'dotenv/config'
-import { JsonRPCClient } from '../../../src/experimental/jsonRPCClient'
+import { account, client } from './setup'
 
 describe('Smart Contract', () => {
-  let client: JsonRPCClient
-  let account: Account
-
-  beforeAll(async () => {
-    client = new JsonRPCClient('https://buildnet.massa.net/api/v2')
-    account = await Account.fromEnv()
-  })
-
   test('execute', async () => {
     const byteCode = new Uint8Array([1, 2, 3, 4])
     const opts = {

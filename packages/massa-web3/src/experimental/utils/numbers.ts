@@ -14,3 +14,16 @@ export const toNanoMas = (amount: string | number): bigint => {
   decimalPart = decimalPart ?? ''
   return BigInt(integerPart + decimalPart.padEnd(MAS_DECIMALS, '0'))
 }
+
+/**
+ * Convert nanoMas bigint amount to floating point Mas string
+ *
+ * @param amount nanoMAS amount in bigint representation
+ * @returns amount in MAS
+ */
+export const toMas = (amount: bigint): string => {
+  const amountString = amount.toString()
+  const integerPart = amountString.slice(0, -MAS_DECIMALS) || '0'
+  const decimalPart = amountString.slice(-MAS_DECIMALS).replace(/0+$/, '')
+  return `${integerPart}${decimalPart.length ? '.' + decimalPart : ''}`
+}
