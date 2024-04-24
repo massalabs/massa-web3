@@ -24,8 +24,12 @@ describe('Internal functions tests', () => {
   })
 
   test('checkPrefix throws error for invalid prefix', () => {
-    expect(() => checkPrefix('invalid_prefix', 'valid_prefix')).toThrow(
-      'invalid prefix: invalid_prefix. valid_prefix was expected.'
+    expect(() => checkPrefix('IP_invalid_prefix', 'AS')).toThrow(
+      'invalid prefix: IP. AS was expected.'
+    )
+
+    expect(() => checkPrefix('IP_invalid_prefix', 'AS', 'AU')).toThrow(
+      'invalid prefix: IP. one of AS or AU was expected.'
     )
   })
 })

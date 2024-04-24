@@ -81,7 +81,7 @@ export class PrivateKey {
         privateKey.version
       )
     } catch (e) {
-      throw new Error(`invalid private key string: ${e.message}`)
+      throw new Error(`Invalid private key string: ${e.message}`)
     }
     return privateKey
   }
