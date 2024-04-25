@@ -386,6 +386,8 @@ export class BaseClient {
           rollsAmountEncoded,
         ])
       }
+      default:
+        throw new Error('operation type not supported')
     }
   }
 }

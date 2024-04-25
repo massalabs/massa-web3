@@ -34,8 +34,8 @@ export class AccountOperation {
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: RollOperation = {
       fee: opts?.fee ?? (await this.client.getMinimalFee()),
-      expirePeriod: await calculateExpirePeriod(
-        this.client,
+      expirePeriod: calculateExpirePeriod(
+        await this.client.fetchPeriod(),
         opts?.periodToLive
       ),
       type,
@@ -97,8 +97,8 @@ export class AccountOperation {
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: TransferOperation = {
       fee: opts?.fee ?? (await this.client.getMinimalFee()),
-      expirePeriod: await calculateExpirePeriod(
-        this.client,
+      expirePeriod: calculateExpirePeriod(
+        await this.client.fetchPeriod(),
         opts?.periodToLive
       ),
       type: OperationType.Transaction,

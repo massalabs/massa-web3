@@ -57,7 +57,10 @@ export class ByteCode {
     const operation = new OperationManager(privateKey, client)
     const details: ExecuteOperation = {
       fee: opts?.fee ?? (await client.getMinimalFee()),
-      expirePeriod: await calculateExpirePeriod(client, opts?.periodToLive),
+      expirePeriod: calculateExpirePeriod(
+        await client.fetchPeriod(),
+        opts?.periodToLive
+      ),
       type: OperationType.ExecuteSmartContractBytecode,
       coins: opts?.coins ?? 0n,
       // TODO: implement max gas
