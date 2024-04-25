@@ -1,4 +1,4 @@
-import { EventFilter, SCOutputEvent } from '../client'
+import { SCOutputEvent } from '../client'
 import { BlockchainClient } from '../client'
 
 /**
@@ -89,12 +89,10 @@ export class Operation {
       return Promise.reject(new Error('Operation not found'))
     }
 
-    const filter = {
+    return this.client.getEvents({
       operationId: this.id,
       isFinal: true,
-    } as EventFilter
-
-    return this.client.getEvents(filter)
+    })
   }
 
   /**
@@ -107,12 +105,10 @@ export class Operation {
       return Promise.reject(new Error('Operation not found'))
     }
 
-    const filter = {
+    return this.client.getEvents({
       operationId: this.id,
       isFinal: false,
-    } as EventFilter
-
-    return this.client.getEvents(filter)
+    })
   }
 }
 

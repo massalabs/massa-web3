@@ -18,6 +18,7 @@
         "generate": "npm-run-all generate:*",
         "test": "jest --detectOpenHandles --forceExit ./test/experimental/unit",
         "test:cov": "jest --detectOpenHandles --coverage --forceExit ./test/experimental/unit",
+        "test:cov:watch": "jest --detectOpenHandles --coverage --watch ./test/experimental/unit",
         "test:integration": "jest --detectOpenHandles --forceExit ./test/experimental/integration",
         "test:all": "npm run test && npm run test:integration",
         "test:watch": "jest --watch",

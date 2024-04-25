@@ -262,23 +262,22 @@ export class OperationManager {
  * Calculates the expire period.
  *
  * @remarks
- * This function fetches the current period from the blockchain and adds the periodToLive to it.
  * If the periodToLive is too big, the node will silently reject the operation.
  * This is why the periodToLive is limited to an upper value.
  *
- * @param client - The blockchain client.
+ * @param period - The current period.
  * @param periodToLive - The period to live.
  *
  * @returns The expire period.
  * @throws An error if the periodToLive is too low or too big.
  */
-export async function calculateExpirePeriod(
-  client: BlockchainClient,
+export function calculateExpirePeriod(
+  period: number,
   periodToLive: number = 10
-): Promise<number> {
+): number {
   // Todo: adjust max value
   if (periodToLive < 1 || periodToLive > 100) {
     throw new Error('periodToLive must be between 1 and 100')
   }
-  return (await client.fetchPeriod()) + periodToLive
+  return period + periodToLive
 }
