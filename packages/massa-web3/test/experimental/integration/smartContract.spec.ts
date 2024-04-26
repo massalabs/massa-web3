@@ -1,36 +1,132 @@
-import { ByteCode } from '../../../src/experimental/smartContract'
+import { Args, fromMAS } from '@massalabs/web3-utils'
+import {
+  ByteCode,
+  MAX_GAS_CALL,
+  MIN_GAS_CALL,
+  SmartContract,
+} from '../../../src/experimental/smartContract'
 import { account, client } from './setup'
 
+const CONTRACT_ADDRESS = 'AS1JsLnBg4wAKJrAgNUYSs32oTpr3WgSDJdPZib3r3o2zLLRE8sP'
+const TIMEOUT = 61000
+const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
+
 describe('Smart Contract', () => {
-  test('execute', async () => {
-    const byteCode = new Uint8Array([1, 2, 3, 4])
-    const opts = {
-      periodToLive: 2,
-      coins: 3n,
-      maxGas: 4n,
-    }
-    const contract = await ByteCode.execute(
-      client,
-      account.privateKey,
-      byteCode,
-      opts
+  describe('ByteCode', () => {
+    test(
+      'execute',
+      async () => {
+        const byteCode = new Uint8Array([1, 2, 3, 4])
+        const opts = {
+          periodToLive: 2,
+          coins: 3n,
+          maxGas: 4n,
+        }
+        const contract = await ByteCode.execute(
+          client,
+          account.privateKey,
+          byteCode,
+          opts
+        )
+        expect(await contract.getSpeculativeEvents()).toHaveLength(1)
+      },
+      TIMEOUT
     )
-    expect(await contract.getSpeculativeEvents()).toHaveLength(1)
-  }, 61000)
 
-  test('not enough fee', async () => {
-    const byteCode = new Uint8Array([1, 2, 3, 4])
-    const opts = {
-      fee: 1n,
-      periodToLive: 2,
-      coins: 3n,
-      maxGas: 4n,
-    }
+    test('not enough fee', async () => {
+      const byteCode = new Uint8Array([1, 2, 3, 4])
+      const opts = {
+        fee: fromMAS(0.000000001),
+        periodToLive: 2,
+        coins: 3n,
+        maxGas: 4n,
+      }
 
-    expect(
-      ByteCode.execute(client, account.privateKey, byteCode, opts)
-    ).rejects.toThrow(
-      'Bad request: fee is too low provided: 0.000000001 , minimal_fees required: 0.01'
+      expect(
+        ByteCode.execute(client, account.privateKey, byteCode, opts)
+      ).rejects.toThrow(
+        'Bad request: fee is too low provided: 0.000000001 , minimal_fees required: 0.01'
+      )
+    })
+  })
+
+  describe('SmartContract - Call ', () => {
+    test(
+      'minimal call',
+      async () => {
+        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
+
+        const op = await sc.call(account, 'event', new Uint8Array(), {})
+
+        const events = await op.getSpeculativeEvents()
+        const firstEvent = events[0].data
+        expect(firstEvent).toBe("I'm an event!")
+      },
+      TIMEOUT
     )
+
+    test(
+      'call that set a value in the datastore',
+      async () => {
+        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
+
+        const key = 'myKey'
+        const value = 'myValue'
+        const parameter = new Args().addString(key).addString(value).serialize()
+
+        const op = await sc.call(account, 'setValueToKey', parameter, {})
+
+        const events = await op.getSpeculativeEvents()
+        const firstEvent = events[0].data
+        expect(firstEvent).toBe(`Set value ${value} to key ${key}`)
+      },
+      TIMEOUT
+    )
+
+    test(
+      'call with send coins',
+      async () => {
+        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
+        const coinAmount = fromMAS(0.001)
+
+        const op = await sc.call(account, 'sendCoins', new Uint8Array(), {
+          coins: coinAmount,
+        })
+
+        const events = await op.getSpeculativeEvents()
+        const firstEvent = events[0].data
+
+        expect(firstEvent).toBe(`Received ${coinAmount.toString()} coins`)
+      },
+      TIMEOUT
+    )
+
+    test(
+      'Attempt to call with maxGas value that is below the minimum required limit',
+      async () => {
+        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
+
+        const call = sc.call(account, 'event', new Uint8Array(), {
+          maxGas: INSUFFICIENT_MAX_GAS,
+        })
+
+        expect(call).rejects.toThrow(
+          `The gas limit for the operation call was below the minimum amount of ${MIN_GAS_CALL}`
+        )
+      },
+      TIMEOUT
+    )
+
+    test('Attempt to call with maxGas value that exceeds the maximum limit', async () => {
+      const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
+
+      const call = sc.call(account, 'event', new Uint8Array(), {
+        maxGas: MAX_GAS_CALL + 1n,
+      })
+
+      expect(call).rejects.toThrow(
+        `The gas limit for the operation call was higher than the maximum amount of ${MAX_GAS_CALL}`
+      )
+    })
   })
 })
