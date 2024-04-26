@@ -2,7 +2,6 @@ import { BaseError } from './base'
 import { ErrorCodes } from './utils/codes'
 
 type MinimalFeeErrorParameters = {
-  operationName: string
   minimalFee: bigint
   cause?: Error
 }
@@ -18,14 +17,13 @@ export class MinimalFeeError extends BaseError {
 
   /**
    * Constructs a new MinimalFeeError with a message indicating the minimum required fee.
-   * @param operationName - The name of the operation that triggered this error.
    * @param minimalFee - The minimum fee that was required for the operation.
    * @param cause - Optional. The underlying cause of the error for error chaining.
    */
-  constructor({ operationName, minimalFee, cause }: MinimalFeeErrorParameters) {
+  constructor({ minimalFee, cause }: MinimalFeeErrorParameters) {
     // Call the base class constructor with a detailed message and the relevant error code.
     super(
-      `Minimal fees for the operation ${operationName} on this client are ${minimalFee}. Please adjust the fee to proceed.`,
+      `Minimal fees for the operation on this client are ${minimalFee}. Please adjust the fee.`,
       {
         code: ErrorCodes.MinimalFee,
         cause,

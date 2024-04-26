@@ -2,7 +2,6 @@ import { BaseError } from './base'
 import { ErrorCodes } from './utils/codes'
 
 type MaxGasErrorParameters = {
-  operationName: string
   isHigher: boolean
   amount: bigint
   cause?: Error
@@ -21,19 +20,13 @@ export class MaxGasError extends BaseError {
 
   /**
    * Constructs a MaxGasError with a message indicating whether the gas limit was exceeded or insufficient.
-   * @param operationName - The operation associated with the error.
    * @param isHigher - Boolean indicating if the actual gas used was higher than allowed (true) or lower (false).
    * @param amount - The critical amount of gas that was either exceeded or not reached.
    * @param cause - Optional cause of the error for deeper error chaining.
    */
-  constructor({
-    operationName,
-    isHigher,
-    amount,
-    cause,
-  }: MaxGasErrorParameters) {
+  constructor({ isHigher, amount, cause }: MaxGasErrorParameters) {
     super(
-      `The gas limit for the operation ${operationName} was ${isHigher ? 'higher than the maximum' : 'below the minimum'} amount of ${amount}.`,
+      `The gas limit for the operation was ${isHigher ? 'higher than the maximum' : 'below the minimum'} amount of ${amount}.`,
       {
         code: ErrorCodes.MaxGasLimit,
         cause,

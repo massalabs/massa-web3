@@ -148,6 +148,7 @@ type DeployOptions = CommonOptions & {
 }
 
 type CallOptions = CommonOptions
+
 /**
  * A class to interact with a smart contract.
  */
@@ -250,12 +251,15 @@ export class SmartContract {
   async call(
     account: Account,
     functionName: string,
-    parameter: Uint8Array | number[],
+    parameter: Uint8Array,
     { fee, maxGas, coins = 0n, periodToLive }: CallOptions
   ): Promise<Operation> {
-    await this.ensureBalance('call', account, coins)
-    fee = await this.getFee('call', fee)
-    maxGas = await this.getMaxGas('call', maxGas, MIN_GAS_CALL, MAX_GAS_CALL)
+    await this.ensureBalance(account, coins)
+    fee = await this.ensureMinimumFee(fee)
+
+    if (!maxGas) maxGas = await this.getGasEstimation()
+    else this.ensureGasWithinLimits(MIN_GAS_CALL, MAX_GAS_CALL, maxGas)
+
     const expirePeriod = await this.getExpirePeriod(periodToLive)
 
     const details: CallOperation = {
@@ -277,21 +281,15 @@ export class SmartContract {
   /**
    * Ensures that the account has sufficient balance to perform a specified operation.
    * If the balance is insufficient, this function throws an InsufficientBalanceError.
-   * @param operationName - The name of the operation being checked. This is used for error reporting.
    * @param account - The account whose balance is to be checked.
    * @param coins - The amount of currency required for the operation.
    * @throws InsufficientBalanceError if the account balance is less than the required amount.
    */
-  async ensureBalance(
-    operationName: string,
-    account: Account,
-    coins?: bigint
-  ): Promise<void> {
+  async ensureBalance(account: Account, coins?: bigint): Promise<void> {
     if (coins) {
       const balance = await this.client.getBalance(account.address.toString())
       if (balance < coins) {
         throw new InsufficientBalanceError({
-          operationName,
           userBalance: balance,
           neededBalance: coins,
         })
@@ -300,9 +298,8 @@ export class SmartContract {
   }
 
   /**
-   * Return the max gas amount for an operation, ensuring it is within the allowable range.
+   * Verifies that the proposed gas amount for an operation is within the allowable limits.
    *
-   * @param operationName - The name of the operation where the gas usage is being checked.
    * @param maxGas - The initial max gas amount proposed for the operation.
    * @param min - The minimum allowable gas limit for the operation.
    * @param max - The maximum allowable gas limit for the operation.
@@ -311,18 +308,15 @@ export class SmartContract {
    *
    * @throws MaxGasError if the proposed gas amount is either too high or too low.
    */
-  async getMaxGas(
-    operationName: string,
-    maxGas: bigint,
+  async ensureGasWithinLimits(
     min: bigint,
-    max: bigint
+    max: bigint,
+    maxGas?: bigint
   ): Promise<bigint> {
-    if (!maxGas) return await this.getGasEstimation()
-
     if (maxGas > max) {
-      throw new MaxGasError({ operationName, isHigher: true, amount: max })
+      throw new MaxGasError({ isHigher: true, amount: max })
     } else if (maxGas < min) {
-      throw new MaxGasError({ operationName, isHigher: false, amount: min })
+      throw new MaxGasError({ isHigher: false, amount: min })
     }
     return maxGas
   }
@@ -330,21 +324,17 @@ export class SmartContract {
   /**
    * Returns the fee for an operation, ensuring it is at least the minimal fee required.
    *
-   * @param operationName - The name of the operation for which the fee is being checked. This helps identify the context in errors.
    * @param fee - The fee proposed for the operation. If no fee is provided, the minimal fee will be used.
    *
    * @returns The validated or minimal fee.
    *
    * @throws MinimalFeeError if the fee provided is less than the minimum required fee.
    */
-  async getFee(operationName: string, fee: bigint): Promise<bigint> {
+  async ensureMinimumFee(fee?: bigint): Promise<bigint> {
     const minimalFee = await this.client.getMinimalFee()
     if (!fee) return minimalFee
     if (fee < minimalFee) {
-      throw new MinimalFeeError({
-        operationName,
-        minimalFee,
-      })
+      throw new MinimalFeeError({ minimalFee })
     }
     return fee
   }

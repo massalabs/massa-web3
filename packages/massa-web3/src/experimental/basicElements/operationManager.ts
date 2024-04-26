@@ -60,7 +60,7 @@ export type CallOperation = BaseSmartContractOperation & {
   type: OperationType.CallSmartContractFunction
   address: string
   functionName: string
-  parameter: Uint8Array | number[]
+  parameter: Uint8Array
 }
 
 export type ExecuteOperation = BaseSmartContractOperation & {
