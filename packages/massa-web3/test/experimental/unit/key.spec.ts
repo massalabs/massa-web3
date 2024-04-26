@@ -3,9 +3,6 @@ import {
   PrivateKey,
   PublicKey,
 } from '../../../src/experimental/basicElements/keys'
-import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
-
-const invalidVersion = -1 as Version
 
 describe('PrivateKey and PublicKey tests', () => {
   let privateKey: PrivateKey
@@ -19,14 +16,14 @@ describe('PrivateKey and PublicKey tests', () => {
   describe('Conversion to and from Bytes', () => {
     test('PublicKey toBytes and fromBytes', async () => {
       const publicKey = await PublicKey.fromPrivateKey(privateKey)
-      const newPubKeyBytes = PublicKey.fromBytes(publicKey.bytes)
-      expect(newPubKeyBytes.bytes).toEqual(publicKey.bytes)
+      const newPubKeyBytes = PublicKey.fromBytes(publicKey.toBytes())
+      expect(newPubKeyBytes.toBytes()).toEqual(publicKey.toBytes())
     })
 
     test('PrivateKey toBytes and fromBytes', async () => {
       const privateKey = PrivateKey.generate()
-      const newPKeyBytes = PrivateKey.fromBytes(privateKey.bytes)
-      expect(newPKeyBytes.bytes).toEqual(privateKey.bytes)
+      const newPKeyBytes = PrivateKey.fromBytes(privateKey.toBytes())
+      expect(newPKeyBytes.toBytes()).toEqual(privateKey.toBytes())
     })
   })
 
@@ -79,23 +76,9 @@ describe('PrivateKey and PublicKey tests', () => {
     test('fromString throws error for invalid public key string', () => {
       const invalidPublicKeyString = 'invalidPublicKey'
 
-      expect(() =>
-        PublicKey.fromString(invalidPublicKeyString, Version.V0)
-      ).toThrow(/invalid public key string/)
-    })
-
-    test('fromString throws error for invalid public key version', () => {
-      const publicKeyString = publicKey.toString()
-      expect(() =>
-        PublicKey.fromString(publicKeyString, invalidVersion)
-      ).toThrow(/unsupported version/)
-    })
-    test('fromString throws error for invalid private key version', () => {
-      const privateKeyString = privateKey.toString()
-
-      expect(() =>
-        PrivateKey.fromString(privateKeyString, invalidVersion)
-      ).toThrow(/unsupported version/)
+      expect(() => PublicKey.fromString(invalidPublicKeyString)).toThrow(
+        /invalid public key string/
+      )
     })
   })
 

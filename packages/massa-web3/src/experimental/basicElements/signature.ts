@@ -91,8 +91,9 @@ export class Signature {
     const version = getVersion(bytes)
     const signature = Signature.initFromVersion(version)
     signature.bytes = bytes
-    const { version: extractedVersion } = signature.versioner.extract(bytes)
+
     // safety check
+    const { version: extractedVersion } = signature.versioner.extract(bytes)
     if (extractedVersion !== version) {
       throw new Error(
         `invalid version: ${version}. ${signature.version} was expected.`

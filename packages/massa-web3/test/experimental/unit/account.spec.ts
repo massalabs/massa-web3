@@ -4,8 +4,8 @@ import { Account, AccountKeyStore } from '../../../src/experimental/account'
 import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
 import path from 'path'
 
-describe('Basic use cases', () => {
-  test('Account - from private key', async () => {
+describe('Account tests', () => {
+  test('from private key', async () => {
     const account = await Account.fromPrivateKey(
       'S12jWf59Yzf2LimL89soMnAP2VEBDBpfCbZLoEFo36CxEL3j92rZ'
     )

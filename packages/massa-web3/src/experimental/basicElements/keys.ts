@@ -8,10 +8,24 @@ import Serializer from '../crypto/interfaces/serializer'
 import Signer from '../crypto/interfaces/signer'
 import { Version, Versioner } from '../crypto/interfaces/versioner'
 import VarintVersioner from '../crypto/varintVersioner'
-import { mustExtractPrefix, extractData } from './internal'
 
 const PRIVATE_KEY_PREFIX = 'S'
 const PUBLIC_KEY_PREFIX = 'P'
+
+/**
+ * Get the version from string or bytes key.
+ *
+ * @remarks
+ * For now the function is common for private & public key but it might change in the futur.
+ *
+ * @returns the key version.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getVersion(data: string | Uint8Array): Version {
+  // When a new version will come, implement the logic to detect version here
+  // This should be done without serializer and versionner as they are potentially not known at this point
+  return Version.V0
+}
 
 /**
  * A class representing a private key.
@@ -27,7 +41,9 @@ const PUBLIC_KEY_PREFIX = 'P'
  * - Voila! The code will automatically handle the new version.
  */
 export class PrivateKey {
-  public bytes: Uint8Array
+  // The key in byte format. Version included.
+  private bytes: Uint8Array
+  private prefix = PRIVATE_KEY_PREFIX
 
   // eslint-disable-next-line max-params
   protected constructor(
@@ -60,42 +76,46 @@ export class PrivateKey {
     }
   }
 
+  private checkPrefix(str: string): void {
+    if (!str.startsWith(this.prefix)) {
+      throw new Error(
+        `invalid private key prefix: ${this.prefix} was expected.`
+      )
+    }
+  }
+
   /**
    * Initializes a new private key object from a serialized string.
    *
    * @param str - The serialized private key string.
-   * @param version - The version of the private key. If not defined, the last version will be used.
    *
    * @returns A new private key instance.
    *
    * @throws If the private key prefix is invalid.
    */
-  public static fromString(str: string, version?: Version): PrivateKey {
-    const privateKey = PrivateKey.initFromVersion(version)
-
+  public static fromString(str: string): PrivateKey {
     try {
-      mustExtractPrefix(str, PRIVATE_KEY_PREFIX)
-      privateKey.bytes = extractData(
-        privateKey.serializer,
-        privateKey.versioner,
-        str.slice(PRIVATE_KEY_PREFIX.length),
-        privateKey.version
+      const version = getVersion(str)
+      const privateKey = PrivateKey.initFromVersion(version)
+      privateKey.checkPrefix(str)
+      privateKey.bytes = privateKey.serializer.deserialize(
+        str.slice(privateKey.prefix.length)
       )
+      return privateKey
     } catch (e) {
       throw new Error(`invalid private key string: ${e.message}`)
     }
-    return privateKey
   }
 
   /**
-   * Initializes a new private key object from a raw byte array and a version.
+   * Initializes a new private key object from a byte array.
    *
-   * @param bytes - The raw bytes without any prefix version.
-   * @param version - The version of the private key. If not defined, the last version will be used.
+   * @param bytes - The private key in byte format.
    *
    * @returns A new private key instance.
    */
-  public static fromBytes(bytes: Uint8Array, version?: Version): PrivateKey {
+  public static fromBytes(bytes: Uint8Array): PrivateKey {
+    const version = getVersion(bytes)
     const privateKey = PrivateKey.initFromVersion(version)
     privateKey.bytes = bytes
     return privateKey
@@ -125,7 +145,8 @@ export class PrivateKey {
    */
   public static generate(version?: Version): PrivateKey {
     const privateKey = PrivateKey.initFromVersion(version)
-    privateKey.bytes = privateKey.signer.generatePrivateKey()
+    const rawBytes = privateKey.signer.generatePrivateKey()
+    privateKey.bytes = privateKey.versioner.attach(privateKey.version, rawBytes)
     return privateKey
   }
 
@@ -150,22 +171,18 @@ export class PrivateKey {
    * @returns The signature byte array.
    */
   public async sign(message: Uint8Array): Promise<Signature> {
-    const signatureRawBytes = await this.signer.sign(
-      this.bytes,
-      this.hasher.hash(message)
-    )
-    return Signature.fromBytes(
-      this.versioner.attach(this.version, signatureRawBytes)
-    )
+    const { data } = this.versioner.extract(this.bytes)
+    const signature = await this.signer.sign(data, this.hasher.hash(message))
+    return Signature.fromBytes(this.versioner.attach(this.version, signature))
   }
 
   /**
-   * Versions the private key bytes.
+   * Private key in bytes.
    *
    * @returns The versioned private key bytes.
    */
   public toBytes(): Uint8Array {
-    return this.versioner.attach(this.version, this.bytes)
+    return this.bytes
   }
 
   /**
@@ -179,7 +196,7 @@ export class PrivateKey {
    * @returns The serialized private key string.
    */
   public toString(): string {
-    return `${PRIVATE_KEY_PREFIX}${this.serializer.serialize(this.toBytes())}`
+    return `${this.prefix}${this.serializer.serialize(this.bytes)}`
   }
 }
 
@@ -198,7 +215,9 @@ export class PrivateKey {
  * - Voila! The code will automatically handle the new version.
  */
 export class PublicKey {
-  public bytes: Uint8Array
+  // The key in byte format. Version included.
+  private bytes: Uint8Array
+  private prefix = PUBLIC_KEY_PREFIX
 
   // eslint-disable-next-line max-params
   protected constructor(
@@ -233,43 +252,44 @@ export class PublicKey {
     }
   }
 
+  private checkPrefix(str: string): void {
+    if (!str.startsWith(this.prefix)) {
+      throw new Error(`invalid public key prefix: ${this.prefix} was expected.`)
+    }
+  }
+
   /**
    * Initializes a new public key object from a serialized string.
    *
    * @param str - The serialized public key string.
-   * @param version - The version of the public key. If not defined, the last version will be used.
    *
    * @returns A new public key instance.
    *
-   * @throws If the public key string is invalid.
+   * @throws If the public key prefix is invalid.
    */
-  public static fromString(str: string, version?: Version): PublicKey {
-    const publicKey = PublicKey.initFromVersion(version)
-
+  public static fromString(str: string): PublicKey {
     try {
-      mustExtractPrefix(str, PUBLIC_KEY_PREFIX)
-      publicKey.bytes = extractData(
-        publicKey.serializer,
-        publicKey.versioner,
-        str.slice(PUBLIC_KEY_PREFIX.length),
-        publicKey.version
+      const version = getVersion(str)
+      const publicKey = PublicKey.initFromVersion(version)
+      publicKey.checkPrefix(str)
+      publicKey.bytes = publicKey.serializer.deserialize(
+        str.slice(publicKey.prefix.length)
       )
+      return publicKey
     } catch (e) {
       throw new Error(`invalid public key string: ${e.message}`)
     }
-
-    return publicKey
   }
 
   /**
-   * Initializes a new public key object from a raw byte array and a version.
+   * Initializes a new public key object from a byte array.
    *
-   * @param bytes - The raw bytes without any prefix version.
-   * @param version - The version of the public key. If not defined, the last version will be used.
+   * @param bytes - The public key in byte format.
    *
    * @returns A new public key instance.
    */
-  public static fromBytes(bytes: Uint8Array, version?: Version): PublicKey {
+  public static fromBytes(bytes: Uint8Array): PublicKey {
+    const version = getVersion(bytes)
     const publicKey = PublicKey.initFromVersion(version)
     publicKey.bytes = bytes
     return publicKey
@@ -286,7 +306,12 @@ export class PublicKey {
     privateKey: PrivateKey
   ): Promise<PublicKey> {
     const publicKey = PublicKey.initFromVersion()
-    publicKey.bytes = await publicKey.signer.getPublicKey(privateKey.bytes)
+    const { data } = publicKey.versioner.extract(privateKey.toBytes())
+    const publicKeyBytes = await publicKey.signer.getPublicKey(data)
+    publicKey.bytes = publicKey.versioner.attach(
+      publicKey.version,
+      publicKeyBytes
+    )
     return publicKey
   }
 
@@ -316,20 +341,21 @@ export class PublicKey {
     signature: Signature
   ): Promise<boolean> {
     const { data: rawSignature } = this.versioner.extract(signature.toBytes())
+    const { data: rawPublicKey } = this.versioner.extract(this.bytes)
     return await this.signer.verify(
-      this.bytes,
+      rawPublicKey,
       this.hasher.hash(data),
       rawSignature
     )
   }
 
   /**
-   * Versions the public key bytes.
+   * Public key in bytes.
    *
    * @returns The versioned public key bytes.
    */
   public toBytes(): Uint8Array {
-    return this.versioner.attach(this.version, this.bytes)
+    return this.bytes
   }
 
   /**
@@ -343,6 +369,6 @@ export class PublicKey {
    * @returns The serialized public key string.
    */
   public toString(): string {
-    return `${PUBLIC_KEY_PREFIX}${this.serializer.serialize(this.toBytes())}`
+    return `${this.prefix}${this.serializer.serialize(this.bytes)}`
   }
 }

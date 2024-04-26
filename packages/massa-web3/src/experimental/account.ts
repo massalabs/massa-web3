@@ -1,6 +1,5 @@
 import { Version } from './crypto/interfaces/versioner'
 import Sealer from './crypto/interfaces/sealer'
-import VarintVersioner from './crypto/varintVersioner'
 import { PasswordSeal } from './crypto/passwordSeal'
 import { Address, PrivateKey, PublicKey, Signature } from './basicElements'
 import { readFileSync, existsSync } from 'fs'
@@ -186,13 +185,9 @@ export class Account {
           keystore.Nonce
         )
         const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
-        const privateKey = PrivateKey.fromBytes(privateKeyBytes, Version.V0)
+        const privateKey = PrivateKey.fromBytes(privateKeyBytes)
         const publicKey = PublicKey.fromBytes(
-          // TODO: The PublicKey class should be refactored to ensure consistency between the fromBytes and toBytes methods,
-          // similar to what was done for the address class.
-          // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-          new Uint8Array(keystore.PublicKey).subarray(1),
-          Version.V0
+          Uint8Array.from(keystore.PublicKey)
         )
         const address = publicKey.getAddress()
         // TODO: add a consistency check with the address in the keystore
@@ -210,18 +205,10 @@ export class Account {
         )
 
         const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
-        const varintVersioner = new VarintVersioner()
-        const { data: bytes, version: numberVersion } =
-          varintVersioner.extract(privateKeyBytes)
 
-        const version = numberVersion as Version
-        const privateKey = PrivateKey.fromBytes(bytes, version)
+        const privateKey = PrivateKey.fromBytes(privateKeyBytes)
         const publicKey = PublicKey.fromBytes(
-          // TODO: The PublicKey class should be refactored to ensure consistency between the fromBytes and toBytes methods,
-          // similar to what was done for the address class.
-          // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-          new Uint8Array(keystore.PublicKey).subarray(1),
-          Version.V0
+          Uint8Array.from(keystore.PublicKey)
         )
         const address = publicKey.getAddress()
         // TODO: add a consistency check with the address in the keystore
