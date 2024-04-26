@@ -11,7 +11,7 @@ import {
 import { PrivateKey, Address } from '../../../src/experimental/basicElements'
 import 'dotenv/config'
 
-describe('Unit tests', () => {
+describe('Operation manager tests', () => {
   test('serialize - transfer', async () => {
     const transfer: TransferOperation = {
       fee: 1n,
