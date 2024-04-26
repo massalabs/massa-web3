@@ -11,6 +11,11 @@ const UNDERLYING_HASH_LEN = 32
 
 const DEFAULT_VERSION = Version.V0
 
+export enum AddressType {
+  EOA = 0,
+  Contract = 1,
+}
+
 /**
  * A class representing an address.
  *
@@ -57,7 +62,7 @@ export class Address {
     }
   }
 
-  private getPrefix(str: string): string {
+  private static getPrefix(str: string): string {
     const expected = [ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX]
     for (let prefix of expected) {
       if (str.startsWith(prefix)) {
@@ -79,11 +84,10 @@ export class Address {
    * @throws If the address string is invalid.
    */
   public static fromString(str: string): Address {
-    const version = Address.getVersion(str)
-    const address = Address.initFromVersion(version)
-
     try {
-      const prefix = address.getPrefix(str)
+      const version = Address.getVersion(str)
+      const address = Address.initFromVersion(version)
+      const prefix = Address.getPrefix(str)
 
       address.isEOA = prefix === ADDRESS_USER_PREFIX
       const versionedBytes = address.serializer.deserialize(
@@ -91,18 +95,20 @@ export class Address {
       )
 
       address.bytes = Uint8Array.from([
-        ...varint.encode(address.isEOA ? 0 : 1),
+        ...varint.encode(
+          address.isEOA ? AddressType.EOA : AddressType.Contract
+        ),
         ...versionedBytes,
       ])
+      return address
     } catch (e) {
       throw new Error(`invalid address string: ${e.message}`)
     }
-    return address
   }
 
   /**
    * Get the address type from bytes.
-   *   *
+   *
    * @returns the address type enum.
    */
   private getType(): number {
@@ -114,7 +120,7 @@ export class Address {
 
   /**
    * Get the address version.
-   *   *
+   *
    * @returns the address type enum.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -131,15 +137,15 @@ export class Address {
    *
    * @returns A new address object.
    */
-  public static fromPublicKey(
-    publicKey: PublicKey,
-    version = DEFAULT_VERSION
-  ): Address {
-    const address = Address.initFromVersion(version)
+  public static fromPublicKey(publicKey: PublicKey): Address {
+    if (publicKey.version !== Version.V0) {
+      throw new Error(`unsupported public key version: ${publicKey.version}`)
+    }
+    const address = Address.initFromVersion(Version.V0)
     const rawBytes = publicKey.hasher.hash(publicKey.toBytes())
     address.bytes = Uint8Array.from([
-      0 /* EOA*/,
-      ...address.versioner.attach(version, rawBytes),
+      AddressType.EOA,
+      ...address.versioner.attach(Version.V0, rawBytes),
     ])
     address.isEOA = true
     return address
@@ -156,7 +162,7 @@ export class Address {
     const version = Address.getVersion(bytes)
     const address = Address.initFromVersion(version)
     address.bytes = bytes
-    address.isEOA = address.getType() === 0
+    address.isEOA = address.getType() === AddressType.EOA
     return address
   }
 
@@ -194,7 +200,10 @@ export class Address {
    *
    * @returns The address in bytes format.
    */
-  static extractFromBuffer(data: Uint8Array, offset = 0): Uint8Array {
+  static extractFromBuffer(
+    data: Uint8Array,
+    offset = 0
+  ): { data: Uint8Array; length: number } {
     // addr type
     varint.decode(data, offset)
     let addrByteLen = varint.decode.bytes
@@ -203,6 +212,7 @@ export class Address {
     addrByteLen += varint.decode.bytes
 
     addrByteLen += UNDERLYING_HASH_LEN
-    return data.slice(offset, offset + addrByteLen)
+    const extractedData = data.slice(offset, offset + addrByteLen)
+    return { data: extractedData, length: addrByteLen }
   }
 }
