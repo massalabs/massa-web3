@@ -1,4 +1,4 @@
-import { u64ToBytes, Args, u8toByte } from '@massalabs/web3-utils'
+import { u64ToBytes, u8toByte } from '@massalabs/web3-utils'
 import {
   PrivateKey,
   Operation,
@@ -9,6 +9,7 @@ import {
   StorageCost,
   Address,
   CallOperation,
+  Args,
 } from './basicElements'
 import { BlockchainClient } from './client'
 import { Account } from './account'
@@ -110,23 +111,19 @@ function populateDatastore(
     datastore.set(u64ToBytes(BigInt(i + 1)), contract.data)
     if (contract.args) {
       datastore.set(
-        new Uint8Array(
-          new Args()
-            .addU64(BigInt(i + 1))
-            .addUint8Array(u8toByte(0))
-            .serialize()
-        ),
-        new Uint8Array(contract.args)
+        new Args()
+          .addU64(BigInt(i + 1))
+          .addUint8Array(u8toByte(0))
+          .serialize(),
+        contract.args
       )
     }
     if (contract.coins > 0) {
       datastore.set(
-        new Uint8Array(
-          new Args()
-            .addU64(BigInt(i + 1))
-            .addUint8Array(u8toByte(1))
-            .serialize()
-        ),
+        new Args()
+          .addU64(BigInt(i + 1))
+          .addUint8Array(u8toByte(1))
+          .serialize(),
         u64ToBytes(BigInt(contract.coins))
       )
     }
