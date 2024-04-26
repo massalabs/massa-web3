@@ -36,8 +36,8 @@ export type OptOpDetails = {
 
 type BaseOperation = {
   fee: bigint
-  expirePeriod: number
   type: OperationType
+  expirePeriod?: number
 }
 
 export type RollOperation = BaseOperation & {

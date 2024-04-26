@@ -1,4 +1,4 @@
-import { Args, fromMAS } from '@massalabs/web3-utils'
+import { fromMAS } from '@massalabs/web3-utils'
 import {
   ByteCode,
   MAX_GAS_CALL,
@@ -6,6 +6,7 @@ import {
   SmartContract,
 } from '../../../src/experimental/smartContract'
 import { account, client } from './setup'
+import { Args } from '../../../src/experimental/basicElements'
 
 const CONTRACT_ADDRESS = 'AS1JsLnBg4wAKJrAgNUYSs32oTpr3WgSDJdPZib3r3o2zLLRE8sP'
 const TIMEOUT = 61000
@@ -111,7 +112,7 @@ describe('Smart Contract', () => {
         })
 
         expect(call).rejects.toThrow(
-          `The gas limit for the operation call was below the minimum amount of ${MIN_GAS_CALL}`
+          `The gas limit for the operation was below the minimum amount of ${MIN_GAS_CALL}`
         )
       },
       TIMEOUT
@@ -125,7 +126,7 @@ describe('Smart Contract', () => {
       })
 
       expect(call).rejects.toThrow(
-        `The gas limit for the operation call was higher than the maximum amount of ${MAX_GAS_CALL}`
+        `The gas limit for the operation was higher than the maximum amount of ${MAX_GAS_CALL}`
       )
     })
   })

@@ -13,11 +13,7 @@ import {
 } from './basicElements'
 import { BlockchainClient } from './client'
 import { Account } from './account'
-import {
-  InsufficientBalanceError,
-  MaxGasError,
-  MinimalFeeError,
-} from './errors'
+import { InsufficientBalanceError, MaxGasError } from './errors'
 
 export const MAX_GAS_EXECUTE = 3980167295n
 export const MAX_GAS_CALL = 4294167295n
@@ -238,7 +234,7 @@ export class SmartContract {
   }
 
   /**
-   * Executes a smart contract call operation using provided details and ensures all prerequisites like balance, gas, and fees are met.
+   * Executes a smart contract call operation
    * @param account - The account performing the operation.
    * @param functionName - The smart contract function to be called.
    * @param parameter - Parameters for the function call in Uint8Array or number[] format.
@@ -252,10 +248,17 @@ export class SmartContract {
     { fee, maxGas, coins = 0n, periodToLive }: CallOptions
   ): Promise<Operation> {
     await this.ensureBalance(account, coins)
-    fee = await this.ensureMinimumFee(fee)
+
+    fee = fee ?? (await this.client.getMinimalFee())
 
     if (!maxGas) maxGas = await this.getGasEstimation()
-    else this.ensureGasWithinLimits(MIN_GAS_CALL, MAX_GAS_CALL, maxGas)
+    else {
+      if (maxGas > MAX_GAS_CALL) {
+        throw new MaxGasError({ isHigher: true, amount: MAX_GAS_CALL })
+      } else if (maxGas < MIN_GAS_CALL) {
+        throw new MaxGasError({ isHigher: false, amount: MIN_GAS_CALL })
+      }
+    }
 
     const expirePeriod = await this.getExpirePeriod(periodToLive)
 
@@ -295,60 +298,18 @@ export class SmartContract {
   }
 
   /**
-   * Verifies that the proposed gas amount for an operation is within the allowable limits.
-   *
-   * @param maxGas - The initial max gas amount proposed for the operation.
-   * @param min - The minimum allowable gas limit for the operation.
-   * @param max - The maximum allowable gas limit for the operation.
-   *
-   * @returns The validated gas amount.
-   *
-   * @throws MaxGasError if the proposed gas amount is either too high or too low.
-   */
-  async ensureGasWithinLimits(
-    min: bigint,
-    max: bigint,
-    maxGas?: bigint
-  ): Promise<bigint> {
-    if (maxGas > max) {
-      throw new MaxGasError({ isHigher: true, amount: max })
-    } else if (maxGas < min) {
-      throw new MaxGasError({ isHigher: false, amount: min })
-    }
-    return maxGas
-  }
-
-  /**
-   * Returns the fee for an operation, ensuring it is at least the minimal fee required.
-   *
-   * @param fee - The fee proposed for the operation. If no fee is provided, the minimal fee will be used.
-   *
-   * @returns The validated or minimal fee.
-   *
-   * @throws MinimalFeeError if the fee provided is less than the minimum required fee.
-   */
-  async ensureMinimumFee(fee?: bigint): Promise<bigint> {
-    const minimalFee = await this.client.getMinimalFee()
-    if (!fee) return minimalFee
-    if (fee < minimalFee) {
-      throw new MinimalFeeError({ minimalFee })
-    }
-    return fee
-  }
-
-  /**
    * Returns the period when the operation should expire.
    *
    * @param periodToLive - The number of periods from now when the operation should expire.
    *
    * @returns The calculated expiration period for the operation.
    */
-  async getExpirePeriod(periodToLive: number): Promise<number> {
+  async getExpirePeriod(periodToLive?: number): Promise<number> {
     const currentPeriod = await this.client.fetchPeriod()
     // TODO - What should be the default value ?
-    let expirePeriod = currentPeriod + MIN_PERIODS_TO_LIVE
-    if (!periodToLive) return expirePeriod
-    return calculateExpirePeriod(currentPeriod, periodToLive)
+    return !periodToLive
+      ? currentPeriod + MIN_PERIODS_TO_LIVE
+      : calculateExpirePeriod(currentPeriod, periodToLive)
   }
 
   /**
