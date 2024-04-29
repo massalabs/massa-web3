@@ -247,12 +247,21 @@ export class SmartContract {
     parameter: Uint8Array,
     { fee, maxGas, coins = 0n, periodToLive }: CallOptions
   ): Promise<Operation> {
-    await this.ensureBalance(account, coins)
+    if (coins > 0n) {
+      const balance = await this.client.getBalance(account.address.toString())
+      if (balance < coins) {
+        throw new InsufficientBalanceError({
+          userBalance: balance,
+          neededBalance: coins,
+        })
+      }
+    }
 
     fee = fee ?? (await this.client.getMinimalFee())
 
-    if (!maxGas) maxGas = await this.getGasEstimation()
-    else {
+    if (!maxGas) {
+      maxGas = await this.getGasEstimation()
+    } else {
       if (maxGas > MAX_GAS_CALL) {
         throw new MaxGasError({ isHigher: true, amount: MAX_GAS_CALL })
       } else if (maxGas < MIN_GAS_CALL) {
@@ -276,25 +285,6 @@ export class SmartContract {
     const operation = new OperationManager(account.privateKey, this.client)
 
     return new Operation(this.client, await operation.send(details))
-  }
-
-  /**
-   * Ensures that the account has sufficient balance to perform a specified operation.
-   * If the balance is insufficient, this function throws an InsufficientBalanceError.
-   * @param account - The account whose balance is to be checked.
-   * @param coins - The amount of currency required for the operation.
-   * @throws InsufficientBalanceError if the account balance is less than the required amount.
-   */
-  async ensureBalance(account: Account, coins?: bigint): Promise<void> {
-    if (coins) {
-      const balance = await this.client.getBalance(account.address.toString())
-      if (balance < coins) {
-        throw new InsufficientBalanceError({
-          userBalance: balance,
-          neededBalance: coins,
-        })
-      }
-    }
   }
 
   /**
