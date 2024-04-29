@@ -1,27 +1,27 @@
-import { BaseError } from './base'
+import { ErrorBase } from './base'
 import { ErrorCodes } from './utils/codes'
 
-type InsufficientBalanceErrorParameters = {
+type InsufficientBalanceParameters = {
   userBalance: bigint
   neededBalance: bigint
   cause?: Error
 }
 
-export type InsufficientBalanceErrorType = InsufficientBalanceError & {
-  name: 'InsufficientBalanceError'
+export type ErrorTypeInsufficientBalance = ErrorInsufficientBalance & {
+  name: 'ErrorInsufficientBalance'
 }
 
 /**
  * Error class for handling cases when a user's balance is insufficient for a specified operation.
  */
-export class InsufficientBalanceError extends BaseError {
+export class ErrorInsufficientBalance extends ErrorBase {
   /**
    * Explicitly sets the error name for easier identification in error handling processes.
    */
-  override name = 'InsufficientBalanceError'
+  override name = 'ErrorInsufficientBalance'
 
   /**
-   * Constructs an InsufficientBalanceError with a detailed message about the shortage.
+   * Constructs an ErrorInsufficientBalance with a detailed message about the shortage.
    * @param userBalance - The current balance of the user in nanoMassa.
    * @param neededBalance - The balance required to successfully perform the operation in nanoMassa.
    * @param cause - Optional error object that triggered this error, useful for chaining errors.
@@ -30,7 +30,7 @@ export class InsufficientBalanceError extends BaseError {
     userBalance,
     neededBalance,
     cause,
-  }: InsufficientBalanceErrorParameters) {
+  }: InsufficientBalanceParameters) {
     super(
       `Insufficient balance for the operation. User has ${userBalance} nanoMassa, but ${neededBalance} nanoMassa is needed.`,
       {

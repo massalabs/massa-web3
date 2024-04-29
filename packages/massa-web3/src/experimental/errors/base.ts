@@ -1,6 +1,6 @@
 import { ErrorCodes } from './utils/codes'
 
-export type BaseErrorParameters = {
+export type BaseParameters = {
   code?: ErrorCodes
   docsPath?: string
   metaMessages?: string[]
@@ -10,32 +10,32 @@ export type BaseErrorParameters = {
       details?: string
     }
   | {
-      cause: BaseError | Error
+      cause: ErrorBase | Error
       details?: never
     }
 )
 
-export type BaseErrorType = BaseError & { name: 'WalletProviderError' }
+export type ErrorTypeBase = ErrorBase & { name: 'WalletProviderError' }
 /**
- * BaseError extends the native Error class to provide additional metadata handling for richer error information.
+ * ErrorBase extends the native Error class to provide additional metadata handling for richer error information.
  * This class can serve as a base for more specific error types in a wallet or similar system.
  */
-export class BaseError extends Error {
+export class ErrorBase extends Error {
   metaMessages: string[]
   docsPath?: string
   code: ErrorCodes
 
-  override name = 'WalletProviderError'
+  override name = 'MassaWeb3Error'
   constructor(
     shortMessage: string,
-    args: BaseErrorParameters = { code: ErrorCodes.UnknownError }
+    args: BaseParameters = { code: ErrorCodes.UnknownError }
   ) {
     super()
 
     const metaMessageStr =
       args.metaMessages?.map((msg) => `Meta: ${msg}`).join('\n') || ''
     const docsMessageStr = args.docsPath
-      ? `Docs: ${args.docsPath} for more information.`
+      ? `Docs: see ${args.docsPath} for more information.`
       : ''
 
     const detailsMessage = args.details ? `Details: ${args.details}` : ''

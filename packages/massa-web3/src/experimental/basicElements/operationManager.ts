@@ -59,7 +59,7 @@ export type BaseSmartContractOperation = BaseOperation & {
 export type CallOperation = BaseSmartContractOperation & {
   type: OperationType.CallSmartContractFunction
   address: string
-  functionName: string
+  func: string
   parameter: Uint8Array
 }
 
@@ -116,8 +116,8 @@ export class OperationManager {
         components.push(unsigned.encode(operation.maxGas))
         components.push(unsigned.encode(operation.coins))
         components.push(Address.fromString(operation.address).toBytes())
-        components.push(varint.encode(operation.functionName.length))
-        components.push(Buffer.from(operation.functionName))
+        components.push(varint.encode(operation.func.length))
+        components.push(Buffer.from(operation.func))
         components.push(varint.encode(operation.parameter.length))
         components.push(operation.parameter)
         break

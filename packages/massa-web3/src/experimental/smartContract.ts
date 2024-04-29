@@ -13,12 +13,13 @@ import {
 } from './basicElements'
 import { BlockchainClient } from './client'
 import { Account } from './account'
-import { InsufficientBalanceError, MaxGasError } from './errors'
+import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
 
 export const MAX_GAS_EXECUTE = 3980167295n
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
-const MIN_PERIODS_TO_LIVE = 1
+
+const DEFAULT_PERIODS_TO_LIVE = 9
 
 interface ExecuteOption {
   fee?: bigint
@@ -161,11 +162,9 @@ export class SmartContract {
    */
   static fromAddress(
     client: BlockchainClient,
-    contractAddress: string
+    contract: Address
   ): SmartContract {
-    // Used to validate the address
-    const address = Address.fromString(contractAddress)
-    return new SmartContract(client, address.toString())
+    return new SmartContract(client, contract.toString())
   }
 
   /**
@@ -236,49 +235,52 @@ export class SmartContract {
   /**
    * Executes a smart contract call operation
    * @param account - The account performing the operation.
-   * @param functionName - The smart contract function to be called.
+   * @param func - The smart contract function to be called.
    * @param parameter - Parameters for the function call in Uint8Array or number[] format.
    * @param options - Includes optional and required parameters like fee, maxGas, coins, and periodToLive.
    * @returns A promise that resolves to an Operation object representing the transaction.
    */
   async call(
     account: Account,
-    functionName: string,
+    func: string,
     parameter: Uint8Array,
-    { fee, maxGas, coins = 0n, periodToLive }: CallOptions
+    opts: CallOptions
   ): Promise<Operation> {
-    if (coins > 0n) {
+    if (!opts.coins) {
+      opts.coins = 0n
+    }
+    if (opts.coins > 0n) {
       const balance = await this.client.getBalance(account.address.toString())
-      if (balance < coins) {
-        throw new InsufficientBalanceError({
+      if (balance < opts.coins) {
+        throw new ErrorInsufficientBalance({
           userBalance: balance,
-          neededBalance: coins,
+          neededBalance: opts.coins,
         })
       }
     }
 
-    fee = fee ?? (await this.client.getMinimalFee())
+    opts.fee = opts.fee ?? (await this.client.getMinimalFee())
 
-    if (!maxGas) {
-      maxGas = await this.getGasEstimation()
+    if (!opts.maxGas) {
+      opts.maxGas = await this.getGasEstimation()
     } else {
-      if (maxGas > MAX_GAS_CALL) {
-        throw new MaxGasError({ isHigher: true, amount: MAX_GAS_CALL })
-      } else if (maxGas < MIN_GAS_CALL) {
-        throw new MaxGasError({ isHigher: false, amount: MIN_GAS_CALL })
+      if (opts.maxGas > MAX_GAS_CALL) {
+        throw new ErrorMaxGas({ isHigher: true, amount: MAX_GAS_CALL })
+      } else if (opts.maxGas < MIN_GAS_CALL) {
+        throw new ErrorMaxGas({ isHigher: false, amount: MIN_GAS_CALL })
       }
     }
 
-    const expirePeriod = await this.getExpirePeriod(periodToLive)
+    const expirePeriod = await this.getExpirePeriod(opts.periodToLive)
 
     const details: CallOperation = {
-      fee,
+      fee: opts.fee,
       expirePeriod,
       type: OperationType.CallSmartContractFunction,
-      coins,
-      maxGas,
+      coins: opts.coins,
+      maxGas: opts.maxGas,
       address: this.contractAddress,
-      functionName,
+      func,
       parameter,
     }
 
@@ -294,12 +296,11 @@ export class SmartContract {
    *
    * @returns The calculated expiration period for the operation.
    */
-  async getExpirePeriod(periodToLive?: number): Promise<number> {
+  async getExpirePeriod(
+    periodToLive = DEFAULT_PERIODS_TO_LIVE
+  ): Promise<number> {
     const currentPeriod = await this.client.fetchPeriod()
-    // TODO - What should be the default value ?
-    return !periodToLive
-      ? currentPeriod + MIN_PERIODS_TO_LIVE
-      : calculateExpirePeriod(currentPeriod, periodToLive)
+    return calculateExpirePeriod(currentPeriod, periodToLive)
   }
 
   /**

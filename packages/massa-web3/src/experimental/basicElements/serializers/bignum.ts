@@ -3,24 +3,22 @@ import { U64_MAX } from './numbers'
 /**
  * The maximum value for an unsigned 128-bit integer (u128) represented as a BigInt.
  */
-export const U128_MAX = BigInt('0xffffffffffffffffffffffffffffffff')
+export const U128_MAX = (BigInt(1) << BigInt(128)) - BigInt(1)
 
 /**
  * The maximum value for an unsigned 256-bit integer (u256) represented as a BigInt.
  */
-export const U256_MAX = BigInt(
-  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-)
+export const U256_MAX = (BigInt(1) << BigInt(256)) - BigInt(1)
 
 /**
  * The maximum value for a signed 128-bit integer (i128) represented as a BigInt.
  */
-export const I128_MAX = BigInt('0x7fffffffffffffffffffffffffffffff')
+export const I128_MAX = (BigInt(1) << BigInt(127)) - BigInt(1)
 
 /**
  * The minimum value for a signed 128-bit integer (i128) represented as a BigInt.
  */
-export const I128_MIN = BigInt('-170141183460469231731687303715884105728')
+export const I128_MIN = -(BigInt(1) << BigInt(127))
 
 function generic128ToBytes(val: bigint): Uint8Array {
   const upper = val >> 64n

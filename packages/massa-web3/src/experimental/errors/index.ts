@@ -1,7 +1,7 @@
-export { BaseError, type BaseErrorType } from './base'
-export { MaxGasError, type MaxGasErrorType } from './maxGas'
-export { MinimalFeeError, type MinimalFeeErrorType } from './minimalFee'
+export { ErrorBase, type ErrorTypeBase } from './base'
+export { ErrorMaxGas, type ErrorTypeMaxGas } from './maxGas'
+export { ErrorMinimalFee, type ErrorTypeMinimalFee } from './minimalFee'
 export {
-  InsufficientBalanceError,
-  type InsufficientBalanceErrorType,
+  ErrorInsufficientBalance,
+  type ErrorTypeInsufficientBalance,
 } from './insufficientBalance'

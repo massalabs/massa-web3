@@ -6,9 +6,9 @@ import * as ser from './serializers'
  * @see serialize - serialize object to Uint8Array
  * @see deserialize - deserialize Uint8Array to object
  */
-export interface ISerializable<T> {
+export interface Serializable<T> {
   serialize(): Uint8Array
-  deserialize(data: Uint8Array, offset: number): IDeserializedResult<T>
+  deserialize(data: Uint8Array, offset: number): DeserializedResult<T>
 }
 
 /**
@@ -17,7 +17,7 @@ export interface ISerializable<T> {
  * @see instance - deserialized instance
  * @see offset - offset of the deserialized instance
  */
-export interface IDeserializedResult<T> {
+export interface DeserializedResult<T> {
   instance: T
   offset: number
 }
@@ -329,7 +329,7 @@ export class Args {
    *
    * @returns the deserialized object T
    */
-  public nextSerializable<T extends ISerializable<T>>(ctor: new () => T): T {
+  public nextSerializable<T extends Serializable<T>>(ctor: new () => T): T {
     let deserializationResult = ser.deserializeObj(
       this.serialized,
       this.offset,
@@ -349,7 +349,7 @@ export class Args {
    *
    * @returns the deserialized array of object that implement ISerializable
    */
-  public nextSerializableObjectArray<T extends ISerializable<T>>(
+  public nextSerializableObjectArray<T extends Serializable<T>>(
     ctor: new () => T
   ): T[] {
     const length = this.nextU32()
@@ -629,7 +629,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addSerializable<T>(value: ISerializable<T>): this {
+  public addSerializable<T>(value: Serializable<T>): this {
     const serializedValue = value.serialize()
     this.serialized = Args.concatArrays(this.serialized, serializedValue)
     this.offset += serializedValue.length
@@ -651,9 +651,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addSerializableObjectArray<T extends ISerializable<T>>(
-    arg: T[]
-  ): this {
+  public addSerializableObjectArray<T extends Serializable<T>>(arg: T[]): this {
     const content: Uint8Array = ser.serializableObjectsArrayToBytes(arg)
     this.addU32(content.length)
     this.serialized = Args.concatArrays(this.serialized, content)

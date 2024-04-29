@@ -4,8 +4,8 @@ import {
   Args,
   NativeType,
   ArrayTypes,
-  IDeserializedResult,
-  ISerializable,
+  DeserializedResult,
+  Serializable,
 } from '../args'
 import { bytesToStr } from './strings'
 import { byteToBool } from './bool'
@@ -58,7 +58,7 @@ export const getDatatypeSize = (type: ArrayTypes): number => {
  * @returns The serialized array as Uint8Array.
  */
 
-export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
+export function serializableObjectsArrayToBytes<T extends Serializable<T>>(
   source: T[]
 ): Uint8Array {
   return source.reduce(
@@ -72,36 +72,35 @@ export function serializableObjectsArrayToBytes<T extends ISerializable<T>>(
  *
  * @param data - The bytes array to deserialize.
  * @param offset - The offset to start deserializing from.
- * @param Clazz - The class used for deserialization.
+ * @param Obj - The class used for deserialization.
  *
  * @returns The deserialized array of objects.
  */
-export function deserializeObj<T extends ISerializable<T>>(
+export function deserializeObj<T extends Serializable<T>>(
   data: Uint8Array,
   offset: number,
-  Clazz: new () => T
-): IDeserializedResult<T> {
-  const deserialized = new Clazz().deserialize(data, offset)
-  return deserialized
+  Obj: new () => T
+): DeserializedResult<T> {
+  return new Obj().deserialize(data, offset)
 }
 
 /**
  * Converts a Uint8Array into an array of deserialized type parameters.
  *
  * @param source - The Uint8Array to convert.
- * @param Clazz - The class constructor for deserialization.
+ * @param Obj - The class constructor for deserialization.
  *
  * @returns An array of deserialized objects.
  */
-export function bytesToSerializableObjectArray<T extends ISerializable<T>>(
+export function bytesToSerializableObjectArray<T extends Serializable<T>>(
   source: Uint8Array,
-  Clazz: new () => T
+  Obj: new () => T
 ): T[] {
   const array: T[] = []
   let offset = 0
 
   while (offset < source.length) {
-    let deserializationResult = deserializeObj(source, offset, Clazz)
+    let deserializationResult = deserializeObj(source, offset, Obj)
     offset = deserializationResult.offset
     array.push(deserializationResult.instance)
   }
