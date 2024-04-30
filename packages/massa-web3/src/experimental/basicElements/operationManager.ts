@@ -24,7 +24,7 @@ export enum OperationType {
  *
  * @remarks
  * Period to live is the number of periods the operation is valid for.
- * This value must be positive and if it's too big, the node will (sliently?) reject the operation.
+ * This value must be positive and if it's too big, the node will (silently?) reject the operation.
  *
  * If no fee is provided, minimal fee of connected node is used.
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
@@ -36,8 +36,8 @@ export type OptOpDetails = {
 
 type BaseOperation = {
   fee: bigint
-  expirePeriod: number
   type: OperationType
+  expirePeriod?: number
 }
 
 export type RollOperation = BaseOperation & {
@@ -59,7 +59,7 @@ export type BaseSmartContractOperation = BaseOperation & {
 export type CallOperation = BaseSmartContractOperation & {
   type: OperationType.CallSmartContractFunction
   address: string
-  functionName: string
+  func: string
   parameter: Uint8Array
 }
 
@@ -109,6 +109,17 @@ export class OperationManager {
       case OperationType.RollSell:
         operation = operation as RollOperation
         components.push(unsigned.encode(operation.amount))
+        break
+      case OperationType.CallSmartContractFunction:
+        // @see https://docs.massa.net/docs/learn/operation-format-execution#callsc-operation-payload
+        operation = operation as CallOperation
+        components.push(unsigned.encode(operation.maxGas))
+        components.push(unsigned.encode(operation.coins))
+        components.push(Address.fromString(operation.address).toBytes())
+        components.push(varint.encode(operation.func.length))
+        components.push(Buffer.from(operation.func))
+        components.push(varint.encode(operation.parameter.length))
+        components.push(operation.parameter)
         break
       case OperationType.ExecuteSmartContractBytecode:
         operation = operation as ExecuteOperation

@@ -1,4 +1,4 @@
-import { u64ToBytes, Args, u8toByte } from '@massalabs/web3-utils'
+import { u64ToBytes, u8toByte } from '@massalabs/web3-utils'
 import {
   PrivateKey,
   Operation,
@@ -7,11 +7,19 @@ import {
   calculateExpirePeriod,
   OperationType,
   StorageCost,
+  Address,
+  CallOperation,
+  Args,
 } from './basicElements'
 import { BlockchainClient } from './client'
 import { Account } from './account'
+import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
 
 export const MAX_GAS_EXECUTE = 3980167295n
+export const MAX_GAS_CALL = 4294167295n
+export const MIN_GAS_CALL = 2100000n
+
+const DEFAULT_PERIODS_TO_LIVE = 9
 
 interface ExecuteOption {
   fee?: bigint
@@ -100,23 +108,19 @@ function populateDatastore(
     datastore.set(u64ToBytes(BigInt(i + 1)), contract.data)
     if (contract.args) {
       datastore.set(
-        new Uint8Array(
-          new Args()
-            .addU64(BigInt(i + 1))
-            .addUint8Array(u8toByte(0))
-            .serialize()
-        ),
-        new Uint8Array(contract.args)
+        new Args()
+          .addU64(BigInt(i + 1))
+          .addUint8Array(u8toByte(0))
+          .serialize(),
+        contract.args
       )
     }
     if (contract.coins > 0) {
       datastore.set(
-        new Uint8Array(
-          new Args()
-            .addU64(BigInt(i + 1))
-            .addUint8Array(u8toByte(1))
-            .serialize()
-        ),
+        new Args()
+          .addU64(BigInt(i + 1))
+          .addUint8Array(u8toByte(1))
+          .serialize(),
         u64ToBytes(BigInt(contract.coins))
       )
     }
@@ -125,16 +129,19 @@ function populateDatastore(
   return datastore
 }
 
-interface DeployOptions {
-  smartContractCoins?: bigint
+type CommonOptions = {
   fee?: bigint
-  periodToLive?: number
-  coins?: bigint
   maxGas?: bigint
+  coins?: bigint
+  periodToLive?: number
+}
+
+type DeployOptions = CommonOptions & {
+  smartContractCoins?: bigint
   waitFinalExecution?: boolean
 }
 
-interface CallOptions {}
+type CallOptions = CommonOptions
 
 /**
  * A class to interact with a smart contract.
@@ -155,9 +162,9 @@ export class SmartContract {
    */
   static fromAddress(
     client: BlockchainClient,
-    contractAddress: string
+    contract: Address
   ): SmartContract {
-    return new SmartContract(client, contractAddress)
+    return new SmartContract(client, contract.toString())
   }
 
   /**
@@ -225,12 +232,84 @@ export class SmartContract {
     return new SmartContract(client, addr)
   }
 
-  // todo: implement call
+  /**
+   * Executes a smart contract call operation
+   * @param account - The account performing the operation.
+   * @param func - The smart contract function to be called.
+   * @param parameter - Parameters for the function call in Uint8Array or number[] format.
+   * @param options - Includes optional and required parameters like fee, maxGas, coins, and periodToLive.
+   * @returns A promise that resolves to an Operation object representing the transaction.
+   */
   async call(
-    _method: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-    _args: Uint8Array, // eslint-disable-line @typescript-eslint/no-unused-vars
-    _opts: CallOptions // eslint-disable-line @typescript-eslint/no-unused-vars
-  ): Promise<Uint8Array> {
-    throw new Error('Not implemented')
+    account: Account,
+    func: string,
+    parameter: Uint8Array,
+    opts: CallOptions
+  ): Promise<Operation> {
+    if (!opts.coins) {
+      opts.coins = 0n
+    }
+    if (opts.coins > 0n) {
+      const balance = await this.client.getBalance(account.address.toString())
+      if (balance < opts.coins) {
+        throw new ErrorInsufficientBalance({
+          userBalance: balance,
+          neededBalance: opts.coins,
+        })
+      }
+    }
+
+    opts.fee = opts.fee ?? (await this.client.getMinimalFee())
+
+    if (!opts.maxGas) {
+      opts.maxGas = await this.getGasEstimation()
+    } else {
+      if (opts.maxGas > MAX_GAS_CALL) {
+        throw new ErrorMaxGas({ isHigher: true, amount: MAX_GAS_CALL })
+      } else if (opts.maxGas < MIN_GAS_CALL) {
+        throw new ErrorMaxGas({ isHigher: false, amount: MIN_GAS_CALL })
+      }
+    }
+
+    const expirePeriod = await this.getExpirePeriod(opts.periodToLive)
+
+    const details: CallOperation = {
+      fee: opts.fee,
+      expirePeriod,
+      type: OperationType.CallSmartContractFunction,
+      coins: opts.coins,
+      maxGas: opts.maxGas,
+      address: this.contractAddress,
+      func,
+      parameter,
+    }
+
+    const operation = new OperationManager(account.privateKey, this.client)
+
+    return new Operation(this.client, await operation.send(details))
+  }
+
+  /**
+   * Returns the period when the operation should expire.
+   *
+   * @param periodToLive - The number of periods from now when the operation should expire.
+   *
+   * @returns The calculated expiration period for the operation.
+   */
+  async getExpirePeriod(
+    periodToLive = DEFAULT_PERIODS_TO_LIVE
+  ): Promise<number> {
+    const currentPeriod = await this.client.fetchPeriod()
+    return calculateExpirePeriod(currentPeriod, periodToLive)
+  }
+
+  /**
+   * Estimates the gas required for an operation.
+   * Currently, it returns a predefined maximum gas value.
+   * @returns A promise that resolves to the estimated gas amount in bigint.
+   * TODO: Implement dynamic gas estimation using dry run call.
+   */
+  async getGasEstimation(): Promise<bigint> {
+    return MAX_GAS_CALL
   }
 }
