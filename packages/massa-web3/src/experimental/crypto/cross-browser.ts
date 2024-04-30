@@ -5,6 +5,10 @@
  * If you extend this module, please check that the functions are working in both Node.js and the browser.
  */
 
+const KEY_SIZE_BYTES = 32
+const IV_SIZE_BYTES = 12
+const AUTH_TAG_SIZE_BYTES = 16
+
 function isNode(): boolean {
   // inspired from secure-random.js
   // we check for process.pid to prevent browserify from tricking us
@@ -64,7 +68,7 @@ async function pbkdf2Browser(
       hash: { name: hash },
     },
     keyMaterial,
-    { name: 'AES-GCM', length: keyLength * 8 },
+    { name: 'AES-GCM', length: keyLength * U8_SIZE_BITS },
     false,
     ['encrypt', 'decrypt']
   )
@@ -72,7 +76,9 @@ async function pbkdf2Browser(
   return Buffer.from(crypto.subtle.exportKey('raw', derivedKey))
 }
 
-export interface PBKDF2Options {
+const U8_SIZE_BITS = 8
+
+export type PBKDF2Options = {
   iterations: number
   keyLength: number
   hash: string
@@ -94,9 +100,9 @@ export async function pbkdf2(
 ): Promise<Uint8Array> {
   if (isNode()) {
     return pbkdf2Node(password, salt, opts)
-  } else {
-    return pbkdf2Browser(password, salt, opts)
   }
+
+  return pbkdf2Browser(password, salt, opts)
 }
 
 /**
@@ -116,11 +122,11 @@ export async function aesGCMEncrypt(
   key: Uint8Array,
   iv: Uint8Array
 ): Promise<Uint8Array> {
-  if (key.length !== 32) {
-    throw new Error('key must be 32 bytes')
+  if (key.length !== KEY_SIZE_BYTES) {
+    throw new Error(`key must be ${KEY_SIZE_BYTES} bytes`)
   }
-  if (iv.length !== 12) {
-    throw new Error('iv must be 12 bytes')
+  if (iv.length !== IV_SIZE_BYTES) {
+    throw new Error(`iv must be ${IV_SIZE_BYTES} bytes`)
   }
   if (isNode()) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -132,21 +138,21 @@ export async function aesGCMEncrypt(
       cipher.getAuthTag(),
     ])
     return encrypted
-  } else {
-    const keyData = await window.crypto.subtle.importKey(
-      'raw',
-      key,
-      { name: 'AES-GCM' },
-      false,
-      ['encrypt']
-    )
-    const encrypted = await window.crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv: iv },
-      keyData,
-      data
-    )
-    return Buffer.from(encrypted)
   }
+
+  const keyData = await window.crypto.subtle.importKey(
+    'raw',
+    key,
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt']
+  )
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv: iv },
+    keyData,
+    data
+  )
+  return Buffer.from(encrypted)
 }
 
 /**
@@ -169,36 +175,41 @@ export async function aesGCMDecrypt(
   key: Uint8Array,
   iv: Uint8Array
 ): Promise<Uint8Array> {
-  if (key.length !== 32) {
-    throw new Error('key must be 32 bytes')
+  if (key.length !== KEY_SIZE_BYTES) {
+    throw new Error(`key must be ${KEY_SIZE_BYTES} bytes`)
   }
-  if (iv.length !== 12) {
-    throw new Error('iv must be 12 bytes')
+  if (iv.length !== IV_SIZE_BYTES) {
+    throw new Error(`iv must be ${IV_SIZE_BYTES} bytes`)
   }
   if (isNode()) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const crypto = require('crypto')
     encryptedData = Buffer.from(encryptedData)
     const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv)
-    decipher.setAuthTag(encryptedData.slice(encryptedData.length - 16))
+    decipher.setAuthTag(
+      encryptedData.slice(encryptedData.length - AUTH_TAG_SIZE_BYTES)
+    )
     const decrypted = Buffer.concat([
-      decipher.update(encryptedData.slice(0, encryptedData.length - 16)),
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      decipher.update(
+        encryptedData.slice(0, encryptedData.length - AUTH_TAG_SIZE_BYTES)
+      ),
       decipher.final(),
     ])
     return decrypted
-  } else {
-    const keyData = await window.crypto.subtle.importKey(
-      'raw',
-      key,
-      { name: 'AES-GCM' },
-      false,
-      ['decrypt']
-    )
-    const decrypted = await window.crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: iv },
-      keyData,
-      encryptedData
-    )
-    return Buffer.from(decrypted)
   }
+
+  const keyData = await window.crypto.subtle.importKey(
+    'raw',
+    key,
+    { name: 'AES-GCM' },
+    false,
+    ['decrypt']
+  )
+  const decrypted = await window.crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: iv },
+    keyData,
+    encryptedData
+  )
+  return Buffer.from(decrypted)
 }

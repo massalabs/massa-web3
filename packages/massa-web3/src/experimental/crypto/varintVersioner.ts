@@ -13,6 +13,7 @@ export default class VarintVersioner implements Versioner {
    *
    * @returns The versioned data.
    */
+  // eslint-disable-next-line class-methods-use-this -- Expected by the interface.
   attach(version: Version, data: Uint8Array): Uint8Array {
     const versionArray = varint.encode(version)
     return new Uint8Array([...versionArray, ...data])
@@ -25,6 +26,7 @@ export default class VarintVersioner implements Versioner {
    *
    * @returns The version and the data.
    */
+  // eslint-disable-next-line class-methods-use-this -- Expected by the interface.
   extract(data: Uint8Array): { version: Version; data: Uint8Array } {
     const version = varint.decode(data)
     return { data: data.slice(varint.decode.bytes), version }
