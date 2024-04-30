@@ -7,8 +7,6 @@ type ErrorMaxGasParameters = {
   cause?: Error
 }
 
-export type ErrorTypeMaxGas = ErrorMaxGas & { name: 'ErrorMaxGas' }
-
 /**
  * Error class for handling gas limit errors related to operations, whether exceeding max or falling below min allowed limits.
  */

@@ -6,8 +6,6 @@ type ErrorMinimalFeeParameters = {
   cause?: Error
 }
 
-export type ErrorTypeMinimalFee = ErrorMinimalFee & { name: 'ErrorMinimalFee' }
-
 /**
  * ErrorMinimalFee is a specific type of error that is thrown when the provided fee for an operation
  * is below the minimum required fee for that operation. It extends ErrorBase to provide additional context and metadata.

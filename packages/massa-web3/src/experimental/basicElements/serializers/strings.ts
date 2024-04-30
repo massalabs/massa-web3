@@ -32,14 +32,13 @@ export function bytesToStr(arr: Uint8Array): string {
     const decoder = new StringDecoder('utf-8')
 
     return decoder.write(Buffer.from(arr))
-  } else {
-    let { TextDecoder } = window
-    if (typeof TextDecoder === 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      TextDecoder = require('util').TextDecoder
-    }
-    const textDecoder = new TextDecoder('utf-8')
-
-    return textDecoder.decode(arr)
   }
+  let { TextDecoder } = window
+  if (typeof TextDecoder === 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    TextDecoder = require('util').TextDecoder
+  }
+  const textDecoder = new TextDecoder('utf-8')
+
+  return textDecoder.decode(arr)
 }

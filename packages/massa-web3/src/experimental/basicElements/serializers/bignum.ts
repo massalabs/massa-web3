@@ -1,3 +1,4 @@
+// TODO: creating u64, u128, u256 types as wrapper of bigint, adding a from and to generic function that convert everything
 import { U64_MAX } from './numbers'
 
 /**

@@ -15,7 +15,6 @@ export type BaseParameters = {
     }
 )
 
-export type ErrorTypeBase = ErrorBase & { name: 'WalletProviderError' }
 /**
  * ErrorBase extends the native Error class to provide additional metadata handling for richer error information.
  * This class can serve as a base for more specific error types in a wallet or similar system.
@@ -24,12 +23,10 @@ export class ErrorBase extends Error {
   metaMessages: string[]
   docsPath?: string
   code: ErrorCodes
+  cause?: Error
 
   override name = 'MassaWeb3Error'
-  constructor(
-    shortMessage: string,
-    args: BaseParameters = { code: ErrorCodes.UnknownError }
-  ) {
+  constructor(shortMessage: string, args: BaseParameters) {
     super()
 
     const metaMessageStr =
@@ -51,7 +48,7 @@ export class ErrorBase extends Error {
 
     this.metaMessages = args.metaMessages || []
     this.docsPath = args.docsPath
-    this.code = args.code
+    this.code = args.code ?? ErrorCodes.UnknownError
     this.cause = args.cause
   }
 }

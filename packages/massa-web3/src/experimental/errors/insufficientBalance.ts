@@ -7,10 +7,6 @@ type InsufficientBalanceParameters = {
   cause?: Error
 }
 
-export type ErrorTypeInsufficientBalance = ErrorInsufficientBalance & {
-  name: 'ErrorInsufficientBalance'
-}
-
 /**
  * Error class for handling cases when a user's balance is insufficient for a specified operation.
  */
