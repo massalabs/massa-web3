@@ -26,16 +26,16 @@ export class ErrorBase extends Error {
   cause?: Error
 
   override name = 'MassaWeb3Error'
-  constructor(shortMessage: string, args: BaseParameters) {
+  constructor(shortMessage: string, args?: BaseParameters) {
     super()
 
     const metaMessageStr =
-      args.metaMessages?.map((msg) => `Meta: ${msg}`).join('\n') || ''
-    const docsMessageStr = args.docsPath
-      ? `Docs: see ${args.docsPath} for more information.`
+      args?.metaMessages?.map((msg) => `Meta: ${msg}`).join('\n') || ''
+    const docsMessageStr = args?.docsPath
+      ? `Docs: see ${args?.docsPath} for more information.`
       : ''
 
-    const detailsMessage = args.details ? `Details: ${args.details}` : ''
+    const detailsMessage = args?.details ? `Details: ${args.details}` : ''
 
     this.message = [
       shortMessage,
@@ -46,9 +46,9 @@ export class ErrorBase extends Error {
       .filter(Boolean)
       .join('\n\n')
 
-    this.metaMessages = args.metaMessages || []
-    this.docsPath = args.docsPath
-    this.code = args.code ?? ErrorCodes.UnknownError
-    this.cause = args.cause
+    this.metaMessages = args?.metaMessages || []
+    this.docsPath = args?.docsPath
+    this.code = args?.code ?? ErrorCodes.UnknownError
+    this.cause = args?.cause
   }
 }
