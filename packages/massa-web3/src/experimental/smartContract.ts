@@ -14,6 +14,7 @@ import {
 import { BlockchainClient } from './client'
 import { Account } from './account'
 import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
+import { deployer } from './generated/deployer-bytecode'
 
 export const MAX_GAS_EXECUTE = 3980167295n
 export const MAX_GAS_CALL = 4294167295n
@@ -24,7 +25,7 @@ const DEFAULT_PERIODS_TO_LIVE = 9
 interface ExecuteOption {
   fee?: bigint
   periodToLive?: number
-  coins?: bigint
+  maxCoins?: bigint
   maxGas?: bigint
   datastore?: Map<Uint8Array, Uint8Array>
 }
@@ -70,7 +71,7 @@ export class ByteCode {
         opts?.periodToLive
       ),
       type: OperationType.ExecuteSmartContractBytecode,
-      coins: opts?.coins ?? 0n,
+      maxCoins: opts?.maxCoins ?? 0n,
       // TODO: implement max gas
       maxGas: opts?.maxGas || MAX_GAS_EXECUTE,
       contractDataBinary: byteCode,
@@ -103,6 +104,9 @@ function populateDatastore(
   contracts: DatastoreContract[]
 ): Map<Uint8Array, Uint8Array> {
   const datastore = new Map<Uint8Array, Uint8Array>()
+
+  // set the number of contracts in the first key of the datastore
+  datastore.set(new Uint8Array([0x00]), u64ToBytes(BigInt(contracts.length)))
 
   contracts.forEach((contract, i) => {
     datastore.set(u64ToBytes(BigInt(i + 1)), contract.data)
@@ -187,8 +191,7 @@ export class SmartContract {
     Args: Uint8Array,
     opts: DeployOptions
   ): Promise<SmartContract> {
-    const totalCost =
-      BigInt(StorageCost.smartContract(byteCode.length)) + opts.coins
+    const totalCost = StorageCost.smartContract(byteCode.length) + opts.coins
 
     if (
       (await client.getBalance(account.address.toString(), false)) < totalCost
@@ -200,19 +203,18 @@ export class SmartContract {
       {
         data: byteCode,
         args: Args,
-        coins: BigInt(opts.smartContractCoins),
+        coins: opts.smartContractCoins ?? 0n,
       },
     ])
 
-    // TODO: fix the code to execute the deployer smart contract instead
     const operation = await ByteCode.execute(
       client,
       account.privateKey,
-      byteCode,
+      deployer,
       {
         fee: opts?.fee ?? (await client.getMinimalFee()),
         periodToLive: opts?.periodToLive,
-        coins: opts?.coins,
+        maxCoins: totalCost,
         maxGas: opts?.maxGas,
         datastore,
       }
@@ -226,9 +228,19 @@ export class SmartContract {
       throw new Error('no event received.')
     }
 
-    // TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
-    const addr = event[0].data.split(': ')[1]
+    // an error can occur in the deployed smart contract
+    // We could throw a custom deploy error with the list of errors
+    // @ts-expect-error TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
+    if (event.at(-1).context.is_error) {
+      const parsedData = JSON.parse(event.at(-1).data)
+      throw new Error(parsedData.massa_execution_error)
+    }
 
+    // TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
+    // TODO: What if multiple smart contracts are deployed in the same operation?
+    const addr = event.at(-1).data.split(': ')[1]
+
+    // TODO: What if multiple smart contracts are deployed in the same operation?
     return new SmartContract(client, addr)
   }
 

@@ -1,4 +1,4 @@
-import { fromMAS } from '@massalabs/web3-utils'
+import { MAX_GAS_DEPLOYMENT, fromMAS } from '@massalabs/web3-utils'
 import {
   ByteCode,
   MAX_GAS_CALL,
@@ -7,8 +7,13 @@ import {
 } from '../../../src/experimental/smartContract'
 import { account, client } from './setup'
 import { Args } from '../../../src/experimental/basicElements'
+import path from 'path'
+import fs from 'fs'
+import { Address } from '../../../src/experimental/basicElements'
 
-const CONTRACT_ADDRESS = 'AS1JsLnBg4wAKJrAgNUYSs32oTpr3WgSDJdPZib3r3o2zLLRE8sP'
+const CONTRACT_ADDRESS = Address.fromString(
+  'AS1JsLnBg4wAKJrAgNUYSs32oTpr3WgSDJdPZib3r3o2zLLRE8sP'
+)
 const TIMEOUT = 61000
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
 
@@ -130,4 +135,27 @@ describe('Smart Contract', () => {
       )
     })
   })
+
+  test('deploy', async () => {
+    const wasmPath = path.join(__dirname, './contracts/main.wasm')
+
+    const byteCode = fs.readFileSync(wasmPath)
+
+    const opts = {
+      periodToLive: 2,
+      coins: 3n,
+      maxGas: MAX_GAS_DEPLOYMENT,
+    }
+    const args = new Args().addString('myName').serialize()
+    const contract = await SmartContract.deploy(
+      client,
+      account,
+      byteCode,
+      new Uint8Array(args),
+      opts
+    )
+
+    const scAddress = Address.fromString(contract.contractAddress)
+    expect(scAddress.isEOA).toBeFalsy()
+  }, 60000)
 })
