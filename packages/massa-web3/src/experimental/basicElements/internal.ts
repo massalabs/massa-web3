@@ -31,9 +31,11 @@ export function extractData(
  * @returns the extracted prefix.
  */
 export function mustExtractPrefix(str: string, ...expected: string[]): string {
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
   const prefix = str.slice(0, expected[0].length)
   if (!expected.includes(prefix)) {
     throw new Error(
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
       `invalid prefix: ${prefix}. ${expected.length > 1 ? 'one of ' : ''}${expected.join(' or ')} was expected.`
     )
   }

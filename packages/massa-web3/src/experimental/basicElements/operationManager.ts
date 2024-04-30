@@ -5,6 +5,13 @@ import { BlockchainClient } from '../client'
 import { Signature } from './signature'
 import varint from 'varint'
 
+// TODO: replace with a U64 helper
+const U64_SIZE_BYTES = 8
+
+const PERIOD_TO_LIVE_DEFAULT = 10
+const PERIOD_TO_LIVE_MAX = 100
+const PERIOD_TO_LIVE_MIN = 1
+
 /**
  * Operation types.
  *
@@ -24,7 +31,7 @@ export enum OperationType {
  *
  * @remarks
  * Period to live is the number of periods the operation is valid for.
- * This value must be positive and if it's too big, the node will (silently?) reject the operation.
+ * This value must be positive and if it's too big, the node will (sliently?) reject the operation.
  *
  * If no fee is provided, minimal fee of connected node is used.
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
@@ -36,8 +43,8 @@ export type OptOpDetails = {
 
 type BaseOperation = {
   fee: bigint
+  expirePeriod: number
   type: OperationType
-  expirePeriod?: number
 }
 
 export type RollOperation = BaseOperation & {
@@ -110,17 +117,6 @@ export class OperationManager {
         operation = operation as RollOperation
         components.push(unsigned.encode(operation.amount))
         break
-      case OperationType.CallSmartContractFunction:
-        // @see https://docs.massa.net/docs/learn/operation-format-execution#callsc-operation-payload
-        operation = operation as CallOperation
-        components.push(unsigned.encode(operation.maxGas))
-        components.push(unsigned.encode(operation.coins))
-        components.push(Address.fromString(operation.address).toBytes())
-        components.push(varint.encode(operation.func.length))
-        components.push(Buffer.from(operation.func))
-        components.push(varint.encode(operation.parameter.length))
-        components.push(operation.parameter)
-        break
       case OperationType.ExecuteSmartContractBytecode:
         operation = operation as ExecuteOperation
         components.push(unsigned.encode(operation.maxGas))
@@ -160,14 +156,15 @@ export class OperationManager {
    * @returns An new instance of OperationDetails representing the deserialized operation.
    */
   static deserialize(data: Uint8Array): OperationDetails {
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     let offset = 0
-    const nextVarInt = () => {
+    const nextVarInt = (): bigint => {
       const value = unsigned.decode(data, offset)
       offset += unsigned.encodingLength(value)
       return value
     }
 
-    let operationDetails: BaseOperation = {
+    const operationDetails: BaseOperation = {
       fee: nextVarInt(),
       expirePeriod: Number(nextVarInt()),
       type: Number(nextVarInt()),
@@ -214,8 +211,9 @@ export class OperationManager {
     key: PublicKey
   ): Uint8Array {
     // u64ToBytes is little endian
-    const networkId = new Uint8Array(8)
+    const networkId = new Uint8Array(U64_SIZE_BYTES)
     const view = new DataView(networkId.buffer)
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     view.setBigUint64(0, chainId, false)
 
     const data = OperationManager.serialize(operation)
@@ -285,11 +283,13 @@ export class OperationManager {
  */
 export function calculateExpirePeriod(
   period: number,
-  periodToLive: number = 10
+  periodToLive = PERIOD_TO_LIVE_DEFAULT
 ): number {
   // Todo: adjust max value
-  if (periodToLive < 1 || periodToLive > 100) {
-    throw new Error('periodToLive must be between 1 and 100')
+  if (periodToLive < PERIOD_TO_LIVE_MAX || periodToLive > PERIOD_TO_LIVE_MIN) {
+    throw new Error(
+      `periodToLive must be between ${PERIOD_TO_LIVE_MIN} and ${PERIOD_TO_LIVE_MAX}.`
+    )
   }
   return period + periodToLive
 }

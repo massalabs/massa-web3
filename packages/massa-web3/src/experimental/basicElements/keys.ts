@@ -29,6 +29,7 @@ const PUBLIC_KEY_PREFIX = 'P'
 export class PrivateKey {
   public bytes: Uint8Array
 
+  // eslint-disable-next-line max-params
   protected constructor(
     public hasher: Hasher,
     public signer: Signer,
@@ -199,6 +200,7 @@ export class PrivateKey {
 export class PublicKey {
   public bytes: Uint8Array
 
+  // eslint-disable-next-line max-params
   protected constructor(
     public hasher: Hasher,
     public signer: Signer,
