@@ -286,7 +286,7 @@ export function calculateExpirePeriod(
   periodToLive = PERIOD_TO_LIVE_DEFAULT
 ): number {
   // Todo: adjust max value
-  if (periodToLive < PERIOD_TO_LIVE_MAX || periodToLive > PERIOD_TO_LIVE_MIN) {
+  if (periodToLive < PERIOD_TO_LIVE_MIN || periodToLive > PERIOD_TO_LIVE_MAX) {
     throw new Error(
       `periodToLive must be between ${PERIOD_TO_LIVE_MIN} and ${PERIOD_TO_LIVE_MAX}.`
     )

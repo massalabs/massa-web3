@@ -5,6 +5,9 @@ const BYTE_COST_MASSA = 0.0001
 // TODO: replace with a U32 helper
 const U32_SIZE_BYTES = 4
 
+// TODO: replace by the underlying logic of the storage cost
+const ACCOUNT_SIZE_BYTES = 10
+
 /**
  * Calculates the cost of a given number of bytes.
  *
@@ -22,7 +25,7 @@ export function bytes(numberOfBytes: number): bigint {
  * @returns The cost in the smallest unit of the Massa currency.
  */
 export function account(): bigint {
-  return toNanoMas(BYTE_COST_MASSA)
+  return bytes(ACCOUNT_SIZE_BYTES)
 }
 
 /**
