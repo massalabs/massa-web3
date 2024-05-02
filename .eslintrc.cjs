@@ -10,6 +10,7 @@ module.exports = {
     plugins: ['@typescript-eslint'],
     root: true,
     rules: {
+        'no-else-return': ['error', { allowElseIf: false }],
         "no-magic-numbers": "off",
         "@typescript-eslint/no-magic-numbers": [
           'error',
@@ -46,7 +47,14 @@ module.exports = {
           {
             selector: 'variable',
             modifiers: ['const'],
-            format: ['camelCase', 'UPPER_CASE'],
+            format: ['camelCase'],
+            leadingUnderscore: 'forbid',
+            trailingUnderscore: 'forbid',
+          },
+          {
+            selector: 'variable',
+            modifiers: ['const', 'global'],
+            format: ['UPPER_CASE'],
             leadingUnderscore: 'forbid',
             trailingUnderscore: 'forbid',
           },
@@ -75,6 +83,7 @@ module.exports = {
             trailingUnderscore: 'forbid',
           },
         ],
+        // Not working for now. To investigate at some point.
         //'@typescript-eslint/prefer-nullish-coalescing': [
         //  'error',
         //  { ignoreConditionalTests: true, ignoreMixedLogicalExpressions: true },
