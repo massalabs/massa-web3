@@ -1,35 +1,46 @@
 // TODO: creating u64, u128, u256 types as wrapper of bigint, adding a from and to generic function that convert everything
 import { U64_MAX } from './numbers'
 
+const ZERO = 0
+const OFFSET = 8
+const BYTE_1 = 1
+const BYTES_64_BN = 64n
+const BYTES_127 = 127
+const BYTES_128_BN = 128n
+const BYTES_128 = 128
+const BYTES_192_BN = 192n
+const BYTES_256 = 256
+
 /**
  * The maximum value for an unsigned 128-bit integer (u128) represented as a BigInt.
  */
-export const U128_MAX = (BigInt(1) << BigInt(128)) - BigInt(1)
+export const U128_MAX = (BigInt(BYTE_1) << BigInt(BYTES_128)) - BigInt(BYTE_1)
 
 /**
  * The maximum value for an unsigned 256-bit integer (u256) represented as a BigInt.
  */
-export const U256_MAX = (BigInt(1) << BigInt(256)) - BigInt(1)
+export const U256_MAX = (BigInt(BYTE_1) << BigInt(BYTES_256)) - BigInt(BYTE_1)
 
 /**
  * The maximum value for a signed 128-bit integer (i128) represented as a BigInt.
  */
-export const I128_MAX = (BigInt(1) << BigInt(127)) - BigInt(1)
+export const I128_MAX = (BigInt(BYTE_1) << BigInt(BYTES_127)) - BigInt(BYTE_1)
 
 /**
  * The minimum value for a signed 128-bit integer (i128) represented as a BigInt.
  */
-export const I128_MIN = -(BigInt(1) << BigInt(127))
+export const I128_MIN = -(BigInt(BYTE_1) << BigInt(BYTES_127))
 
 function generic128ToBytes(val: bigint): Uint8Array {
-  const upper = val >> 64n
-  const lower = (val << 64n) >> 64n
+  const upper = val >> BYTES_64_BN
+  const lower = (val << BYTES_64_BN) >> BYTES_64_BN
 
-  const buffer = new ArrayBuffer(16)
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  const buffer = new ArrayBuffer(OFFSET * 2)
   const view = new DataView(buffer)
 
-  view.setBigUint64(0, lower, true)
-  view.setBigUint64(8, upper, true)
+  view.setBigUint64(ZERO, lower, true)
+  view.setBigUint64(OFFSET, upper, true)
 
   return new Uint8Array(view.buffer)
 }
@@ -45,7 +56,7 @@ function generic128ToBytes(val: bigint): Uint8Array {
  *
  */
 export function u128ToBytes(val: bigint): Uint8Array {
-  if (val < 0 || val > U128_MAX) {
+  if (val < ZERO || val > U128_MAX) {
     throw new Error(`Unable to serialize invalid Uint128 value ${val}`)
   }
 
@@ -61,13 +72,13 @@ export function u128ToBytes(val: bigint): Uint8Array {
  * @returns The deserialized u128BigInt value
  *
  */
-export function bytesToU128(arr: Uint8Array, offset = 0): bigint {
+export function bytesToU128(arr: Uint8Array, offset = ZERO): bigint {
   const view = new DataView(arr.buffer, offset)
 
-  const lower = view.getBigUint64(0, true) // Lower 64 bits
-  const upper = view.getBigUint64(8, true) // Upper 64 bits
+  const lower = view.getBigUint64(ZERO, true) // Lower 64 bits
+  const upper = view.getBigUint64(OFFSET, true) // Upper 64 bits
 
-  return (upper << 64n) | lower
+  return (upper << BYTES_64_BN) | lower
 }
 
 /**
@@ -96,13 +107,13 @@ export function i128ToBytes(val: bigint): Uint8Array {
  * @returns The deserialized i128 BigInt value
  *
  */
-export function bytesToI128(arr: Uint8Array, offset = 0): bigint {
+export function bytesToI128(arr: Uint8Array, offset = ZERO): bigint {
   const view = new DataView(arr.buffer, offset)
 
-  const lower = view.getBigUint64(0, true) // Lower 64 bits
-  const upper = view.getBigInt64(8, true) // Upper 64 bits
+  const lower = view.getBigUint64(ZERO, true) // Lower 64 bits
+  const upper = view.getBigInt64(OFFSET, true) // Upper 64 bits
 
-  return (upper << 64n) | lower
+  return (upper << BYTES_64_BN) | lower
 }
 
 /**
@@ -116,22 +127,25 @@ export function bytesToI128(arr: Uint8Array, offset = 0): bigint {
  *
  */
 export function u256ToBytes(val: bigint): Uint8Array {
-  if (val < 0 || val > U256_MAX) {
+  if (val < ZERO || val > U256_MAX) {
     throw new Error(`Unable to serialize invalid Uint256 value ${val}`)
   }
 
   const p0 = val & U64_MAX
-  const p1 = (val >> 64n) & U64_MAX
-  const p2 = (val >> 128n) & U64_MAX
-  const p3 = (val >> 192n) & U64_MAX
+  const p1 = (val >> BYTES_64_BN) & U64_MAX
+  const p2 = (val >> BYTES_128_BN) & U64_MAX
+  const p3 = (val >> BYTES_192_BN) & U64_MAX
 
-  const buffer = new ArrayBuffer(32)
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  const buffer = new ArrayBuffer(OFFSET * 4)
   const view = new DataView(buffer)
 
-  view.setBigUint64(0, p0, true)
-  view.setBigUint64(8, p1, true)
-  view.setBigUint64(16, p2, true)
-  view.setBigUint64(24, p3, true)
+  view.setBigUint64(ZERO, p0, true)
+  view.setBigUint64(OFFSET, p1, true)
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  view.setBigUint64(OFFSET * 2, p2, true)
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  view.setBigUint64(OFFSET * 3, p3, true)
 
   return new Uint8Array(view.buffer)
 }
@@ -145,13 +159,15 @@ export function u256ToBytes(val: bigint): Uint8Array {
  * @returns The deserialized u256BigInt value
  *
  */
-export function bytesToU256(arr: Uint8Array, offset = 0): bigint {
+export function bytesToU256(arr: Uint8Array, offset = ZERO): bigint {
   const view = new DataView(arr.buffer, offset)
 
-  const p0 = view.getBigUint64(0, true)
-  const p1 = view.getBigUint64(8, true)
-  const p2 = view.getBigUint64(16, true)
-  const p3 = view.getBigUint64(24, true)
+  const p0 = view.getBigUint64(ZERO, true)
+  const p1 = view.getBigUint64(OFFSET, true)
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  const p2 = view.getBigUint64(OFFSET * 2, true)
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  const p3 = view.getBigUint64(OFFSET * 3, true)
 
-  return (p3 << 192n) | (p2 << 128n) | (p1 << 64n) | p0
+  return (p3 << BYTES_192_BN) | (p2 << BYTES_128_BN) | (p1 << BYTES_64_BN) | p0
 }
