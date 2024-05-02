@@ -8,10 +8,15 @@ import {
   pbkdf2,
 } from './cross-browser'
 
+const KEY_SIZE_BYTES = 32
+const NONCE_SIZE_BYTES = 12
+const SALT_SIZE_BYTES = 16
+const OWASP_ITERATIONS = 600000
+
 function createKey(password: string, salt: Buffer): Promise<Uint8Array> {
   const opts: PBKDF2Options = {
-    iterations: 600000,
-    keyLength: 32,
+    iterations: OWASP_ITERATIONS,
+    keyLength: KEY_SIZE_BYTES,
     hash: 'SHA-256',
   }
   return pbkdf2(password, salt, opts)
@@ -26,31 +31,19 @@ export class PasswordSeal implements Sealer {
   public nonce: Uint8Array
 
   constructor(password: string, salt?: Uint8Array, nonce?: Uint8Array) {
-    if (salt === undefined) {
-      this.salt = randomUint8Array(16)
-    } else if (salt.length !== 16) {
-      throw new Error('Salt must be 16 bytes')
-    } else {
-      this.salt = salt
-    }
-
-    if (nonce === undefined) {
-      this.nonce = randomUint8Array(12)
-    } else if (nonce.length !== 12) {
-      throw new Error('Nonce must be 12 bytes')
-    } else {
-      this.nonce = nonce
-    }
+    this.salt = salt ?? randomUint8Array(SALT_SIZE_BYTES)
+    this.nonce = nonce ?? randomUint8Array(NONCE_SIZE_BYTES)
+    this.validate()
 
     this.password = password
   }
 
   private validate(): void {
-    if (!this.salt || this.salt.length !== 16) {
-      throw new Error('Salt must be 16 bytes')
+    if (!this.salt || this.salt.length !== SALT_SIZE_BYTES) {
+      throw new Error(`Salt must be ${SALT_SIZE_BYTES} bytes`)
     }
-    if (!this.nonce || this.nonce.length !== 12) {
-      throw new Error('Nonce must be 12 bytes')
+    if (!this.nonce || this.nonce.length !== NONCE_SIZE_BYTES) {
+      throw new Error(`Nonce must be ${NONCE_SIZE_BYTES} bytes`)
     }
   }
 

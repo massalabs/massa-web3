@@ -71,7 +71,10 @@ export type CallOperation = BaseSmartContractOperation & {
   parameter: Uint8Array
 }
 
-export type ExecuteOperation = BaseSmartContractOperation & {
+// @see https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload
+export type ExecuteOperation = BaseOperation & {
+  maxGas: bigint
+  maxCoins: bigint
   type: OperationType.ExecuteSmartContractBytecode
   contractDataBinary: Uint8Array
   datastore?: Map<Uint8Array, Uint8Array>
@@ -132,7 +135,7 @@ export class OperationManager {
       case OperationType.ExecuteSmartContractBytecode:
         operation = operation as ExecuteOperation
         components.push(unsigned.encode(operation.maxGas))
-        components.push(unsigned.encode(operation.coins))
+        components.push(unsigned.encode(operation.maxCoins))
         components.push(
           unsigned.encode(BigInt(operation.contractDataBinary.length))
         )

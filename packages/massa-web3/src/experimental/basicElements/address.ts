@@ -237,14 +237,14 @@ export class Address {
     varint.decode(data, offset)
     const typeLen = varint.decode.bytes
     if (typeLen === undefined) {
-      throw new Error('invalid address type: not found.')
+      throw new Error('invalid address: type not found.')
     }
 
     // version
     varint.decode(data, offset + typeLen)
     const versionLen = varint.decode.bytes
     if (versionLen === undefined) {
-      throw new Error('invalid address version: not found.')
+      throw new Error('invalid address: version not found.')
     }
 
     const addrLen = typeLen + versionLen + UNDERLYING_HASH_LEN
