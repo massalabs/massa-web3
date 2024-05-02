@@ -11,8 +11,9 @@ module.exports = {
     root: true,
     rules: {
         'no-else-return': ['error', { allowElseIf: false }],
-        "no-magic-numbers": "off",
-        "@typescript-eslint/no-magic-numbers": [
+        'func-style': ['error', 'declaration', { 'allowArrowFunctions': false }],
+        'no-magic-numbers': 'off',
+        '@typescript-eslint/no-magic-numbers': [
           'error',
           {
             ignoreArrayIndexes: true,
@@ -22,9 +23,9 @@ module.exports = {
           },
         ],
         '@typescript-eslint/ban-tslint-comment': 'off',
-        "@typescript-eslint/consistent-type-definitions": [
-            "error",
-            "type"
+        '@typescript-eslint/consistent-type-definitions': [
+            'error',
+            'type'
           ],
         'max-params': ['error', 4],
         'class-methods-use-this': ['error', { exceptMethods: [] }],
