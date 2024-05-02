@@ -113,6 +113,9 @@ export class Account {
           throw new Error('Password is required for V0 keystore')
         }
         const passwordSeal = new PasswordSeal(password, salt, nonce)
+
+        /* eslint-disable @typescript-eslint/naming-convention */
+        // It is mandatory to follow the Massa standard.
         return {
           Address: this.address.toString(),
           Version: this.version,
@@ -124,12 +127,16 @@ export class Account {
             .then((a) => Array.from(a)),
           PublicKey: Array.from(this.publicKey.toBytes()),
         } as AccountV0KeyStore
+        /* eslint-enable @typescript-eslint/naming-convention */
       }
       case Version.V1: {
         if (!password) {
           throw new Error('Password is required for V1 keystore')
         }
         const passwordSeal = new PasswordSeal(password, salt, nonce)
+
+        /* eslint-disable @typescript-eslint/naming-convention */
+        // It is mandatory to follow the Massa standard.
         return {
           Address: this.address.toString(),
           Version: this.version,
@@ -141,6 +148,7 @@ export class Account {
             .then((a) => Array.from(a)),
           PublicKey: Array.from(this.publicKey.toBytes()),
         } as AccountV1KeyStore
+        /* eslint-enable @typescript-eslint/naming-convention */
       }
       default:
         throw new Error(`unsupported version`)
@@ -180,6 +188,9 @@ export class Account {
         const privateKeyBytes = await passwordSeal.unseal(keystore.CipheredData)
         const privateKey = PrivateKey.fromBytes(privateKeyBytes, Version.V0)
         const publicKey = PublicKey.fromBytes(
+          // TODO: The PublicKey class should be refactored to ensure consistency between the fromBytes and toBytes methods,
+          // similar to what was done for the address class.
+          // eslint-disable-next-line @typescript-eslint/no-magic-numbers
           new Uint8Array(keystore.PublicKey).subarray(1),
           Version.V0
         )
@@ -206,6 +217,9 @@ export class Account {
         const version = numberVersion as Version
         const privateKey = PrivateKey.fromBytes(bytes, version)
         const publicKey = PublicKey.fromBytes(
+          // TODO: The PublicKey class should be refactored to ensure consistency between the fromBytes and toBytes methods,
+          // similar to what was done for the address class.
+          // eslint-disable-next-line @typescript-eslint/no-magic-numbers
           new Uint8Array(keystore.PublicKey).subarray(1),
           Version.V0
         )
@@ -243,7 +257,8 @@ export class Account {
   }
 }
 
-// keys are uppercased to match the yaml keystore file format
+/* eslint-disable @typescript-eslint/naming-convention */
+// It is mandatory to follow the Massa standard.
 export type AccountKeyStoreBase = {
   Address: string
   Nickname: string
@@ -255,4 +270,5 @@ export type AccountKeyStoreBase = {
 
 export type AccountV0KeyStore = AccountKeyStoreBase & { Version: Version.V0 }
 export type AccountV1KeyStore = AccountKeyStoreBase & { Version: Version.V1 }
+/* eslint-enable @typescript-eslint/naming-convention */
 export type AccountKeyStore = AccountV0KeyStore | AccountV1KeyStore
