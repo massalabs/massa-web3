@@ -56,9 +56,7 @@ describe('Smart Contract', () => {
   })
 
   test('deploy', async () => {
-    const wasmPath = path.join(__dirname, contractPath)
-
-    const byteCode = fs.readFileSync(wasmPath)
+    const byteCode = fs.readFileSync(contractPath)
 
     const opts = {
       periodToLive: 2,

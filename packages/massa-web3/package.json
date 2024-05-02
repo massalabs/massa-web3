@@ -15,7 +15,7 @@
         "build": "npm-run-all clean-dist build-*",
         "generate:client": "open-rpc-generator generate -c open_rpc/openrpc.config.json && mv tmp/client/typescript/src/index.ts src/experimental/generated/client.ts && rm -r tmp",
         "generate:test": "ts-interface-builder src/experimental/generated/client.ts",
-        "generate:deployer": "node ./src/experimental/generated/generate-deployer.js",
+        "generate:deployer": "ts-node ./src/experimental/generated/generate-deployer.ts",
         "generate": "npm-run-all generate:*",
         "test": "jest --detectOpenHandles --forceExit ./test/experimental/unit",
         "test:cov": "jest --detectOpenHandles --coverage --forceExit ./test/experimental/unit",
