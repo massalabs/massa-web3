@@ -1,6 +1,9 @@
 import { SCOutputEvent } from '../client'
 import { BlockchainClient } from '../client'
 
+const DEFAULT_WAIT_TIMEOUT_MS = 60000
+const DEFAULT_WAIT_PERIOD_MS = 500
+
 /**
  * An operation object.
  */
@@ -30,10 +33,11 @@ export class Operation {
    */
   private wait(
     exitThreshold: OperationStatus,
-    timeout: number = 60000,
-    period: number = 500
+    timeout = DEFAULT_WAIT_TIMEOUT_MS,
+    period = DEFAULT_WAIT_PERIOD_MS
   ): Promise<OperationStatus> {
     return new Promise<OperationStatus>((resolve) => {
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
       let elapsedTime = 0
       const checkStatusInterval = setInterval(async () => {
         const currentStatus = await this.getStatus()

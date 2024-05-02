@@ -1,4 +1,4 @@
-import { StorageCost } from '../../../src/experimental/basicElements/storage'
+import * as StorageCost from '../../../src/experimental/basicElements/storage'
 import {
   BASE_ACCOUNT_CREATION_COST,
   STORAGE_BYTE_COST,

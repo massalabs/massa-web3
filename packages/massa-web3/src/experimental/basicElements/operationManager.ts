@@ -4,6 +4,14 @@ import { PrivateKey, PublicKey } from './keys'
 import { BlockchainClient } from '../client'
 import { Signature } from './signature'
 import varint from 'varint'
+import { FIRST } from '../utils'
+
+// TODO: replace with a U64 helper
+const U64_SIZE_BYTES = 8
+
+const PERIOD_TO_LIVE_DEFAULT = 10
+const PERIOD_TO_LIVE_MAX = 100
+const PERIOD_TO_LIVE_MIN = 1
 
 /**
  * Operation types.
@@ -36,8 +44,8 @@ export type OptOpDetails = {
 
 type BaseOperation = {
   fee: bigint
+  expirePeriod: number
   type: OperationType
-  expirePeriod?: number
 }
 
 export type RollOperation = BaseOperation & {
@@ -163,14 +171,14 @@ export class OperationManager {
    * @returns An new instance of OperationDetails representing the deserialized operation.
    */
   static deserialize(data: Uint8Array): OperationDetails {
-    let offset = 0
-    const nextVarInt = () => {
+    let offset = FIRST
+    const nextVarInt = (): bigint => {
       const value = unsigned.decode(data, offset)
       offset += unsigned.encodingLength(value)
       return value
     }
 
-    let operationDetails: BaseOperation = {
+    const operationDetails: BaseOperation = {
       fee: nextVarInt(),
       expirePeriod: Number(nextVarInt()),
       type: Number(nextVarInt()),
@@ -217,9 +225,9 @@ export class OperationManager {
     key: PublicKey
   ): Uint8Array {
     // u64ToBytes is little endian
-    const networkId = new Uint8Array(8)
+    const networkId = new Uint8Array(U64_SIZE_BYTES)
     const view = new DataView(networkId.buffer)
-    view.setBigUint64(0, chainId, false)
+    view.setBigUint64(FIRST, chainId, false)
 
     const data = OperationManager.serialize(operation)
     const publicKeyBytes = key.toBytes()
@@ -288,11 +296,13 @@ export class OperationManager {
  */
 export function calculateExpirePeriod(
   period: number,
-  periodToLive: number = 10
+  periodToLive = PERIOD_TO_LIVE_DEFAULT
 ): number {
   // Todo: adjust max value
-  if (periodToLive < 1 || periodToLive > 100) {
-    throw new Error('periodToLive must be between 1 and 100')
+  if (periodToLive < PERIOD_TO_LIVE_MIN || periodToLive > PERIOD_TO_LIVE_MAX) {
+    throw new Error(
+      `periodToLive must be between ${PERIOD_TO_LIVE_MIN} and ${PERIOD_TO_LIVE_MAX}.`
+    )
   }
   return period + periodToLive
 }

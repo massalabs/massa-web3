@@ -6,11 +6,11 @@ import {
   ExecuteOperation,
   calculateExpirePeriod,
   OperationType,
-  StorageCost,
   Address,
   CallOperation,
   Args,
 } from './basicElements'
+import * as StorageCost from './basicElements/storage'
 import { BlockchainClient } from './client'
 import { Account } from './account'
 import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'

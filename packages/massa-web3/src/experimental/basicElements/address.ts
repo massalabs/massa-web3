@@ -2,7 +2,7 @@ import Base58 from '../crypto/base58'
 import Serializer from '../crypto/interfaces/serializer'
 import { Version, Versioner } from '../crypto/interfaces/versioner'
 import VarintVersioner from '../crypto/varintVersioner'
-import { FIRST } from '../utils/noMagic'
+import { FIRST } from '../utils'
 import { PublicKey } from './keys'
 import varint from 'varint'
 
