@@ -5,9 +5,13 @@
  * If you extend this module, please check that the functions are working in both Node.js and the browser.
  */
 
+import { FIRST } from '../utils/noMagic'
+
 const KEY_SIZE_BYTES = 32
 const IV_SIZE_BYTES = 12
 const AUTH_TAG_SIZE_BYTES = 16
+
+const U8_SIZE_BITS = 8
 
 function isNode(): boolean {
   // inspired from secure-random.js
@@ -75,8 +79,6 @@ async function pbkdf2Browser(
 
   return Buffer.from(crypto.subtle.exportKey('raw', derivedKey))
 }
-
-const U8_SIZE_BITS = 8
 
 export type PBKDF2Options = {
   iterations: number
@@ -190,9 +192,8 @@ export async function aesGCMDecrypt(
       encryptedData.slice(encryptedData.length - AUTH_TAG_SIZE_BYTES)
     )
     const decrypted = Buffer.concat([
-      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
       decipher.update(
-        encryptedData.slice(0, encryptedData.length - AUTH_TAG_SIZE_BYTES)
+        encryptedData.slice(FIRST, encryptedData.length - AUTH_TAG_SIZE_BYTES)
       ),
       decipher.final(),
     ])
