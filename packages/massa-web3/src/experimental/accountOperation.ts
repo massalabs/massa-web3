@@ -28,6 +28,7 @@ export class AccountOperation {
     if (type !== OperationType.RollBuy && type !== OperationType.RollSell) {
       throw new Error('Invalid roll operation type.')
     }
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     if (amount <= 0) {
       throw new Error('amount of rolls must be a positive non-zero value.')
     }
@@ -86,6 +87,7 @@ export class AccountOperation {
     amount: bigint,
     opts?: OptOpDetails
   ): Promise<Operation> {
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     if (amount <= 0) {
       throw new Error('amount to trasnfer must be a positive non-zero value.')
     }
@@ -116,7 +118,7 @@ export class AccountOperation {
    *
    * @returns The balance of the account.
    */
-  async fetchBalance(final: boolean = true): Promise<bigint> {
+  async fetchBalance(final = true): Promise<bigint> {
     return this.client.getBalance(this.account.address.toString(), final)
   }
 }
