@@ -1,4 +1,5 @@
-import { fromMAS } from '@massalabs/web3-utils'
+import path from 'path'
+import fs from 'fs'
 import {
   ByteCode,
   MAX_GAS_CALL,
@@ -7,12 +8,15 @@ import {
 } from '../../../src/experimental/smartContract'
 import { account, client } from './setup'
 import { Args } from '../../../src/experimental/basicElements'
+import { Address } from '../../../src/experimental/basicElements'
+import { MAX_GAS_DEPLOYMENT, fromMAS } from '@massalabs/web3-utils'
 
-const CONTRACT_ADDRESS = 'AS1JsLnBg4wAKJrAgNUYSs32oTpr3WgSDJdPZib3r3o2zLLRE8sP'
 const TIMEOUT = 61000
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
+const contractPath = path.join(__dirname, './contracts/scTest.wasm')
 
 describe('Smart Contract', () => {
+  let contractTest: SmartContract
   describe('ByteCode', () => {
     test(
       'execute',
@@ -51,13 +55,39 @@ describe('Smart Contract', () => {
     })
   })
 
+  test('deploy', async () => {
+    const byteCode = fs.readFileSync(contractPath)
+
+    const opts = {
+      periodToLive: 2,
+      coins: 3n,
+      maxGas: MAX_GAS_DEPLOYMENT,
+    }
+    const args = new Args().addString('myName').serialize()
+    const contract = await SmartContract.deploy(
+      client,
+      account,
+      byteCode,
+      new Uint8Array(args),
+      opts
+    )
+
+    const scAddress = Address.fromString(contract.contractAddress)
+    expect(scAddress.isEOA).toBeFalsy()
+
+    contractTest = contract
+  }, 60000)
+
   describe('SmartContract - Call ', () => {
     test(
       'minimal call',
       async () => {
-        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
-
-        const op = await sc.call(account, 'event', new Uint8Array(), {})
+        const op = await contractTest.call(
+          account,
+          'event',
+          new Uint8Array(),
+          {}
+        )
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -69,13 +99,18 @@ describe('Smart Contract', () => {
     test(
       'call that set a value in the datastore',
       async () => {
-        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
-
         const key = 'myKey'
         const value = 'myValue'
         const parameter = new Args().addString(key).addString(value).serialize()
 
-        const op = await sc.call(account, 'setValueToKey', parameter, {})
+        const op = await contractTest.call(
+          account,
+          'setValueToKey',
+          parameter,
+          {
+            coins: fromMAS(0.0016),
+          }
+        )
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -87,12 +122,16 @@ describe('Smart Contract', () => {
     test(
       'call with send coins',
       async () => {
-        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
         const coinAmount = fromMAS(0.001)
 
-        const op = await sc.call(account, 'sendCoins', new Uint8Array(), {
-          coins: coinAmount,
-        })
+        const op = await contractTest.call(
+          account,
+          'sendCoins',
+          new Uint8Array(),
+          {
+            coins: coinAmount,
+          }
+        )
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -105,9 +144,7 @@ describe('Smart Contract', () => {
     test(
       'Attempt to call with maxGas value that is below the minimum required limit',
       async () => {
-        const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
-
-        const call = sc.call(account, 'event', new Uint8Array(), {
+        const call = contractTest.call(account, 'event', new Uint8Array(), {
           maxGas: INSUFFICIENT_MAX_GAS,
         })
 
@@ -119,9 +156,7 @@ describe('Smart Contract', () => {
     )
 
     test('Attempt to call with maxGas value that exceeds the maximum limit', async () => {
-      const sc = SmartContract.fromAddress(client, CONTRACT_ADDRESS)
-
-      const call = sc.call(account, 'event', new Uint8Array(), {
+      const call = contractTest.call(account, 'event', new Uint8Array(), {
         maxGas: MAX_GAS_CALL + 1n,
       })
 

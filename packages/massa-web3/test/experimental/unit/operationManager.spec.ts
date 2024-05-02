@@ -92,7 +92,7 @@ describe('Unit tests', () => {
       type: OperationType.ExecuteSmartContractBytecode,
       expirePeriod: 2,
       maxGas: 3n,
-      coins: 4n,
+      maxCoins: 4n,
       contractDataBinary: new Uint8Array([1, 2, 3, 4]),
       datastore: new Map<Uint8Array, Uint8Array>([
         [new Uint8Array([1, 2, 3, 4]), new Uint8Array([1, 2, 3, 4])],
@@ -169,7 +169,7 @@ describe('Unit tests', () => {
       type: OperationType.ExecuteSmartContractBytecode,
       expirePeriod: 2,
       maxGas: 3n,
-      coins: 4n,
+      maxCoins: 4n,
       contractDataBinary: new Uint8Array([1, 2, 3, 4]),
       datastore: new Map<Uint8Array, Uint8Array>([
         [new Uint8Array([1, 2, 3, 4]), new Uint8Array([1, 2, 3, 4])],
