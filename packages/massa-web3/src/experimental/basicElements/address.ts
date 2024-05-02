@@ -2,6 +2,7 @@ import Base58 from '../crypto/base58'
 import Serializer from '../crypto/interfaces/serializer'
 import { Version, Versioner } from '../crypto/interfaces/versioner'
 import VarintVersioner from '../crypto/varintVersioner'
+import { FIRST } from '../utils/noMagic'
 import { PublicKey } from './keys'
 import varint from 'varint'
 
@@ -38,7 +39,7 @@ function getVersion(data: string | Uint8Array): Version {
  */
 function getPrefix(str: string): string {
   const expected = [ADDRESS_USER_PREFIX, ADDRESS_CONTRACT_PREFIX]
-  for (let prefix of expected) {
+  for (const prefix of expected) {
     if (str.startsWith(prefix)) {
       return prefix
     }
@@ -230,17 +231,25 @@ export class Address {
    */
   static extractFromBuffer(
     data: Uint8Array,
-    offset = 0
+    offset = FIRST
   ): { data: Uint8Array; length: number } {
     // addr type
     varint.decode(data, offset)
-    let addrByteLen = varint.decode.bytes
-    // version
-    varint.decode(data, offset + addrByteLen)
-    addrByteLen += varint.decode.bytes
+    const typeLen = varint.decode.bytes
+    if (typeLen === undefined) {
+      throw new Error('invalid address: type not found.')
+    }
 
-    addrByteLen += UNDERLYING_HASH_LEN
-    const extractedData = data.slice(offset, offset + addrByteLen)
-    return { data: extractedData, length: addrByteLen }
+    // version
+    varint.decode(data, offset + typeLen)
+    const versionLen = varint.decode.bytes
+    if (versionLen === undefined) {
+      throw new Error('invalid address: version not found.')
+    }
+
+    const addrLen = typeLen + versionLen + UNDERLYING_HASH_LEN
+
+    const extractedData = data.slice(offset, offset + addrLen)
+    return { data: extractedData, length: addrLen }
   }
 }
