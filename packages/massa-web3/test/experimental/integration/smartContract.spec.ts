@@ -1,4 +1,5 @@
-import { MAX_GAS_DEPLOYMENT, fromMAS } from '@massalabs/web3-utils'
+import path from 'path'
+import fs from 'fs'
 import {
   ByteCode,
   MAX_GAS_CALL,
@@ -7,12 +8,12 @@ import {
 } from '../../../src/experimental/smartContract'
 import { account, client } from './setup'
 import { Args } from '../../../src/experimental/basicElements'
-import path from 'path'
-import fs from 'fs'
 import { Address } from '../../../src/experimental/basicElements'
+import { MAX_GAS_DEPLOYMENT, fromMAS } from '@massalabs/web3-utils'
 
 const TIMEOUT = 61000
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
+const contractPath = path.join(__dirname, './contracts/scTest.wasm')
 
 describe('Smart Contract', () => {
   let contractTest: SmartContract
@@ -55,7 +56,7 @@ describe('Smart Contract', () => {
   })
 
   test('deploy', async () => {
-    const wasmPath = path.join(__dirname, './contracts/main.wasm')
+    const wasmPath = path.join(__dirname, contractPath)
 
     const byteCode = fs.readFileSync(wasmPath)
 
