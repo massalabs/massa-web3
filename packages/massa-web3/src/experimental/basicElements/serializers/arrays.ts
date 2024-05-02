@@ -100,7 +100,7 @@ export function bytesToSerializableObjectArray<T extends Serializable<T>>(
   let offset = 0
 
   while (offset < source.length) {
-    let deserializationResult = deserializeObj(source, offset, Obj)
+    const deserializationResult = deserializeObj(source, offset, Obj)
     offset = deserializationResult.offset
     array.push(deserializationResult.instance)
   }
@@ -124,7 +124,7 @@ export function arrayToBytes(
   source: NativeType[],
   type: ArrayTypes
 ): Uint8Array {
-  let args = new Args()
+  const args = new Args()
   source.forEach((value) => {
     switch (type) {
       case ArrayTypes.STRING:

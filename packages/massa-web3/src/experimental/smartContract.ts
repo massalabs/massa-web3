@@ -22,7 +22,7 @@ export const MIN_GAS_CALL = 2100000n
 
 const DEFAULT_PERIODS_TO_LIVE = 9
 
-interface ExecuteOption {
+type ExecuteOption = {
   fee?: bigint
   periodToLive?: number
   maxCoins?: bigint
@@ -82,7 +82,7 @@ export class ByteCode {
   }
 }
 
-interface DatastoreContract {
+type DatastoreContract = {
   data: Uint8Array
   args: Uint8Array
   coins: bigint

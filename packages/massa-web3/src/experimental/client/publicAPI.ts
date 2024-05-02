@@ -26,16 +26,20 @@ import {
   OperationId,
   AddressFilter,
 } from '../generated/client'
-import { toNanoMas } from '../utils'
+import { FIRST, toNanoMas } from '../utils'
 
 export enum Transport {
-  webSocket = 'websocket',
-  http = 'http',
-  https = 'https',
-  postMessageWindow = 'postmessagewindow',
-  postMessageIframe = 'postmessageiframe',
+  WebSocket = 'websocket',
+  HTTP = 'http',
+  HTTPS = 'https',
+  PostMessageWindow = 'postmessagewindow',
+  PostMessageIframe = 'postmessageiframe',
 }
 
+type JSONAPIOptions = {
+  path?: string
+  protocol?: string
+}
 export class PublicAPI {
   connector: MassaOpenRPCSpecification
   status: NodeStatus
@@ -44,26 +48,26 @@ export class PublicAPI {
     transport: Transport,
     host: string,
     port: number,
-    path?: string,
-    protocol?: string
+    opts: JSONAPIOptions = {}
   ) {
     this.connector = new MassaOpenRPCSpecification({
       transport: {
         type: transport,
         host,
         port,
-        path,
-        protocol,
+        path: opts.path,
+        protocol: opts.protocol,
       },
     })
   }
 
+  /* eslint-disable @typescript-eslint/naming-convention */
   async executeReadOnlyBytecode(
     ReadOnlyBytecodeExecution: ReadOnlyBytecodeExecution
   ): Promise<ExecuteReadOnlyResponse> {
     return this.connector
       .execute_read_only_bytecode([ReadOnlyBytecodeExecution])
-      .then((r) => r[0])
+      .then((r) => r[FIRST])
   }
 
   async executeMultipleReadOnlyBytecode(
@@ -77,7 +81,7 @@ export class PublicAPI {
   ): Promise<ExecuteReadOnlyResponse> {
     return this.connector
       .execute_read_only_call([ReadOnlyCall])
-      .then((r) => r[0])
+      .then((r) => r[FIRST])
   }
 
   async executeMultipleReadOnlyCall(
@@ -87,10 +91,10 @@ export class PublicAPI {
   }
 
   async getAddressInfo(address: string): Promise<AddressInfo> {
-    return this.getMultipleAddressInfo([address]).then((r) => r[0])
+    return this.getMultipleAddressInfo([address]).then((r) => r[FIRST])
   }
 
-  async getBalance(address: string, final: boolean = true): Promise<bigint> {
+  async getBalance(address: string, final = true): Promise<bigint> {
     return this.getAddressInfo(address).then((r) => {
       return toNanoMas(final ? r.final_balance : r.candidate_balance)
     })
@@ -103,7 +107,7 @@ export class PublicAPI {
   async getAddressesBytecode(address_filter: AddressFilter): Promise<string> {
     return this.connector
       .get_addresses_bytecode([address_filter])
-      .then((r) => r[0])
+      .then((r) => r[FIRST])
   }
 
   async executeMultipleGetAddressesBytecode(
@@ -113,7 +117,7 @@ export class PublicAPI {
   }
 
   async getBlock(blockId: BlockId): Promise<BlockInfo> {
-    return this.connector.get_blocks([blockId]).then((r) => r[0])
+    return this.connector.get_blocks([blockId]).then((r) => r[FIRST])
   }
 
   // todo should return an array of blockInfo, right?
@@ -148,14 +152,14 @@ export class PublicAPI {
     key: string,
     address: string
   ): Promise<DatastoreEntryOutput> {
-    let result = Array.from(key, (char) => char.charCodeAt(0))
+    const result = Array.from(key, (char) => char.charCodeAt(FIRST))
     return this.connector
       .get_datastore_entries([{ key: result, address: address }])
-      .then((r) => r[0])
+      .then((r) => r[FIRST])
   }
 
   async getSlotTransfers(slot: Slot): Promise<Transfer[]> {
-    return this.connector.get_slots_transfers([slot]).then((r) => r[0])
+    return this.connector.get_slots_transfers([slot]).then((r) => r[FIRST])
   }
 
   async getMultipleSlotTransfers(slots: Slot[]): Promise<Transfer[][]> {
@@ -163,7 +167,7 @@ export class PublicAPI {
   }
 
   async getEndorsement(endorsementId: string): Promise<EndorsementInfo> {
-    return this.getMultipleEndorsements([endorsementId]).then((r) => r[0])
+    return this.getMultipleEndorsements([endorsementId]).then((r) => r[FIRST])
   }
 
   async getMultipleEndorsements(
@@ -200,7 +204,7 @@ export class PublicAPI {
   }
 
   async getOperation(operationId: string): Promise<OperationInfo> {
-    return this.getOperations([operationId]).then((r) => r[0])
+    return this.getOperations([operationId]).then((r) => r[FIRST])
   }
 
   async getOperationStatus(operationId: string): Promise<OperationStatus> {
@@ -241,6 +245,9 @@ export class PublicAPI {
     if (!this.status) {
       await this.getStatus()
     }
+    if (!this.status.minimal_fees) {
+      throw new Error('minimal fees: not available')
+    }
     return toNanoMas(this.status.minimal_fees)
   }
 
@@ -252,7 +259,11 @@ export class PublicAPI {
   }
 
   async fetchPeriod(): Promise<number> {
-    return this.getStatus().then((r) => r.last_slot.period)
+    const status = await this.getStatus()
+    if (!status.last_slot) {
+      throw new Error('last slot: not available')
+    }
+    return status.last_slot.period
   }
 
   private static convertOperationInput(
@@ -266,7 +277,7 @@ export class PublicAPI {
   }
 
   async sendOperation(data: SendOperationInput): Promise<OperationId> {
-    return this.sendOperations([data]).then((r) => r[0])
+    return this.sendOperations([data]).then((r) => r[FIRST])
   }
 
   async sendOperations(data: SendOperationInput[]): Promise<OperationId[]> {
@@ -278,4 +289,5 @@ export class PublicAPI {
   async sendMultipleOperations(data: OperationInput[]): Promise<OperationId[]> {
     return this.connector.send_operations(data)
   }
+  /* eslint-enable @typescript-eslint/naming-convention */
 }

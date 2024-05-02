@@ -6,7 +6,7 @@ import * as ser from './serializers'
  * @see serialize - serialize object to Uint8Array
  * @see deserialize - deserialize Uint8Array to object
  */
-export interface Serializable<T> {
+export type Serializable<T> = {
   serialize(): Uint8Array
   deserialize(data: Uint8Array, offset: number): DeserializedResult<T>
 }
@@ -17,7 +17,7 @@ export interface Serializable<T> {
  * @see instance - deserialized instance
  * @see offset - offset of the deserialized instance
  */
-export interface DeserializedResult<T> {
+export type DeserializedResult<T> = {
   instance: T
   offset: number
 }
@@ -63,7 +63,7 @@ export enum ArrayTypes {
   F64,
 }
 
-export interface IParam {
+export type IParam = {
   type: ArgTypes
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
@@ -87,7 +87,7 @@ export type NativeType = string | boolean | number | bigint
  *
  */
 export class Args {
-  private argsList: Array<IParam> = []
+  private argsList: IParam[] = []
 
   /**
    * Constructor to either serialize or deserialize data passed from/to DApps and remote Smart contracts.
@@ -100,7 +100,7 @@ export class Args {
     public offset = 0
   ) {}
 
-  public getArgsList(): Array<IParam> {
+  public getArgsList(): IParam[] {
     return this.argsList
   }
 
@@ -330,7 +330,7 @@ export class Args {
    * @returns the deserialized object T
    */
   public nextSerializable<T extends Serializable<T>>(ctor: new () => T): T {
-    let deserializationResult = ser.deserializeObj(
+    const deserializationResult = ser.deserializeObj(
       this.serialized,
       this.offset,
       ctor
