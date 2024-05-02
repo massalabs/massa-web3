@@ -11,6 +11,6 @@ export class JsonRPCClient extends PublicAPI {
     if (isNaN(port)) {
       port = protocol === Transport.HTTPS ? HTTPS : HTTP
     }
-    super(protocol, u.hostname, port, u.pathname)
+    super(protocol, u.hostname, port, { path: u.pathname })
   }
 }
