@@ -7,6 +7,8 @@ packages/massa-web3/src/web3
 packages/massa-web3/src/index.ts
 packages/massa-web3/test
 **/generated/**
+**/dist/**
+**/docs/**
 *.config.js
 *.config.ts
 package*.json
