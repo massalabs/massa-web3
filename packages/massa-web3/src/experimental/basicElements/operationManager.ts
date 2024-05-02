@@ -4,6 +4,7 @@ import { PrivateKey, PublicKey } from './keys'
 import { BlockchainClient } from '../client'
 import { Signature } from './signature'
 import varint from 'varint'
+import { FIRST } from '../utils'
 
 // TODO: replace with a U64 helper
 const U64_SIZE_BYTES = 8
@@ -31,7 +32,7 @@ export enum OperationType {
  *
  * @remarks
  * Period to live is the number of periods the operation is valid for.
- * This value must be positive and if it's too big, the node will (sliently?) reject the operation.
+ * This value must be positive and if it's too big, the node will (silently?) reject the operation.
  *
  * If no fee is provided, minimal fee of connected node is used.
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
@@ -117,6 +118,17 @@ export class OperationManager {
         operation = operation as RollOperation
         components.push(unsigned.encode(operation.amount))
         break
+      case OperationType.CallSmartContractFunction:
+        // @see https://docs.massa.net/docs/learn/operation-format-execution#callsc-operation-payload
+        operation = operation as CallOperation
+        components.push(unsigned.encode(operation.maxGas))
+        components.push(unsigned.encode(operation.coins))
+        components.push(Address.fromString(operation.address).toBytes())
+        components.push(varint.encode(operation.func.length))
+        components.push(Buffer.from(operation.func))
+        components.push(varint.encode(operation.parameter.length))
+        components.push(operation.parameter)
+        break
       case OperationType.ExecuteSmartContractBytecode:
         operation = operation as ExecuteOperation
         components.push(unsigned.encode(operation.maxGas))
@@ -156,8 +168,7 @@ export class OperationManager {
    * @returns An new instance of OperationDetails representing the deserialized operation.
    */
   static deserialize(data: Uint8Array): OperationDetails {
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    let offset = 0
+    let offset = FIRST
     const nextVarInt = (): bigint => {
       const value = unsigned.decode(data, offset)
       offset += unsigned.encodingLength(value)
@@ -213,8 +224,7 @@ export class OperationManager {
     // u64ToBytes is little endian
     const networkId = new Uint8Array(U64_SIZE_BYTES)
     const view = new DataView(networkId.buffer)
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    view.setBigUint64(0, chainId, false)
+    view.setBigUint64(FIRST, chainId, false)
 
     const data = OperationManager.serialize(operation)
     const publicKeyBytes = key.toBytes()

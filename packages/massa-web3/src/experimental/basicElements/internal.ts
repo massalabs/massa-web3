@@ -1,5 +1,6 @@
 import Serializer from '../crypto/interfaces/serializer'
 import { Versioner, Version } from '../crypto/interfaces/versioner'
+import { FIRST, ONE } from '../utils'
 
 /**
  * Deserialize a string data into non versioned bytes and checks that expected version match.
@@ -31,12 +32,10 @@ export function extractData(
  * @returns the extracted prefix.
  */
 export function mustExtractPrefix(str: string, ...expected: string[]): string {
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  const prefix = str.slice(0, expected[0].length)
+  const prefix = str.slice(FIRST, expected[FIRST].length)
   if (!expected.includes(prefix)) {
     throw new Error(
-      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-      `invalid prefix: ${prefix}. ${expected.length > 1 ? 'one of ' : ''}${expected.join(' or ')} was expected.`
+      `invalid prefix: ${prefix}. ${expected.length > ONE ? 'one of ' : ''}${expected.join(' or ')} was expected.`
     )
   }
   return prefix
