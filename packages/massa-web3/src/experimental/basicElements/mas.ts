@@ -1,6 +1,8 @@
 import { FIRST, ONE } from '../utils'
 
 const NB_DECIMALS = 9
+const POWER_TEN = 10
+const SIZE_U256_BIT = 256
 
 export const ERROR_NOT_SAFE_INTEGER = 'value is not a safe integer.'
 export const ERROR_VALUE_TOO_LARGE = 'value is too large.'
@@ -22,7 +24,7 @@ export function fromMas(value: number): Mas {
     throw new Error(ERROR_NOT_SAFE_INTEGER)
   }
 
-  return BigInt(value * 10 ** NB_DECIMALS)
+  return BigInt(value * POWER_TEN ** NB_DECIMALS)
 }
 
 /**
@@ -39,8 +41,8 @@ export function fromMilliMas(value: number): Mas {
   if (!Number.isSafeInteger(value)) {
     throw new Error(ERROR_NOT_SAFE_INTEGER)
   }
-
-  return BigInt(value * 10 ** (NB_DECIMALS - 3))
+  const milli = 3
+  return BigInt(value * POWER_TEN ** (NB_DECIMALS - milli))
 }
 
 /**
@@ -57,7 +59,8 @@ export function fromMicroMas(value: number): Mas {
   if (!Number.isSafeInteger(value)) {
     throw new Error(ERROR_NOT_SAFE_INTEGER)
   }
-  return BigInt(value * 10 ** (NB_DECIMALS - 6))
+  const micro = 6
+  return BigInt(value * POWER_TEN ** (NB_DECIMALS - micro))
 }
 
 /**
@@ -75,7 +78,8 @@ export function fromNanoMas(value: number): Mas {
     throw new Error(ERROR_NOT_SAFE_INTEGER)
   }
 
-  return BigInt(value * 10 ** (NB_DECIMALS - 9))
+  const nano = 9
+  return BigInt(value * POWER_TEN ** (NB_DECIMALS - nano))
 }
 
 /**
@@ -89,6 +93,7 @@ export function fromNanoMas(value: number): Mas {
  */
 export function fromString(value: string): Mas {
   const parts = value.split('.')
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
   if (parts.length > 2) {
     throw new Error('invalid format')
   }
@@ -100,7 +105,7 @@ export function fromString(value: string): Mas {
   }
 
   const mas = BigInt(integerPart + decimalPart.padEnd(NB_DECIMALS, '0'))
-  if (mas >= BigInt(1) << BigInt(256)) {
+  if (mas >= BigInt(ONE) << BigInt(SIZE_U256_BIT)) {
     throw new Error(ERROR_VALUE_TOO_LARGE)
   }
 
@@ -116,11 +121,11 @@ export function fromString(value: string): Mas {
  * @throws An error if the value is too large to be represented by an U256.
  */
 export function toString(value: Mas): string {
-  if (value >= BigInt(1) << BigInt(256)) {
+  if (value >= BigInt(ONE) << BigInt(SIZE_U256_BIT)) {
     throw new Error(ERROR_VALUE_TOO_LARGE)
   }
   const valueString = value.toString()
-  const integerPart = valueString.slice(0, -NB_DECIMALS) || '0'
+  const integerPart = valueString.slice(FIRST, -NB_DECIMALS) || '0'
   const decimalPart = valueString.slice(-NB_DECIMALS).replace(/0+$/, '')
   return `${integerPart}${decimalPart.length ? '.' + decimalPart : ''}`
 }
