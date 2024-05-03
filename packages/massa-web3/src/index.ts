@@ -9,6 +9,8 @@ declare global {
   }
 }
 
+export * as experimental from './experimental'
+
 // Check if we are on browser
 if (typeof window !== 'undefined') {
   window.Buffer = Buffer
