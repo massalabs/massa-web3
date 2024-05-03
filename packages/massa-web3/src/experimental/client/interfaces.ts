@@ -1,17 +1,17 @@
 import { OperationStatus } from '../basicElements'
 import { NodeStatus, Slot } from '../generated/client'
 
-export interface SendOperationInput {
+export type SendOperationInput = {
   data: Uint8Array
   publicKey: string
   signature: string
 }
 
-export interface SCOutputEvent {
+export type SCOutputEvent = {
   data: string
 }
 
-export interface EventFilter {
+export type EventFilter = {
   start?: Slot
   end?: Slot
   smartContractAddress?: string
@@ -24,6 +24,7 @@ export interface EventFilter {
 /*
  * Blockchain client functions needed by the Operation class to send operations to the blockchain.
  */
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export interface BlockchainClient {
   sendOperation(data: SendOperationInput): Promise<string>
   fetchPeriod(): Promise<number>
