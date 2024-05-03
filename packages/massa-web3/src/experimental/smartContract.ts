@@ -11,9 +11,9 @@ import { BlockchainClient } from './client'
 import { Account } from './account'
 import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
 import { deployer } from './generated/deployer-bytecode'
+import { populateDatastore } from '../../deployer_generation/dataStore'
 import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
-import { populateDatastore } from './basicElements/dataStore'
 
 // TODO: Move to constants file
 export const MAX_GAS_CALL = 4294167295n
