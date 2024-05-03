@@ -197,15 +197,14 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
   const result: T[] = []
   let elementSize: number
 
-  if (type !== ArrayTypes.STRING) {
+  if (type === ArrayTypes.STRING) {
+    elementSize = bytesToU32(source, byteOffset)
+    byteOffset += BYTES_32_OFFSET
+  } else {
     elementSize = getDatatypeSize(type)
   }
 
   while (byteOffset < sourceLength) {
-    if (type === ArrayTypes.STRING) {
-      elementSize = bytesToU32(source, byteOffset)
-      byteOffset += BYTES_32_OFFSET
-    }
     const elt = source.slice(byteOffset, byteOffset + elementSize)
     byteOffset += elementSize
 

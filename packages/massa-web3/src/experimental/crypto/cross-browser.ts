@@ -77,7 +77,10 @@ async function pbkdf2Browser(
     ['encrypt', 'decrypt']
   )
 
-  return Buffer.from(crypto.subtle.exportKey('raw', derivedKey))
+  const exportedKey = await crypto.subtle.exportKey('raw', derivedKey)
+  const buffer = Buffer.from(exportedKey)
+
+  return buffer
 }
 
 export type PBKDF2Options = {
