@@ -275,8 +275,10 @@ export class PublicAPI {
     data: SendOperationInput
   ): OperationInput {
     return {
+      /* eslint-disable @typescript-eslint/naming-convention */
       serialized_content: Array.from(data.data),
       creator_public_key: data.publicKey,
+      /* eslint-enable @typescript-eslint/naming-convention */
       signature: data.signature,
     }
   }
