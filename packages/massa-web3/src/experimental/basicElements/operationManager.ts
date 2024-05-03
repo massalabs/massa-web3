@@ -172,6 +172,8 @@ export class OperationManager {
    */
   static deserialize(data: Uint8Array): OperationDetails {
     let offset = FIRST
+
+    // eslint-disable-next-line func-style
     const nextVarInt = (): bigint => {
       const value = unsigned.decode(data, offset)
       offset += unsigned.encodingLength(value)

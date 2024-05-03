@@ -44,6 +44,7 @@ export class PublicAPI {
   connector: MassaOpenRPCSpecification
   status: NodeStatus
 
+  // eslint-disable-next-line max-params
   constructor(
     transport: Transport,
     host: string,
@@ -63,31 +64,31 @@ export class PublicAPI {
 
   /* eslint-disable @typescript-eslint/naming-convention */
   async executeReadOnlyBytecode(
-    ReadOnlyBytecodeExecution: ReadOnlyBytecodeExecution
+    readOnlyBytecodeExecution: ReadOnlyBytecodeExecution
   ): Promise<ExecuteReadOnlyResponse> {
     return this.connector
-      .execute_read_only_bytecode([ReadOnlyBytecodeExecution])
+      .execute_read_only_bytecode([readOnlyBytecodeExecution])
       .then((r) => r[FIRST])
   }
 
   async executeMultipleReadOnlyBytecode(
-    ReadOnlyBytecodeExecutions: ReadOnlyBytecodeExecution[]
+    readOnlyBytecodeExecutions: ReadOnlyBytecodeExecution[]
   ): Promise<ExecuteReadOnlyResponse[]> {
-    return this.connector.execute_read_only_bytecode(ReadOnlyBytecodeExecutions)
+    return this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions)
   }
 
   async executeReadOnlyCall(
-    ReadOnlyCall: ReadOnlyCall
+    readOnlyCall: ReadOnlyCall
   ): Promise<ExecuteReadOnlyResponse> {
     return this.connector
-      .execute_read_only_call([ReadOnlyCall])
+      .execute_read_only_call([readOnlyCall])
       .then((r) => r[FIRST])
   }
 
   async executeMultipleReadOnlyCall(
-    ReadOnlyCalls: ReadOnlyCall[]
+    readOnlyCalls: ReadOnlyCall[]
   ): Promise<ExecuteReadOnlyResponse[]> {
-    return this.connector.execute_read_only_call(ReadOnlyCalls)
+    return this.connector.execute_read_only_call(readOnlyCalls)
   }
 
   async getAddressInfo(address: string): Promise<AddressInfo> {
@@ -104,16 +105,16 @@ export class PublicAPI {
     return this.connector.get_addresses(addresses)
   }
 
-  async getAddressesBytecode(address_filter: AddressFilter): Promise<string> {
+  async getAddressesBytecode(addressFilter: AddressFilter): Promise<string> {
     return this.connector
-      .get_addresses_bytecode([address_filter])
+      .get_addresses_bytecode([addressFilter])
       .then((r) => r[FIRST])
   }
 
   async executeMultipleGetAddressesBytecode(
-    address_filters: AddressFilter[]
+    addressFilters: AddressFilter[]
   ): Promise<string[]> {
-    return this.connector.get_addresses_bytecode(address_filters)
+    return this.connector.get_addresses_bytecode(addressFilters)
   }
 
   async getBlock(blockId: BlockId): Promise<BlockInfo> {
@@ -143,9 +144,9 @@ export class PublicAPI {
 
   // why it's not a 2d array?
   async getMultipleDatastoresEntries(
-    DatastoreEntryInput: DatastoreEntryInput[]
+    datastoreEntryInput: DatastoreEntryInput[]
   ): Promise<DatastoreEntryOutput[]> {
-    return this.connector.get_datastore_entries(DatastoreEntryInput)
+    return this.connector.get_datastore_entries(datastoreEntryInput)
   }
 
   async getDatastoreEntry(
@@ -180,11 +181,15 @@ export class PublicAPI {
     filter = {
       start: filter.start,
       end: filter.end,
+
+      /* eslint-disable @typescript-eslint/naming-convention */
+      // It is mandatory to follow the Massa api format.
       emitter_address: filter.smartContractAddress,
       original_caller_address: filter.callerAddress,
       original_operation_id: filter.operationId,
       is_final: filter.isFinal,
       is_error: filter.isError,
+      /* eslint-enable @typescript-eslint/naming-convention */
     } as EventFilter
 
     const events = await this.connector.get_filtered_sc_output_event(filter)

@@ -35,7 +35,7 @@ const ZERO_LEN = 0
  * @returns The size of the typed array unit.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const getDatatypeSize = (type: ArrayTypes): number => {
+export function getDatatypeSize(type: ArrayTypes): number {
   switch (type) {
     case ArrayTypes.BOOL:
     case ArrayTypes.U8:
@@ -195,19 +195,19 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
 
   let byteOffset = DEFAULT_OFFSET
   const result: T[] = []
-  let eltSize: number
+  let elementSize: number
 
   if (type !== ArrayTypes.STRING) {
-    eltSize = getDatatypeSize(type)
+    elementSize = getDatatypeSize(type)
   }
 
   while (byteOffset < sourceLength) {
     if (type === ArrayTypes.STRING) {
-      eltSize = bytesToU32(source, byteOffset)
+      elementSize = bytesToU32(source, byteOffset)
       byteOffset += BYTES_32_OFFSET
     }
-    const elt = source.slice(byteOffset, byteOffset + eltSize)
-    byteOffset += eltSize
+    const elt = source.slice(byteOffset, byteOffset + elementSize)
+    byteOffset += elementSize
 
     switch (type) {
       case ArrayTypes.STRING:
