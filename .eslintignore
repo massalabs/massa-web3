@@ -1,3 +1,9 @@
+*.config.js
+*.config.ts
+package*.json
+.eslintrc.cjs
+bundle*.js
+
 packages/web3-utils
 packages/massa-web3/examples
 packages/massa-web3/code-snippets
@@ -6,10 +12,7 @@ packages/massa-web3/src/utils
 packages/massa-web3/src/web3
 packages/massa-web3/src/index.ts
 packages/massa-web3/test
+
 **/generated/**
 **/dist/**
 **/docs/**
-*.config.js
-*.config.ts
-package*.json
-.eslintrc.cjs
