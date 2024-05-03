@@ -16,6 +16,7 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "outDir": "./dist",
+        "strictNullChecks": true,
         "types": [
             "node",
             "jest"

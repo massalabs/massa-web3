@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IClientConfig } from '../interfaces/IClientConfig'
 import { INodeStatus } from '../interfaces/INodeStatus'
 import { IAddressInfo } from '../interfaces/IAddressInfo'
@@ -304,7 +305,9 @@ export class PublicApiClient extends BaseClient implements IPublicApiClient {
     }
     return datastoreEntries.map((e) => {
       return {
+        // @ts-ignore
         final_value: new Uint8Array(e.final_value),
+        // @ts-ignore
         candidate_value: new Uint8Array(e.candidate_value),
       }
     })

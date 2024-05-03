@@ -4,8 +4,6 @@ import {
   PublicKey,
 } from '../../../src/experimental/basicElements/keys'
 import { Version } from '../../../src/experimental/crypto/interfaces/versioner'
-import { SecretKey as LegacyPrivateKey } from '../../../src/utils/keyAndAddresses'
-import { Address as LegacyAddress } from '../../../src/utils/keyAndAddresses'
 
 const invalidVersion = -1 as Version
 
@@ -34,22 +32,15 @@ describe('PrivateKey and PublicKey tests', () => {
 
   describe('Address Generation', () => {
     test('PublicKey getAddress', async () => {
-      // Generate address from Legacy keys objects
-      const legacyPrivKey = new LegacyPrivateKey(
-        'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
-      )
-      const legacyPubKey = await legacyPrivKey.getPublicKey()
-      const legacyAddress = LegacyAddress.fromPublicKey(legacyPubKey)
-
-      // Generate address from new keys objects
       const privKey = PrivateKey.fromString(
         'S1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
       )
       const pubKey = await PublicKey.fromPrivateKey(privKey)
       const address = Address.fromPublicKey(pubKey)
 
-      // Verify that the addresses are the same
-      expect(address.toString()).toBe(legacyAddress.base58Encoded)
+      expect(address.toString()).toBe(
+        'AU12Set6aygzt1k7ZkDwrkStYovVBzeGs8VgaZogy11s7fQzaytv3'
+      )
     })
   })
 

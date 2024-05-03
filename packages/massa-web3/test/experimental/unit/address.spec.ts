@@ -1,6 +1,5 @@
 import { Account } from '../../../src/experimental/account'
 import { Address } from '../../../src/experimental/basicElements'
-import { Address as LegacyAddress } from '../../../src/utils/keyAndAddresses'
 
 const contractAddress = 'AS1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
 
@@ -12,13 +11,19 @@ describe('Address tests', () => {
   })
 
   test('serialization and deserialization', async () => {
-    const addStr = account.address.toString()
-    const address = Address.fromString(addStr)
-    const legacyAddress = new LegacyAddress(addStr)
+    const address = Address.fromString(
+      'AU1tY57YPhHyCTDhJP4gdNqHeqzRd37TDB4VB8MUJFFaQPrq57do'
+    )
     const bytes = address.toBytes()
 
     // serialization
-    expect(bytes).toStrictEqual(Uint8Array.from(legacyAddress.toBytes()))
+    expect(bytes).toStrictEqual(
+      new Uint8Array([
+        0, 0, 117, 4, 163, 189, 244, 68, 52, 227, 126, 40, 61, 243, 206, 212,
+        58, 106, 9, 96, 74, 130, 69, 47, 38, 49, 139, 36, 117, 249, 22, 212, 63,
+        104,
+      ])
+    )
 
     // deserialization
     expect(Address.fromBytes(bytes)).toStrictEqual(address)

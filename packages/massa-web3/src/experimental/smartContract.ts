@@ -1,137 +1,24 @@
-import { u64ToBytes, u8toByte } from '@massalabs/web3-utils'
 import {
-  PrivateKey,
   Operation,
   OperationManager,
-  ExecuteOperation,
   calculateExpirePeriod,
   OperationType,
   Address,
   CallOperation,
-  Args,
 } from './basicElements'
 import * as StorageCost from './basicElements/storage'
 import { BlockchainClient } from './client'
 import { Account } from './account'
 import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
 import { deployer } from './generated/deployer-bytecode'
+import { populateDatastore } from '../../deployer_generation/dataStore'
+import { ONE, ZERO } from './utils'
+import { execute } from './basicElements/bytecode'
 
-export const MAX_GAS_EXECUTE = 3980167295n
+// TODO: Move to constants file
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
-
 const DEFAULT_PERIODS_TO_LIVE = 9
-
-type ExecuteOption = {
-  fee?: bigint
-  periodToLive?: number
-  maxCoins?: bigint
-  maxGas?: bigint
-  datastore?: Map<Uint8Array, Uint8Array>
-}
-
-/**
- * A class to compile and execute byte code.
- *
- * @remarks
- * The difference between byte code and a smart contract is that the byte code is the raw code that will be
- * executed on the blockchain, while a smart contract is the code that is already deployed on the blockchain.
- * The byte code is only ephemeral and will be executed only once.
- * A smart contract has an address and exposes functions that can be called multiple times.
- *
- */
-export class ByteCode {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static compile(_source: string): Promise<Uint8Array> {
-    throw new Error('Not implemented')
-  }
-
-  /**
-   *
-   * Executes a byte code on the blockchain.
-   *
-   * @param client - The client to connect to the desired blockchain.
-   * @param privateKey - The private key of the account that will execute the byte code.
-   * @param byteCode - The byte code to execute.
-   * @param opts - Optional execution details.
-   *
-   * @returns The operation.
-   */
-  static async execute(
-    client: BlockchainClient,
-    privateKey: PrivateKey,
-    byteCode: Uint8Array,
-    opts: ExecuteOption
-  ): Promise<Operation> {
-    const operation = new OperationManager(privateKey, client)
-    const details: ExecuteOperation = {
-      fee: opts?.fee ?? (await client.getMinimalFee()),
-      expirePeriod: calculateExpirePeriod(
-        await client.fetchPeriod(),
-        opts?.periodToLive
-      ),
-      type: OperationType.ExecuteSmartContractBytecode,
-      maxCoins: opts?.maxCoins ?? 0n,
-      // TODO: implement max gas
-      maxGas: opts?.maxGas || MAX_GAS_EXECUTE,
-      contractDataBinary: byteCode,
-      datastore: opts.datastore,
-    }
-
-    return new Operation(client, await operation.send(details))
-  }
-}
-
-type DatastoreContract = {
-  data: Uint8Array
-  args: Uint8Array
-  coins: bigint
-}
-
-/**
- * Populates the datastore with the contracts.
- *
- * @remarks
- * This function is to be used in conjunction with the deployer smart contract.
- * The deployer smart contract expects to have an execution datastore in a specific state.
- * This function populates the datastore according to that expectation.
- *
- * @param contracts - The contracts to populate the datastore with.
- *
- * @returns The populated datastore.
- */
-function populateDatastore(
-  contracts: DatastoreContract[]
-): Map<Uint8Array, Uint8Array> {
-  const datastore = new Map<Uint8Array, Uint8Array>()
-
-  // set the number of contracts in the first key of the datastore
-  datastore.set(new Uint8Array([0x00]), u64ToBytes(BigInt(contracts.length)))
-
-  contracts.forEach((contract, i) => {
-    datastore.set(u64ToBytes(BigInt(i + 1)), contract.data)
-    if (contract.args) {
-      datastore.set(
-        new Args()
-          .addU64(BigInt(i + 1))
-          .addUint8Array(u8toByte(0))
-          .serialize(),
-        contract.args
-      )
-    }
-    if (contract.coins > 0) {
-      datastore.set(
-        new Args()
-          .addU64(BigInt(i + 1))
-          .addUint8Array(u8toByte(1))
-          .serialize(),
-        u64ToBytes(BigInt(contract.coins))
-      )
-    }
-  })
-
-  return datastore
-}
 
 type CommonOptions = {
   fee?: bigint
@@ -140,9 +27,18 @@ type CommonOptions = {
   periodToLive?: number
 }
 
-type DeployOptions = CommonOptions & {
-  smartContractCoins?: bigint
+type DeployOptions = {
+  fee?: bigint
+  maxGas?: bigint
+  maxCoins?: bigint
+  periodToLive?: number
   waitFinalExecution?: boolean
+}
+
+type DeployContract = {
+  byteCode: Uint8Array
+  parameter: Uint8Array
+  coins: bigint
 }
 
 type CallOptions = CommonOptions
@@ -176,8 +72,7 @@ export class SmartContract {
    *
    * @param client - The client to connect to the desired blockchain.
    * @param account - The account that will deploy the smart contract.
-   * @param byteCode - The byte code of the smart contract.
-   * @param Args - The arguments of the smart contract constructor.
+   * @param contract - The contract to deploy.
    * @param opts - Optional deployment details.
    *
    * @returns The deployed smart contract.
@@ -187,11 +82,12 @@ export class SmartContract {
   static async deploy(
     client: BlockchainClient,
     account: Account,
-    byteCode: Uint8Array,
-    Args: Uint8Array,
+    // TODO: Handle multiple contracts
+    contract: DeployContract,
     opts: DeployOptions
   ): Promise<SmartContract> {
-    const totalCost = StorageCost.smartContract(byteCode.length) + opts.coins
+    const totalCost =
+      StorageCost.smartContract(contract.byteCode.length) + contract.coins
 
     if (
       (await client.getBalance(account.address.toString(), false)) < totalCost
@@ -201,44 +97,40 @@ export class SmartContract {
 
     const datastore = populateDatastore([
       {
-        data: byteCode,
-        args: Args,
-        coins: opts.smartContractCoins ?? 0n,
+        data: contract.byteCode,
+        args: contract.parameter,
+        coins: contract.coins ?? BigInt(ZERO),
       },
     ])
 
-    const operation = await ByteCode.execute(
-      client,
-      account.privateKey,
-      deployer,
-      {
-        fee: opts?.fee ?? (await client.getMinimalFee()),
-        periodToLive: opts?.periodToLive,
-        maxCoins: totalCost,
-        maxGas: opts?.maxGas,
-        datastore,
-      }
-    )
+    const operation = await execute(client, account.privateKey, deployer, {
+      fee: opts?.fee ?? (await client.getMinimalFee()),
+      periodToLive: opts?.periodToLive,
+      maxCoins: totalCost,
+      maxGas: opts?.maxGas,
+      datastore,
+    })
 
     const event = opts.waitFinalExecution
       ? await operation.getFinalEvents()
       : await operation.getSpeculativeEvents()
 
-    if (event.length === 0) {
-      throw new Error('no event received.')
-    }
-
     // an error can occur in the deployed smart contract
     // We could throw a custom deploy error with the list of errors
+    const firstEvent = event.at(-ONE)
+
+    if (!firstEvent) {
+      throw new Error('no event received.')
+    }
     // @ts-expect-error TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
-    if (event.at(-1).context.is_error) {
-      const parsedData = JSON.parse(event.at(-1).data)
+    if (firstEvent?.context.is_error) {
+      const parsedData = JSON.parse(firstEvent.data)
       throw new Error(parsedData.massa_execution_error)
     }
 
     // TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
     // TODO: What if multiple smart contracts are deployed in the same operation?
-    const addr = event.at(-1).data.split(': ')[1]
+    const addr = firstEvent.data.split(': ')[ONE]
 
     // TODO: What if multiple smart contracts are deployed in the same operation?
     return new SmartContract(client, addr)
@@ -258,10 +150,9 @@ export class SmartContract {
     parameter: Uint8Array,
     opts: CallOptions
   ): Promise<Operation> {
-    if (!opts.coins) {
-      opts.coins = 0n
-    }
-    if (opts.coins > 0n) {
+    opts.coins = opts.coins ?? BigInt(ZERO)
+
+    if (opts.coins > BigInt(ZERO)) {
       const balance = await this.client.getBalance(account.address.toString())
       if (balance < opts.coins) {
         throw new ErrorInsufficientBalance({
@@ -274,7 +165,7 @@ export class SmartContract {
     opts.fee = opts.fee ?? (await this.client.getMinimalFee())
 
     if (!opts.maxGas) {
-      opts.maxGas = await this.getGasEstimation()
+      opts.maxGas = await SmartContract.getGasEstimation()
     } else {
       if (opts.maxGas > MAX_GAS_CALL) {
         throw new ErrorMaxGas({ isHigher: true, amount: MAX_GAS_CALL })
@@ -320,8 +211,9 @@ export class SmartContract {
    * Currently, it returns a predefined maximum gas value.
    * @returns A promise that resolves to the estimated gas amount in bigint.
    * TODO: Implement dynamic gas estimation using dry run call.
+   * TODO: Remove static if needed.
    */
-  async getGasEstimation(): Promise<bigint> {
+  static async getGasEstimation(): Promise<bigint> {
     return MAX_GAS_CALL
   }
 }

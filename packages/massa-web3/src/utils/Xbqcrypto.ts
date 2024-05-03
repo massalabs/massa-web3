@@ -71,7 +71,7 @@ export function varintDecode(data: Uint8Array): {
   value: number
   bytes: number
 } {
-  const value = varint.decode(data)
-  const bytes = varint.decode.bytes
+  const value = varint.decode(data) || 0
+  const bytes = varint.decode.bytes!
   return { value, bytes }
 }

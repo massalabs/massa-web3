@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IProvider, ProviderType } from '../interfaces/IProvider'
 import { IClientConfig } from '../interfaces/IClientConfig'
 import { Buffer } from 'buffer'
@@ -243,7 +244,6 @@ export class BaseClient {
     if (resp.error) {
       throw resp.error
     }
-
     return resp.result
   }
 
@@ -272,7 +272,6 @@ export class BaseClient {
           data as IContractData
         const maxGasEncoded = Buffer.from(varintEncode(maxGas))
         const maxCoinEncoded = Buffer.from(varintEncode(maxCoins))
-
         const contractDataEncoded = Buffer.from(contractDataBinary)
         const dataLengthEncoded = Buffer.from(
           varintEncode(contractDataEncoded.length)
@@ -323,7 +322,6 @@ export class BaseClient {
       case OperationTypeId.CallSC: {
         const { maxGas, coins, targetAddress, targetFunction, parameter } =
           data as ICallData
-
         const maxGasEncoded = Buffer.from(varintEncode(maxGas))
         const coinsEncoded = Buffer.from(varintEncode(coins))
         const targetAddressEncoded = new Address(targetAddress).toBytes()

@@ -182,7 +182,7 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
 
   let byteOffset = 0
   const result: T[] = []
-  let eltSize: number
+  let eltSize: number = 0
 
   if (type !== ArrayTypes.STRING) {
     eltSize = getDatatypeSize(type)
@@ -193,7 +193,9 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
       eltSize = bytesToU32(source, byteOffset)
       byteOffset += 4
     }
+    // @ts-ignore
     const elt = source.slice(byteOffset, byteOffset + eltSize)
+    // @ts-ignore
     byteOffset += eltSize
 
     switch (type) {

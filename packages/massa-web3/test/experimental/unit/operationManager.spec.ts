@@ -1,13 +1,3 @@
-import {
-  IClientConfig,
-  IContractData,
-  IProvider,
-  ITransactionData,
-  OperationTypeId,
-  ProviderType,
-} from '../../../src/index'
-import { getOperationBufferToSign } from '../../../src/web3/accounts/Web3Account'
-import { BaseClient, PERIOD_OFFSET } from '../../../src/web3/BaseClient'
 import { blockchainClientMock } from './mock/blockchainClient.mock'
 import {
   ExecuteOperation,
@@ -21,17 +11,6 @@ import {
 import { PrivateKey, Address } from '../../../src/experimental/basicElements'
 import 'dotenv/config'
 
-const clientConfig: IClientConfig = {
-  providers: [
-    { url: '', type: ProviderType.PUBLIC } as IProvider,
-    {
-      url: '',
-      type: ProviderType.PRIVATE,
-    } as IProvider,
-  ],
-  periodOffset: PERIOD_OFFSET,
-}
-
 describe('Unit tests', () => {
   test('serialize - transfer', async () => {
     const transfer: TransferOperation = {
@@ -44,20 +23,12 @@ describe('Unit tests', () => {
       ),
     }
 
-    const transactionData: ITransactionData = {
-      fee: 1n,
-      amount: 3n,
-      recipientAddress: 'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-    }
-
     expect(OperationManager.serialize(transfer)).toEqual(
-      Uint8Array.from(
-        new BaseClient(clientConfig).compactBytesForOperation(
-          transactionData,
-          OperationTypeId.Transaction,
-          2
-        )
-      )
+      new Uint8Array([
+        1, 2, 0, 0, 0, 123, 112, 231, 120, 210, 147, 6, 222, 60, 132, 122, 220,
+        63, 36, 111, 216, 72, 248, 161, 29, 104, 213, 241, 70, 172, 217, 243,
+        24, 153, 171, 29, 50, 3,
+      ])
     )
   })
 
@@ -69,20 +40,8 @@ describe('Unit tests', () => {
       amount: 3n,
     }
 
-    const transactionData: ITransactionData = {
-      fee: 1n,
-      amount: 3n,
-      recipientAddress: 'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-    }
-
     expect(OperationManager.serialize(sellRoll)).toEqual(
-      Uint8Array.from(
-        new BaseClient(clientConfig).compactBytesForOperation(
-          transactionData,
-          OperationTypeId.RollSell,
-          2
-        )
-      )
+      new Uint8Array([1, 2, 2, 3])
     )
   })
 
@@ -99,24 +58,10 @@ describe('Unit tests', () => {
       ]),
     }
 
-    const contractData: IContractData = {
-      fee: 1n,
-      maxGas: BigInt(3),
-      maxCoins: BigInt(4),
-      contractDataBinary: new Uint8Array([1, 2, 3, 4]),
-      datastore: new Map<Uint8Array, Uint8Array>([
-        [new Uint8Array([1, 2, 3, 4]), new Uint8Array([1, 2, 3, 4])],
-      ]),
-    }
-
     expect(OperationManager.serialize(execute)).toEqual(
-      Uint8Array.from(
-        new BaseClient(clientConfig).compactBytesForOperation(
-          contractData,
-          OperationTypeId.ExecuteSC,
-          2
-        )
-      )
+      new Uint8Array([
+        1, 2, 3, 3, 4, 4, 1, 2, 3, 4, 1, 4, 1, 2, 3, 4, 4, 1, 2, 3, 4,
+      ])
     )
   })
 
@@ -140,26 +85,19 @@ describe('Unit tests', () => {
         'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
       ),
     }
-    const publicKey = await PrivateKey.generate().getPublicKey()
+
+    const publicKey = await PrivateKey.fromString(
+      'S1edybaAp8cYXwXtchW3nfyPwwh9tvoWgSdkxK2uJwWo9zZrCH9'
+    ).getPublicKey()
+
     expect(OperationManager.canonicalize(1n, transfer, publicKey)).toEqual(
-      Uint8Array.from(
-        getOperationBufferToSign(
-          1n,
-          publicKey.toBytes(),
-          Buffer.from(
-            new BaseClient(clientConfig).compactBytesForOperation(
-              {
-                fee: 1n,
-                amount: 3n,
-                recipientAddress:
-                  'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-              },
-              OperationTypeId.Transaction,
-              2
-            )
-          )
-        )
-      )
+      new Uint8Array([
+        0, 0, 0, 0, 0, 0, 0, 1, 0, 80, 4, 30, 211, 241, 1, 3, 219, 6, 32, 235,
+        244, 186, 4, 239, 84, 155, 62, 17, 45, 68, 245, 236, 88, 141, 50, 82,
+        254, 9, 151, 4, 167, 1, 2, 0, 0, 0, 123, 112, 231, 120, 210, 147, 6,
+        222, 60, 132, 122, 220, 63, 36, 111, 216, 72, 248, 161, 29, 104, 213,
+        241, 70, 172, 217, 243, 24, 153, 171, 29, 50, 3,
+      ])
     )
   })
 
@@ -176,31 +114,17 @@ describe('Unit tests', () => {
       ]),
     }
 
-    const contractData: IContractData = {
-      fee: 1n,
-      maxGas: BigInt(3),
-      maxCoins: BigInt(4),
-      contractDataBinary: new Uint8Array([1, 2, 3, 4]),
-      datastore: new Map<Uint8Array, Uint8Array>([
-        [new Uint8Array([1, 2, 3, 4]), new Uint8Array([1, 2, 3, 4])],
-      ]),
-    }
+    const publicKey = await PrivateKey.fromString(
+      'S1edybaAp8cYXwXtchW3nfyPwwh9tvoWgSdkxK2uJwWo9zZrCH9'
+    ).getPublicKey()
 
-    const publicKey = await PrivateKey.generate().getPublicKey()
     expect(OperationManager.canonicalize(1n, execute, publicKey)).toEqual(
-      Uint8Array.from(
-        getOperationBufferToSign(
-          1n,
-          publicKey.toBytes(),
-          Buffer.from(
-            new BaseClient(clientConfig).compactBytesForOperation(
-              contractData,
-              OperationTypeId.ExecuteSC,
-              2
-            )
-          )
-        )
-      )
+      new Uint8Array([
+        0, 0, 0, 0, 0, 0, 0, 1, 0, 80, 4, 30, 211, 241, 1, 3, 219, 6, 32, 235,
+        244, 186, 4, 239, 84, 155, 62, 17, 45, 68, 245, 236, 88, 141, 50, 82,
+        254, 9, 151, 4, 167, 1, 2, 3, 3, 4, 4, 1, 2, 3, 4, 1, 4, 1, 2, 3, 4, 4,
+        1, 2, 3, 4,
+      ])
     )
   })
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods'
 import { wait } from './time'
 

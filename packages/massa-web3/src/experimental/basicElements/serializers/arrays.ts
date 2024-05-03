@@ -6,6 +6,12 @@ import {
   ArrayTypes,
   DeserializedResult,
   Serializable,
+  BYTES_8_OFFSET,
+  BYTES_32_OFFSET,
+  BYTES_64_OFFSET,
+  BYTES_128_OFFSET,
+  BYTES_256_OFFSET,
+  DEFAULT_OFFSET,
 } from '../args'
 import { bytesToStr } from './strings'
 import { byteToBool } from './bool'
@@ -19,7 +25,9 @@ import {
   bytesToU64,
 } from './numbers'
 import { bytesToI128, bytesToU128, bytesToU256 } from './bignum'
+import { ZERO } from '../../utils'
 
+const ZERO_LEN = 0
 /**
  * Get the byte size of a typed array unit.
  *
@@ -27,24 +35,25 @@ import { bytesToI128, bytesToU128, bytesToU256 } from './bignum'
  *
  * @returns The size of the typed array unit.
  */
-export const getDatatypeSize = (type: ArrayTypes): number => {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function getDatatypeSize(type: ArrayTypes): number {
   switch (type) {
     case ArrayTypes.BOOL:
     case ArrayTypes.U8:
-      return 1
+      return BYTES_8_OFFSET
     case ArrayTypes.F32:
     case ArrayTypes.I32:
     case ArrayTypes.U32:
-      return 4
+      return BYTES_32_OFFSET
     case ArrayTypes.F64:
     case ArrayTypes.I64:
     case ArrayTypes.U64:
-      return 8
+      return BYTES_64_OFFSET
     case ArrayTypes.I128:
     case ArrayTypes.U128:
-      return 16
+      return BYTES_128_OFFSET
     case ArrayTypes.U256:
-      return 32
+      return BYTES_256_OFFSET
     default:
       throw new Error(`Unsupported type: ${Object.keys(ArrayTypes)[type]}`)
   }
@@ -63,7 +72,8 @@ export function serializableObjectsArrayToBytes<T extends Serializable<T>>(
 ): Uint8Array {
   return source.reduce(
     (acc, curr) => Args.concatArrays(acc, curr.serialize()),
-    new Uint8Array(0)
+    //eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    new Uint8Array(ZERO_LEN)
   )
 }
 
@@ -72,35 +82,35 @@ export function serializableObjectsArrayToBytes<T extends Serializable<T>>(
  *
  * @param data - The bytes array to deserialize.
  * @param offset - The offset to start deserializing from.
- * @param Obj - The class used for deserialization.
+ * @param obj - The class used for deserialization.
  *
  * @returns The deserialized array of objects.
  */
 export function deserializeObj<T extends Serializable<T>>(
   data: Uint8Array,
   offset: number,
-  Obj: new () => T
+  obj: new () => T
 ): DeserializedResult<T> {
-  return new Obj().deserialize(data, offset)
+  return new obj().deserialize(data, offset)
 }
 
 /**
  * Converts a Uint8Array into an array of deserialized type parameters.
  *
  * @param source - The Uint8Array to convert.
- * @param Obj - The class constructor for deserialization.
+ * @param obj - The class constructor for deserialization.
  *
  * @returns An array of deserialized objects.
  */
 export function bytesToSerializableObjectArray<T extends Serializable<T>>(
   source: Uint8Array,
-  Obj: new () => T
+  obj: new () => T
 ): T[] {
   const array: T[] = []
-  let offset = 0
+  let offset = DEFAULT_OFFSET
 
   while (offset < source.length) {
-    const deserializationResult = deserializeObj(source, offset, Obj)
+    const deserializationResult = deserializeObj(source, offset, obj)
     offset = deserializationResult.offset
     array.push(deserializationResult.instance)
   }
@@ -184,21 +194,21 @@ export function arrayToBytes(
 export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
   const sourceLength = source.length
 
-  let byteOffset = 0
+  let byteOffset = DEFAULT_OFFSET
   const result: T[] = []
-  let eltSize: number
+  let elementSize = ZERO
 
   if (type !== ArrayTypes.STRING) {
-    eltSize = getDatatypeSize(type)
+    elementSize = getDatatypeSize(type)
   }
 
   while (byteOffset < sourceLength) {
     if (type === ArrayTypes.STRING) {
-      eltSize = bytesToU32(source, byteOffset)
-      byteOffset += 4
+      elementSize = bytesToU32(source, byteOffset)
+      byteOffset += BYTES_32_OFFSET
     }
-    const elt = source.slice(byteOffset, byteOffset + eltSize)
-    byteOffset += eltSize
+    const elt = source.slice(byteOffset, byteOffset + elementSize)
+    byteOffset += elementSize
 
     switch (type) {
       case ArrayTypes.STRING:
