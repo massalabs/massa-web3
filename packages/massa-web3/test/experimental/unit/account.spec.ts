@@ -163,7 +163,7 @@ describe('Basic use cases', () => {
     const account = await Account.fromPrivateKey(
       'S12jWf59Yzf2LimL89soMnAP2VEBDBpfCbZLoEFo36CxEL3j92rZ'
     )
-    const messsage = new Uint8Array([1, 2, 3])
+    const message = new Uint8Array([1, 2, 3])
     const signature = await account.sign(messsage)
     expect(account.verify(messsage, signature)).toBeTruthy()
   })
