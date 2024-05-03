@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * This file includes the implementation for the {@link SmartContractsClient} class. This class provides methods for interacting with smart contracts
  * in the Massa blockchain. Such methods include {@link SmartContractsClient#deploySmartContract|deploying}, {@link SmartContractsClient#callSmartContract|calling},

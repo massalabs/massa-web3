@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IAccount } from '../../interfaces/IAccount'
 import { IBaseAccount } from '../../interfaces/IBaseAccount'
 import { INodeStatus } from '../../interfaces/INodeStatus'

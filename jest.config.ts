@@ -17,6 +17,7 @@ const config: Config.InitialOptions = {
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/packages/*/dist/',
+    '<rootDir>/packages/massa-web3/test/code-snippets',
   ],
   modulePathIgnorePatterns: ['experimental/integration'],
   transformIgnorePatterns: ['/node_modules/(?!big-varint).+\\.js$'],

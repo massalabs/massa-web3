@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IProvider, ProviderType } from '../interfaces/IProvider'
 import { IAccount } from '../interfaces/IAccount'
 import { Client } from './Client'

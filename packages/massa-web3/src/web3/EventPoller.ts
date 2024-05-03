@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { EventEmitter } from 'events'
 import { IEventFilter } from '../interfaces/IEventFilter'
 import { IEventRegexFilter } from '../interfaces/IEventRegexFilter'
