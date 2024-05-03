@@ -1,7 +1,6 @@
 import path from 'path'
 import fs from 'fs'
 import {
-  ByteCode,
   MAX_GAS_CALL,
   MIN_GAS_CALL,
   SmartContract,
@@ -10,6 +9,7 @@ import { account, client } from './setup'
 import { Args } from '../../../src/experimental/basicElements'
 import { Address } from '../../../src/experimental/basicElements'
 import { MAX_GAS_DEPLOYMENT, fromMAS } from '@massalabs/web3-utils'
+import { execute } from '../../../src/experimental/basicElements/bytecode'
 
 const TIMEOUT = 61000
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
@@ -27,7 +27,7 @@ describe('Smart Contract', () => {
           coins: 3n,
           maxGas: 4n,
         }
-        const contract = await ByteCode.execute(
+        const contract = await execute(
           client,
           account.privateKey,
           byteCode,
@@ -48,7 +48,7 @@ describe('Smart Contract', () => {
       }
 
       expect(
-        ByteCode.execute(client, account.privateKey, byteCode, opts)
+        execute(client, account.privateKey, byteCode, opts)
       ).rejects.toThrow(
         'Bad request: fee is too low provided: 0.000000001 , minimal_fees required: 0.01'
       )
@@ -58,18 +58,21 @@ describe('Smart Contract', () => {
   test('deploy', async () => {
     const byteCode = fs.readFileSync(contractPath)
 
-    const opts = {
-      periodToLive: 2,
+    const deployContract = {
+      byteCode,
+      parameter: new Args().addString('myName').serialize(),
       coins: 3n,
+    }
+    const deployOptions = {
+      periodToLive: 2,
       maxGas: MAX_GAS_DEPLOYMENT,
     }
-    const args = new Args().addString('myName').serialize()
+
     const contract = await SmartContract.deploy(
       client,
       account,
-      byteCode,
-      new Uint8Array(args),
-      opts
+      deployContract,
+      deployOptions
     )
 
     const scAddress = Address.fromString(contract.contractAddress)
