@@ -9,7 +9,6 @@
  *
  */
 import { BlockchainClient } from '../client'
-import { MAX_GAS_EXECUTE } from '../smartContract'
 import { ZERO } from '../utils'
 import { PrivateKey } from './keys'
 import { Operation } from './operation'
@@ -19,6 +18,8 @@ import {
   calculateExpirePeriod,
   OperationType,
 } from './operationManager'
+
+export const MAX_GAS_EXECUTE = 3980167295n
 
 type ExecuteOption = {
   fee?: bigint

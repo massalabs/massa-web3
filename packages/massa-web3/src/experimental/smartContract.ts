@@ -1,4 +1,3 @@
-import { u64ToBytes, u8toByte } from '@massalabs/web3-utils'
 import {
   Operation,
   OperationManager,
@@ -6,7 +5,6 @@ import {
   OperationType,
   Address,
   CallOperation,
-  Args,
 } from './basicElements'
 import * as StorageCost from './basicElements/storage'
 import { BlockchainClient } from './client'
@@ -15,67 +13,12 @@ import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
 import { deployer } from './generated/deployer-bytecode'
 import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
+import { populateDatastore } from './basicElements/dataStore'
 
 // TODO: Move to constants file
-export const MAX_GAS_EXECUTE = 3980167295n
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
-const MASTER_KEY = 0x00
 const DEFAULT_PERIODS_TO_LIVE = 9
-
-type DatastoreContract = {
-  data: Uint8Array
-  args: Uint8Array
-  coins: bigint
-}
-
-/**
- * Populates the datastore with the contracts.
- *
- * @remarks
- * This function is to be used in conjunction with the deployer smart contract.
- * The deployer smart contract expects to have an execution datastore in a specific state.
- * This function populates the datastore according to that expectation.
- *
- * @param contracts - The contracts to populate the datastore with.
- *
- * @returns The populated datastore.
- */
-function populateDatastore(
-  contracts: DatastoreContract[]
-): Map<Uint8Array, Uint8Array> {
-  const datastore = new Map<Uint8Array, Uint8Array>()
-
-  // set the number of contracts in the first key of the datastore
-  datastore.set(
-    new Uint8Array([MASTER_KEY]),
-    u64ToBytes(BigInt(contracts.length))
-  )
-
-  contracts.forEach((contract, i) => {
-    datastore.set(u64ToBytes(BigInt(i + ONE)), contract.data)
-    if (contract.args) {
-      datastore.set(
-        new Args()
-          .addU64(BigInt(i + ONE))
-          .addUint8Array(u8toByte(ZERO))
-          .serialize(),
-        contract.args
-      )
-    }
-    if (contract.coins > ZERO) {
-      datastore.set(
-        new Args()
-          .addU64(BigInt(i + ONE))
-          .addUint8Array(u8toByte(ONE))
-          .serialize(),
-        u64ToBytes(BigInt(contract.coins))
-      )
-    }
-  })
-
-  return datastore
-}
 
 type CommonOptions = {
   fee?: bigint
