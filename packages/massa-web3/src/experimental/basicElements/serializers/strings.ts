@@ -9,6 +9,7 @@ import { isNode } from '../../utils/isNode'
  */
 export function strToBytes(str: string): Uint8Array {
   if (!str.length) {
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     return new Uint8Array(0)
   }
   return new Uint8Array(Buffer.from(str, 'utf-8'))
@@ -27,12 +28,13 @@ export function bytesToStr(arr: Uint8Array): string {
   }
 
   if (isNode()) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/naming-convention
     const { StringDecoder } = require('string_decoder')
     const decoder = new StringDecoder('utf-8')
 
     return decoder.write(Buffer.from(arr))
   }
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   let { TextDecoder } = window
   if (typeof TextDecoder === 'undefined') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires

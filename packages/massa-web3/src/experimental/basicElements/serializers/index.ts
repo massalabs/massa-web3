@@ -38,6 +38,7 @@ export * from './arrays'
 export function argsListToBytes(argsList: IParam[]): Uint8Array {
   return argsList.reduce(
     (acc, curr) => Args.concatArrays(acc, new TextEncoder().encode(curr.value)),
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     new Uint8Array(0)
   )
 }
