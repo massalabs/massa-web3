@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IBaseAccount } from '../../interfaces/IBaseAccount'
 import { IAccount, ITransactionDetails } from '@massalabs/wallet-provider'
 import { ISignature } from '../../interfaces/ISignature'

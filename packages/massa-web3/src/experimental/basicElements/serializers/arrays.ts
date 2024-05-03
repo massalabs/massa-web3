@@ -25,6 +25,7 @@ import {
   bytesToU64,
 } from './numbers'
 import { bytesToI128, bytesToU128, bytesToU256 } from './bignum'
+import { ZERO } from '../../utils'
 
 const ZERO_LEN = 0
 /**
@@ -195,16 +196,17 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
 
   let byteOffset = DEFAULT_OFFSET
   const result: T[] = []
-  let elementSize: number
+  let elementSize = ZERO
 
-  if (type === ArrayTypes.STRING) {
-    elementSize = bytesToU32(source, byteOffset)
-    byteOffset += BYTES_32_OFFSET
-  } else {
+  if (type !== ArrayTypes.STRING) {
     elementSize = getDatatypeSize(type)
   }
 
   while (byteOffset < sourceLength) {
+    if (type === ArrayTypes.STRING) {
+      elementSize = bytesToU32(source, byteOffset)
+      byteOffset += BYTES_32_OFFSET
+    }
     const elt = source.slice(byteOffset, byteOffset + elementSize)
     byteOffset += elementSize
 
