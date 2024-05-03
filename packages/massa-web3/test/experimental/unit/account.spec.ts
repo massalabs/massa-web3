@@ -164,7 +164,7 @@ describe('Basic use cases', () => {
       'S12jWf59Yzf2LimL89soMnAP2VEBDBpfCbZLoEFo36CxEL3j92rZ'
     )
     const message = new Uint8Array([1, 2, 3])
-    const signature = await account.sign(messsage)
-    expect(account.verify(messsage, signature)).toBeTruthy()
+    const signature = await account.sign(message)
+    expect(account.verify(message, signature)).toBeTruthy()
   })
 })
