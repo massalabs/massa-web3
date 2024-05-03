@@ -26,6 +26,9 @@ describe('amount conversion', () => {
     expect(Mas.fromString('01234.567890000')).toStrictEqual(1_234_567_890_000n)
     expect(() => Mas.fromString('1.1.1')).toThrow()
     expect(() => Mas.fromString('0.1234567890')).toThrow()
+    expect(() =>
+      Mas.fromString((BigInt(1) << BigInt(256)).toString())
+    ).toThrow()
   })
 
   it('converts to string', () => {
