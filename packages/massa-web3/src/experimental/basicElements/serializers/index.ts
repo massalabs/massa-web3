@@ -42,3 +42,5 @@ export function argsListToBytes(argsList: IParam[]): Uint8Array {
     new Uint8Array(0)
   )
 }
+
+export * from './number/index'
