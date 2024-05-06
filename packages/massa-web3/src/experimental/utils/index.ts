@@ -1,2 +1,2 @@
-export * from './numbers'
 export * from './noMagic'
+export * from './isNode'

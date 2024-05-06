@@ -6,26 +6,16 @@ import {
   ArrayTypes,
   DeserializedResult,
   Serializable,
-  BYTES_8_OFFSET,
-  BYTES_32_OFFSET,
-  BYTES_64_OFFSET,
   BYTES_128_OFFSET,
   BYTES_256_OFFSET,
   DEFAULT_OFFSET,
 } from '../args'
 import { bytesToStr } from './strings'
 import { byteToBool } from './bool'
-import {
-  byteToU8,
-  bytesToF32,
-  bytesToF64,
-  bytesToI32,
-  bytesToI64,
-  bytesToU32,
-  bytesToU64,
-} from './numbers'
+import { bytesToF32, bytesToF64, bytesToI32, bytesToI64 } from './numbers'
 import { bytesToI128, bytesToU128, bytesToU256 } from './bignum'
 import { ZERO } from '../../utils'
+import { U8, U32, U64 } from '.'
 
 const ZERO_LEN = 0
 /**
@@ -40,15 +30,15 @@ export function getDatatypeSize(type: ArrayTypes): number {
   switch (type) {
     case ArrayTypes.BOOL:
     case ArrayTypes.U8:
-      return BYTES_8_OFFSET
+      return U8.SIZE_BYTE
     case ArrayTypes.F32:
     case ArrayTypes.I32:
     case ArrayTypes.U32:
-      return BYTES_32_OFFSET
+      return U32.SIZE_BYTE
     case ArrayTypes.F64:
     case ArrayTypes.I64:
     case ArrayTypes.U64:
-      return BYTES_64_OFFSET
+      return U64.SIZE_BYTE
     case ArrayTypes.I128:
     case ArrayTypes.U128:
       return BYTES_128_OFFSET
@@ -144,7 +134,7 @@ export function arrayToBytes(
         args.addBool(value as boolean)
         break
       case ArrayTypes.U8:
-        args.addU8(value as number)
+        args.addU8(value as U8.U8)
         break
       case ArrayTypes.F64:
         args.addF64(value as number)
@@ -159,10 +149,10 @@ export function arrayToBytes(
         args.addI64(value as bigint)
         break
       case ArrayTypes.U32:
-        args.addU32(value as number)
+        args.addU32(value as U32.U32)
         break
       case ArrayTypes.U64:
-        args.addU64(value as bigint)
+        args.addU64(value as U64.U64)
         break
       case ArrayTypes.I128:
         args.addI128(value as bigint)
@@ -204,8 +194,9 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
 
   while (byteOffset < sourceLength) {
     if (type === ArrayTypes.STRING) {
-      elementSize = bytesToU32(source, byteOffset)
-      byteOffset += BYTES_32_OFFSET
+      const { value, offset } = U32.fromBuffer(source, byteOffset)
+      elementSize = Number(value)
+      byteOffset = offset
     }
     const elt = source.slice(byteOffset, byteOffset + elementSize)
     byteOffset += elementSize
@@ -218,7 +209,7 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
         result.push(byteToBool(elt) as T)
         break
       case ArrayTypes.U8:
-        result.push(byteToU8(elt) as T)
+        result.push(U8.fromBytes(elt) as T)
         break
       case ArrayTypes.F32:
         result.push(bytesToF32(elt) as T)
@@ -233,10 +224,10 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
         result.push(bytesToI64(elt) as T)
         break
       case ArrayTypes.U32:
-        result.push(bytesToU32(elt) as T)
+        result.push(U32.fromBytes(elt) as T)
         break
       case ArrayTypes.U64:
-        result.push(bytesToU64(elt) as T)
+        result.push(U64.fromBytes(elt) as T)
         break
       case ArrayTypes.I128:
         result.push(bytesToI128(elt) as T)

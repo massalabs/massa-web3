@@ -9,6 +9,7 @@ import {
   TransferOperation,
   calculateExpirePeriod,
 } from './basicElements'
+import { Mas } from './basicElements/mas'
 import { BlockchainClient } from './client'
 
 /**
@@ -22,7 +23,7 @@ export class AccountOperation {
 
   private async rollOperation(
     type: OperationType,
-    amount: bigint,
+    amount: Mas,
     opts?: OptOpDetails
   ): Promise<Operation> {
     if (type !== OperationType.RollBuy && type !== OperationType.RollSell) {
@@ -55,7 +56,7 @@ export class AccountOperation {
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async buyRolls(amount: bigint, opts?: OptOpDetails): Promise<Operation> {
+  async buyRolls(amount: Mas, opts?: OptOpDetails): Promise<Operation> {
     return this.rollOperation(OperationType.RollBuy, amount, opts)
   }
 
@@ -68,7 +69,7 @@ export class AccountOperation {
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async sellRolls(amount: bigint, opts?: OptOpDetails): Promise<Operation> {
+  async sellRolls(amount: Mas, opts?: OptOpDetails): Promise<Operation> {
     return this.rollOperation(OperationType.RollSell, amount, opts)
   }
 
@@ -84,7 +85,7 @@ export class AccountOperation {
    */
   async transfer(
     to: Address | string,
-    amount: bigint,
+    amount: Mas,
     opts?: OptOpDetails
   ): Promise<Operation> {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
@@ -118,7 +119,7 @@ export class AccountOperation {
    *
    * @returns The balance of the account.
    */
-  async fetchBalance(final = true): Promise<bigint> {
+  async fetchBalance(final = true): Promise<Mas> {
     return this.client.getBalance(this.account.address.toString(), final)
   }
 }

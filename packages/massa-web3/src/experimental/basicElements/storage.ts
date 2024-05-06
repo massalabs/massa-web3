@@ -1,9 +1,7 @@
-import { toNanoMas } from '../utils'
+import { Mas, fromMicroMas } from './mas'
+import { U32 } from './serializers'
 
-const BYTE_COST_MASSA = 0.0001
-
-// TODO: replace with a U32 helper
-const U32_SIZE_BYTES = 4
+const BYTE_COST_MICRO_MASSA = 100n
 
 // TODO: replace by the underlying logic of the storage cost
 const ACCOUNT_SIZE_BYTES = 10
@@ -15,8 +13,8 @@ const ACCOUNT_SIZE_BYTES = 10
  *
  * @returns The cost in the smallest unit of the Massa currency.
  */
-export function bytes(numberOfBytes: number): bigint {
-  return BigInt(numberOfBytes) * toNanoMas(BYTE_COST_MASSA)
+export function bytes(numberOfBytes: number): Mas {
+  return BigInt(numberOfBytes) * fromMicroMas(BYTE_COST_MICRO_MASSA)
 }
 
 /**
@@ -24,7 +22,7 @@ export function bytes(numberOfBytes: number): bigint {
  *
  * @returns The cost in the smallest unit of the Massa currency.
  */
-export function account(): bigint {
+export function account(): Mas {
   return bytes(ACCOUNT_SIZE_BYTES)
 }
 
@@ -38,7 +36,7 @@ export function account(): bigint {
  *
  * @returns The cost in the smallest unit of the Massa currency.
  */
-export function smartContract(numberOfBytes: number): bigint {
+export function smartContract(numberOfBytes: number): Mas {
   return bytes(numberOfBytes) + account()
 }
 
@@ -47,6 +45,6 @@ export function smartContract(numberOfBytes: number): bigint {
  *
  * @returns The cost in the smallest unit of the Massa currency.
  */
-export function newEntry(): bigint {
-  return bytes(U32_SIZE_BYTES)
+export function newEntry(): Mas {
+  return bytes(U32.SIZE_BYTE)
 }

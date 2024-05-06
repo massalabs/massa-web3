@@ -18,14 +18,15 @@ import {
   calculateExpirePeriod,
   OperationType,
 } from './operationManager'
+import { U64 } from './serializers/number/u64'
 
 export const MAX_GAS_EXECUTE = 3980167295n
 
 type ExecuteOption = {
-  fee?: bigint
+  fee?: U64
   periodToLive?: number
-  maxCoins?: bigint
-  maxGas?: bigint
+  maxCoins?: U64
+  maxGas?: U64
   datastore?: Map<Uint8Array, Uint8Array>
 }
 
