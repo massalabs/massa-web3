@@ -7,6 +7,10 @@ const POWER_TEN = 10
 export const ERROR_NOT_SAFE_INTEGER = 'value is not a safe integer.'
 export const ERROR_VALUE_TOO_LARGE = 'value is too large.'
 
+/**
+ * Defines 'Mas' as a type for representing nano massa,
+ * the smallest unit in Massa currency equivalent to 10^9.
+ */
 export type Mas = U64
 
 /**
