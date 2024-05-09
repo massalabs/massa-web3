@@ -1,7 +1,7 @@
 import { FIRST, ONE } from '../utils'
 import { U64, fromNumber } from './serializers/number/u64'
 
-const NB_DECIMALS = 9
+export const NB_DECIMALS = 9
 const POWER_TEN = 10
 
 export const ERROR_NOT_SAFE_INTEGER = 'value is not a safe integer.'

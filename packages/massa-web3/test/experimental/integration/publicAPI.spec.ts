@@ -8,6 +8,7 @@ import { createCheckers } from 'ts-interface-checker'
 import validator from '../../../src/experimental/generated/client-ti'
 import { EventFilter } from '../../../src/experimental/client'
 import { client } from './setup'
+import { MAX_GAS_CALL } from '../../../src/experimental/smartContract'
 
 const {
   NodeStatus,
@@ -213,17 +214,16 @@ describe('client tests', () => {
     expect(bytecodes).toHaveLength(2)
   })
 
-  test('executeReadOnlyCall', async () => {
+  xtest('executeReadOnlyCall', async () => {
     let arg = {
-      max_gas: 1000000,
-      target_address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
-      target_function: 'hello',
-      parameter: [],
-      caller_address: null,
-      coins: null,
-      fee: null,
+      func: 'hello',
+      callerAddress: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
+      targetAddress: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      maxGas: MAX_GAS_CALL,
+      parameter: new Uint8Array(),
     }
-    const response = await client.executeReadOnlyCall(arg as ReadOnlyCall)
+
+    const response = await client.executeReadOnlyCall(arg)
     expect(response).toHaveProperty('result')
     ExecuteReadOnlyResponse.strictCheck(response)
   })

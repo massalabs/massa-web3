@@ -23,6 +23,33 @@ export type EventFilter = {
   isError?: boolean
 }
 
+export type ReadOnlyCallParams = {
+  func: string
+  targetAddress: string
+  callerAddress: string
+  parameter?: Uint8Array
+  coins?: Mas
+  fee?: Mas
+  maxGas?: bigint
+}
+
+export type ReadOnlyCallResult = {
+  value: Uint8Array
+  info: {
+    gasCost: number
+    error?: string
+    events: SCOutputEvent[]
+    stateChanges: {
+      ledgerChanges: Record<string, unknown>
+      asyncPoolChanges: Record<string, unknown>[]
+      posChanges: Record<string, unknown>
+      executedOpsChanges: Record<string, unknown>
+      executedDenunciationsChanges: Record<string, unknown>
+      executionTrailHashChange: string
+    }
+  }
+}
+
 /*
  * Blockchain client functions needed by the Operation class to send operations to the blockchain.
  */
@@ -35,6 +62,7 @@ export interface BlockchainClient {
   getEvents(filter: EventFilter): Promise<SCOutputEvent[]>
   getChainId(): Promise<U64>
   getMinimalFee(): Promise<Mas>
+  executeReadOnlyCall(opt: ReadOnlyCallParams): Promise<ReadOnlyCallResult>
   // TODO: change for a getter instead
   status: NodeStatus
 }

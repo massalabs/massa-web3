@@ -7,7 +7,7 @@ import {
   CallOperation,
 } from './basicElements'
 import * as StorageCost from './basicElements/storage'
-import { BlockchainClient } from './client'
+import { BlockchainClient, ReadOnlyCallResult } from './client'
 import { Account } from './account'
 import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
 import { deployer } from './generated/deployer-bytecode'
@@ -16,9 +16,10 @@ import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
 import { Mas } from './basicElements/mas'
 
-// TODO: Move to constants file
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
+export const MAX_GAS_DEPLOYMENT = 3980167295n
+
 const DEFAULT_PERIODS_TO_LIVE = 9
 
 type CommonOptions = {
@@ -34,6 +35,14 @@ type DeployOptions = {
   maxCoins?: Mas
   periodToLive?: number
   waitFinalExecution?: boolean
+}
+
+type ReadOnlyCallOptions = {
+  parameter?: Uint8Array
+  callerAddress?: string
+  coins?: Mas
+  fee?: Mas
+  maxGas?: bigint
 }
 
 type DeployContract = {
@@ -166,7 +175,12 @@ export class SmartContract {
     opts.fee = opts.fee ?? (await this.client.getMinimalFee())
 
     if (!opts.maxGas) {
-      opts.maxGas = await SmartContract.getGasEstimation()
+      opts.maxGas = await this.getGasEstimation(
+        func,
+        parameter,
+        account.address,
+        opts
+      )
     } else {
       if (opts.maxGas > MAX_GAS_CALL) {
         throw new ErrorMaxGas({ isHigher: true, amount: MAX_GAS_CALL })
@@ -193,6 +207,23 @@ export class SmartContract {
     return new Operation(this.client, await operation.send(details))
   }
 
+  async read(
+    func: string,
+    opts: ReadOnlyCallOptions
+  ): Promise<ReadOnlyCallResult> {
+    opts.maxGas = opts.maxGas ?? MAX_GAS_CALL
+
+    return await this.client.executeReadOnlyCall({
+      func,
+      parameter: opts.parameter,
+      targetAddress: this.contractAddress,
+      callerAddress: opts.callerAddress || this.contractAddress,
+      coins: opts.coins,
+      fee: opts.fee,
+      maxGas: opts.maxGas,
+    })
+  }
+
   /**
    * Returns the period when the operation should expire.
    *
@@ -208,13 +239,29 @@ export class SmartContract {
   }
 
   /**
-   * Estimates the gas required for an operation.
-   * Currently, it returns a predefined maximum gas value.
-   * @returns A promise that resolves to the estimated gas amount in bigint.
-   * TODO: Implement dynamic gas estimation using dry run call.
-   * TODO: Remove static if needed.
+   * Returns the gas estimation for a given function.
+   *
+   * @param func - The function to estimate the gas cost.
+   * @returns The gas estimation for the function.
    */
-  static async getGasEstimation(): Promise<bigint> {
-    return MAX_GAS_CALL
+  async getGasEstimation(
+    func: string,
+    parameter: Uint8Array,
+    callerAddress: Address,
+    opts: CallOptions
+  ): Promise<bigint> {
+    const result = await this.read(func, {
+      parameter: parameter,
+      maxGas: opts.maxGas,
+      fee: opts.fee,
+      callerAddress: callerAddress.toString(),
+      coins: opts.coins,
+    })
+
+    if (result.info.error) {
+      throw new Error(result.info.error)
+    }
+
+    return BigInt(result.info.gasCost)
   }
 }

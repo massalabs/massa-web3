@@ -1,5 +1,10 @@
 import { Mas, OperationStatus } from '../basicElements'
-import { SendOperationInput, EventFilter as EvtFilter } from '.'
+import {
+  SendOperationInput,
+  EventFilter as EvtFilter,
+  ReadOnlyCallParams,
+  ReadOnlyCallResult,
+} from '.'
 import {
   OperationInput,
   Pagination,
@@ -40,6 +45,7 @@ type JSONAPIOptions = {
   path?: string
   protocol?: string
 }
+
 export class PublicAPI {
   connector: MassaOpenRPCSpecification
   status: NodeStatus
@@ -78,11 +84,48 @@ export class PublicAPI {
   }
 
   async executeReadOnlyCall(
-    readOnlyCall: ReadOnlyCall
-  ): Promise<ExecuteReadOnlyResponse> {
-    return this.connector
-      .execute_read_only_call([readOnlyCall])
-      .then((r) => r[FIRST])
+    readOnlyCall: ReadOnlyCallParams
+  ): Promise<ReadOnlyCallResult> {
+    const [readOnlyRes] = await this.connector.execute_read_only_call([
+      {
+        max_gas: Number(readOnlyCall.maxGas),
+        target_address: readOnlyCall.targetAddress,
+        target_function: readOnlyCall.func,
+        parameter: readOnlyCall.parameter
+          ? Array.from(readOnlyCall.parameter)
+          : [],
+        caller_address: readOnlyCall.callerAddress,
+        coins: readOnlyCall.coins
+          ? Mas.toString(readOnlyCall.coins).padStart(Mas.NB_DECIMALS, '0')
+          : null,
+        fee: readOnlyCall.fee
+          ? Mas.toString(readOnlyCall.fee).padStart(Mas.NB_DECIMALS, '0')
+          : null,
+      },
+    ])
+
+    if (!readOnlyRes) {
+      throw new Error('No result returned from execute_read_only_call')
+    }
+
+    return {
+      value: (readOnlyRes.result.Ok as unknown as Uint8Array) ?? null,
+      info: {
+        gasCost: readOnlyRes.gas_cost,
+        error: readOnlyRes.result.Error,
+        events: readOnlyRes.output_events,
+        stateChanges: {
+          ledgerChanges: readOnlyRes.state_changes.ledger_changes,
+          asyncPoolChanges: readOnlyRes.state_changes.async_pool_changes,
+          posChanges: readOnlyRes.state_changes.pos_changes,
+          executedOpsChanges: readOnlyRes.state_changes.executed_ops_changes,
+          executedDenunciationsChanges:
+            readOnlyRes.state_changes.executed_denunciations_changes,
+          executionTrailHashChange:
+            readOnlyRes.state_changes.execution_trail_hash_change,
+        },
+      },
+    }
   }
 
   async executeMultipleReadOnlyCall(
