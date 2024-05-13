@@ -1,4 +1,6 @@
 import { OperationStatus } from '../basicElements'
+import { Mas } from '../basicElements/mas'
+import { U64 } from '../basicElements/serializers/number/u64'
 import { NodeStatus, Slot } from '../generated/client'
 
 export type SendOperationInput = {
@@ -29,10 +31,10 @@ export interface BlockchainClient {
   sendOperation(data: SendOperationInput): Promise<string>
   fetchPeriod(): Promise<number>
   getOperationStatus(operationId: string): Promise<OperationStatus>
-  getBalance(address: string, final?: boolean): Promise<bigint>
+  getBalance(address: string, final?: boolean): Promise<Mas>
   getEvents(filter: EventFilter): Promise<SCOutputEvent[]>
-  getChainId(): Promise<bigint>
-  getMinimalFee(): Promise<bigint>
+  getChainId(): Promise<U64>
+  getMinimalFee(): Promise<Mas>
   // TODO: change for a getter instead
   status: NodeStatus
 }

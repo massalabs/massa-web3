@@ -14,6 +14,7 @@ import { deployer } from './generated/deployer-bytecode'
 import { populateDatastore } from '../../deployer_generation/dataStore'
 import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
+import { Mas } from './basicElements/mas'
 
 // TODO: Move to constants file
 export const MAX_GAS_CALL = 4294167295n
@@ -21,16 +22,16 @@ export const MIN_GAS_CALL = 2100000n
 const DEFAULT_PERIODS_TO_LIVE = 9
 
 type CommonOptions = {
-  fee?: bigint
-  maxGas?: bigint
-  coins?: bigint
+  fee?: Mas
+  maxGas?: Mas
+  coins?: Mas
   periodToLive?: number
 }
 
 type DeployOptions = {
-  fee?: bigint
-  maxGas?: bigint
-  maxCoins?: bigint
+  fee?: Mas
+  maxGas?: Mas
+  maxCoins?: Mas
   periodToLive?: number
   waitFinalExecution?: boolean
 }
@@ -38,7 +39,7 @@ type DeployOptions = {
 type DeployContract = {
   byteCode: Uint8Array
   parameter: Uint8Array
-  coins: bigint
+  coins: Mas
 }
 
 type CallOptions = CommonOptions

@@ -1,5 +1,5 @@
 // TODO: creating u64, u128, u256 types as wrapper of bigint, adding a from and to generic function that convert everything
-import { U64_MAX } from './numbers'
+import { U64 } from './number'
 
 const ZERO = 0
 const OFFSET = 8
@@ -131,10 +131,10 @@ export function u256ToBytes(val: bigint): Uint8Array {
     throw new Error(`Unable to serialize invalid Uint256 value ${val}`)
   }
 
-  const p0 = val & U64_MAX
-  const p1 = (val >> BYTES_64_BN) & U64_MAX
-  const p2 = (val >> BYTES_128_BN) & U64_MAX
-  const p3 = (val >> BYTES_192_BN) & U64_MAX
+  const p0 = val & U64.MAX
+  const p1 = (val >> BYTES_64_BN) & U64.MAX
+  const p2 = (val >> BYTES_128_BN) & U64.MAX
+  const p3 = (val >> BYTES_192_BN) & U64.MAX
 
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers
   const buffer = new ArrayBuffer(OFFSET * 4)

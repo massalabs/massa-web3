@@ -6,6 +6,9 @@ import { ArrayTypes } from '../../../../src/experimental/basicElements/args'
 import {
   I128_MAX,
   I128_MIN,
+  U8,
+  U32,
+  U64,
 } from '../../../../src/experimental/basicElements/serializers'
 import {
   arrayToBytes,
@@ -144,14 +147,26 @@ describe('array.ts functions', () => {
     })
 
     it('converts a U8 array to bytes and back correctly', () => {
-      const dataArray = [1, 2, 3, 4, 5]
+      const dataArray = [
+        U8.fromNumber(1),
+        U8.fromNumber(2),
+        U8.fromNumber(3),
+        U8.fromNumber(4),
+        U8.fromNumber(5),
+      ]
       const byteArray = arrayToBytes(dataArray, ArrayTypes.U8)
       const arrayBack = bytesToArray(byteArray, ArrayTypes.U8)
       expect(arrayBack).toEqual(dataArray)
     })
 
     it('converts a U32 array to bytes and back correctly', () => {
-      const dataArray = [10, 20, 30, 40, 50]
+      const dataArray = [
+        U32.fromNumber(10),
+        U32.fromNumber(20),
+        U32.fromNumber(30),
+        U32.fromNumber(40),
+        U32.fromNumber(50),
+      ]
       const byteArray = arrayToBytes(dataArray, ArrayTypes.U32)
       const arrayBack = bytesToArray(byteArray, ArrayTypes.U32)
       expect(arrayBack).toEqual(dataArray)
@@ -159,11 +174,11 @@ describe('array.ts functions', () => {
 
     it('converts a U64 array to bytes and back correctly', () => {
       const dataArray = [
-        BigInt(10),
-        BigInt(20),
-        BigInt(30),
-        BigInt(40),
-        BigInt(50),
+        U64.fromNumber(10),
+        U64.fromNumber(20),
+        U64.fromNumber(30),
+        U64.fromNumber(40),
+        U64.fromNumber(50),
       ]
       const byteArray = arrayToBytes(dataArray, ArrayTypes.U64)
       const arrayBack = bytesToArray(byteArray, ArrayTypes.U64)

@@ -1,4 +1,4 @@
-import { OperationStatus } from '../basicElements'
+import { Mas, OperationStatus } from '../basicElements'
 import { SendOperationInput, EventFilter as EvtFilter } from '.'
 import {
   OperationInput,
@@ -26,7 +26,7 @@ import {
   OperationId,
   AddressFilter,
 } from '../generated/client'
-import { FIRST, toNanoMas } from '../utils'
+import { FIRST } from '../utils'
 
 export enum Transport {
   WebSocket = 'websocket',
@@ -95,9 +95,9 @@ export class PublicAPI {
     return this.getMultipleAddressInfo([address]).then((r) => r[FIRST])
   }
 
-  async getBalance(address: string, final = true): Promise<bigint> {
+  async getBalance(address: string, final = true): Promise<Mas.Mas> {
     return this.getAddressInfo(address).then((r) => {
-      return toNanoMas(final ? r.final_balance : r.candidate_balance)
+      return Mas.fromString(final ? r.final_balance : r.candidate_balance)
     })
   }
 
@@ -253,7 +253,7 @@ export class PublicAPI {
     if (!this.status.minimal_fees) {
       throw new Error('minimal fees: not available')
     }
-    return toNanoMas(this.status.minimal_fees)
+    return Mas.fromString(this.status.minimal_fees)
   }
 
   async getChainId(): Promise<bigint> {

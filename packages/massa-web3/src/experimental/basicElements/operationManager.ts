@@ -5,9 +5,7 @@ import { BlockchainClient } from '../client'
 import { Signature } from './signature'
 import varint from 'varint'
 import { FIRST } from '../utils'
-
-// TODO: replace with a U64 helper
-const U64_SIZE_BYTES = 8
+import { U64 } from './serializers'
 
 const PERIOD_TO_LIVE_DEFAULT = 10
 const PERIOD_TO_LIVE_MAX = 100
@@ -38,30 +36,30 @@ export enum OperationType {
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
  */
 export type OptOpDetails = {
-  fee?: bigint
+  fee?: U64.U64
   periodToLive?: number
 }
 
 type BaseOperation = {
-  fee: bigint
+  fee: U64.U64
   expirePeriod: number
   type: OperationType
 }
 
 export type RollOperation = BaseOperation & {
   type: OperationType.RollBuy | OperationType.RollSell
-  amount: bigint
+  amount: U64.U64
 }
 
 export type TransferOperation = BaseOperation & {
   type: OperationType.Transaction
-  amount: bigint
+  amount: U64.U64
   recipientAddress: Address
 }
 
 export type BaseSmartContractOperation = BaseOperation & {
-  maxGas: bigint
-  coins: bigint
+  maxGas: U64.U64
+  coins: U64.U64
 }
 
 export type CallOperation = BaseSmartContractOperation & {
@@ -73,8 +71,8 @@ export type CallOperation = BaseSmartContractOperation & {
 
 // @see https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload
 export type ExecuteOperation = BaseOperation & {
-  maxGas: bigint
-  maxCoins: bigint
+  maxGas: U64.U64
+  maxCoins: U64.U64
   type: OperationType.ExecuteSmartContractBytecode
   contractDataBinary: Uint8Array
   datastore?: Map<Uint8Array, Uint8Array>
@@ -137,20 +135,22 @@ export class OperationManager {
         components.push(unsigned.encode(operation.maxGas))
         components.push(unsigned.encode(operation.maxCoins))
         components.push(
-          unsigned.encode(BigInt(operation.contractDataBinary.length))
+          unsigned.encode(U64.fromNumber(operation.contractDataBinary.length))
         )
         components.push(operation.contractDataBinary)
 
         operation.datastore =
           operation.datastore || new Map<Uint8Array, Uint8Array>()
-        components.push(unsigned.encode(BigInt(operation.datastore.size)))
+        components.push(
+          unsigned.encode(U64.fromNumber(operation.datastore.size))
+        )
 
         // length prefixed key-value pairs encoding
         for (const [key, value] of operation.datastore) {
           const keyBytes = Buffer.from(key)
-          const keyLen = unsigned.encode(BigInt(keyBytes.length))
+          const keyLen = unsigned.encode(U64.fromNumber(keyBytes.length))
           const valueBytes = Buffer.from(value)
-          const valueLen = unsigned.encode(BigInt(valueBytes.length))
+          const valueLen = unsigned.encode(U64.fromNumber(valueBytes.length))
           components.push(keyLen, keyBytes, valueLen, valueBytes)
         }
         break
@@ -227,7 +227,7 @@ export class OperationManager {
     key: PublicKey
   ): Uint8Array {
     // u64ToBytes is little endian
-    const networkId = new Uint8Array(U64_SIZE_BYTES)
+    const networkId = new Uint8Array(U64.SIZE_BYTE)
     const view = new DataView(networkId.buffer)
     view.setBigUint64(FIRST, chainId, false)
 
