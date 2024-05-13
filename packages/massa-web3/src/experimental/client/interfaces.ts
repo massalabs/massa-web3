@@ -30,7 +30,7 @@ export type ReadOnlyCallParams = {
   parameter?: Uint8Array
   coins?: Mas
   fee?: Mas
-  maxGas?: bigint
+  maxGas?: U64
 }
 
 export type ReadOnlyCallResult = {
@@ -62,7 +62,7 @@ export interface BlockchainClient {
   getEvents(filter: EventFilter): Promise<SCOutputEvent[]>
   getChainId(): Promise<U64>
   getMinimalFee(): Promise<Mas>
-  executeReadOnlyCall(opt: ReadOnlyCallParams): Promise<ReadOnlyCallResult>
+  executeReadOnlyCall(params: ReadOnlyCallParams): Promise<ReadOnlyCallResult>
   // TODO: change for a getter instead
   status: NodeStatus
 }

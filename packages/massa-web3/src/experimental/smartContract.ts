@@ -15,6 +15,7 @@ import { populateDatastore } from '../../deployer_generation/dataStore'
 import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
 import { Mas } from './basicElements/mas'
+import { U64 } from './basicElements/serializers/number/u64'
 
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
@@ -38,11 +39,10 @@ type DeployOptions = {
 }
 
 type ReadOnlyCallOptions = {
-  parameter?: Uint8Array
   callerAddress?: string
   coins?: Mas
   fee?: Mas
-  maxGas?: bigint
+  maxGas?: U64
 }
 
 type DeployContract = {
@@ -207,15 +207,23 @@ export class SmartContract {
     return new Operation(this.client, await operation.send(details))
   }
 
+  /**
+   * Executes a smart contract read operation
+   * @param func - The smart contract function to be called.
+   * @param parameter - Parameter for the function call in Uint8Array format.
+   * @param options - Includes optional parameters like fee, maxGas, coins, and periodToLive.
+   * @returns A promise that resolves to the result of the read operation.
+   */
   async read(
     func: string,
-    opts: ReadOnlyCallOptions
+    parameter = new Uint8Array(),
+    opts: ReadOnlyCallOptions = {}
   ): Promise<ReadOnlyCallResult> {
     opts.maxGas = opts.maxGas ?? MAX_GAS_CALL
 
     return await this.client.executeReadOnlyCall({
       func,
-      parameter: opts.parameter,
+      parameter,
       targetAddress: this.contractAddress,
       callerAddress: opts.callerAddress || this.contractAddress,
       coins: opts.coins,
@@ -242,6 +250,10 @@ export class SmartContract {
    * Returns the gas estimation for a given function.
    *
    * @param func - The function to estimate the gas cost.
+   * @param parameter - The parameter for the function call in Uint8Array format.
+   * @param callerAddress - The address of the caller.
+   * @param opts - Includes optional parameters like fee, maxGas, coins, and periodToLive.
+   * @throws If the read operation returns an error.
    * @returns The gas estimation for the function.
    */
   async getGasEstimation(
@@ -249,9 +261,8 @@ export class SmartContract {
     parameter: Uint8Array,
     callerAddress: Address,
     opts: CallOptions
-  ): Promise<bigint> {
-    const result = await this.read(func, {
-      parameter: parameter,
+  ): Promise<U64> {
+    const result = await this.read(func, parameter, {
       maxGas: opts.maxGas,
       fee: opts.fee,
       callerAddress: callerAddress.toString(),

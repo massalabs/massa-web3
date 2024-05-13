@@ -84,45 +84,39 @@ export class PublicAPI {
   }
 
   async executeReadOnlyCall(
-    readOnlyCall: ReadOnlyCallParams
+    params: ReadOnlyCallParams
   ): Promise<ReadOnlyCallResult> {
-    const [readOnlyRes] = await this.connector.execute_read_only_call([
+    const [res] = await this.connector.execute_read_only_call([
       {
-        max_gas: Number(readOnlyCall.maxGas),
-        target_address: readOnlyCall.targetAddress,
-        target_function: readOnlyCall.func,
-        parameter: readOnlyCall.parameter
-          ? Array.from(readOnlyCall.parameter)
-          : [],
-        caller_address: readOnlyCall.callerAddress,
-        coins: readOnlyCall.coins
-          ? Mas.toString(readOnlyCall.coins).padStart(Mas.NB_DECIMALS, '0')
-          : null,
-        fee: readOnlyCall.fee
-          ? Mas.toString(readOnlyCall.fee).padStart(Mas.NB_DECIMALS, '0')
-          : null,
+        max_gas: Number(params.maxGas),
+        target_address: params.targetAddress,
+        target_function: params.func,
+        parameter: params.parameter ? Array.from(params.parameter) : [],
+        caller_address: params.callerAddress,
+        coins: params.coins ? Mas.toString(params.coins, true) : null,
+        fee: params.fee ? Mas.toString(params.fee, true) : null,
       },
     ])
 
-    if (!readOnlyRes) {
+    if (!res) {
       throw new Error('No result returned from execute_read_only_call')
     }
 
     return {
-      value: (readOnlyRes.result.Ok as unknown as Uint8Array) ?? null,
+      value: (res.result.Ok as unknown as Uint8Array) ?? null,
       info: {
-        gasCost: readOnlyRes.gas_cost,
-        error: readOnlyRes.result.Error,
-        events: readOnlyRes.output_events,
+        gasCost: res.gas_cost,
+        error: res.result.Error,
+        events: res.output_events,
         stateChanges: {
-          ledgerChanges: readOnlyRes.state_changes.ledger_changes,
-          asyncPoolChanges: readOnlyRes.state_changes.async_pool_changes,
-          posChanges: readOnlyRes.state_changes.pos_changes,
-          executedOpsChanges: readOnlyRes.state_changes.executed_ops_changes,
+          ledgerChanges: res.state_changes.ledger_changes,
+          asyncPoolChanges: res.state_changes.async_pool_changes,
+          posChanges: res.state_changes.pos_changes,
+          executedOpsChanges: res.state_changes.executed_ops_changes,
           executedDenunciationsChanges:
-            readOnlyRes.state_changes.executed_denunciations_changes,
+            res.state_changes.executed_denunciations_changes,
           executionTrailHashChange:
-            readOnlyRes.state_changes.execution_trail_hash_change,
+            res.state_changes.execution_trail_hash_change,
         },
       },
     }

@@ -9,6 +9,7 @@ import validator from '../../../src/experimental/generated/client-ti'
 import { EventFilter } from '../../../src/experimental/client'
 import { client } from './setup'
 import { MAX_GAS_CALL } from '../../../src/experimental/smartContract'
+import { bytesToStr } from '../../../src/experimental/basicElements'
 
 const {
   NodeStatus,
@@ -98,7 +99,7 @@ describe('client tests', () => {
   test('getDatastoreEntry', async () => {
     const entry = await client.getDatastoreEntry(
       '',
-      'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP'
+      'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T'
     )
     DatastoreEntryOutput.strictCheck(entry)
   })
@@ -108,7 +109,7 @@ describe('client tests', () => {
     let result = Array.from(str1, (char) => char.charCodeAt(0))
     const entries = await client.getDatastoreEntries([
       {
-        address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+        address: 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T',
         key: result,
       },
     ])
@@ -160,7 +161,7 @@ describe('client tests', () => {
 
   test('getMultipleAddressInfo', async () => {
     const info = await client.getMultipleAddressInfo([
-      'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T',
     ])
     expect(info).toHaveLength(1)
     AddressInfo.strictCheck(info[0])
@@ -169,7 +170,7 @@ describe('client tests', () => {
   test.skip('getEvents', async () => {
     const event = await client.getEvents({
       smartContractAddress:
-        'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+        'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T',
     } as EventFilter)
     expect(event.length > 1).toBeTruthy()
     SCOutputEvent.strictCheck(event[0])
@@ -196,7 +197,7 @@ describe('client tests', () => {
 
   test.skip('getAddressesBytecode', async () => {
     const bytecode = await client.getAddressesBytecode({
-      address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      address: 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T',
       is_final: true,
     } as AddressFilter)
     expect(bytecode.length > 1).toBeTruthy()
@@ -204,7 +205,7 @@ describe('client tests', () => {
 
   test.skip('executeMultipleGetAddressesBytecode', async () => {
     const req = {
-      address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      address: 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T',
       is_final: true,
     } as AddressFilter
     const bytecodes = await client.executeMultipleGetAddressesBytecode([
@@ -214,18 +215,19 @@ describe('client tests', () => {
     expect(bytecodes).toHaveLength(2)
   })
 
-  xtest('executeReadOnlyCall', async () => {
+  test('executeReadOnlyCall', async () => {
     let arg = {
       func: 'hello',
       callerAddress: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
-      targetAddress: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      targetAddress: 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T',
       maxGas: MAX_GAS_CALL,
       parameter: new Uint8Array(),
     }
 
     const response = await client.executeReadOnlyCall(arg)
-    expect(response).toHaveProperty('result')
-    ExecuteReadOnlyResponse.strictCheck(response)
+    expect(response).toHaveProperty('value')
+
+    expect(bytesToStr(response.value)).toBe('Hello, World!')
   })
 
   test('executeMultipleReadOnlyCall', async () => {

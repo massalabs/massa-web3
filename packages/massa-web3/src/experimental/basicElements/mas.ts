@@ -2,6 +2,7 @@ import { FIRST, ONE } from '../utils'
 import { U64, fromNumber } from './serializers/number/u64'
 
 export const NB_DECIMALS = 9
+export const SIZE_U256_BIT = 256
 const POWER_TEN = 10
 
 export const ERROR_NOT_SAFE_INTEGER = 'value is not a safe integer.'
@@ -103,11 +104,21 @@ export function fromString(value: string): Mas {
  * Converts a value in the smallest unit of the Massa currency to a decimal value.
  *
  * @param value - The value in the smallest unit of the Massa currency.
+ * @param keepTrailingZeros - Optional parameter to keep trailing zeros in the decimal part.
  * @returns The decimal value.
  */
-export function toString(value: Mas): string {
+export function toString(value: Mas, keepTrailingZeros = false): string {
+  if (value >= BigInt(ONE) << BigInt(SIZE_U256_BIT)) {
+    throw new Error(ERROR_VALUE_TOO_LARGE)
+  }
+
   const valueString = value.toString()
   const integerPart = valueString.slice(FIRST, -NB_DECIMALS) || '0'
-  const decimalPart = valueString.slice(-NB_DECIMALS).replace(/0+$/, '')
-  return `${integerPart}${decimalPart.length ? '.' + decimalPart : ''}`
+
+  let decimalPart = valueString.slice(-NB_DECIMALS).padStart(NB_DECIMALS, '0')
+
+  if (!keepTrailingZeros) {
+    decimalPart = decimalPart.replace(/0+$/, '')
+  }
+  return decimalPart.length ? `${integerPart}.${decimalPart}` : integerPart
 }

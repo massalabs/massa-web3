@@ -64,6 +64,7 @@ describe('Smart Contract', () => {
       parameter: new Args().addString('myName').serialize(),
       coins: 3n,
     }
+
     const deployOptions = {
       periodToLive: 2,
       maxGas: MAX_GAS_DEPLOYMENT,
@@ -78,7 +79,6 @@ describe('Smart Contract', () => {
 
     const scAddress = Address.fromString(contract.contractAddress)
     expect(scAddress.isEOA).toBeFalsy()
-
     contractTest = contract
   }, 60000)
 
@@ -171,9 +171,10 @@ describe('Smart Contract', () => {
 
     describe('Read', () => {
       test('Read only call', async () => {
-        const result = await contractTest.read('getValueFromKey', {
-          parameter: new Args().addString('myKey').serialize(),
-        })
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize()
+        )
 
         const value = bytesToStr(result.value)
 
@@ -181,18 +182,21 @@ describe('Smart Contract', () => {
       })
 
       test('Read only call with invalid function name', async () => {
-        const result = await contractTest.read('invalidFunction', {})
+        const result = await contractTest.read('invalidFunction')
 
         expect(result.info.error).toContain('Missing export invalidFunction')
       })
 
       // Read with fee
       test('Read only call with fee', async () => {
-        const result = await contractTest.read('getValueFromKey', {
-          parameter: new Args().addString('myKey').serialize(),
-          fee: Mas.fromString('0.1'),
-          callerAddress: account.address.toString(),
-        })
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize(),
+          {
+            fee: Mas.fromString('0.1'),
+            callerAddress: account.address.toString(),
+          }
+        )
 
         const value = bytesToStr(result.value)
         expect(value).toBe('myValue')
@@ -203,10 +207,13 @@ describe('Smart Contract', () => {
       // For now it works because we send coins on a previous tes
       // Maybe caller address should not be optional
       test('Read only call with fee and no callerAddress', async () => {
-        const result = await contractTest.read('getValueFromKey', {
-          parameter: new Args().addString('myKey').serialize(),
-          fee: Mas.fromString('0.01'),
-        })
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize(),
+          {
+            fee: Mas.fromString('0.01'),
+          }
+        )
 
         const value = bytesToStr(result.value)
         expect(value).toBe('myValue')
@@ -214,7 +221,7 @@ describe('Smart Contract', () => {
 
       test('Read only call with coins', async () => {
         const coinAmount = Mas.fromString('1')
-        const result = await contractTest.read('sendCoins', {
+        const result = await contractTest.read('sendCoins', new Uint8Array(), {
           coins: coinAmount,
         })
 
@@ -223,11 +230,14 @@ describe('Smart Contract', () => {
         )
       })
 
-      xtest('Read only call with maxGas', async () => {
-        const result = await contractTest.read('getValueFromKey', {
-          parameter: new Args().addString('myKey').serialize(),
-          maxGas: MAX_GAS_CALL,
-        })
+      test('Read only call with maxGas', async () => {
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize(),
+          {
+            maxGas: MAX_GAS_CALL,
+          }
+        )
 
         const value = bytesToStr(result.value)
         expect(value).toBe('myValue')
