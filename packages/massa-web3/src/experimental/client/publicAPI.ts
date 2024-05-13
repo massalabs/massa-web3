@@ -93,8 +93,8 @@ export class PublicAPI {
         target_function: params.func,
         parameter: params.parameter ? Array.from(params.parameter) : [],
         caller_address: params.callerAddress,
-        coins: params.coins ? Mas.toString(params.coins, true) : null,
-        fee: params.fee ? Mas.toString(params.fee, true) : null,
+        coins: params.coins ? Mas.toString(params.coins) : null,
+        fee: params.fee ? Mas.toString(params.fee) : null,
       },
     ])
 

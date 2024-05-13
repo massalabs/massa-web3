@@ -1,4 +1,4 @@
-import { FIRST, ONE } from '../utils'
+import { FIRST, ONE, ZERO } from '../utils'
 import { U64, fromNumber } from './serializers/number/u64'
 
 export const NB_DECIMALS = 9
@@ -100,25 +100,33 @@ export function fromString(value: string): Mas {
   return fromNumber(mas)
 }
 
-/**
- * Converts a value in the smallest unit of the Massa currency to a decimal value.
+/*
+ * Converts a Mas value to a string.
  *
- * @param value - The value in the smallest unit of the Massa currency.
- * @param keepTrailingZeros - Optional parameter to keep trailing zeros in the decimal part.
- * @returns The decimal value.
+ * @param value - The Mas value.
+ * @param decimalPlaces - The number of decimal places to include in the string.
+ * @returns The value as a string.
+ *
+ * @throws An error if the value is too large to be represented by an U256.
  */
-export function toString(value: Mas, keepTrailingZeros = false): string {
+export function toString(
+  value: Mas,
+  decimalPlaces: number | null = null
+): string {
   if (value >= BigInt(ONE) << BigInt(SIZE_U256_BIT)) {
     throw new Error(ERROR_VALUE_TOO_LARGE)
   }
 
   const valueString = value.toString()
-  const integerPart = valueString.slice(FIRST, -NB_DECIMALS) || '0'
-
+  const integerPart = valueString.slice(ZERO, -NB_DECIMALS) || '0'
   let decimalPart = valueString.slice(-NB_DECIMALS).padStart(NB_DECIMALS, '0')
 
-  if (!keepTrailingZeros) {
+  if (decimalPlaces === null) {
     decimalPart = decimalPart.replace(/0+$/, '')
+  } else {
+    // TODO - Round the number to the desired number of decimal places
+    decimalPart = decimalPart.slice(ZERO, decimalPlaces)
   }
+
   return decimalPart.length ? `${integerPart}.${decimalPart}` : integerPart
 }

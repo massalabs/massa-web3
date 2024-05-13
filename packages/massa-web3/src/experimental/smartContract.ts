@@ -51,7 +51,9 @@ type DeployContract = {
   coins: Mas
 }
 
-type CallOptions = CommonOptions
+type CallOptions = CommonOptions & {
+  account?: Account
+}
 
 /**
  * A class to interact with a smart contract.
@@ -59,7 +61,8 @@ type CallOptions = CommonOptions
 export class SmartContract {
   protected constructor(
     public client: BlockchainClient,
-    public contractAddress: string
+    public contractAddress: string,
+    public account: Account
   ) {}
 
   /**
@@ -72,9 +75,10 @@ export class SmartContract {
    */
   static fromAddress(
     client: BlockchainClient,
-    contract: Address
+    contract: Address,
+    account: Account
   ): SmartContract {
-    return new SmartContract(client, contract.toString())
+    return new SmartContract(client, contract.toString(), account)
   }
 
   /**
@@ -143,7 +147,7 @@ export class SmartContract {
     const addr = firstEvent.data.split(': ')[ONE]
 
     // TODO: What if multiple smart contracts are deployed in the same operation?
-    return new SmartContract(client, addr)
+    return new SmartContract(client, addr, account)
   }
 
   /**
@@ -155,12 +159,13 @@ export class SmartContract {
    * @returns A promise that resolves to an Operation object representing the transaction.
    */
   async call(
-    account: Account,
     func: string,
     parameter: Uint8Array,
-    opts: CallOptions
+    opts: CallOptions = {}
   ): Promise<Operation> {
     opts.coins = opts.coins ?? BigInt(ZERO)
+
+    const account = opts.account ?? this.account
 
     if (opts.coins > BigInt(ZERO)) {
       const balance = await this.client.getBalance(account.address.toString())
@@ -225,7 +230,7 @@ export class SmartContract {
       func,
       parameter,
       targetAddress: this.contractAddress,
-      callerAddress: opts.callerAddress || this.contractAddress,
+      callerAddress: opts.callerAddress ?? this.account.address.toString(),
       coins: opts.coins,
       fee: opts.fee,
       maxGas: opts.maxGas,

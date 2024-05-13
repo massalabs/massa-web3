@@ -32,5 +32,6 @@ describe('amount conversion', () => {
     expect(Mas.toString(1_000_000_000n)).toStrictEqual('1')
     expect(Mas.toString(1_100_000_000n)).toStrictEqual('1.1')
     expect(Mas.toString(1_234_567_890_000n)).toStrictEqual('1234.56789')
+    expect(Mas.toString(100_000n)).toStrictEqual('0.0001')
   })
 })

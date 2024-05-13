@@ -86,12 +86,7 @@ describe('Smart Contract', () => {
     test(
       'minimal call',
       async () => {
-        const op = await contractTest.call(
-          account,
-          'event',
-          new Uint8Array(),
-          {}
-        )
+        const op = await contractTest.call('event', new Uint8Array())
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -107,14 +102,9 @@ describe('Smart Contract', () => {
         const value = 'myValue'
         const parameter = new Args().addString(key).addString(value).serialize()
 
-        const op = await contractTest.call(
-          account,
-          'setValueToKey',
-          parameter,
-          {
-            coins: Mas.fromString('0.0016'),
-          }
-        )
+        const op = await contractTest.call('setValueToKey', parameter, {
+          coins: Mas.fromString('0.0016'),
+        })
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -128,14 +118,10 @@ describe('Smart Contract', () => {
       async () => {
         const coinAmount = Mas.fromString('1')
 
-        const op = await contractTest.call(
-          account,
-          'sendCoins',
-          new Uint8Array(),
-          {
-            coins: coinAmount,
-          }
-        )
+        const op = await contractTest.call('sendCoins', new Uint8Array(), {
+          coins: coinAmount,
+          account: account,
+        })
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -148,7 +134,7 @@ describe('Smart Contract', () => {
     test(
       'Attempt to call with maxGas value that is below the minimum required limit',
       async () => {
-        const call = contractTest.call(account, 'event', new Uint8Array(), {
+        const call = contractTest.call('event', new Uint8Array(), {
           maxGas: INSUFFICIENT_MAX_GAS,
         })
 
@@ -160,7 +146,7 @@ describe('Smart Contract', () => {
     )
 
     test('Attempt to call with maxGas value that exceeds the maximum limit', async () => {
-      const call = contractTest.call(account, 'event', new Uint8Array(), {
+      const call = contractTest.call('event', new Uint8Array(), {
         maxGas: MAX_GAS_CALL + 1n,
       })
 
