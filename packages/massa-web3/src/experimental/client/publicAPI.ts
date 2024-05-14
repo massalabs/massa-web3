@@ -89,10 +89,10 @@ export class PublicAPI {
     const [res] = await this.connector.execute_read_only_call([
       {
         max_gas: Number(params.maxGas),
-        target_address: params.targetAddress,
+        target_address: params.target.toString(),
         target_function: params.func,
         parameter: params.parameter ? Array.from(params.parameter) : [],
-        caller_address: params.callerAddress,
+        caller_address: params.caller.toString(),
         coins: params.coins ? Mas.toString(params.coins) : null,
         fee: params.fee ? Mas.toString(params.fee) : null,
       },

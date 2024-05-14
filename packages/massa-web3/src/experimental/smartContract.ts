@@ -39,7 +39,7 @@ type DeployOptions = {
 }
 
 type ReadOnlyCallOptions = {
-  callerAddress?: string
+  caller?: Address
   coins?: Mas
   fee?: Mas
   maxGas?: U64
@@ -61,7 +61,7 @@ type CallOptions = CommonOptions & {
 export class SmartContract {
   protected constructor(
     public client: BlockchainClient,
-    public contractAddress: string,
+    public address: Address,
     public account: Account
   ) {}
 
@@ -78,7 +78,7 @@ export class SmartContract {
     contract: Address,
     account: Account
   ): SmartContract {
-    return new SmartContract(client, contract.toString(), account)
+    return new SmartContract(client, contract, account)
   }
 
   /**
@@ -147,7 +147,7 @@ export class SmartContract {
     const addr = firstEvent.data.split(': ')[ONE]
 
     // TODO: What if multiple smart contracts are deployed in the same operation?
-    return new SmartContract(client, addr, account)
+    return SmartContract.fromAddress(client, Address.fromString(addr), account)
   }
 
   /**
@@ -202,7 +202,7 @@ export class SmartContract {
       type: OperationType.CallSmartContractFunction,
       coins: opts.coins,
       maxGas: opts.maxGas,
-      address: this.contractAddress,
+      address: this.address.toString(),
       func,
       parameter,
     }
@@ -229,8 +229,8 @@ export class SmartContract {
     return await this.client.executeReadOnlyCall({
       func,
       parameter,
-      targetAddress: this.contractAddress,
-      callerAddress: opts.callerAddress ?? this.account.address.toString(),
+      target: this.address,
+      caller: opts.caller ?? this.account.address,
       coins: opts.coins,
       fee: opts.fee,
       maxGas: opts.maxGas,
@@ -264,13 +264,13 @@ export class SmartContract {
   async getGasEstimation(
     func: string,
     parameter: Uint8Array,
-    callerAddress: Address,
+    caller: Address,
     opts: CallOptions
   ): Promise<U64> {
     const result = await this.read(func, parameter, {
       maxGas: opts.maxGas,
       fee: opts.fee,
-      callerAddress: callerAddress.toString(),
+      caller,
       coins: opts.coins,
     })
 

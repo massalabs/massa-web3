@@ -1,4 +1,4 @@
-import { FIRST, ONE, ZERO } from '../utils'
+import { FIRST, FIVE, ONE, ZERO } from '../utils'
 import { U64, fromNumber } from './serializers/number/u64'
 
 export const NB_DECIMALS = 9
@@ -100,14 +100,14 @@ export function fromString(value: string): Mas {
   return fromNumber(mas)
 }
 
-/*
- * Converts a Mas value to a string.
+/**
+ * Converts a Mas value to a string with rounding approximation.
  *
  * @param value - The Mas value.
- * @param decimalPlaces - The number of decimal places to include in the string.
+ * @param decimalPlaces - The number of decimal places to include in the string. If null, trailing zeros are removed.
  * @returns The value as a string.
  *
- * @throws An error if the value is too large to be represented by an U256.
+ * @throws An error if the value is too large to be represented by a U256.
  */
 export function toString(
   value: Mas,
@@ -122,10 +122,23 @@ export function toString(
   let decimalPart = valueString.slice(-NB_DECIMALS).padStart(NB_DECIMALS, '0')
 
   if (decimalPlaces === null) {
+    // If decimalPlaces is null, remove trailing zeros from the decimal part
     decimalPart = decimalPart.replace(/0+$/, '')
-  } else {
-    // TODO - Round the number to the desired number of decimal places
-    decimalPart = decimalPart.slice(ZERO, decimalPlaces)
+  } else if (decimalPlaces < NB_DECIMALS) {
+    // If decimalPlaces is specified and less than NB_DECIMALS, handle rounding
+    const roundingDigit = parseInt(decimalPart[decimalPlaces])
+
+    if (roundingDigit >= FIVE) {
+      // If the rounding digit is 5 or greater, round up
+      decimalPart = (
+        BigInt(decimalPart.slice(ZERO, decimalPlaces)) + BigInt(ONE)
+      )
+        .toString()
+        .padStart(decimalPlaces, '0')
+    } else {
+      // Otherwise, truncate the decimal part to the specified number of places
+      decimalPart = decimalPart.slice(ZERO, decimalPlaces)
+    }
   }
 
   return decimalPart.length ? `${integerPart}.${decimalPart}` : integerPart

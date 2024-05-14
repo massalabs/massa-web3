@@ -1,4 +1,4 @@
-import { OperationStatus } from '../basicElements'
+import { Address, OperationStatus } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64 } from '../basicElements/serializers/number/u64'
 import { NodeStatus, Slot } from '../generated/client'
@@ -25,8 +25,8 @@ export type EventFilter = {
 
 export type ReadOnlyCallParams = {
   func: string
-  targetAddress: string
-  callerAddress: string
+  target: Address
+  caller: Address
   parameter?: Uint8Array
   coins?: Mas
   fee?: Mas

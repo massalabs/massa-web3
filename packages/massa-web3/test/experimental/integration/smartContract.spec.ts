@@ -9,7 +9,6 @@ import {
 import { account, client } from './setup'
 import { Args, bytesToStr, Mas } from '../../../src/experimental/basicElements'
 
-import { Address } from '../../../src/experimental/basicElements'
 import { execute } from '../../../src/experimental/basicElements/bytecode'
 
 const TIMEOUT = 61000
@@ -77,8 +76,7 @@ describe('Smart Contract', () => {
       deployOptions
     )
 
-    const scAddress = Address.fromString(contract.contractAddress)
-    expect(scAddress.isEOA).toBeFalsy()
+    expect(contract.address.isEOA).toBeFalsy()
     contractTest = contract
   }, 60000)
 
@@ -180,7 +178,7 @@ describe('Smart Contract', () => {
           new Args().addString('myKey').serialize(),
           {
             fee: Mas.fromString('0.1'),
-            callerAddress: account.address.toString(),
+            caller: account.address,
           }
         )
 
