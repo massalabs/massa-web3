@@ -87,7 +87,13 @@ export class SmartContract {
    * @param client - The client to connect to the desired blockchain.
    * @param account - The account that will deploy the smart contract.
    * @param contract - The contract to deploy.
-   * @param opts - Optional deployment details.
+   * @param opts - Optional deployment details. Default to
+   *  - fee: auto-estimated fee,
+   *  - maxCoins: auto-estimated cost,
+   *  - maxGas: auto-estimated gas,
+   *  - periodToLive: 10,
+   *  - waitFinalExecution: true.
+   *
    *
    * @returns The deployed smart contract.
    *
@@ -98,7 +104,9 @@ export class SmartContract {
     account: Account,
     // TODO: Handle multiple contracts
     contract: DeployContract,
-    opts: DeployOptions
+    opts: DeployOptions = {
+      waitFinalExecution: true,
+    }
   ): Promise<SmartContract> {
     const totalCost =
       StorageCost.smartContract(contract.byteCode.length) + contract.coins
@@ -254,6 +262,8 @@ export class SmartContract {
   /**
    * Returns the gas estimation for a given function.
    *
+   * @remarks To avoid running out of gas, the gas estimation is increased by 20%.
+   *
    * @param func - The function to estimate the gas cost.
    * @param parameter - The parameter for the function call in Uint8Array format.
    * @param callerAddress - The address of the caller.
@@ -278,6 +288,7 @@ export class SmartContract {
       throw new Error(result.info.error)
     }
 
-    return BigInt(result.info.gasCost)
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    return (BigInt(result.info.gasCost) * 120n) / 100n
   }
 }
