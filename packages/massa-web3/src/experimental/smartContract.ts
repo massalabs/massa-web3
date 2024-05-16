@@ -289,6 +289,6 @@ export class SmartContract {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    return (BigInt(result.info.gasCost) * 120n) / 100n
+    return BigInt(result.info.gasCost * 1.2)
   }
 }
