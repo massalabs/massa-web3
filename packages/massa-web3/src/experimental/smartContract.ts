@@ -87,12 +87,12 @@ export class SmartContract {
    * @param client - The client to connect to the desired blockchain.
    * @param account - The account that will deploy the smart contract.
    * @param contract - The contract to deploy.
-   * @param opts - Optional deployment details. Default to
-   *  - fee: auto-estimated fee,
-   *  - maxCoins: auto-estimated cost,
-   *  - maxGas: auto-estimated gas,
-   *  - periodToLive: 10,
-   *  - waitFinalExecution: true.
+   * @param opts - Optional deployment details with defaults as follows:
+   * @param opts.fee - Execution fee, auto-estimated if absent.
+   * @param opts.maxCoins - Maximum number of coins to use, auto-estimated if absent.
+   * @param opts.maxGas - Maximum executino gas, auto-estimated if absent.
+   * @param opts.periodToLive - Duration in blocks before the transaction expires, defaults to 10.
+   * @param opts.waitFinalExecution - Whether to wait for the transaction to be finalized, defaults to true.
    *
    *
    * @returns The deployed smart contract.
