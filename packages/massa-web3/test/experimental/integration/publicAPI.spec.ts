@@ -8,6 +8,8 @@ import { createCheckers } from 'ts-interface-checker'
 import validator from '../../../src/experimental/generated/client-ti'
 import { EventFilter } from '../../../src/experimental/client'
 import { client } from './setup'
+import { MAX_GAS_CALL } from '../../../src/experimental/smartContract'
+import { Address, bytesToStr } from '../../../src/experimental/basicElements'
 
 const {
   NodeStatus,
@@ -28,6 +30,9 @@ let lastSlot: Slot = { period: 0, thread: 0 }
 let someEndorsement: string[]
 let someBlockIds: string[]
 let operationId: string
+
+const TEST_USER = 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
+const TEST_CONTRACT = 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T'
 
 describe('client tests', () => {
   test('getStatus', async () => {
@@ -95,10 +100,7 @@ describe('client tests', () => {
   })
 
   test('getDatastoreEntry', async () => {
-    const entry = await client.getDatastoreEntry(
-      '',
-      'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP'
-    )
+    const entry = await client.getDatastoreEntry('', TEST_CONTRACT)
     DatastoreEntryOutput.strictCheck(entry)
   })
 
@@ -107,7 +109,7 @@ describe('client tests', () => {
     let result = Array.from(str1, (char) => char.charCodeAt(0))
     const entries = await client.getDatastoreEntries([
       {
-        address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+        address: TEST_CONTRACT,
         key: result,
       },
     ])
@@ -158,17 +160,14 @@ describe('client tests', () => {
   })
 
   test('getMultipleAddressInfo', async () => {
-    const info = await client.getMultipleAddressInfo([
-      'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
-    ])
+    const info = await client.getMultipleAddressInfo([TEST_CONTRACT])
     expect(info).toHaveLength(1)
     AddressInfo.strictCheck(info[0])
   })
 
   test.skip('getEvents', async () => {
     const event = await client.getEvents({
-      smartContractAddress:
-        'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      smartTEST_CONTRACT: TEST_CONTRACT,
     } as EventFilter)
     expect(event.length > 1).toBeTruthy()
     SCOutputEvent.strictCheck(event[0])
@@ -178,7 +177,7 @@ describe('client tests', () => {
     const response = await client.executeReadOnlyBytecode({
       max_gas: 100000,
       bytecode: [65, 66],
-      address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
+      address: TEST_USER,
     })
     ExecuteReadOnlyResponse.strictCheck(response)
   })
@@ -187,7 +186,7 @@ describe('client tests', () => {
     const req = {
       max_gas: 100000,
       bytecode: [65, 66],
-      address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
+      address: TEST_USER,
     } as ReadOnlyBytecodeExecution
     const responses = await client.executeMultipleReadOnlyBytecode([req, req])
     expect(responses).toHaveLength(2)
@@ -195,7 +194,7 @@ describe('client tests', () => {
 
   test.skip('getAddressesBytecode', async () => {
     const bytecode = await client.getAddressesBytecode({
-      address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      address: TEST_CONTRACT,
       is_final: true,
     } as AddressFilter)
     expect(bytecode.length > 1).toBeTruthy()
@@ -203,7 +202,7 @@ describe('client tests', () => {
 
   test.skip('executeMultipleGetAddressesBytecode', async () => {
     const req = {
-      address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
+      address: TEST_CONTRACT,
       is_final: true,
     } as AddressFilter
     const bytecodes = await client.executeMultipleGetAddressesBytecode([
@@ -215,23 +214,23 @@ describe('client tests', () => {
 
   test('executeReadOnlyCall', async () => {
     let arg = {
-      max_gas: 1000000,
-      target_address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
-      target_function: 'hello',
-      parameter: [],
-      caller_address: null,
-      coins: null,
-      fee: null,
+      func: 'hello',
+      caller: Address.fromString(TEST_USER),
+      target: Address.fromString(TEST_CONTRACT),
+      maxGas: MAX_GAS_CALL,
+      parameter: new Uint8Array(),
     }
-    const response = await client.executeReadOnlyCall(arg as ReadOnlyCall)
-    expect(response).toHaveProperty('result')
-    ExecuteReadOnlyResponse.strictCheck(response)
+
+    const response = await client.executeReadOnlyCall(arg)
+    expect(response).toHaveProperty('value')
+
+    expect(bytesToStr(response.value)).toBe('Hello, World!')
   })
 
   test('executeMultipleReadOnlyCall', async () => {
     let arg = {
       max_gas: 1000000,
-      target_address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
+      target_address: TEST_USER,
       target_function: 'hello',
       parameter: [],
       caller_address: null,

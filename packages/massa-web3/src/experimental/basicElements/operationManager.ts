@@ -101,7 +101,6 @@ export class OperationManager {
    * @returns A byte array representing the serialized operation.
    */
   static serialize(operation: OperationDetails): Uint8Array {
-    // TODO: check that unsigned.encode is equivalent to varint.encode
     const components = [
       unsigned.encode(operation.fee),
       varint.encode(operation.expirePeriod),

@@ -1,7 +1,9 @@
+import Decimal from 'decimal.js'
 import { FIRST, ONE } from '../utils'
 import { U64, fromNumber } from './serializers/number/u64'
 
-const NB_DECIMALS = 9
+export const NB_DECIMALS = 9
+export const SIZE_U256_BIT = 256
 const POWER_TEN = 10
 
 export const ERROR_NOT_SAFE_INTEGER = 'value is not a safe integer.'
@@ -98,16 +100,26 @@ export function fromString(value: string): Mas {
 
   return fromNumber(mas)
 }
-
 /**
- * Converts a value in the smallest unit of the Massa currency to a decimal value.
+ * Converts a Mas value to a string with rounding approximation.
  *
- * @param value - The value in the smallest unit of the Massa currency.
- * @returns The decimal value.
+ * @param value - The Mas value.
+ * @param decimalPlaces - The number of decimal places to include in the string.
+ * @returns The value as a string.
+ *
+ * @throws An error if the value is too large to be represented by a U256.
  */
-export function toString(value: Mas): string {
-  const valueString = value.toString()
-  const integerPart = valueString.slice(FIRST, -NB_DECIMALS) || '0'
-  const decimalPart = valueString.slice(-NB_DECIMALS).replace(/0+$/, '')
-  return `${integerPart}${decimalPart.length ? '.' + decimalPart : ''}`
+export function toString(
+  value: Mas,
+  decimalPlaces: number | null = null
+): string {
+  if (BigInt(value) >= BigInt(ONE) << BigInt(SIZE_U256_BIT)) {
+    throw new Error(ERROR_VALUE_TOO_LARGE)
+  }
+
+  const scaledValue = new Decimal(value.toString()).div(`1e+${NB_DECIMALS}`)
+
+  return decimalPlaces !== null
+    ? scaledValue.toFixed(decimalPlaces, Decimal.ROUND_HALF_UP)
+    : scaledValue.toString()
 }

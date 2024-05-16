@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { JsonRPCClient } from '../../../src/experimental/client'
 import { Account } from '../../../src/experimental/account'
 import { AccountOperation } from '../../../src/experimental/accountOperation'
-import { toMas } from '../../../src/experimental/utils'
+import { Mas } from '../../../src/experimental/basicElements'
 
 export let client: JsonRPCClient
 export let account: Account
@@ -17,6 +17,6 @@ beforeAll(async () => {
     'Using account:',
     account.address.toString(),
     'with balance:',
-    toMas(await accountOperation.fetchBalance())
+    Mas.toString(await accountOperation.fetchBalance())
   )
 })

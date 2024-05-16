@@ -2,13 +2,13 @@ import path from 'path'
 import fs from 'fs'
 import {
   MAX_GAS_CALL,
+  MAX_GAS_DEPLOYMENT,
   MIN_GAS_CALL,
   SmartContract,
 } from '../../../src/experimental/smartContract'
 import { account, client } from './setup'
-import { Args } from '../../../src/experimental/basicElements'
-import { Address } from '../../../src/experimental/basicElements'
-import { MAX_GAS_DEPLOYMENT, fromMAS } from '@massalabs/web3-utils'
+import { Args, bytesToStr, Mas } from '../../../src/experimental/basicElements'
+
 import { execute } from '../../../src/experimental/basicElements/bytecode'
 
 const TIMEOUT = 61000
@@ -41,7 +41,7 @@ describe('Smart Contract', () => {
     test('not enough fee', async () => {
       const byteCode = new Uint8Array([1, 2, 3, 4])
       const opts = {
-        fee: fromMAS(0.000000001),
+        fee: Mas.fromString('0.000000001'),
         periodToLive: 2,
         coins: 3n,
         maxGas: 4n,
@@ -63,6 +63,7 @@ describe('Smart Contract', () => {
       parameter: new Args().addString('myName').serialize(),
       coins: 3n,
     }
+
     const deployOptions = {
       periodToLive: 2,
       maxGas: MAX_GAS_DEPLOYMENT,
@@ -75,9 +76,7 @@ describe('Smart Contract', () => {
       deployOptions
     )
 
-    const scAddress = Address.fromString(contract.contractAddress)
-    expect(scAddress.isEOA).toBeFalsy()
-
+    expect(contract.address.isEOA).toBeFalsy()
     contractTest = contract
   }, 60000)
 
@@ -85,12 +84,7 @@ describe('Smart Contract', () => {
     test(
       'minimal call',
       async () => {
-        const op = await contractTest.call(
-          account,
-          'event',
-          new Uint8Array(),
-          {}
-        )
+        const op = await contractTest.call('event', new Uint8Array())
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -106,14 +100,9 @@ describe('Smart Contract', () => {
         const value = 'myValue'
         const parameter = new Args().addString(key).addString(value).serialize()
 
-        const op = await contractTest.call(
-          account,
-          'setValueToKey',
-          parameter,
-          {
-            coins: fromMAS(0.0016),
-          }
-        )
+        const op = await contractTest.call('setValueToKey', parameter, {
+          coins: Mas.fromString('0.0016'),
+        })
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -125,16 +114,12 @@ describe('Smart Contract', () => {
     test(
       'call with send coins',
       async () => {
-        const coinAmount = fromMAS(0.001)
+        const coinAmount = Mas.fromString('1')
 
-        const op = await contractTest.call(
-          account,
-          'sendCoins',
-          new Uint8Array(),
-          {
-            coins: coinAmount,
-          }
-        )
+        const op = await contractTest.call('sendCoins', new Uint8Array(), {
+          coins: coinAmount,
+          account: account,
+        })
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -147,7 +132,7 @@ describe('Smart Contract', () => {
     test(
       'Attempt to call with maxGas value that is below the minimum required limit',
       async () => {
-        const call = contractTest.call(account, 'event', new Uint8Array(), {
+        const call = contractTest.call('event', new Uint8Array(), {
           maxGas: INSUFFICIENT_MAX_GAS,
         })
 
@@ -159,13 +144,88 @@ describe('Smart Contract', () => {
     )
 
     test('Attempt to call with maxGas value that exceeds the maximum limit', async () => {
-      const call = contractTest.call(account, 'event', new Uint8Array(), {
+      const call = contractTest.call('event', new Uint8Array(), {
         maxGas: MAX_GAS_CALL + 1n,
       })
 
       expect(call).rejects.toThrow(
         `The gas limit for the operation was higher than the maximum amount of ${MAX_GAS_CALL}`
       )
+    })
+
+    describe('Read', () => {
+      test('Read only call', async () => {
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize()
+        )
+
+        const value = bytesToStr(result.value)
+
+        expect(value).toBe('myValue')
+      })
+
+      test('Read only call with invalid function name', async () => {
+        const result = await contractTest.read('invalidFunction')
+
+        expect(result.info.error).toContain('Missing export invalidFunction')
+      })
+
+      // Read with fee
+      test('Read only call with fee', async () => {
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize(),
+          {
+            fee: Mas.fromString('0.1'),
+            caller: account.address,
+          }
+        )
+
+        const value = bytesToStr(result.value)
+        expect(value).toBe('myValue')
+      })
+
+      // TODO: For now we use the contract address as caller address if no address is provided.
+      // The problem is if the address does not hae enough coins the read will fail
+      // For now it works because we send coins on a previous tes
+      // Maybe caller address should not be optional
+      test('Read only call with fee and no callerAddress', async () => {
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize(),
+          {
+            fee: Mas.fromString('0.01'),
+          }
+        )
+
+        const value = bytesToStr(result.value)
+        expect(value).toBe('myValue')
+      })
+
+      test('Read only call with coins', async () => {
+        const coinAmount = Mas.fromString('1')
+        const result = await contractTest.read('sendCoins', new Uint8Array(), {
+          coins: coinAmount,
+        })
+
+        expect(result.info.events[0].data).toBe(
+          `Received ${coinAmount.toString()} coins`
+        )
+      })
+
+      test('Read only call with maxGas', async () => {
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey').serialize(),
+          {
+            maxGas: MAX_GAS_CALL,
+          }
+        )
+
+        const value = bytesToStr(result.value)
+        expect(value).toBe('myValue')
+      })
     })
   })
 })

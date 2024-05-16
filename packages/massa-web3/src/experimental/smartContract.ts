@@ -7,7 +7,7 @@ import {
   CallOperation,
 } from './basicElements'
 import * as StorageCost from './basicElements/storage'
-import { BlockchainClient } from './client'
+import { BlockchainClient, ReadOnlyCallResult } from './client'
 import { Account } from './account'
 import { ErrorInsufficientBalance, ErrorMaxGas } from './errors'
 import { deployer } from './generated/deployer-bytecode'
@@ -15,10 +15,12 @@ import { populateDatastore } from '../../deployer_generation/dataStore'
 import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
 import { Mas } from './basicElements/mas'
+import { U64 } from './basicElements/serializers/number/u64'
 
-// TODO: Move to constants file
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
+export const MAX_GAS_DEPLOYMENT = 3980167295n
+
 const DEFAULT_PERIODS_TO_LIVE = 9
 
 type CommonOptions = {
@@ -36,13 +38,22 @@ type DeployOptions = {
   waitFinalExecution?: boolean
 }
 
+type ReadOnlyCallOptions = {
+  caller?: Address
+  coins?: Mas
+  fee?: Mas
+  maxGas?: U64
+}
+
 type DeployContract = {
   byteCode: Uint8Array
   parameter: Uint8Array
   coins: Mas
 }
 
-type CallOptions = CommonOptions
+type CallOptions = CommonOptions & {
+  account?: Account
+}
 
 /**
  * A class to interact with a smart contract.
@@ -50,7 +61,8 @@ type CallOptions = CommonOptions
 export class SmartContract {
   protected constructor(
     public client: BlockchainClient,
-    public contractAddress: string
+    public address: Address,
+    public account: Account
   ) {}
 
   /**
@@ -63,9 +75,10 @@ export class SmartContract {
    */
   static fromAddress(
     client: BlockchainClient,
-    contract: Address
+    contract: Address,
+    account: Account
   ): SmartContract {
-    return new SmartContract(client, contract.toString())
+    return new SmartContract(client, contract, account)
   }
 
   /**
@@ -134,7 +147,7 @@ export class SmartContract {
     const addr = firstEvent.data.split(': ')[ONE]
 
     // TODO: What if multiple smart contracts are deployed in the same operation?
-    return new SmartContract(client, addr)
+    return SmartContract.fromAddress(client, Address.fromString(addr), account)
   }
 
   /**
@@ -146,12 +159,13 @@ export class SmartContract {
    * @returns A promise that resolves to an Operation object representing the transaction.
    */
   async call(
-    account: Account,
     func: string,
     parameter: Uint8Array,
-    opts: CallOptions
+    opts: CallOptions = {}
   ): Promise<Operation> {
     opts.coins = opts.coins ?? BigInt(ZERO)
+
+    const account = opts.account ?? this.account
 
     if (opts.coins > BigInt(ZERO)) {
       const balance = await this.client.getBalance(account.address.toString())
@@ -166,7 +180,12 @@ export class SmartContract {
     opts.fee = opts.fee ?? (await this.client.getMinimalFee())
 
     if (!opts.maxGas) {
-      opts.maxGas = await SmartContract.getGasEstimation()
+      opts.maxGas = await this.getGasEstimation(
+        func,
+        parameter,
+        account.address,
+        opts
+      )
     } else {
       if (opts.maxGas > MAX_GAS_CALL) {
         throw new ErrorMaxGas({ isHigher: true, amount: MAX_GAS_CALL })
@@ -183,7 +202,7 @@ export class SmartContract {
       type: OperationType.CallSmartContractFunction,
       coins: opts.coins,
       maxGas: opts.maxGas,
-      address: this.contractAddress,
+      address: this.address.toString(),
       func,
       parameter,
     }
@@ -191,6 +210,31 @@ export class SmartContract {
     const operation = new OperationManager(account.privateKey, this.client)
 
     return new Operation(this.client, await operation.send(details))
+  }
+
+  /**
+   * Executes a smart contract read operation
+   * @param func - The smart contract function to be called.
+   * @param parameter - Parameter for the function call in Uint8Array format.
+   * @param options - Includes optional parameters like fee, maxGas, coins, and periodToLive.
+   * @returns A promise that resolves to the result of the read operation.
+   */
+  async read(
+    func: string,
+    parameter = new Uint8Array(),
+    opts: ReadOnlyCallOptions = {}
+  ): Promise<ReadOnlyCallResult> {
+    opts.maxGas = opts.maxGas ?? MAX_GAS_CALL
+
+    return await this.client.executeReadOnlyCall({
+      func,
+      parameter,
+      target: this.address,
+      caller: opts.caller ?? this.account.address,
+      coins: opts.coins,
+      fee: opts.fee,
+      maxGas: opts.maxGas,
+    })
   }
 
   /**
@@ -208,13 +252,32 @@ export class SmartContract {
   }
 
   /**
-   * Estimates the gas required for an operation.
-   * Currently, it returns a predefined maximum gas value.
-   * @returns A promise that resolves to the estimated gas amount in bigint.
-   * TODO: Implement dynamic gas estimation using dry run call.
-   * TODO: Remove static if needed.
+   * Returns the gas estimation for a given function.
+   *
+   * @param func - The function to estimate the gas cost.
+   * @param parameter - The parameter for the function call in Uint8Array format.
+   * @param callerAddress - The address of the caller.
+   * @param opts - Includes optional parameters like fee, maxGas, coins, and periodToLive.
+   * @throws If the read operation returns an error.
+   * @returns The gas estimation for the function.
    */
-  static async getGasEstimation(): Promise<bigint> {
-    return MAX_GAS_CALL
+  async getGasEstimation(
+    func: string,
+    parameter: Uint8Array,
+    caller: Address,
+    opts: CallOptions
+  ): Promise<U64> {
+    const result = await this.read(func, parameter, {
+      maxGas: opts.maxGas,
+      fee: opts.fee,
+      caller,
+      coins: opts.coins,
+    })
+
+    if (result.info.error) {
+      throw new Error(result.info.error)
+    }
+
+    return BigInt(result.info.gasCost)
   }
 }

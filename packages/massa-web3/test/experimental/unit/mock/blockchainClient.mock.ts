@@ -25,5 +25,14 @@ export const blockchainClientMock: BlockchainClient = {
   ),
   getChainId: jest.fn(() => Promise.resolve(BigInt(1))),
   getMinimalFee: jest.fn(() => Promise.resolve(BigInt(1))),
+  executeReadOnlyCall: jest.fn(() =>
+    Promise.resolve({
+      value: new Uint8Array(),
+      info: {
+        events: [],
+        stateChanges: {},
+      },
+    } as any)
+  ),
   status: {} as NodeStatus,
 }

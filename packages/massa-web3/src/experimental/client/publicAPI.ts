@@ -1,5 +1,10 @@
 import { Mas, OperationStatus } from '../basicElements'
-import { SendOperationInput, EventFilter as EvtFilter } from '.'
+import {
+  SendOperationInput,
+  EventFilter as EvtFilter,
+  ReadOnlyCallParams,
+  ReadOnlyCallResult,
+} from '.'
 import {
   OperationInput,
   Pagination,
@@ -40,6 +45,7 @@ type JSONAPIOptions = {
   path?: string
   protocol?: string
 }
+
 export class PublicAPI {
   connector: MassaOpenRPCSpecification
   status: NodeStatus
@@ -78,11 +84,42 @@ export class PublicAPI {
   }
 
   async executeReadOnlyCall(
-    readOnlyCall: ReadOnlyCall
-  ): Promise<ExecuteReadOnlyResponse> {
-    return this.connector
-      .execute_read_only_call([readOnlyCall])
-      .then((r) => r[FIRST])
+    params: ReadOnlyCallParams
+  ): Promise<ReadOnlyCallResult> {
+    const [res] = await this.connector.execute_read_only_call([
+      {
+        max_gas: Number(params.maxGas),
+        target_address: params.target.toString(),
+        target_function: params.func,
+        parameter: params.parameter ? Array.from(params.parameter) : [],
+        caller_address: params.caller.toString(),
+        coins: params.coins ? Mas.toString(params.coins) : null,
+        fee: params.fee ? Mas.toString(params.fee) : null,
+      },
+    ])
+
+    if (!res) {
+      throw new Error('No result returned from execute_read_only_call')
+    }
+
+    return {
+      value: (res.result.Ok as unknown as Uint8Array) ?? null,
+      info: {
+        gasCost: res.gas_cost,
+        error: res.result.Error,
+        events: res.output_events,
+        stateChanges: {
+          ledgerChanges: res.state_changes.ledger_changes,
+          asyncPoolChanges: res.state_changes.async_pool_changes,
+          posChanges: res.state_changes.pos_changes,
+          executedOpsChanges: res.state_changes.executed_ops_changes,
+          executedDenunciationsChanges:
+            res.state_changes.executed_denunciations_changes,
+          executionTrailHashChange:
+            res.state_changes.execution_trail_hash_change,
+        },
+      },
+    }
   }
 
   async executeMultipleReadOnlyCall(
