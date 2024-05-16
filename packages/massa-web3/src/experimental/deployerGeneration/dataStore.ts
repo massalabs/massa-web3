@@ -1,6 +1,6 @@
 import { u64ToBytes, u8toByte } from '@massalabs/web3-utils'
-import { ONE, ZERO, ZERO_BYTE } from '../src/experimental/utils'
-import { Args } from '../src/experimental/basicElements/args'
+import { ZERO_BYTE, ONE, ZERO } from '../utils'
+import { Args } from '../basicElements'
 
 const CONTRACTS_NUMBER_KEY = new Uint8Array([ZERO_BYTE])
 
