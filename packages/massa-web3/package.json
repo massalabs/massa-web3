@@ -57,6 +57,7 @@
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
         "@open-rpc/client-js": "^1.8.1",
+        "@open-rpc/schema-utils-js": "^2.0.2",
         "@types/ws": "^8.5.4",
         "@web3pack/base58-check": "^1.0.3",
         "axios": "^0.26.1",
