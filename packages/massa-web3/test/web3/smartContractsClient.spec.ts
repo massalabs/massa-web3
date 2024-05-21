@@ -29,6 +29,7 @@ import {
 } from './mockData'
 import { IExecuteReadOnlyResponse } from '../../src/interfaces/IExecuteReadOnlyResponse'
 import { Web3Account } from '../../src/web3/accounts/Web3Account'
+import { MnsResolver } from '../../src/web3/MnsResolver'
 
 // Mock to not wait for the timeout to finish
 jest.mock('../../src/utils/time', () => {
@@ -43,9 +44,11 @@ describe('SmartContractsClient', () => {
   let mockPublicApiClient: PublicApiClient
   let mockWalletClient: WalletClient
   let mockDeployerAccount: Web3Account
+  let mockMnsResolver: MnsResolver
 
   beforeEach(() => {
     // Initialize the mock objects
+    mockMnsResolver = new MnsResolver(mockClientConfig)
     mockPublicApiClient = new PublicApiClient(mockClientConfig)
     mockDeployerAccount = new Web3Account(
       importedMockDeployerAccount,
@@ -55,12 +58,14 @@ describe('SmartContractsClient', () => {
     mockWalletClient = new WalletClient(
       mockClientConfig,
       mockPublicApiClient,
+      mockMnsResolver,
       mockDeployerAccount
     )
     smartContractsClient = new SmartContractsClient(
       mockClientConfig,
       mockPublicApiClient,
-      mockWalletClient
+      mockWalletClient,
+      mockMnsResolver
     )
 
     // Mock getOperations
