@@ -27,6 +27,7 @@ import {
   SECRET_KEY_PREFIX,
   fromMAS,
 } from '@massalabs/web3-utils'
+import { MnsResolver } from './MnsResolver'
 
 const MAX_WALLET_ACCOUNTS = 256
 
@@ -40,6 +41,7 @@ const MAX_WALLET_ACCOUNTS = 256
  */
 export class WalletClient extends BaseClient implements IWalletClient {
   private wallet: Array<IAccount> = []
+  private mnsResolver: MnsResolver
   private baseAccount?: IBaseAccount
 
   /**
@@ -52,12 +54,15 @@ export class WalletClient extends BaseClient implements IWalletClient {
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
+    mnsResolver: MnsResolver,
     baseAccount?: IBaseAccount
   ) {
     super(clientConfig)
     if (baseAccount) {
       this.baseAccount = baseAccount
     }
+
+    this.mnsResolver = mnsResolver
 
     // ========== bind wallet methods ========= //
 
@@ -513,6 +518,13 @@ export class WalletClient extends BaseClient implements IWalletClient {
     txData: ITransactionData,
     executor?: IBaseAccount
   ): Promise<Array<string>> {
+    try {
+      txData.recipientAddress = await this.mnsResolver.resolve(
+        txData.recipientAddress
+      )
+    } catch {
+      // ignore
+    }
     if (!new Address(txData.recipientAddress).isUser) {
       throw new Error(
         `Invalid recipient address: "${txData.recipientAddress}". The address must be a user address, starting with "${ADDRESS_USER_PREFIX}".`
