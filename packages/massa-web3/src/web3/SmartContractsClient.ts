@@ -44,6 +44,7 @@ import {
   isSpeculativeSuccess,
   isUnexecutedOrExpired,
 } from './helpers/operationStatus'
+import { MnsResolver } from './MnsResolver'
 
 const WAIT_STATUS_TIMEOUT = 60000
 const WAIT_OPERATION_TIMEOUT = 160000
@@ -70,7 +71,8 @@ export class SmartContractsClient
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    private readonly walletClient: IWalletClient
+    private readonly walletClient: IWalletClient,
+    private readonly mnsResolver: MnsResolver
   ) {
     super(clientConfig)
 
@@ -167,6 +169,14 @@ export class SmartContractsClient
       }
     }
 
+    try {
+      callData.targetAddress = await this.mnsResolver.resolve(
+        callData.targetAddress
+      )
+    } catch {
+      // do nothing
+    }
+
     return await sender.callSmartContract(callData)
   }
 
@@ -186,6 +196,14 @@ export class SmartContractsClient
       throw new Error(
         `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`
       )
+    }
+
+    try {
+      readData.targetAddress = await this.mnsResolver.resolve(
+        readData.targetAddress
+      )
+    } catch {
+      // do nothing
     }
 
     const data = {
@@ -241,11 +259,16 @@ export class SmartContractsClient
   /**
    * Returns the balance of the smart contract.
    *
-   * @param address - The address of the smart contract.
+   * @param address - The address of the smart contract or the MNS domain associated.
    *
    * @returns A promise that resolves to the balance of the smart contract.
    */
   public async getContractBalance(address: string): Promise<IBalance | null> {
+    try {
+      address = await this.mnsResolver.resolve(address)
+    } catch {
+      // do nothing
+    }
     const addresses: Array<IAddressInfo> =
       await this.publicApiClient.getAddresses([address])
     if (addresses.length === 0) return null
@@ -267,6 +290,25 @@ export class SmartContractsClient
   public async getFilteredScOutputEvents(
     eventFilterData: IEventFilter
   ): Promise<Array<IEvent>> {
+    try {
+      if (eventFilterData.emitter_address) {
+        eventFilterData.emitter_address = await this.mnsResolver.resolve(
+          eventFilterData.emitter_address
+        )
+      }
+    } catch {
+      // do nothing
+    }
+    try {
+      if (eventFilterData.original_caller_address) {
+        eventFilterData.original_caller_address =
+          await this.mnsResolver.resolve(
+            eventFilterData.original_caller_address
+          )
+      }
+    } catch {
+      // do nothing
+    }
     const data = {
       start: eventFilterData.start,
       end: eventFilterData.end,
@@ -314,6 +356,15 @@ export class SmartContractsClient
   public async executeReadOnlySmartContract(
     contractData: IContractData
   ): Promise<IExecuteReadOnlyResponse> {
+    try {
+      if (contractData.address) {
+        contractData.address = await this.mnsResolver.resolve(
+          contractData.address
+        )
+      }
+    } catch {
+      // do nothing
+    }
     if (!contractData.contractDataBinary) {
       throw new Error('Expected non-null contract bytecode, but received null.')
     }

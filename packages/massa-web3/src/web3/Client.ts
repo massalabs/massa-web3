@@ -7,11 +7,13 @@ import { IProvider, ProviderType } from '../interfaces/IProvider'
 import { IClient } from '../interfaces/IClient'
 import { IBaseAccount } from '../interfaces/IBaseAccount'
 import { DefaultProviderUrls } from '@massalabs/web3-utils'
+import { MnsResolver } from './MnsResolver'
 
 /**
  * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities.
  */
 export class Client implements IClient {
+  private mnsResolver: MnsResolver
   private publicApiClient: PublicApiClient
   private privateApiClient: PrivateApiClient
   private walletClient: WalletClient
@@ -22,12 +24,16 @@ export class Client implements IClient {
    *
    * @param clientConfig - client configuration object.
    * @param baseAccount - base account to use for signing transactions (optional).
+   * @param publicApiClient - public api client to use (optional).
+   * @param mnsResolverAddress - MNS resolver address to use (optional).
    */
   public constructor(
     private clientConfig: IClientConfig,
     baseAccount?: IBaseAccount,
-    publicApiClient?: PublicApiClient
+    publicApiClient?: PublicApiClient,
+    mnsResolverAddress?: string
   ) {
+    this.mnsResolver = new MnsResolver(clientConfig, mnsResolverAddress)
     this.publicApiClient = publicApiClient || new PublicApiClient(clientConfig)
     this.privateApiClient = new PrivateApiClient(clientConfig)
     this.walletClient = new WalletClient(
@@ -38,7 +44,8 @@ export class Client implements IClient {
     this.smartContractsClient = new SmartContractsClient(
       clientConfig,
       this.publicApiClient,
-      this.walletClient
+      this.walletClient,
+      this.mnsResolver
     )
 
     // subclients

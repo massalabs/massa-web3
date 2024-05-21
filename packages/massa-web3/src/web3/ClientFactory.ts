@@ -9,7 +9,10 @@ import {
 import { Web3Account } from './accounts/Web3Account'
 import { PublicApiClient } from './PublicApiClient'
 import { WalletProviderAccount } from './accounts/WalletProviderAccount'
-import { DefaultProviderUrls } from '@massalabs/web3-utils'
+import {
+  DefaultProviderUrls,
+  CHAIN_ID_DNS_ADDRESS_MAP,
+} from '@massalabs/web3-utils'
 
 /**
  * Massa Web3 ClientFactory class allows you to easily initialize a client to
@@ -77,7 +80,8 @@ export class ClientFactory {
         providers,
       } as IClientConfig,
       account,
-      publicApi
+      publicApi,
+      CHAIN_ID_DNS_ADDRESS_MAP[chainId.toString()]
     )
     return client
   }
@@ -110,7 +114,12 @@ export class ClientFactory {
     if (baseAccount) {
       account = new Web3Account(baseAccount, publicApi, chainId)
     }
-    const client: Client = new Client(clientConfig, account, publicApi)
+    const client: Client = new Client(
+      clientConfig,
+      account,
+      publicApi,
+      CHAIN_ID_DNS_ADDRESS_MAP[chainId.toString()]
+    )
     return client
   }
 
@@ -142,7 +151,9 @@ export class ClientFactory {
         retryStrategyOn,
         providers,
       },
-      new WalletProviderAccount(baseAccount)
+      new WalletProviderAccount(baseAccount),
+      undefined,
+      CHAIN_ID_DNS_ADDRESS_MAP[provider.getChainId().toString()]
     )
 
     return client

@@ -76,3 +76,10 @@ export const CHAIN_ID_RPC_URL_MAP = {
   [BUILDNET_CHAIN_ID.toString()]: DefaultProviderUrls.BUILDNET,
   [SANDBOX_CHAIN_ID.toString()]: DefaultProviderUrls.LOCALNET,
 } as const // type is inferred as the specific, unchangeable structure
+
+export const CHAIN_ID_DNS_ADDRESS_MAP = {
+  [MAINNET_CHAIN_ID.toString()]:
+    'AS12mdKsjAqcWC5DjabWZp7tG9s5wgkrwDGDuh6xUCSc53SrmfY9r',
+  [BUILDNET_CHAIN_ID.toString()]:
+    'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G',
+} as const // type is inferred as the specific, unchangeable structure
