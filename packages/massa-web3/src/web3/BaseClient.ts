@@ -4,7 +4,6 @@ import { Buffer } from 'buffer'
 import { varintEncode } from '../utils/Xbqcrypto'
 import { IContractData } from '../interfaces/IContractData'
 import { JsonRpcResponseData } from '../interfaces/JsonRpcResponseData'
-import axios, { AxiosResponse, AxiosRequestHeaders } from 'axios'
 import { JSON_RPC_REQUEST_METHOD } from '../interfaces/JsonRpcMethods'
 import { ITransactionData } from '../interfaces/ITransactionData'
 import { OperationTypeId } from '../interfaces/OperationTypes'
@@ -14,13 +13,11 @@ import { Address } from '../utils/keyAndAddresses'
 
 export type DataType = IContractData | ITransactionData | IRollsData | ICallData
 
-export const requestHeaders = {
+export const fetchRequestHeaders = {
   Accept:
     'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': true,
-  'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-} as AxiosRequestHeaders
+  'Content-Type': 'application/json',
+}
 
 export const PERIOD_OFFSET = 5
 
@@ -182,44 +179,45 @@ export class BaseClient {
     resource: JSON_RPC_REQUEST_METHOD,
     params: object
   ): Promise<JsonRpcResponseData<T>> {
-    let resp: AxiosResponse<JsonRpcResponseData<T>> = null
+    let resp: Response = null
 
-    const body = {
+    const bodyData = {
       jsonrpc: '2.0',
       method: resource,
       params: params,
       id: 0,
     }
-
+    let body;
     try {
-      resp = await axios.post(
-        this.getProviderForRpcMethod(resource).url,
-        body,
-        requestHeaders
-      )
+      body = JSON.stringify(bodyData)
     } catch (ex) {
       return {
         isError: true,
         result: null,
-        error: new Error('JSON.parse error: ' + String(ex)),
+        error: new Error('JSON.stringify error: ' + String(ex)),
       } as JsonRpcResponseData<T>
     }
+    try {
+      resp = await fetch(this.getProviderForRpcMethod(resource).url, {
+        headers: fetchRequestHeaders,
+        body: body,
+        method: 'POST',
+      })
 
-    const responseData: JsonRpcResponseData<T> = resp.data
+      const responseData: JsonRpcResponseData<T> = await resp.json()
 
-    if (responseData.error) {
+      return {  
+        isError: !!responseData.error,  
+        result: responseData.error ? null : responseData.result as T,  
+        error: responseData.error ? new Error(responseData.error.message) : null,  
+      } as JsonRpcResponseData<T>;  
+    } catch (ex) {
       return {
         isError: true,
         result: null,
-        error: new Error(responseData.error.message),
+        error: new Error('Fetch error: ' + String(ex)),
       } as JsonRpcResponseData<T>
     }
-
-    return {
-      isError: false,
-      result: responseData.result as T,
-      error: null,
-    } as JsonRpcResponseData<T>
   }
 
   /**
