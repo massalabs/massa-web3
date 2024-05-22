@@ -79,7 +79,7 @@ export const CHAIN_ID_RPC_URL_MAP = {
 
 export const CHAIN_ID_DNS_ADDRESS_MAP = {
   [MAINNET_CHAIN_ID.toString()]:
-    'AS12mdKsjAqcWC5DjabWZp7tG9s5wgkrwDGDuh6xUCSc53SrmfY9r',
+    'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT',
   [BUILDNET_CHAIN_ID.toString()]:
     'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G',
 } as const // type is inferred as the specific, unchangeable structure
