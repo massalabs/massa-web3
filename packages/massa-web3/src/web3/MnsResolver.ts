@@ -51,8 +51,6 @@ export class MnsResolver extends BaseClient implements IMnsResolver {
       target_function: 'dnsResolve',
       parameter: new Args().addString(domain).serialize(),
       caller_address: this.contractResolver,
-      coins: undefined,
-      fee: undefined,
     }
 
     // returns operation ids
