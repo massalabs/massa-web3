@@ -44,6 +44,7 @@ import {
   isSpeculativeSuccess,
   isUnexecutedOrExpired,
 } from './helpers/operationStatus'
+import { MnsResolver } from './MnsResolver'
 
 const WAIT_STATUS_TIMEOUT = 60000
 const WAIT_OPERATION_TIMEOUT = 160000
@@ -70,7 +71,8 @@ export class SmartContractsClient
   public constructor(
     clientConfig: IClientConfig,
     private readonly publicApiClient: PublicApiClient,
-    private readonly walletClient: IWalletClient
+    private readonly walletClient: IWalletClient,
+    private readonly mnsResolver: MnsResolver
   ) {
     super(clientConfig)
 
@@ -167,6 +169,10 @@ export class SmartContractsClient
       }
     }
 
+    callData.targetAddress = await this.mnsResolver.resolveOrFallback(
+      callData.targetAddress
+    )
+
     return await sender.callSmartContract(callData)
   }
 
@@ -187,6 +193,10 @@ export class SmartContractsClient
         `The gas submitted ${readData.maxGas.toString()} exceeds the max. allowed block gas of ${MAX_GAS_CALL.toString()}`
       )
     }
+
+    readData.targetAddress = await this.mnsResolver.resolveOrFallback(
+      readData.targetAddress
+    )
 
     const data = {
       max_gas:
@@ -241,11 +251,13 @@ export class SmartContractsClient
   /**
    * Returns the balance of the smart contract.
    *
-   * @param address - The address of the smart contract.
+   * @param address - The address of the smart contract or the MNS domain associated.
    *
    * @returns A promise that resolves to the balance of the smart contract.
    */
   public async getContractBalance(address: string): Promise<IBalance | null> {
+    address = await this.mnsResolver.resolveOrFallback(address)
+
     const addresses: Array<IAddressInfo> =
       await this.publicApiClient.getAddresses([address])
     if (addresses.length === 0) return null
@@ -267,6 +279,15 @@ export class SmartContractsClient
   public async getFilteredScOutputEvents(
     eventFilterData: IEventFilter
   ): Promise<Array<IEvent>> {
+    eventFilterData.emitter_address = await this.mnsResolver.resolveOrFallback(
+      eventFilterData.emitter_address
+    )
+
+    eventFilterData.original_caller_address =
+      await this.mnsResolver.resolveOrFallback(
+        eventFilterData.original_caller_address
+      )
+
     const data = {
       start: eventFilterData.start,
       end: eventFilterData.end,
@@ -314,6 +335,12 @@ export class SmartContractsClient
   public async executeReadOnlySmartContract(
     contractData: IContractData
   ): Promise<IExecuteReadOnlyResponse> {
+    if (contractData.address) {
+      contractData.address = await this.mnsResolver.resolveOrFallback(
+        contractData.address
+      )
+    }
+
     if (!contractData.contractDataBinary) {
       throw new Error('Expected non-null contract bytecode, but received null.')
     }

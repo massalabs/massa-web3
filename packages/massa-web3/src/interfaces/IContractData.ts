@@ -12,7 +12,7 @@
  * @see maxCoins of type `bigint` represents maximum amount of coins allowed to be spent by the execution
  * @see contractDataText of type `string | undefined` represents the contract's data as string (optional).
  * @see contractDataBinary of type `Uint8Array | undefined` represents the contract's data as bytecode (optional).
- * @see address of type `string | undefined` represents the smart contract address (optional).
+ * @see address of type `string | undefined` represents the smart contract address (optional) or the MNS domain associated.
  * @see datastore of type `Map<Uint8Array, Uint8Array> | undefined` represents the smart contract's operational storage data (optional).
  */
 export interface IContractData {

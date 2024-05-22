@@ -7,11 +7,13 @@ import { IProvider, ProviderType } from '../interfaces/IProvider'
 import { IClient } from '../interfaces/IClient'
 import { IBaseAccount } from '../interfaces/IBaseAccount'
 import { DefaultProviderUrls } from '@massalabs/web3-utils'
+import { MnsResolver } from './MnsResolver'
 
 /**
  * Massa Web3 Client object wraps all public, private, wallet and smart-contracts-related functionalities.
  */
 export class Client implements IClient {
+  private mnsResolverVar: MnsResolver
   private publicApiClient: PublicApiClient
   private privateApiClient: PrivateApiClient
   private walletClient: WalletClient
@@ -22,23 +24,29 @@ export class Client implements IClient {
    *
    * @param clientConfig - client configuration object.
    * @param baseAccount - base account to use for signing transactions (optional).
+   * @param publicApiClient - public api client to use (optional).
+   * @param mnsResolverAddress - MNS resolver address to use (optional).
    */
   public constructor(
     private clientConfig: IClientConfig,
     baseAccount?: IBaseAccount,
-    publicApiClient?: PublicApiClient
+    publicApiClient?: PublicApiClient,
+    mnsResolverAddress?: string
   ) {
+    this.mnsResolverVar = new MnsResolver(clientConfig, mnsResolverAddress)
     this.publicApiClient = publicApiClient || new PublicApiClient(clientConfig)
     this.privateApiClient = new PrivateApiClient(clientConfig)
     this.walletClient = new WalletClient(
       clientConfig,
       this.publicApiClient,
+      this.mnsResolverVar,
       baseAccount
     )
     this.smartContractsClient = new SmartContractsClient(
       clientConfig,
       this.publicApiClient,
-      this.walletClient
+      this.walletClient,
+      this.mnsResolverVar
     )
 
     // subclients
@@ -46,6 +54,7 @@ export class Client implements IClient {
     this.publicApi = this.publicApi.bind(this)
     this.wallet = this.wallet.bind(this)
     this.smartContracts = this.smartContracts.bind(this)
+    this.mnsResolver = this.mnsResolver.bind(this)
     // setters
     this.setCustomProviders = this.setCustomProviders.bind(this)
     this.setNewDefaultProvider = this.setNewDefaultProvider.bind(this)
@@ -89,6 +98,15 @@ export class Client implements IClient {
    */
   public smartContracts(): SmartContractsClient {
     return this.smartContractsClient
+  }
+
+  /**
+   * Get the MNS resolver object.
+   *
+   * @returns MnsResolver object.
+   */
+  public mnsResolver(): MnsResolver {
+    return this.mnsResolverVar
   }
 
   /**
@@ -154,5 +172,14 @@ export class Client implements IClient {
     this.privateApiClient.setProviders(providers)
     this.walletClient.setProviders(providers)
     this.smartContractsClient.setProviders(providers)
+  }
+
+  /**
+   * Set a new MNS resolver address.
+   *
+   * @param contractAddress - The new MNS resolver contract address.
+   */
+  public setNewMnsResolver(contractAddress: string): void {
+    this.mnsResolverVar.setMnsResolver(contractAddress)
   }
 }

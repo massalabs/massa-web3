@@ -79,7 +79,7 @@ export const deploySmartContracts = async (
   contractsToDeploy: ISCData[],
   web3Client: Client,
   deployerAccount: IBaseAccount,
-  fee = 0n,
+  fee = fromMAS(0.01),
   maxGas = MAX_GAS_DEPLOYMENT,
   maxCoins = fromMAS(0.1)
 ): Promise<string> => {

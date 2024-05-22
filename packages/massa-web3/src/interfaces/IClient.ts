@@ -4,6 +4,7 @@ import { IProvider } from './IProvider'
 import { IPublicApiClient } from './IPublicApiClient'
 import { ISmartContractsClient } from './ISmartContractsClient'
 import { IWalletClient } from './IWalletClient'
+import { MnsResolver } from '../web3/MnsResolver'
 
 /**
  * Represents the client object.
@@ -17,14 +18,18 @@ import { IWalletClient } from './IWalletClient'
  * @see publicApi() - A function that returns an instance of the public API client.
  * @see wallet() - A function that returns an instance of the wallet client.
  * @see smartContracts() - A function that returns an instance of the smart contracts client.
+ * @see mnsResolver() - A function that returns an instance of the MNS resolver.
  * @see setCustomProviders - A method for setting custom providers.
  * @see setNewDefaultProvider - A method for setting a new default provider.
+ * @see setNewMnsResolver - A method for setting a new MNS resolver.
  */
 export interface IClient {
   privateApi(): IPrivateApiClient
   publicApi(): IPublicApiClient
   wallet(): IWalletClient
   smartContracts(): ISmartContractsClient
+  mnsResolver(): MnsResolver
   setCustomProviders(providers: Array<IProvider>): void
   setNewDefaultProvider(provider: DefaultProviderUrls): void
+  setNewMnsResolver(contractAddress: string): void
 }

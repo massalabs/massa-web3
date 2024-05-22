@@ -117,7 +117,7 @@ const receiverPrivateKey = getEnvVariable('RECEIVER_PRIVATE_KEY')
     // send from base account to receiver
     const txId = await web3Client.wallet().sendTransaction({
       amount: fromMAS(1),
-      fee: 0n,
+      fee: fromMAS(0.01),
       recipientAddress: receiverAccount.address,
     } as ITransactionData)
     console.log('Money Transfer:: TxId ', txId[0])
@@ -164,7 +164,7 @@ const receiverPrivateKey = getEnvVariable('RECEIVER_PRIVATE_KEY')
     // sender buys some rolls
     const buyRollsTxId = await web3Client.wallet().buyRolls({
       amount: 2n,
-      fee: fromMAS(0),
+      fee: fromMAS(0.01),
     } as IRollsData)
     console.log('Buy Rolls Tx Id ', buyRollsTxId)
 
