@@ -181,40 +181,41 @@ export class BaseClient {
   ): Promise<JsonRpcResponseData<T>> {
     let resp: Response = null
 
-    const body = {
+    const bodyData = {
       jsonrpc: '2.0',
       method: resource,
       params: params,
       id: 0,
     }
-
+    let body;
+    try {
+      body = JSON.stringify(bodyData)
+    } catch (ex) {
+      return {
+        isError: true,
+        result: null,
+        error: new Error('JSON.stringify error: ' + String(ex)),
+      } as JsonRpcResponseData<T>
+    }
     try {
       resp = await fetch(this.getProviderForRpcMethod(resource).url, {
         headers: fetchRequestHeaders,
-        body: JSON.stringify(body),
+        body: body,
         method: 'POST',
       })
 
       const responseData: JsonRpcResponseData<T> = await resp.json()
 
-      if (responseData.error) {
-        return {
-          isError: true,
-          result: null,
-          error: new Error(responseData.error.message),
-        } as JsonRpcResponseData<T>
-      }
-
-      return {
-        isError: false,
-        result: responseData.result as T,
-        error: null,
-      } as JsonRpcResponseData<T>
+      return {  
+        isError: !!responseData.error,  
+        result: responseData.error ? null : responseData.result as T,  
+        error: responseData.error ? new Error(responseData.error.message) : null,  
+      } as JsonRpcResponseData<T>;  
     } catch (ex) {
       return {
         isError: true,
         result: null,
-        error: new Error('JSON.parse error: ' + String(ex)),
+        error: new Error('Fetch error: ' + String(ex)),
       } as JsonRpcResponseData<T>
     }
   }
