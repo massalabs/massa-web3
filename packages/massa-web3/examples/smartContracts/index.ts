@@ -214,7 +214,7 @@ const pollAsyncEvents = async (
       ],
       web3Client,
       baseAccount,
-      0n,
+      fromMAS(0.01),
       3000_000_000n,
       fromMAS(1.5)
     )
@@ -270,7 +270,7 @@ const pollAsyncEvents = async (
       targetFunction: 'getMusicAlbum',
       parameter: args.serialize(),
       coins: 0n,
-      fee: 0n,
+      fee: fromMAS(0.01),
     })
 
     const res = new Args(result.returnValue, 0)
@@ -288,7 +288,7 @@ const pollAsyncEvents = async (
     const deleteMusicAlbumCallOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
-        fee: 0n,
+        fee: fromMAS(0.01),
         coins: 0n,
         targetAddress: scAddress,
         targetFunction: 'deleteMusicAlbum',
@@ -317,7 +317,7 @@ const pollAsyncEvents = async (
     const createMusicAlbumCallOperationId = await web3Client
       .smartContracts()
       .callSmartContract({
-        fee: 0n,
+        fee: fromMAS(0.01),
         coins: 0n,
         targetAddress: scAddress,
         targetFunction: 'addMusicAlbum',

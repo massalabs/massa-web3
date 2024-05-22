@@ -42,14 +42,17 @@ export class MnsResolver extends BaseClient implements IMnsResolver {
         'Invalid domain name. Domain name should end with ".massa"'
       )
     }
+
+    // remove .massa from domain
+    domain = domain.slice(0, -6)
     const data = {
-      max_gas: MAX_GAS_CALL,
+      max_gas: Number(MAX_GAS_CALL),
       target_address: this.contractResolver,
       target_function: 'dnsResolve',
       parameter: new Args().addString(domain).serialize(),
       caller_address: this.contractResolver,
-      coins: 0,
-      fee: 0,
+      coins: undefined,
+      fee: undefined,
     }
 
     // returns operation ids
@@ -84,5 +87,14 @@ export class MnsResolver extends BaseClient implements IMnsResolver {
    */
   public setMnsResolver(contractAddress: string): void {
     this.contractResolver = contractAddress
+  }
+
+  /**
+   * Get the MNS resolver contract address.
+   *
+   * @returns The MNS resolver contract address.
+   */
+  public getMnsResolverAddress(): string {
+    return this.contractResolver
   }
 }

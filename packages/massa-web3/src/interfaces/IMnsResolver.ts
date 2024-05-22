@@ -11,5 +11,6 @@
 
 export interface IMnsResolver {
   resolve(domain: string): Promise<string>
+  getMnsResolverAddress(): string | undefined
   setMnsResolver(contractAddress: string): void
 }
