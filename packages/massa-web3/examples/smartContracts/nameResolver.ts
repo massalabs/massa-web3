@@ -110,7 +110,8 @@ const privateKey = getEnvVariable('DEPLOYER_PRIVATE_KEY')
       targetAddress: resolvedAddress,
       targetFunction: 'getBalance',
       parameter: new Args().serialize(),
-    } as ICallData
+    }
+
     try {
       await web3Client.smartContracts().callSmartContract(callData)
     } catch (ex) {
@@ -135,7 +136,8 @@ const privateKey = getEnvVariable('DEPLOYER_PRIVATE_KEY')
       targetAddress: resolvedAddress,
       targetFunction: 'getBalance',
       parameter: new Args().serialize(),
-    } as ICallData
+    }
+
     try {
       await web3Client.smartContracts().readSmartContract(callReadOnlyData)
     } catch (ex) {

@@ -169,13 +169,9 @@ export class SmartContractsClient
       }
     }
 
-    try {
-      callData.targetAddress = await this.mnsResolver.resolve(
-        callData.targetAddress
-      )
-    } catch {
-      // do nothing
-    }
+    callData.targetAddress = await this.mnsResolver.resolveOrFallback(
+      callData.targetAddress
+    )
 
     return await sender.callSmartContract(callData)
   }
@@ -198,13 +194,9 @@ export class SmartContractsClient
       )
     }
 
-    try {
-      readData.targetAddress = await this.mnsResolver.resolve(
-        readData.targetAddress
-      )
-    } catch {
-      // do nothing
-    }
+    readData.targetAddress = await this.mnsResolver.resolveOrFallback(
+      readData.targetAddress
+    )
 
     const data = {
       max_gas:
@@ -264,11 +256,8 @@ export class SmartContractsClient
    * @returns A promise that resolves to the balance of the smart contract.
    */
   public async getContractBalance(address: string): Promise<IBalance | null> {
-    try {
-      address = await this.mnsResolver.resolve(address)
-    } catch {
-      // do nothing
-    }
+    address = await this.mnsResolver.resolveOrFallback(address)
+
     const addresses: Array<IAddressInfo> =
       await this.publicApiClient.getAddresses([address])
     if (addresses.length === 0) return null
@@ -290,25 +279,15 @@ export class SmartContractsClient
   public async getFilteredScOutputEvents(
     eventFilterData: IEventFilter
   ): Promise<Array<IEvent>> {
-    try {
-      if (eventFilterData.emitter_address) {
-        eventFilterData.emitter_address = await this.mnsResolver.resolve(
-          eventFilterData.emitter_address
-        )
-      }
-    } catch {
-      // do nothing
-    }
-    try {
-      if (eventFilterData.original_caller_address) {
-        eventFilterData.original_caller_address =
-          await this.mnsResolver.resolve(
-            eventFilterData.original_caller_address
-          )
-      }
-    } catch {
-      // do nothing
-    }
+    eventFilterData.emitter_address = await this.mnsResolver.resolveOrFallback(
+      eventFilterData.emitter_address
+    )
+
+    eventFilterData.original_caller_address =
+      await this.mnsResolver.resolveOrFallback(
+        eventFilterData.original_caller_address
+      )
+
     const data = {
       start: eventFilterData.start,
       end: eventFilterData.end,
@@ -356,15 +335,12 @@ export class SmartContractsClient
   public async executeReadOnlySmartContract(
     contractData: IContractData
   ): Promise<IExecuteReadOnlyResponse> {
-    try {
-      if (contractData.address) {
-        contractData.address = await this.mnsResolver.resolve(
-          contractData.address
-        )
-      }
-    } catch {
-      // do nothing
+    if (contractData.address) {
+      contractData.address = await this.mnsResolver.resolveOrFallback(
+        contractData.address
+      )
     }
+
     if (!contractData.contractDataBinary) {
       throw new Error('Expected non-null contract bytecode, but received null.')
     }

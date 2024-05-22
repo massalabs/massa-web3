@@ -80,6 +80,13 @@ export class MnsResolver extends BaseClient implements IMnsResolver {
     return bytesToStr(jsonRpcCallResult[0].result.Ok)
   }
 
+  resolveOrFallback = async (domain?: string): Promise<string> => {
+    try {
+      return await this.resolve(domain)
+    } catch (e) {
+      return domain
+    }
+  }
   /**
    * Sets the MNS resolver contract address.
    *

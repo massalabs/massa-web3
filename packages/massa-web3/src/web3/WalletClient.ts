@@ -518,13 +518,10 @@ export class WalletClient extends BaseClient implements IWalletClient {
     txData: ITransactionData,
     executor?: IBaseAccount
   ): Promise<Array<string>> {
-    try {
-      txData.recipientAddress = await this.mnsResolver.resolve(
-        txData.recipientAddress
-      )
-    } catch {
-      // ignore
-    }
+    txData.recipientAddress = await this.mnsResolver.resolveOrFallback(
+      txData.recipientAddress
+    )
+
     if (!new Address(txData.recipientAddress).isUser) {
       throw new Error(
         `Invalid recipient address: "${txData.recipientAddress}". The address must be a user address, starting with "${ADDRESS_USER_PREFIX}".`
