@@ -103,7 +103,8 @@ export class PublicAPI {
     }
 
     return {
-      value: (res.result.Ok as unknown as Uint8Array) ?? null,
+      // @ts-expect-error - wrong type returned by the API interface
+      value: new Uint8Array(res.result.Ok),
       info: {
         gasCost: res.gas_cost,
         error: res.result.Error,
