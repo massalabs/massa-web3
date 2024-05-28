@@ -647,7 +647,7 @@ export const mockContractReadOperationData: Array<IContractReadOperationData> =
           },
         },
       ],
-      gas_cost: 1000000,
+      gas_cost: 12345678,
     },
   ]
 

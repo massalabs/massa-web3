@@ -272,7 +272,7 @@ describe('SmartContractsClient', () => {
       expect(spy).toHaveBeenCalledWith(
         expect.objectContaining({
           ...mockCallDataWithoutMaxGas,
-          maxGas: BigInt(1_000_000),
+          maxGas: BigInt(mockContractReadOperationData[0].gas_cost),
         })
       )
       spy.mockRestore()
