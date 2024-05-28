@@ -187,7 +187,7 @@ export class BaseClient {
       params: params,
       id: 0,
     }
-    let body;
+    let body
     try {
       body = JSON.stringify(bodyData)
     } catch (ex) {
@@ -206,11 +206,13 @@ export class BaseClient {
 
       const responseData: JsonRpcResponseData<T> = await resp.json()
 
-      return {  
-        isError: !!responseData.error,  
-        result: responseData.error ? null : responseData.result as T,  
-        error: responseData.error ? new Error(responseData.error.message) : null,  
-      } as JsonRpcResponseData<T>;  
+      return {
+        isError: !!responseData.error,
+        result: responseData.error ? null : (responseData.result as T),
+        error: responseData.error
+          ? new Error(responseData.error.message)
+          : null,
+      } as JsonRpcResponseData<T>
     } catch (ex) {
       return {
         isError: true,

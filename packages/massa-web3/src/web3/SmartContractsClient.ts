@@ -33,6 +33,7 @@ import {
   MAX_GAS_CALL,
   toMAS,
   MASSA_SCALING_FACTOR,
+  MIN_GAS_CALL,
 } from '@massalabs/web3-utils'
 import { wait } from '../utils/time'
 import {
@@ -162,6 +163,9 @@ export class SmartContractsClient
       try {
         const response = await this.readSmartContract(callData)
         callData.maxGas = BigInt(response.info.gas_cost)
+        if (callData.maxGas < MIN_GAS_CALL) {
+          callData.maxGas = MIN_GAS_CALL
+        }
       } catch (error) {
         throw new Error(
           `Operation failed: Max gas unspecified and auto-estimation failed. Error details: ${error.message}`

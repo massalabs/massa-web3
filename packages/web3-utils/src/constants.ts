@@ -23,6 +23,7 @@ export const BASE_ACCOUNT_CREATION_COST = fromMAS(0.001)
 export const MAX_GAS_EXECUTE_SC = 3_980_167_295n
 export const MAX_GAS_DEPLOYMENT = MAX_GAS_EXECUTE_SC
 export const MAX_GAS_CALL = 4_294_167_295n
+export const MIN_GAS_CALL = 2100000n
 
 /* -------------------------------------------------------------------------- */
 /*                                   NETWORK                                  */
