@@ -3142,7 +3142,7 @@
                         "type": "array",
                         "items": {
                             "format": "byte",
-                            "type": "string"
+                            "type": "number"
                         }
                     },
                     "Error": {

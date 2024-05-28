@@ -93,8 +93,8 @@ export class PublicAPI {
         target_function: params.func,
         parameter: params.parameter ? Array.from(params.parameter) : [],
         caller_address: params.caller.toString(),
-        coins: params.coins ? Mas.toString(params.coins) : null,
-        fee: params.fee ? Mas.toString(params.fee) : null,
+        coins: params.coins ? params.coins.toString() : null,
+        fee: params.fee ? params.fee.toString() : null,
       },
     ])
 
@@ -103,8 +103,7 @@ export class PublicAPI {
     }
 
     return {
-      // @ts-expect-error - wrong type returned by the API interface
-      value: new Uint8Array(res.result.Ok),
+      value: new Uint8Array(res.result.Ok || []),
       info: {
         gasCost: res.gas_cost,
         error: res.result.Error,
