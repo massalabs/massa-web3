@@ -1,5 +1,5 @@
-import { ZERO_BYTE, ONE, ZERO } from '../utils'
-import { Args, U64, U8 } from '../basicElements'
+import { ZERO_BYTE, ONE, ZERO } from './utils'
+import { Args, U64, U8 } from './basicElements'
 
 const CONTRACTS_NUMBER_KEY = new Uint8Array([ZERO_BYTE])
 
