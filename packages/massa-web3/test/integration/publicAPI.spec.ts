@@ -3,13 +3,13 @@ import {
   ReadOnlyBytecodeExecution,
   ReadOnlyCall,
   Slot,
-} from '../../src/experimental/generated/client'
+} from '../../src/generated/client'
 import { createCheckers } from 'ts-interface-checker'
-import validator from '../../src/experimental/generated/client-ti'
-import { EventFilter } from '../../src/experimental/client'
+import validator from '../../src/generated/client-ti'
+import { EventFilter } from '../../src/client'
 import { client } from './setup'
-import { MAX_GAS_CALL } from '../../src/experimental/smartContract'
-import { Address, bytesToStr } from '../../src/experimental/basicElements'
+import { MAX_GAS_CALL } from '../../src/smartContract'
+import { Address, bytesToStr } from '../../src/basicElements'
 
 const {
   NodeStatus,

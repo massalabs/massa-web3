@@ -5,11 +5,11 @@ import {
   MAX_GAS_DEPLOYMENT,
   MIN_GAS_CALL,
   SmartContract,
-} from '../../../src/experimental/smartContract'
+} from '../../../src/smartContract'
 import { account, client } from './setup'
-import { Args, bytesToStr, Mas } from '../../../src/experimental/basicElements'
+import { Args, bytesToStr, Mas } from '../../../src/basicElements'
 
-import { execute } from '../../../src/experimental/basicElements/bytecode'
+import { execute } from '../../../src/basicElements/bytecode'
 
 const TIMEOUT = 61000
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n

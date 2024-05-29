@@ -1,4 +1,4 @@
-import { OperationStatus } from '../../../src/experimental/basicElements'
+import { OperationStatus } from '../../../src/basicElements'
 import { accountOperation } from './setup'
 
 describe('AccountOperation tests', () => {

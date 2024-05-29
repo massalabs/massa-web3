@@ -1,4 +1,4 @@
-import { Args } from '../../../src/experimental/basicElements/args'
+import { Args } from '../../../src/basicElements/args'
 import {
   U8,
   U16,
@@ -28,7 +28,7 @@ import {
   strToBytes,
   u128ToBytes,
   u256ToBytes,
-} from '../../../src/experimental/basicElements/serializers'
+} from '../../../src/basicElements/serializers'
 
 describe('Serialization tests', () => {
   it('ser/deser with emojis', () => {

@@ -1,8 +1,8 @@
 import 'dotenv/config'
-import { JsonRPCClient } from '../../src/experimental/client'
-import { Account } from '../../src/experimental/account'
-import { AccountOperation } from '../../src/experimental/accountOperation'
-import { Mas } from '../../src/experimental/basicElements'
+import { JsonRPCClient } from '../../src/client'
+import { Account } from '../../src/account'
+import { AccountOperation } from '../../src/accountOperation'
+import { Mas } from '../../src/basicElements'
 
 export let client: JsonRPCClient
 export let account: Account

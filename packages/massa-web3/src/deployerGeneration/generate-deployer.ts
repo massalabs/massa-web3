@@ -8,8 +8,7 @@ function populateDeployer(src?: string, dst?: string): void {
   const output = `export const deployer: Uint8Array = new Uint8Array([${[...wasmData]}]);\n`
 
   const outputDir =
-    dst ??
-    path.join(__dirname, '../src/experimental/generated/deployer-bytecode.ts')
+    dst ?? path.join(__dirname, '../src/generated/deployer-bytecode.ts')
 
   fs.writeFileSync(outputDir, output)
 }

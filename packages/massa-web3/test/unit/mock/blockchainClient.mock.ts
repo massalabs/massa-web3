@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { OperationStatus } from '../../../src/experimental/basicElements/operation'
+import { OperationStatus } from '../../../src/basicElements/operation'
 import {
   BlockchainClient,
   EventFilter,
   SCOutputEvent,
   SendOperationInput,
-} from '../../../src/experimental/client/interfaces'
+} from '../../../src/client/interfaces'
 
-import { NodeStatus } from '../../../src/experimental/generated/client'
+import { NodeStatus } from '../../../src/generated/client'
 
 export const blockchainClientMock: BlockchainClient = {
   sendOperation: jest.fn((data: SendOperationInput) =>

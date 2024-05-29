@@ -1,8 +1,5 @@
-import { Address } from '../../src/experimental/basicElements/address'
-import {
-  PrivateKey,
-  PublicKey,
-} from '../../src/experimental/basicElements/keys'
+import { Address } from '../../src/basicElements/address'
+import { PrivateKey, PublicKey } from '../../src/basicElements/keys'
 
 describe('PrivateKey and PublicKey tests', () => {
   let privateKey: PrivateKey

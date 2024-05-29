@@ -1,4 +1,4 @@
-import { PasswordSeal } from '../../src/experimental/crypto/passwordSeal'
+import { PasswordSeal } from '../../src/crypto/passwordSeal'
 import randomUint8Array from 'secure-random'
 
 describe('Password Seal tests', () => {

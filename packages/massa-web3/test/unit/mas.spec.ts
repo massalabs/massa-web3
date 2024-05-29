@@ -1,4 +1,4 @@
-import { Mas } from '../../src/experimental/basicElements'
+import { Mas } from '../../src/basicElements'
 
 describe('amount conversion', () => {
   it('converts from integer', () => {

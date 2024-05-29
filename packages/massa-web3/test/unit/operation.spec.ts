@@ -1,4 +1,4 @@
-import { Operation } from '../../src/experimental/basicElements'
+import { Operation } from '../../src/basicElements'
 import { blockchainClientMock } from './mock/blockchainClient.mock'
 
 const OPERATION_ID = 'testOperationID'

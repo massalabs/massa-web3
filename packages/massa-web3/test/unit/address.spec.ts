@@ -1,5 +1,5 @@
-import { Account } from '../../src/experimental/account'
-import { Address } from '../../src/experimental/basicElements'
+import { Account } from '../../src/account'
+import { Address } from '../../src/basicElements'
 
 const contractAddress = 'AS1eK3SEXGDAWN6pZhdr4Q7WJv6UHss55EB14hPy4XqBpiktfPu6'
 

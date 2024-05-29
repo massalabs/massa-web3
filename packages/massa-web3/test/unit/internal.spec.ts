@@ -1,10 +1,10 @@
 import {
   extractData,
   mustExtractPrefix,
-} from '../../src/experimental/basicElements/internal'
-import Base58 from '../../src/experimental/crypto/base58'
-import VarintVersioner from '../../src/experimental/crypto/varintVersioner'
-import { Version } from '../../src/experimental/crypto/interfaces/versioner'
+} from '../../src/basicElements/internal'
+import Base58 from '../../src/crypto/base58'
+import VarintVersioner from '../../src/crypto/varintVersioner'
+import { Version } from '../../src/crypto/interfaces/versioner'
 
 describe('Internal functions tests', () => {
   const serializer = new Base58()

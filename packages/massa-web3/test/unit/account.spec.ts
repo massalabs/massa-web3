@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { load } from 'js-yaml'
-import { Account, AccountKeyStore } from '../../src/experimental/account'
-import { Version } from '../../src/experimental/crypto/interfaces/versioner'
+import { Account, AccountKeyStore } from '../../src/account'
+import { Version } from '../../src/crypto/interfaces/versioner'
 import path from 'path'
 
 describe('Account tests', () => {

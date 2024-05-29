@@ -1,8 +1,8 @@
-import * as StorageCost from '../../src/experimental/basicElements/storage'
-import {
-  BASE_ACCOUNT_CREATION_COST,
-  STORAGE_BYTE_COST,
-} from '@massalabs/web3-utils'
+import * as Mas from '../../src/basicElements/mas'
+import * as StorageCost from '../../src/basicElements/storage'
+
+const STORAGE_BYTE_COST = Mas.fromString('0.0001')
+const BASE_ACCOUNT_CREATION_COST = Mas.fromString('0.001')
 
 describe('StorageCost', () => {
   describe('bytes', () => {

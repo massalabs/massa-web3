@@ -1,6 +1,5 @@
-import { u64ToBytes, u8toByte } from '@massalabs/web3-utils'
 import { ZERO_BYTE, ONE, ZERO } from '../utils'
-import { Args } from '../basicElements'
+import { Args, U64, U8 } from '../basicElements'
 
 const CONTRACTS_NUMBER_KEY = new Uint8Array([ZERO_BYTE])
 
@@ -19,7 +18,7 @@ type DatastoreContract = {
 function coinsKey(offset: number): Uint8Array {
   return new Args()
     .addU64(BigInt(offset + ONE))
-    .addUint8Array(u8toByte(ONE))
+    .addUint8Array(U8.toBytes(BigInt(ONE)))
     .serialize()
 }
 
@@ -32,7 +31,7 @@ function coinsKey(offset: number): Uint8Array {
 function argsKey(offset: number): Uint8Array {
   return new Args()
     .addU64(BigInt(offset + ONE))
-    .addUint8Array(u8toByte(ZERO))
+    .addUint8Array(U8.toBytes(BigInt(ZERO)))
     .serialize()
 }
 
@@ -43,7 +42,7 @@ function argsKey(offset: number): Uint8Array {
  * @returns A Uint8Array representing the key.
  */
 function contractKey(offset: number): Uint8Array {
-  return u64ToBytes(BigInt(offset + ONE))
+  return U64.toBytes(BigInt(offset + ONE))
 }
 
 /**
@@ -64,7 +63,7 @@ export function populateDatastore(
   const datastore = new Map<Uint8Array, Uint8Array>()
 
   // set the number of contracts in the first key of the datastore
-  datastore.set(CONTRACTS_NUMBER_KEY, u64ToBytes(BigInt(contracts.length)))
+  datastore.set(CONTRACTS_NUMBER_KEY, U64.toBytes(BigInt(contracts.length)))
 
   contracts.forEach((contract, i) => {
     datastore.set(contractKey(i), contract.data)
@@ -72,7 +71,7 @@ export function populateDatastore(
       datastore.set(argsKey(i), contract.args)
     }
     if (contract.coins > ZERO) {
-      datastore.set(coinsKey(i), u64ToBytes(contract.coins))
+      datastore.set(coinsKey(i), U64.toBytes(contract.coins))
     }
   })
 

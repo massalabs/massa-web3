@@ -1,4 +1,4 @@
-import { U8, U16, U32, U64 } from '../../src/experimental/basicElements'
+import { U8, U16, U32, U64 } from '../../src/basicElements'
 
 describe('Integer serialization', () => {
   test('U8', async () => {

@@ -2,14 +2,14 @@ import {
   IDeserializedResult,
   ISerializable,
 } from '../../../../web3-utils/src/interfaces/ISerializable'
-import { ArrayTypes } from '../../../src/experimental/basicElements/args'
+import { ArrayTypes } from '../../../src/basicElements/args'
 import {
   I128_MAX,
   I128_MIN,
   U8,
   U32,
   U64,
-} from '../../../src/experimental/basicElements/serializers'
+} from '../../../src/basicElements/serializers'
 import {
   arrayToBytes,
   bytesToArray,
@@ -17,7 +17,7 @@ import {
   deserializeObj,
   getDatatypeSize,
   serializableObjectsArrayToBytes,
-} from '../../../src/experimental/basicElements/serializers/arrays'
+} from '../../../src/basicElements/serializers/arrays'
 
 class TestSerializable implements ISerializable<TestSerializable> {
   value: number

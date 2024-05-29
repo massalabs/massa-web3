@@ -7,8 +7,8 @@ import {
   Signature,
   TransferOperation,
   calculateExpirePeriod,
-} from '../../src/experimental/basicElements'
-import { PrivateKey, Address } from '../../src/experimental/basicElements'
+} from '../../src/basicElements'
+import { PrivateKey, Address } from '../../src/basicElements'
 import 'dotenv/config'
 
 describe('Operation manager tests', () => {
