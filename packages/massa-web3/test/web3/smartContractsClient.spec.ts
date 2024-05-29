@@ -408,8 +408,8 @@ describe('SmartContractsClient', () => {
             target_function: mockReadData.targetFunction,
             parameter: mockReadData.parameter,
             caller_address: mockReadData.callerAddress,
-            coins: '0.000000001',
-            fee: '0.000000001',
+            coins: '1',
+            fee: '1',
           },
         ],
       ])
@@ -481,8 +481,8 @@ describe('SmartContractsClient', () => {
             target_function: mockReadData.targetFunction,
             parameter: mockReadData.parameter,
             caller_address: mockReadData.callerAddress,
-            coins: '0.000000001',
-            fee: '0.000000001',
+            coins: '1',
+            fee: '1',
           },
         ],
       ])
