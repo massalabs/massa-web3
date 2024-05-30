@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'jest-puppeteer',
-  testMatch: ['**/test/experimental/unit/*.spec.ts'],
+  testMatch: ['**/test/unit/*.spec.ts'],
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
