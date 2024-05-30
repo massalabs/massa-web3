@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { IDeserializedResult, ISerializable } from './ISerializable'
 import { ArrayTypes } from '../../../src/basicElements/args'
+import {
+  ISerializable,
+  IDeserializedResult,
+} from '../../../src/basicElements/serializers/interface/ISerializable'
 import {
   I128_MAX,
   I128_MIN,
