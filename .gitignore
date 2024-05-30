@@ -75,3 +75,5 @@ docs
 # Misc
 .DS_Store
 
+# OpenRPC generated files
+**/open_rpc/generated

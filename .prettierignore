@@ -20,3 +20,6 @@ node_modules
 scripts
 README.md
 LICENSE
+
+# OpenRPC generated files
+**/open_rpc/generated/*

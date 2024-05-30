@@ -5,3 +5,4 @@ bundle.*
 docs
 dist
 scripts
+**/open_rpc/generated/*

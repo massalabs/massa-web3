@@ -1,0 +1,11 @@
+{
+    "openrpcDocument": "test/open_rpc/massa.api.json",
+    "outDir": "tmp/",
+    "components": [
+        {
+            "type": "client",
+            "name": "massa-client",
+            "language": "typescript"
+        } 
+    ]
+}
