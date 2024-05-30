@@ -75,3 +75,6 @@ docs
 # Misc
 .DS_Store
 
+# temporary files
+tmp
+
