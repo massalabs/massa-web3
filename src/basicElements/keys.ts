@@ -16,7 +16,7 @@ const PUBLIC_KEY_PREFIX = 'P'
  * Get the version from string or bytes key.
  *
  * @remarks
- * For now the function is common for private & public key but it might change in the futur.
+ * For now the function is common for private & public key but it might change in the future.
  *
  * @returns the key version.
  */

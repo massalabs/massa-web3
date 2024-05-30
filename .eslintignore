@@ -9,4 +9,5 @@ bundle*.js
 **/dist/**
 **/docs/**
 typedoc.json
-tsconfig.base.json
+tsconfig.json
+test

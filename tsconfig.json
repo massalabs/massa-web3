@@ -33,11 +33,11 @@
         }
     },
     "include": [
-        "packages/**/src/**/*.ts"
+        "./src/**/*.ts"
     ],
     "exclude": [
         "node_modules",
-        "packages/**/node_modules",
-        "packages/**/dist"
+        "dist",
+        "**/*.spec.ts"
     ]
 }
