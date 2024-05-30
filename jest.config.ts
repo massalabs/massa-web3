@@ -11,9 +11,6 @@ const config: Config.InitialOptions = {
     ],
     '^.+\\.jsx?$': 'babel-jest',
   },
-  moduleNameMapper: {
-    '^@massalabs/massa-web3/(.*)$': '<rootDir>/src/$1',
-  },
   testMatch: ['<rootDir>/test/**/*.(spec|test).ts?(x)'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
   transformIgnorePatterns: ['/node_modules/(?!big-varint).+\\.js$'],

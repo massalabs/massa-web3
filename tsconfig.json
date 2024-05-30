@@ -26,11 +26,6 @@
             "esnext"
         ],
         "baseUrl": ".",
-        "paths": {
-            "@massalabs/massa-web3/*": [
-                "packages/massa-web3/src/*"
-            ]
-        }
     },
     "include": [
         "./src/**/*.ts"
