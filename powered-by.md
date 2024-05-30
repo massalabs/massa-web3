@@ -21,7 +21,7 @@ The following is a list of all the dependencies for this package:
 
 **License:** MIT - perpetual
 
-**Used version:** 2.1.0
+**Used version:** 1.7.3
 
 **Many thanks to:** Paul Miller (https://paulmillr.com)
 
