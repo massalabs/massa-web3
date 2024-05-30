@@ -1,7 +1,5 @@
-import {
-  IDeserializedResult,
-  ISerializable,
-} from '../../../../web3-utils/src/interfaces/ISerializable'
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+import { IDeserializedResult, ISerializable } from './ISerializable'
 import { ArrayTypes } from '../../../src/basicElements/args'
 import {
   I128_MAX,

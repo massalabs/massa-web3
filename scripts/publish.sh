@@ -11,35 +11,31 @@ npm ci
 npm run build
 
 ref=$1
-echo "Publishing packages for reference: $ref"
+echo "Publishing package for reference: $ref"
 TAG=""
 
 if [[ "$ref" == *"buildnet"* ]]; then
   TAG="--tag buildnet"
 fi
 
-for packageDir in packages/*; do
-  if [ -d "$packageDir" ]; then
-    PACKAGE_NAME=$(cat "$packageDir/package.json" | jq -r '.name')
-    PUBLISH_VERSION=$(cat "$packageDir/package.json" | jq -r '.version')
+PACKAGE_NAME=$(jq -r '.name' package.json)
+PUBLISH_VERSION=$(jq -r '.version' package.json)
 
-    # Check if the package name is in the reference
-    if [[ "$ref" == *"$PACKAGE_NAME"* ]]; then
-      # Check if the package version is already published
-      if [[ "$ref" == "buildnet" ]]; then
-        CURRENT_VERSION=$(npm view "$PACKAGE_NAME@buildnet" version 2>/dev/null || true)
-      else
-        CURRENT_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || true)
-      fi
-
-      if [ "$CURRENT_VERSION" == "$PUBLISH_VERSION" ]; then
-        echo "${PACKAGE_NAME}@${PUBLISH_VERSION} is already published. Skipping."
-      else
-        echo "Publishing ${PACKAGE_NAME}@${PUBLISH_VERSION}"
-        npm publish --workspace="$PACKAGE_NAME" "$TAG"
-      fi
-    else
-      echo "Skipping ${PACKAGE_NAME}"
-    fi
+# Check if the package name is in the reference
+if [[ "$ref" == *"$PACKAGE_NAME"* ]]; then
+  # Check if the package version is already published
+  if [[ "$ref" == "buildnet" ]]; then
+    CURRENT_VERSION=$(npm view "$PACKAGE_NAME@buildnet" version 2>/dev/null || true)
+  else
+    CURRENT_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || true)
   fi
-done
+
+  if [ "$CURRENT_VERSION" == "$PUBLISH_VERSION" ]; then
+    echo "${PACKAGE_NAME}@${PUBLISH_VERSION} is already published. Skipping."
+  else
+    echo "Publishing ${PACKAGE_NAME}@${PUBLISH_VERSION}"
+    npm publish "$TAG"
+  fi
+else
+  echo "Skipping ${PACKAGE_NAME}"
+fi

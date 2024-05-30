@@ -8,7 +8,7 @@ jobs:
   build:
     strategy:
       matrix:
-        project: [massa-web3, web3-utils]
+        project: [massa-web3]
 
     runs-on: ubuntu-latest
 

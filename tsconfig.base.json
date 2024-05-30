@@ -29,9 +29,6 @@
         "paths": {
             "@massalabs/massa-web3/*": [
                 "packages/massa-web3/src/*"
-            ],
-            "@massalabs/web3-utils/*": [
-                "packages/web3-utils/src/*"
             ]
         }
     },

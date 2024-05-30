@@ -2,7 +2,7 @@ name: (workspace) Npm publish next
 
 on:
   push:
-    branches: [xp-new-version]
+    branches: [next]
 
 jobs:
   test:
