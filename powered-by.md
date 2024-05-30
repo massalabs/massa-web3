@@ -1,22 +1,6 @@
 # Dependencies Report
 
 The following is a list of all the dependencies for this package:
-## [@noble/ed25519](git+https://github.com/paulmillr/noble-ed25519.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 2.1.0
-
-**Many thanks to:** Paul Miller (https://paulmillr.com)
-
-## [@noble/hashes](git+https://github.com/paulmillr/noble-hashes.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 1.4.0
-
-**Many thanks to:** Paul Miller (https://paulmillr.com)
-
 ## [@open-rpc/client-js](git+https://github.com/open-rpc/client-js.git)
 
 **License:** Apache-2.0 - perpetual
@@ -32,6 +16,22 @@ The following is a list of all the dependencies for this package:
 **Used version:** 2.0.2
 
 **Many thanks to:** 
+
+## [@noble/ed25519](git+https://github.com/paulmillr/noble-ed25519.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 2.1.0
+
+**Many thanks to:** Paul Miller (https://paulmillr.com)
+
+## [@noble/hashes](git+https://github.com/paulmillr/noble-hashes.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 1.4.0
+
+**Many thanks to:** Paul Miller (https://paulmillr.com)
 
 ## [big-varint](git+https://github.com/joeltg/big-varint.git)
 
@@ -65,14 +65,6 @@ The following is a list of all the dependencies for this package:
 
 **Many thanks to:** n/a
 
-## [js-yaml](git+https://github.com/nodeca/js-yaml.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 4.1.0
-
-**Many thanks to:** [Vladimir Zapparov](dervus.grim@gmail.com)
-
 ## [secure-random](git+https://github.com/jprichardson/secure-random.git)
 
 **License:** MIT - perpetual
@@ -88,14 +80,6 @@ The following is a list of all the dependencies for this package:
 **Used version:** 1.3.0
 
 **Many thanks to:** n/a
-
-## [ts-interface-builder](git+https://github.com/gristlabs/ts-interface-builder.git)
-
-**License:** Apache-2.0 - perpetual
-
-**Used version:** 0.3.3
-
-**Many thanks to:** Dmitry S, Grist Labs
 
 ## [tslib](git+https://github.com/Microsoft/tslib.git)
 
@@ -249,6 +233,14 @@ The following is a list of all the dependencies for this package:
 
 **Many thanks to:** n/a
 
+## [js-yaml](git+https://github.com/nodeca/js-yaml.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 4.1.0
+
+**Many thanks to:** [Vladimir Zapparov](dervus.grim@gmail.com)
+
 ## [lint-staged](git+https://github.com/okonet/lint-staged.git)
 
 **License:** MIT - perpetual
@@ -312,6 +304,14 @@ The following is a list of all the dependencies for this package:
 **Used version:** 10.9.2
 
 **Many thanks to:** Blake Embrey hello@blakeembrey.com http://blakeembrey.me
+
+## [ts-interface-builder](git+https://github.com/gristlabs/ts-interface-builder.git)
+
+**License:** Apache-2.0 - perpetual
+
+**Used version:** 0.3.3
+
+**Many thanks to:** Dmitry S, Grist Labs
 
 ## [typedoc](git://github.com/TypeStrong/TypeDoc.git)
 
