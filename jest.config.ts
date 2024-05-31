@@ -17,7 +17,7 @@ const config: Config.InitialOptions = {
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/packages/*/dist/',
-    '<rootDir>/packages/massa-web3/test/open_rpc/',
+    '<rootDir>/open_rpc/',
   ],
 }
 

@@ -7,7 +7,7 @@ jobs:
   test-openrpc-spec:
     defaults:
       run:
-        working-directory: ./packages/massa-web3/
+        working-directory: ./open_rpc/
 
     runs-on: ubuntu-latest
 
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
-          cache-dependency-path: ./packages/massa-web3/
+          cache-dependency-path: ./open_rpc/
 
       - name: Install dependencies
         run: |
@@ -42,4 +42,4 @@ jobs:
 
       - name: Test OpenRPC spec
         run: |
-          npm run test:openrpc
+          npm run test
