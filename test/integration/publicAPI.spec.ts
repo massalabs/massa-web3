@@ -36,7 +36,7 @@ const TEST_CONTRACT = 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T'
 
 describe('client tests', () => {
   test('getStatus', async () => {
-    const status = await client.getStatus()
+    const status = await client.status()
     lastSlot.period = status.last_slot!.period
     lastSlot.thread = status.last_slot!.thread
     NodeStatus.check(status)

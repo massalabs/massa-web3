@@ -48,7 +48,7 @@ type JSONAPIOptions = {
 
 export class PublicAPI {
   connector: MassaOpenRPCSpecification
-  status: NodeStatus
+  lastStatus: NodeStatus
 
   // eslint-disable-next-line max-params
   constructor(
@@ -278,31 +278,30 @@ export class PublicAPI {
   async getStakers(pagination: Pagination): Promise<Staker[]> {
     return this.connector.get_stakers(pagination)
   }
-
-  async getStatus(): Promise<NodeStatus> {
-    this.status = await this.connector.get_status()
-    return this.status
+  async status(): Promise<NodeStatus> {
+    this.lastStatus = await this.connector.get_status()
+    return this.lastStatus
   }
 
   async getMinimalFee(): Promise<bigint> {
-    if (!this.status) {
-      await this.getStatus()
+    if (!this.lastStatus) {
+      await this.status()
     }
-    if (!this.status.minimal_fees) {
+    if (!this.lastStatus.minimal_fees) {
       throw new Error('minimal fees: not available')
     }
-    return Mas.fromString(this.status.minimal_fees)
+    return Mas.fromString(this.lastStatus.minimal_fees)
   }
 
   async getChainId(): Promise<bigint> {
-    if (!this.status) {
-      await this.getStatus()
+    if (!this.lastStatus) {
+      await this.status()
     }
-    return BigInt(this.status.chain_id)
+    return BigInt(this.lastStatus.chain_id)
   }
 
   async fetchPeriod(): Promise<number> {
-    const status = await this.getStatus()
+    const status = await this.status()
     if (!status.last_slot) {
       throw new Error('last slot: not available')
     }
