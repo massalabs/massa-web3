@@ -1,47 +1,43 @@
 #!/bin/bash +x
 
-# Loop through the packages in your workspace (adjust the path as needed)
-for packageDir in packages/*; do
-  if [ -d "$packageDir" ]; then
-    packageJson="$packageDir/package.json"
-    
-    if [ -f "$packageJson" ]; then
-      fileName="${packageDir}/powered-by.md"  # Define the report file name within each package directory
+# Define the path to the package.json file in the root directory
+packageJson="package.json"
 
-      echo "# Dependencies Report" > "$fileName"
-      echo "" >> "$fileName"
-      echo "The following is a list of all the dependencies for this package:" >> "$fileName"
+if [ -f "$packageJson" ]; then
+  fileName="powered-by.md"  # Define the report file name in the root directory
 
-      report=$(cd "$packageDir" && license-report)
-      if [ -n "$report" ]; then
-        for row in $(echo "${report}" | jq -r '.[] | @base64'); do
-          _jq() {
-            echo "${row}" | base64 --decode | jq -r ${1}
-          }
+  echo "# Dependencies Report" > "$fileName"
+  echo "" >> "$fileName"
+  echo "The following is a list of all the dependencies for this package:" >> "$fileName"
 
-          name=$(_jq '.name')
-          url=$(_jq '.link')
-          licenseType=$(_jq '.licenseType')
-          licensePeriod=$(_jq '.licensePeriod')
-          installedVersion=$(_jq '.installedVersion')
-          author=$(_jq '.author')
+  report=$(license-report)
+  if [ -n "$report" ]; then
+    for row in $(echo "${report}" | jq -r '.[] | @base64'); do
+      _jq() {
+        echo "${row}" | base64 --decode | jq -r ${1}
+      }
 
-          if [[ $author == *" <"* ]]; then
-            author="[${author%% <*}](${author##*<}"
-            author="${author%?}"    # remove the extra ">" at the end
-            author="${author})"     # adding ")" at the end
-          fi
+      name=$(_jq '.name')
+      url=$(_jq '.link')
+      licenseType=$(_jq '.licenseType')
+      licensePeriod=$(_jq '.licensePeriod')
+      installedVersion=$(_jq '.installedVersion')
+      author=$(_jq '.author')
 
-          echo "## [${name}](${url})" >> "$fileName"
-          echo "" >> "$fileName"
-          echo "**License:** ${licenseType} - ${licensePeriod}" >> "$fileName"
-          echo "" >> "$fileName"
-          echo "**Used version:** ${installedVersion}" >> "$fileName"
-          echo "" >> "$fileName"
-          echo "**Many thanks to:** ${author}" >> "$fileName"
-          echo "" >> "$fileName"
-        done
+      if [[ $author == *" <"* ]]; then
+        author="[${author%% <*}](${author##*<}"
+        author="${author%?}"    # remove the extra ">" at the end
+        author="${author})"     # adding ")" at the end
       fi
-    fi
+
+      echo "## [${name}](${url})" >> "$fileName"
+      echo "" >> "$fileName"
+      echo "**License:** ${licenseType} - ${licensePeriod}" >> "$fileName"
+      echo "" >> "$fileName"
+      echo "**Used version:** ${installedVersion}" >> "$fileName"
+      echo "" >> "$fileName"
+      echo "**Many thanks to:** ${author}" >> "$fileName"
+      echo "" >> "$fileName"
+    done
   fi
-done
+fi
