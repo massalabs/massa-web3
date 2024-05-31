@@ -13,7 +13,7 @@ The following is a list of all the dependencies for this package:
 
 **License:** Apache-2.0 - perpetual
 
-**Used version:** 2.0.2
+**Used version:** 1.15.0
 
 **Many thanks to:** 
 
