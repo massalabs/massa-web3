@@ -34,5 +34,5 @@ export const blockchainClientMock: BlockchainClient = {
       },
     } as any)
   ),
-  status: {} as NodeStatus,
+  status: () => Promise.resolve({} as NodeStatus),
 }

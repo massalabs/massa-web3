@@ -63,6 +63,5 @@ export interface BlockchainClient {
   getChainId(): Promise<U64>
   getMinimalFee(): Promise<Mas>
   executeReadOnlyCall(params: ReadOnlyCallParams): Promise<ReadOnlyCallResult>
-  // TODO: change for a getter instead
-  status: NodeStatus
+  status(): Promise<NodeStatus>
 }
