@@ -60,7 +60,7 @@
     ],
     "dependencies": {
         "@open-rpc/client-js": "^1.8.1",
-        "@open-rpc/schema-utils-js": "^2.0.2",
+        "@open-rpc/schema-utils-js": "1.15.0",
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
         "big-varint": "^0.1.3",
