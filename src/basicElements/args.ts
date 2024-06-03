@@ -4,6 +4,7 @@ import {
   U32,
   U64,
   U128,
+  U256,
   arrayToBytes,
   bytesToArray,
   bytesToF32,
@@ -13,7 +14,6 @@ import {
   bytesToI64,
   bytesToSerializableObjectArray,
   bytesToStr,
-  bytesToU256,
   deserializeObj,
   f32ToBytes,
   f64ToBytes,
@@ -258,10 +258,7 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextU256(): bigint {
-    const value = bytesToU256(this.serialized, this.offset)
-
-    this.offset += BYTES_256_OFFSET
-    return value
+    return this.nextInteger(U256.fromBuffer)
   }
 
   /**
@@ -531,7 +528,7 @@ export class Args {
   public addU256(bigInt: bigint): this {
     this.serialized = Args.concatArrays(this.serialized, u256ToBytes(bigInt))
 
-    this.offset += BYTES_256_OFFSET
+    this.offset += U256.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U256, value: bigInt })
     return this
   }

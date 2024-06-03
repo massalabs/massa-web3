@@ -4,10 +4,10 @@ import {
   U16,
   U32,
   U64,
+  U128,
+  U256,
   I128_MAX,
   I128_MIN,
-  U128_MAX,
-  U256_MAX,
   boolToByte,
   byteToBool,
   bytesToF32,
@@ -17,8 +17,6 @@ import {
   bytesToI32,
   bytesToI64,
   bytesToStr,
-  bytesToU128,
-  bytesToU256,
   f32ToBytes,
   f64ToBytes,
   i128ToBytes,
@@ -26,9 +24,6 @@ import {
   i32ToBytes,
   i64ToBytes,
   strToBytes,
-  u128ToBytes,
-  u256ToBytes,
-  U128,
 } from '../../../src/basicElements/serializers'
 
 describe('Serialization tests', () => {
@@ -151,7 +146,7 @@ describe('Serialization tests', () => {
   })
 
   it('throws an error when trying to serialize a u128 value greater than U128_MAX', () => {
-    const largeValue = U128_MAX + 1n
+    const largeValue = U128.MAX + 1n
     const args = new Args()
 
     expect(() => args.addU128(largeValue)).toThrow(
@@ -160,7 +155,7 @@ describe('Serialization tests', () => {
   })
   it('ser/deser u256', () => {
     const val = 123456789012345678901234567890n
-    expect(bytesToU256(u256ToBytes(val))).toEqual(val)
+    expect(U256.fromBytes(U256.toBytes(val))).toEqual(val)
   })
   it('throws an error when trying to serialize a negative u256 value', () => {
     const negativeValue = BigInt(-1)
@@ -171,7 +166,7 @@ describe('Serialization tests', () => {
     )
   })
   it('throws an error when trying to serialize a u256 value greater than U256_MAX', () => {
-    const largeValue = U256_MAX + 1n
+    const largeValue = U256.MAX + 1n
     const args = new Args()
 
     expect(() => args.addU256(largeValue)).toThrow(

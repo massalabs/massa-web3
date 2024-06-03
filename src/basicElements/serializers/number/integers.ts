@@ -1,4 +1,4 @@
-import { U16, U32, U64, U128, U8 } from '..'
+import { U8, U16, U32, U64, U128, U256 } from '..'
 import { FIRST, ONE, ZERO } from '../../../utils'
 
 function mustBeValidUnsigned(sizeInBits: number, value: bigint): void {
@@ -30,6 +30,9 @@ export function unsignedToByte(sizeInBits: number, value: bigint): Uint8Array {
     case U128.SIZE_BIT:
       setBigUint128(view, FIRST, value)
       break
+    case U256.SIZE_BIT:
+      setBigUint256(view, FIRST, value)
+      break
     default:
       throw new Error(`unsupported U${sizeInBits} serialization.`)
   }
@@ -56,11 +59,12 @@ export function unsignedFromByte(
       return view.getBigUint64(index, true)
     case U128.SIZE_BIT:
       return getBigUint128(view, index)
+    case U256.SIZE_BIT:
+      return getBigUint256(view, index)
     default:
       throw new Error(`unsupported U${sizeInBits} deserialization`)
   }
 }
-
 export function numberToUnsigned(
   sizeInBits: number,
   value: number | bigint
@@ -73,8 +77,8 @@ export function numberToUnsigned(
   return int
 }
 
-const BITS_PER_BYTE = 8
-const SHIFT_64_BITS = 64n
+const SHIFT_128_BITS = 128n
+const SHIFT_192_BITS = 192n
 
 function setBigUint128(
   view: DataView,
@@ -82,11 +86,49 @@ function setBigUint128(
   value: bigint
 ): void {
   view.setBigUint64(byteOffset, value & U64.MAX, true)
-  view.setBigUint64(byteOffset + BITS_PER_BYTE, value >> SHIFT_64_BITS, true)
+  view.setBigUint64(
+    byteOffset + U8.SIZE_BIT,
+    value >> BigInt(U64.SIZE_BIT),
+    true
+  )
 }
 
 function getBigUint128(view: DataView, byteOffset: number): bigint {
   const low = view.getBigUint64(byteOffset, true)
-  const high = view.getBigUint64(byteOffset + BITS_PER_BYTE, true)
-  return (high << SHIFT_64_BITS) | low
+  byteOffset += U8.SIZE_BIT
+  const high = view.getBigUint64(byteOffset, true)
+  return (high << BigInt(U64.SIZE_BIT)) | low
+}
+
+function setBigUint256(
+  view: DataView,
+  byteOffset: number,
+  value: bigint
+): void {
+  view.setBigUint64(byteOffset, value & U64.MAX, true)
+  byteOffset += U64.SIZE_BYTE
+  value = value >> BigInt(U64.SIZE_BIT)
+  view.setBigUint64(byteOffset, value & U64.MAX, true)
+  byteOffset += U64.SIZE_BYTE
+  value = value >> BigInt(U64.SIZE_BIT)
+  view.setBigUint64(byteOffset, value & U64.MAX, true)
+  byteOffset += U64.SIZE_BYTE
+  value = value >> BigInt(U64.SIZE_BIT)
+  view.setBigUint64(byteOffset, value, true)
+}
+
+function getBigUint256(view: DataView, byteOffset: number): bigint {
+  const part1 = view.getBigUint64(byteOffset, true)
+  byteOffset += U64.SIZE_BYTE
+  const part2 = view.getBigUint64(byteOffset, true)
+  byteOffset += U64.SIZE_BYTE
+  const part3 = view.getBigUint64(byteOffset, true)
+  byteOffset += U64.SIZE_BYTE
+  const part4 = view.getBigUint64(byteOffset, true)
+  return (
+    (part4 << SHIFT_192_BITS) |
+    (part3 << SHIFT_128_BITS) |
+    (part2 << BigInt(U64.SIZE_BIT)) |
+    part1
+  )
 }
