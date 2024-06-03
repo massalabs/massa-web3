@@ -28,6 +28,7 @@ import {
   strToBytes,
   u128ToBytes,
   u256ToBytes,
+  U128,
 } from '../../../src/basicElements/serializers'
 
 describe('Serialization tests', () => {
@@ -121,6 +122,7 @@ describe('Serialization tests', () => {
       `value ${largeValue} is too large for an U64.`
     )
   })
+
   it('ser/deser i128', () => {
     const val = -123456789123456789n
     expect(bytesToI128(i128ToBytes(val))).toEqual(val)
@@ -133,10 +135,12 @@ describe('Serialization tests', () => {
     const val = I128_MIN
     expect(bytesToI128(i128ToBytes(val))).toEqual(val)
   })
+
   it('ser/deser u128', () => {
-    const val = 123456789123456789n
-    expect(bytesToU128(u128ToBytes(val))).toEqual(val)
+    const val = BigInt('123456789123456789123456789')
+    expect(U128.fromBytes(U128.toBytes(U128.fromNumber(val)))).toEqual(val)
   })
+
   it('throws an error when trying to serialize a negative u128 value', () => {
     const negativeValue = BigInt(-1)
     const args = new Args()
@@ -145,6 +149,7 @@ describe('Serialization tests', () => {
       `Unable to serialize invalid Uint128 value ${negativeValue}`
     )
   })
+
   it('throws an error when trying to serialize a u128 value greater than U128_MAX', () => {
     const largeValue = U128_MAX + 1n
     const args = new Args()
