@@ -186,10 +186,6 @@ describe('Smart Contract', () => {
         expect(value).toBe('myValue')
       })
 
-      // TODO: For now we use the contract address as caller address if no address is provided.
-      // The problem is if the address does not hae enough coins the read will fail
-      // For now it works because we send coins on a previous tes
-      // Maybe caller address should not be optional
       test('Read only call with fee and no callerAddress', async () => {
         const result = await contractTest.read(
           'getValueFromKey',
