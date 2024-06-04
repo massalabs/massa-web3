@@ -22,8 +22,6 @@ import {
   i64ToBytes,
   serializableObjectsArrayToBytes,
   strToBytes,
-  u128ToBytes,
-  u256ToBytes,
 } from './serializers'
 
 /**
@@ -511,7 +509,7 @@ export class Args {
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addU128(bigInt: U128.U128): this {
-    this.serialized = Args.concatArrays(this.serialized, u128ToBytes(bigInt))
+    this.serialized = Args.concatArrays(this.serialized, U128.toBytes(bigInt))
 
     this.offset += U128.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U128, value: bigInt })
@@ -526,7 +524,7 @@ export class Args {
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
   public addU256(bigInt: bigint): this {
-    this.serialized = Args.concatArrays(this.serialized, u256ToBytes(bigInt))
+    this.serialized = Args.concatArrays(this.serialized, U256.toBytes(bigInt))
 
     this.offset += U256.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U256, value: bigInt })

@@ -141,7 +141,7 @@ describe('Serialization tests', () => {
     const args = new Args()
 
     expect(() => args.addU128(negativeValue)).toThrow(
-      `Unable to serialize invalid Uint128 value ${negativeValue}`
+      `negative value can't be serialized as unsigned integer.`
     )
   })
 
@@ -150,7 +150,7 @@ describe('Serialization tests', () => {
     const args = new Args()
 
     expect(() => args.addU128(largeValue)).toThrow(
-      `Unable to serialize invalid Uint128 value ${largeValue}`
+      `value ${largeValue} is too large for an U128.`
     )
   })
   it('ser/deser u256', () => {
@@ -162,7 +162,7 @@ describe('Serialization tests', () => {
     const args = new Args()
 
     expect(() => args.addU256(negativeValue)).toThrow(
-      `Unable to serialize invalid Uint256 value ${negativeValue}`
+      `negative value can't be serialized as unsigned integer.`
     )
   })
   it('throws an error when trying to serialize a u256 value greater than U256_MAX', () => {
@@ -170,7 +170,7 @@ describe('Serialization tests', () => {
     const args = new Args()
 
     expect(() => args.addU256(largeValue)).toThrow(
-      `Unable to serialize invalid Uint256 value ${largeValue}`
+      `value ${largeValue} is too large for an U256.`
     )
   })
   it('ser/deser i32', () => {

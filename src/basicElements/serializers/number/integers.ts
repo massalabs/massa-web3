@@ -1,6 +1,8 @@
 import { U8, U16, U32, U64, U128, U256 } from '..'
 import { FIRST, ONE, ZERO } from '../../../utils'
 
+const U256_NUM_64_BIT_CHUNKS = 4 // 256 / 64
+
 function mustBeValidUnsigned(sizeInBits: number, value: bigint): void {
   if (value < BigInt(ZERO)) {
     throw new Error("negative value can't be serialized as unsigned integer.")
@@ -77,9 +79,6 @@ export function numberToUnsigned(
   return int
 }
 
-const SHIFT_128_BITS = 128n
-const SHIFT_192_BITS = 192n
-
 function setBigUint128(
   view: DataView,
   byteOffset: number,
@@ -105,30 +104,18 @@ function setBigUint256(
   byteOffset: number,
   value: bigint
 ): void {
-  view.setBigUint64(byteOffset, value & U64.MAX, true)
-  byteOffset += U64.SIZE_BYTE
-  value = value >> BigInt(U64.SIZE_BIT)
-  view.setBigUint64(byteOffset, value & U64.MAX, true)
-  byteOffset += U64.SIZE_BYTE
-  value = value >> BigInt(U64.SIZE_BIT)
-  view.setBigUint64(byteOffset, value & U64.MAX, true)
-  byteOffset += U64.SIZE_BYTE
-  value = value >> BigInt(U64.SIZE_BIT)
-  view.setBigUint64(byteOffset, value, true)
+  for (let i = ZERO; i < U256_NUM_64_BIT_CHUNKS; i++) {
+    view.setBigUint64(byteOffset, value & U64.MAX, true)
+    byteOffset += U64.SIZE_BYTE
+    value >>= BigInt(U64.SIZE_BIT)
+  }
 }
 
 function getBigUint256(view: DataView, byteOffset: number): bigint {
-  const part1 = view.getBigUint64(byteOffset, true)
-  byteOffset += U64.SIZE_BYTE
-  const part2 = view.getBigUint64(byteOffset, true)
-  byteOffset += U64.SIZE_BYTE
-  const part3 = view.getBigUint64(byteOffset, true)
-  byteOffset += U64.SIZE_BYTE
-  const part4 = view.getBigUint64(byteOffset, true)
-  return (
-    (part4 << SHIFT_192_BITS) |
-    (part3 << SHIFT_128_BITS) |
-    (part2 << BigInt(U64.SIZE_BIT)) |
-    part1
-  )
+  let result = BigInt(ZERO)
+  for (let i = U256_NUM_64_BIT_CHUNKS - ONE; i >= ZERO; i--) {
+    const part = view.getBigUint64(byteOffset + i * U64.SIZE_BYTE, true)
+    result = (result << BigInt(U64.SIZE_BIT)) | part
+  }
+  return result
 }

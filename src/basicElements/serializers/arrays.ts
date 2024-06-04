@@ -13,9 +13,9 @@ import {
 import { bytesToStr } from './strings'
 import { byteToBool } from './bool'
 import { bytesToF32, bytesToF64, bytesToI32, bytesToI64 } from './numbers'
-import { bytesToI128, bytesToU128, bytesToU256 } from './bignum'
+import { bytesToI128 } from './bignum'
 import { ZERO } from '../../utils'
-import { U8, U32, U64 } from '.'
+import { U8, U32, U64, U128, U256 } from '.'
 
 const ZERO_LEN = 0
 /**
@@ -233,10 +233,10 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
         result.push(bytesToI128(elt) as T)
         break
       case ArrayTypes.U128:
-        result.push(bytesToU128(elt) as T)
+        result.push(U128.fromBytes(elt) as T)
         break
       case ArrayTypes.U256:
-        result.push(bytesToU256(elt) as T)
+        result.push(U256.fromBytes(elt) as T)
         break
     }
   }

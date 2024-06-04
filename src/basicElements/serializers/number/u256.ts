@@ -22,9 +22,6 @@ export function toBytes(value: U256): Uint8Array {
 /**
  * Converts bytes to a U256 value
  *
- * @remarks
- * Silently ignores bytes that are not needed to represent the U256 value.
- *
  * @param bytes - The bytes to convert
  * @returns The U256 representation of the bytes
  */
