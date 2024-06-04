@@ -78,37 +78,33 @@ export function numberToUnsigned(
 }
 
 function setBigUint128(view: DataView, value: bigint): void {
-  const u64Offset = ZERO
-  view.setBigUint64(u64Offset, value & U64.MAX, true)
-  view.setBigUint64(
-    u64Offset + U64.SIZE_BYTE,
-    value >> BigInt(U64.SIZE_BIT),
-    true
-  )
+  const offset = ZERO
+  view.setBigUint64(offset, value & U64.MAX, true)
+  view.setBigUint64(offset + U64.SIZE_BYTE, value >> BigInt(U64.SIZE_BIT), true)
 }
 
-function getBigUint128(view: DataView, u64Offset: number): bigint {
-  const low = view.getBigUint64(u64Offset, true)
-  u64Offset += U64.SIZE_BYTE
-  const high = view.getBigUint64(u64Offset, true)
+function getBigUint128(view: DataView, offset: number): bigint {
+  const low = view.getBigUint64(offset, true)
+  offset += U64.SIZE_BYTE
+  const high = view.getBigUint64(offset, true)
   return (high << BigInt(U64.SIZE_BIT)) | low
 }
 
 function setBigUint256(view: DataView, value: bigint): void {
-  let u64Offset = ZERO
+  let offset = ZERO
   for (let i = ZERO; i < U256.SIZE_BYTE / U64.SIZE_BYTE; i++) {
-    view.setBigUint64(u64Offset, value & U64.MAX, true)
-    u64Offset += U64.SIZE_BYTE
+    view.setBigUint64(offset, value & U64.MAX, true)
+    offset += U64.SIZE_BYTE
     value >>= BigInt(U64.SIZE_BIT)
   }
 }
 
-function getBigUint256(view: DataView, byteOffset: number): bigint {
+function getBigUint256(view: DataView, offset: number): bigint {
   let result = BigInt(ZERO)
-  const parts = U256.SIZE_BYTE / U64.SIZE_BYTE
+  const nbParts = U256.SIZE_BYTE / U64.SIZE_BYTE
 
-  for (let i = ZERO; i < parts; i++) {
-    const part = view.getBigUint64(byteOffset + i * U64.SIZE_BYTE, true)
+  for (let i = ZERO; i < nbParts; i++) {
+    const part = view.getBigUint64(offset + i * U64.SIZE_BYTE, true)
     result = result | (part << BigInt(i * U64.SIZE_BIT))
   }
 
