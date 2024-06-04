@@ -86,7 +86,7 @@ function setBigUint128(
 ): void {
   view.setBigUint64(byteOffset, value & U64.MAX, true)
   view.setBigUint64(
-    byteOffset + U8.SIZE_BIT,
+    byteOffset + U64.SIZE_BYTE,
     value >> BigInt(U64.SIZE_BIT),
     true
   )
