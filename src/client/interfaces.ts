@@ -1,16 +1,16 @@
 import { Address, OperationStatus } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64 } from '../basicElements/serializers/number/u64'
-import { NodeStatus, Slot } from '../generated/client'
+import { EventExecutionContext, NodeStatus, Slot } from '../generated/client'
 
 export type SendOperationInput = {
   data: Uint8Array
   publicKey: string
   signature: string
 }
-
 export type SCOutputEvent = {
   data: string
+  context: EventExecutionContext
 }
 
 export type EventFilter = {

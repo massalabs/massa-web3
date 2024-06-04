@@ -90,7 +90,7 @@ export class SmartContract {
    * @param opts - Optional deployment details with defaults as follows:
    * @param opts.fee - Execution fee, auto-estimated if absent.
    * @param opts.maxCoins - Maximum number of coins to use, auto-estimated if absent.
-   * @param opts.maxGas - Maximum executino gas, auto-estimated if absent.
+   * @param opts.maxGas - Maximum execution gas, auto-estimated if absent.
    * @param opts.periodToLive - Duration in blocks before the transaction expires, defaults to 10.
    * @param opts.waitFinalExecution - Whether to wait for the transaction to be finalized, defaults to true.
    *
@@ -144,17 +144,15 @@ export class SmartContract {
     if (!firstEvent) {
       throw new Error('no event received.')
     }
-    // @ts-expect-error TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
+
     if (firstEvent?.context.is_error) {
       const parsedData = JSON.parse(firstEvent.data)
       throw new Error(parsedData.massa_execution_error)
     }
 
     // TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
-    // TODO: What if multiple smart contracts are deployed in the same operation?
     const addr = firstEvent.data.split(': ')[ONE]
 
-    // TODO: What if multiple smart contracts are deployed in the same operation?
     return SmartContract.fromAddress(client, Address.fromString(addr), account)
   }
 
