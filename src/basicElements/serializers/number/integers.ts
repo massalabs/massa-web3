@@ -94,7 +94,7 @@ function setBigUint128(
 
 function getBigUint128(view: DataView, byteOffset: number): bigint {
   const low = view.getBigUint64(byteOffset, true)
-  byteOffset += U8.SIZE_BIT
+  u64Offset = U64.SIZE_BYTE
   const high = view.getBigUint64(byteOffset, true)
   return (high << BigInt(U64.SIZE_BIT)) | low
 }
