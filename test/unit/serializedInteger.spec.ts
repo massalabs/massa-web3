@@ -213,7 +213,7 @@ describe('Integer serialization', () => {
           255, 255,
         ])
       )
-    ).toBe(340282366920938463463374607431768211455n)
+    ).toBe(U128.MAX)
     expect(
       U128.fromBytes(
         new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
@@ -228,7 +228,17 @@ describe('Integer serialization', () => {
       )
     ).toThrow('not enough bytes to read the value.')
 
-    expect(U128.toBytes(340282366920938463463374607431768211455n)).toEqual(
+    expect(
+      U128.fromBuffer(
+        new Uint8Array([
+          255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+          255, 255,
+        ]),
+        0
+      )
+    ).toEqual({ offset: 16, value: U128.MAX })
+
+    expect(U128.toBytes(U128.MAX)).toEqual(
       Uint8Array.from([
         255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
         255, 255,
