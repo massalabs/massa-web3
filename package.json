@@ -25,12 +25,12 @@
         "generate:deployer": "ts-node src/deployerGeneration/generate-deployer.ts",
         "generate": "npm-run-all generate:*",
         "test": "jest --detectOpenHandles --forceExit ./test/unit",
+        "test:watch": "jest --watch ./test/unit",
         "test:browser": "jest --config=jest.browser.config.js",
         "test:cov": "jest --detectOpenHandles --coverage --forceExit",
         "test:cov:watch": "jest --detectOpenHandles --coverage --watch",
         "test:integration": "jest --detectOpenHandles --forceExit ./test/integration",
         "test:all": "npm run test && npm run test:integration",
-        "test:watch": "jest --watch",
         "test:watch:all": "jest --watchAll",
         "check-types": "tsc --noEmit",
         "doc": "typedoc src/index.ts --name massa-web3 --out docs/documentation/html --tsconfig tsconfig.json"
