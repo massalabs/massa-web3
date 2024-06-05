@@ -3,6 +3,9 @@ name: (open-rpc) Test OpenRPC spec
 on:
   pull_request:
 
+env:
+  MAINNET_WALLET_TEST_PRIVATE_KEY: ${{ secrets.MAINNET_WALLET_TEST_PRIVATE_KEY }}
+
 jobs:
   test-openrpc-spec:
     defaults:
