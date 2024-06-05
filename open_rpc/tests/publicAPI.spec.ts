@@ -8,6 +8,18 @@ import {
 import { PublicAPI, Transport } from '../src/publicAPI'
 import { createCheckers } from 'ts-interface-checker'
 import validator from '../generated/client-ti'
+import {
+  CHAIN_ID,
+  Client,
+  ClientFactory,
+  DefaultProviderUrls,
+  IAccount,
+  ITransactionData,
+  WalletClient,
+  fromMAS,
+} from '../../packages/massa-web3/src'
+
+import { getEnvVariable } from '../../packages/massa-web3/examples/utils'
 
 const {
   NodeStatus,
@@ -24,14 +36,33 @@ const {
   ExecuteReadOnlyResponse,
 } = createCheckers(validator)
 
-const api = new PublicAPI(Transport.https, 'buildnet.massa.net', 443, '/api/v2')
+const api = new PublicAPI(Transport.https, 'mainnet.massa.net', 443, '/api/v2')
+
+const mainnetWalletTestPrivateKey = getEnvVariable(
+  'MAINNET_WALLET_TEST_PRIVATE_KEY'
+)
 
 let lastSlot: Slot = { period: 0, thread: 0 }
 let someEndorsement: string[]
 let someBlockIds: string[]
 let operationId: string
 
+let deployerAccount: IAccount
+let web3Client: Client
+
 describe('unit tests', () => {
+  beforeAll(async () => {
+    deployerAccount = await WalletClient.getAccountFromSecretKey(
+      mainnetWalletTestPrivateKey
+    )
+    web3Client = await ClientFactory.createDefaultClient(
+      DefaultProviderUrls.MAINNET,
+      CHAIN_ID.MainNet,
+      true,
+      deployerAccount
+    )
+  })
+
   test('getStatus', async () => {
     const status = await api.getStatus()
     lastSlot.period = status.last_slot!.period
@@ -88,6 +119,16 @@ describe('unit tests', () => {
     EndorsementInfo.strictCheck(endorsement)
   })
 
+  test('sendOperations', async () => {
+    const txIds = await web3Client.wallet().sendTransaction({
+      amount: fromMAS(0),
+      fee: fromMAS(0.01),
+      recipientAddress: 'AU12vgqgRjUDLCDpfokrggn8rD5aem7xDmcNKrbvKzjmKmFK2xVwL',
+    } as ITransactionData)
+    expect(txIds.length > 0)
+    operationId = txIds[0]
+  })
+
   test('getMultipleEndorsements', async () => {
     const endorsements = await api.getMultipleEndorsements([
       someEndorsement[1]!,
@@ -117,45 +158,12 @@ describe('unit tests', () => {
     entries.forEach((entry) => DatastoreEntryOutput.strictCheck(entry))
   })
 
-  test.skip('sendOperations', async () => {
-    const operations = await api.sendMultipleOperations([
-      {
-        creator_public_key:
-          'P12QDzMvr1SNNwJWmdpA9XQY9PqCDqdLaqiQDFZKQh8dPGSxagTh',
-        signature:
-          '1JhEaikbcebpJKPd7q6VsA2iWcnuL1iho6vcbpAsJJkp5SjFo7nD8xCJwxTXh7oiKH3bQ95DH7DK1kNzu5Xw5somQxbeiA',
-        serialized_content: [
-          128, 173, 226, 4, 160, 194, 30, 0, 0, 0, 159, 203, 100, 23, 219, 54,
-          253, 245, 197, 164, 216, 135, 68, 99, 245, 229, 167, 22, 210, 46, 194,
-          89, 114, 243, 208, 0, 237, 205, 111, 189, 24, 65, 0,
-        ],
-      },
-    ])
-    expect(operations).toHaveLength(1)
-    operationId = operations[0]
-  })
-
-  test.skip('sendOperation', async () => {
-    const operation = await api.sendOperation({
-      creator_public_key:
-        'P12QDzMvr1SNNwJWmdpA9XQY9PqCDqdLaqiQDFZKQh8dPGSxagTh',
-      signature:
-        '1JhEaikbcebpJKPd7q6VsA2iWcnuL1iho6vcbpAsJJkp5SjFo7nD8xCJwxTXh7oiKH3bQ95DH7DK1kNzu5Xw5somQxbeiA',
-      serialized_content: [
-        128, 173, 226, 4, 160, 194, 30, 0, 0, 0, 159, 203, 100, 23, 219, 54,
-        253, 245, 197, 164, 216, 135, 68, 99, 245, 229, 167, 22, 210, 46, 194,
-        89, 114, 243, 208, 0, 237, 205, 111, 189, 24, 65, 0,
-      ],
-    })
-    expect(operation.length > 0)
-  })
-
-  test.skip('getOperation', async () => {
+  test('getOperation', async () => {
     const operation = await api.getOperation(operationId)
     OperationInfo.strictCheck(operation)
   })
 
-  test.skip('getMultipleOperations', async () => {
+  test('getMultipleOperations', async () => {
     const operations = await api.getOperations([operationId, operationId])
     expect(operations).toHaveLength(2)
   })
@@ -168,7 +176,7 @@ describe('unit tests', () => {
     AddressInfo.strictCheck(info[0])
   })
 
-  test.skip('getFilteredScOutputEvent', async () => {
+  test('getFilteredScOutputEvent', async () => {
     const event = await api.getFilteredScOutputEvent({
       emitter_address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
     } as EventFilter)
@@ -195,7 +203,7 @@ describe('unit tests', () => {
     expect(responses).toHaveLength(2)
   })
 
-  test.skip('getAddressesBytecode', async () => {
+  test('getAddressesBytecode', async () => {
     const bytecode = await api.getAddressesBytecode({
       address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
       is_final: true,
@@ -203,7 +211,7 @@ describe('unit tests', () => {
     expect(bytecode.length > 1).toBeTruthy()
   })
 
-  test.skip('executeMultipleGetAddressesBytecode', async () => {
+  test('executeMultipleGetAddressesBytecode', async () => {
     const req = {
       address: 'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP',
       is_final: true,
@@ -236,7 +244,7 @@ describe('unit tests', () => {
       caller_address: null,
       coins: null,
       fee: null,
-    } as ReadOnlyCall
+    }
     const responses = await api.executeMultipleReadOnlyCall([arg, arg])
     expect(responses).toHaveLength(2)
     ExecuteReadOnlyResponse.strictCheck(responses[0])

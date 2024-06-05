@@ -91,7 +91,7 @@ export class PublicAPI {
     return this.connector.get_addresses(addresses)
   }
 
-  async getAddressesBytecode(address_filter: AddressFilter): Promise<string> {
+  async getAddressesBytecode(address_filter: AddressFilter): Promise<number[]> {
     return this.connector
       .get_addresses_bytecode([address_filter])
       .then((r) => r[0])
@@ -99,7 +99,7 @@ export class PublicAPI {
 
   async executeMultipleGetAddressesBytecode(
     address_filters: AddressFilter[]
-  ): Promise<string[]> {
+  ): Promise<number[][]> {
     return this.connector.get_addresses_bytecode(address_filters)
   }
 
