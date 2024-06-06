@@ -66,5 +66,5 @@ export async function execute(
     datastore: opts.datastore,
   }
 
-  return new Operation(client, await operation.send(details))
+  return await operation.send(details)
 }

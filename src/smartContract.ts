@@ -5,6 +5,8 @@ import {
   OperationType,
   Address,
   CallOperation,
+  Args,
+  ArrayTypes,
 } from './basicElements'
 import * as StorageCost from './basicElements/storage'
 import { BlockchainClient, ReadOnlyCallResult } from './client'
@@ -16,6 +18,7 @@ import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
 import { Mas } from './basicElements/mas'
 import { U64 } from './basicElements/serializers/number/u64'
+import { rawEventDecode } from './utils/events'
 
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
@@ -152,12 +155,15 @@ export class SmartContract {
       throw new Error(parsedData.massa_execution_error)
     }
 
-    const smartContracts = lastEvent.data
-      .split(',')
-      .map((address) =>
-        SmartContract.fromAddress(client, Address.fromString(address), account)
-      )
+    const result = rawEventDecode(lastEvent.data)
 
+    const arg = new Args(result).nextArray<string>(ArrayTypes.STRING)
+
+    const smartContracts = arg.map((address) =>
+      SmartContract.fromAddress(client, Address.fromString(address), account)
+    )
+
+    // For now, we can only deploy one contract
     return smartContracts[0]
   }
 
@@ -220,7 +226,7 @@ export class SmartContract {
 
     const operation = new OperationManager(account.privateKey, this.client)
 
-    return new Operation(this.client, await operation.send(details))
+    return await operation.send(details)
   }
 
   /**
