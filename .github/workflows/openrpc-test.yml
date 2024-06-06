@@ -1,7 +1,8 @@
 name: (open-rpc) Test OpenRPC spec
 
 on:
-  pull_request:
+  schedule:
+    - cron: "0 2 * * *"
 
 env:
   MAINNET_WALLET_TEST_PRIVATE_KEY: ${{ secrets.MAINNET_WALLET_TEST_PRIVATE_KEY }}
