@@ -18,7 +18,8 @@
     "babel-jest": "^29.7.0"
   },
   "scripts": {
-    "generate:client": "open-rpc-generator generate -c openrpc.config.json && mkdir -p generated && mv tmp/client/typescript/src/index.ts generated/client.ts && rm -r tmp",
+    "generate:download": "curl -o ./massa.api.json https://raw.githubusercontent.com/massalabs/massa/main/massa-node/base_config/openrpc.json",
+    "generate:client": "open-rpc-generator generate -c openrpc.config.json && mkdir -p generated && mv tmp/client/typescript/src/index.ts generated/client.ts && rm -r tmp && rm massa.api.json",
     "generate:test": "ts-interface-builder generated/client.ts",
     "generate": "npm-run-all generate:*",
     "test": "npm run generate && npm run test:run",
