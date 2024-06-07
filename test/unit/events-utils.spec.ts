@@ -6,8 +6,8 @@ describe('Events utils', () => {
     test('decode', () => {
       const message = 'test'
       const rawData = new Args().addString('test').serialize()
-      const base64 = Buffer.from(rawData).toString('base64')
-      const rawEvent = rawEventDecode(base64)
+      const dataBase64Encoded = Buffer.from(rawData).toString('base64')
+      const rawEvent = rawEventDecode(dataBase64Encoded)
       const event = new Args(rawEvent).nextString()
 
       expect(event).toEqual(message)

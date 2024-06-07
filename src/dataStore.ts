@@ -67,12 +67,8 @@ export function populateDatastore(
 
   contracts.forEach((contract, i) => {
     datastore.set(contractKey(i), contract.data)
-    if (contract.args) {
-      datastore.set(argsKey(i), contract.args)
-    }
-    if (contract.coins > ZERO) {
-      datastore.set(coinsKey(i), U64.toBytes(contract.coins))
-    }
+    datastore.set(argsKey(i), contract.args)
+    datastore.set(coinsKey(i), U64.toBytes(contract.coins))
   })
 
   return datastore
