@@ -150,21 +150,20 @@ export class SmartContract {
       throw new Error('no event received.')
     }
 
-    if (lastEvent?.context.is_error) {
+    if (lastEvent.context.is_error) {
       const parsedData = JSON.parse(lastEvent.data)
       throw new Error(parsedData.massa_execution_error)
     }
 
-    const result = rawEventDecode(lastEvent.data)
+    const contracts = new Args(
+      rawEventDecode(lastEvent.data)
+    ).nextArray<string>(ArrayTypes.STRING)
 
-    const arg = new Args(result).nextArray<string>(ArrayTypes.STRING)
-
-    const smartContracts = arg.map((address) =>
-      SmartContract.fromAddress(client, Address.fromString(address), account)
+    return SmartContract.fromAddress(
+      client,
+      Address.fromString(contracts[0]),
+      account
     )
-
-    // For now, we can only deploy one contract
-    return smartContracts[0]
   }
 
   /**
