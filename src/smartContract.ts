@@ -5,6 +5,8 @@ import {
   OperationType,
   Address,
   CallOperation,
+  Args,
+  ArrayTypes,
 } from './basicElements'
 import * as StorageCost from './basicElements/storage'
 import { BlockchainClient, ReadOnlyCallResult } from './client'
@@ -16,6 +18,7 @@ import { ONE, ZERO } from './utils'
 import { execute } from './basicElements/bytecode'
 import { Mas } from './basicElements/mas'
 import { U64 } from './basicElements/serializers/number/u64'
+import { rawEventDecode } from './utils/events'
 
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
@@ -90,7 +93,7 @@ export class SmartContract {
    * @param opts - Optional deployment details with defaults as follows:
    * @param opts.fee - Execution fee, auto-estimated if absent.
    * @param opts.maxCoins - Maximum number of coins to use, auto-estimated if absent.
-   * @param opts.maxGas - Maximum executino gas, auto-estimated if absent.
+   * @param opts.maxGas - Maximum execution gas, auto-estimated if absent.
    * @param opts.periodToLive - Duration in blocks before the transaction expires, defaults to 10.
    * @param opts.waitFinalExecution - Whether to wait for the transaction to be finalized, defaults to true.
    *
@@ -102,7 +105,6 @@ export class SmartContract {
   static async deploy(
     client: BlockchainClient,
     account: Account,
-    // TODO: Handle multiple contracts
     contract: DeployContract,
     opts: DeployOptions = {
       waitFinalExecution: true,
@@ -111,10 +113,15 @@ export class SmartContract {
     const totalCost =
       StorageCost.smartContract(contract.byteCode.length) + contract.coins
 
-    if (
-      (await client.getBalance(account.address.toString(), false)) < totalCost
-    ) {
-      throw new Error('Insufficient balance')
+    const userBalance = await client.getBalance(
+      account.address.toString(),
+      false
+    )
+    if (userBalance < totalCost) {
+      throw new ErrorInsufficientBalance({
+        userBalance,
+        neededBalance: totalCost,
+      })
     }
 
     const datastore = populateDatastore([
@@ -133,29 +140,30 @@ export class SmartContract {
       datastore,
     })
 
-    const event = opts.waitFinalExecution
+    const events = opts.waitFinalExecution
       ? await operation.getFinalEvents()
       : await operation.getSpeculativeEvents()
 
-    // an error can occur in the deployed smart contract
-    // We could throw a custom deploy error with the list of errors
-    const firstEvent = event.at(-ONE)
+    const lastEvent = events.at(-ONE)
 
-    if (!firstEvent) {
+    if (!lastEvent) {
       throw new Error('no event received.')
     }
-    // @ts-expect-error TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
-    if (firstEvent?.context.is_error) {
-      const parsedData = JSON.parse(firstEvent.data)
+
+    if (lastEvent.context.is_error) {
+      const parsedData = JSON.parse(lastEvent.data)
       throw new Error(parsedData.massa_execution_error)
     }
 
-    // TODO: Refactor the deployer smart contract logic to return the deployed address in a more readable way
-    // TODO: What if multiple smart contracts are deployed in the same operation?
-    const addr = firstEvent.data.split(': ')[ONE]
+    const contracts = new Args(
+      rawEventDecode(lastEvent.data)
+    ).nextArray<string>(ArrayTypes.STRING)
 
-    // TODO: What if multiple smart contracts are deployed in the same operation?
-    return SmartContract.fromAddress(client, Address.fromString(addr), account)
+    return SmartContract.fromAddress(
+      client,
+      Address.fromString(contracts[0]),
+      account
+    )
   }
 
   /**
@@ -217,7 +225,7 @@ export class SmartContract {
 
     const operation = new OperationManager(account.privateKey, this.client)
 
-    return new Operation(this.client, await operation.send(details))
+    return await operation.send(details)
   }
 
   /**

@@ -61,7 +61,7 @@ describe('Smart Contract', () => {
     const deployContract = {
       byteCode,
       parameter: new Args().addString('myName').serialize(),
-      coins: 3n,
+      coins: Mas.fromString('0.0016'),
     }
 
     const deployOptions = {

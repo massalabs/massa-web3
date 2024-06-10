@@ -44,7 +44,7 @@ export class AccountOperation {
       amount,
     }
 
-    return new Operation(this.client, await operation.send(details))
+    return await operation.send(details)
   }
 
   /**
@@ -109,7 +109,7 @@ export class AccountOperation {
       recipientAddress: to,
     }
 
-    return new Operation(this.client, await operation.send(details))
+    return await operation.send(details)
   }
 
   /**

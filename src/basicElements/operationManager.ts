@@ -6,6 +6,7 @@ import { Signature } from './signature'
 import varint from 'varint'
 import { FIRST } from '../utils'
 import { U64 } from './serializers'
+import { Operation } from './operation'
 
 const PERIOD_TO_LIVE_DEFAULT = 10
 const PERIOD_TO_LIVE_MAX = 100
@@ -263,8 +264,7 @@ export class OperationManager {
    *
    * @returns An operation Id.
    */
-  // TODO: should return an Operation object, having speculative and final getter, instead
-  async send(operation: OperationDetails): Promise<string> {
+  async send(operation: OperationDetails): Promise<Operation> {
     if (!this.blockchainClient) {
       throw new Error('blockchainClient is mandatory to send operations')
     }
@@ -274,11 +274,14 @@ export class OperationManager {
     const data = OperationManager.serialize(operation)
     const publicKey = await this.privateKey.getPublicKey()
 
-    return this.blockchainClient.sendOperation({
-      data,
-      publicKey: publicKey.toString(),
-      signature: signature.toString(),
-    })
+    return new Operation(
+      this.blockchainClient,
+      await this.blockchainClient.sendOperation({
+        data,
+        publicKey: publicKey.toString(),
+        signature: signature.toString(),
+      })
+    )
   }
 }
 

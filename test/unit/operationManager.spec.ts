@@ -222,7 +222,7 @@ describe('Operation manager tests', () => {
       publicKey: (await privateKey.getPublicKey()).toString(),
       signature: (await operationManager.sign(1n, transfer)).toString(),
     })
-    expect(operationId).toBe('operationId')
+    expect(operationId.id).toBe('operationId')
   })
 })
 
