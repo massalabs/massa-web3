@@ -1,3 +1,4 @@
+import { Address } from './address'
 import {
   Bit,
   U8,
@@ -173,6 +174,18 @@ export class Args {
 
     this.offset = end
     return result
+  }
+
+  /**
+   * Returns the next address in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized address
+   */
+  public nextAddress(): Address {
+    return Address.fromString(this.nextString())
   }
 
   private nextInteger(
@@ -642,6 +655,17 @@ export class Args {
     this.argsList.push({ type: ArgTypes.STRING, value: value })
 
     return this
+  }
+
+  /**
+   * Adds an address to the serialized arguments.
+   *
+   * @param value - the address to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addAddress(value: Address): this {
+    return this.addString(value.toString())
   }
 
   /**

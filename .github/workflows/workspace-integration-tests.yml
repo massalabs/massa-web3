@@ -22,5 +22,5 @@ jobs:
 
       - name: Run integration tests
         env:
-          PRIVATE_KEY: ${{ secrets.WALLET_SECRET_KEY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: npm run test:integration

@@ -4,6 +4,8 @@ import { PasswordSeal } from './crypto/passwordSeal'
 import { Address, PrivateKey, PublicKey, Signature } from './basicElements'
 import { readFileSync, existsSync } from 'fs'
 import yaml from 'js-yaml'
+import { AccountOperation } from './accountOperation'
+import { BlockchainClient } from './client'
 
 /**
  * A class representing an account.
@@ -152,6 +154,18 @@ export class Account {
       default:
         throw new Error(`unsupported version`)
     }
+  }
+
+  /**
+   * Returns an account operation object using this account.
+   * It's useful to make simple operations like transfer, buyRolls, etc directly from the account object.
+   *
+   * @param client - The blockchain client to use to submit the operations to the network.
+   *
+   * @returns An account operation object.
+   */
+  operations(client: BlockchainClient): AccountOperation {
+    return new AccountOperation(this, client)
   }
 
   /**
