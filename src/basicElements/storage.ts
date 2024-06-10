@@ -3,7 +3,6 @@ import { U32 } from './serializers'
 
 const BYTE_COST_MICRO_MASSA = 100n
 
-// TODO: replace by the underlying logic of the storage cost
 const ACCOUNT_SIZE_BYTES = 10
 
 /**
