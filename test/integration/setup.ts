@@ -9,7 +9,7 @@ export let account: Account
 export let accountOperation: AccountOperation
 
 beforeAll(async () => {
-  client = new JsonRPCClient('https://buildnet.massa.net/api/v2')
+  client = JsonRPCClient.buildnet()
   account = await Account.fromEnv()
   accountOperation = new AccountOperation(account, client)
   // eslint-disable-next-line no-console
