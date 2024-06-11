@@ -222,10 +222,12 @@ export class Account {
   /**
    * Uses the environment variables to create an account.
    *
+   * @param key - The environment variable key containing the private key.
+   *
    * @returns An account instance.
    */
-  static async fromEnv(): Promise<Account> {
-    return Account.fromPrivateKey(PrivateKey.fromEnv())
+  static async fromEnv(key?: string): Promise<Account> {
+    return Account.fromPrivateKey(PrivateKey.fromEnv(key))
   }
 
   /**

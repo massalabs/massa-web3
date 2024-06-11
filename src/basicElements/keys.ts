@@ -124,16 +124,21 @@ export class PrivateKey {
   /**
    * Initializes a new private key object from the environment variables.
    *
+   * @param key - The environment variable name containing the private key.
+   *
    * @remarks
-   * The `PRIVATE_KEY` environment variable is required.
+   * The `PRIVATE_KEY` or the provided key is required in the environment variables.
    *
    * @returns A new private key instance.
    */
-  public static fromEnv(): PrivateKey {
-    if (!process.env.PRIVATE_KEY) {
-      throw new Error('missing `PRIVATE_KEY` environment variable')
+  public static fromEnv(key = 'PRIVATE_KEY'): PrivateKey {
+    const privateKey = process.env[key]
+
+    if (!privateKey) {
+      throw new Error(`missing \`${key}\` environment variable`)
     }
-    return PrivateKey.fromString(process.env.PRIVATE_KEY)
+
+    return PrivateKey.fromString(privateKey)
   }
 
   /**

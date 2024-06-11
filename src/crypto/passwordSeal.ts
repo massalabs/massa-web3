@@ -77,7 +77,7 @@ export class PasswordSeal implements Sealer {
    * Creates a Sealer from environment variables.
    *
    * @remarks
-   * The expected envrionment variables are:
+   * The expected environment variables are:
    * - PASSWORD,
    * - SALT - base64 encoded, and
    * - NONCE - base64 encoded.
