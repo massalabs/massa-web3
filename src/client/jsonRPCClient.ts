@@ -1,4 +1,4 @@
-import { NETWORKS } from 'src/utils/networks'
+import { NETWORKS } from '../utils/networks'
 import { PublicAPI, Transport } from './publicAPI'
 
 const HTTPS = 443
