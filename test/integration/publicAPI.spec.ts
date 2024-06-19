@@ -28,6 +28,7 @@ import {
   TransferOperation,
 } from '../../src/basicElements'
 import { Account } from '../../src/account'
+import { AccountOperation } from '../../src/accountOperation'
 
 const {
   NodeStatus,
@@ -52,8 +53,8 @@ let someBlockIds: string[]
 let operationId: string
 
 let deployerAccount: Account
-let web3Client: JsonRPCClient
-let api
+let api: JsonRPCClient
+let accountOperation: AccountOperation
 
 describe('unit tests', () => {
   beforeAll(async () => {
@@ -63,6 +64,8 @@ describe('unit tests', () => {
     deployerAccount = await Account.fromPrivateKey(mainnetWalletTestPrivateKey)
 
     api = JsonRPCClient.mainnet()
+
+    accountOperation = new AccountOperation(deployerAccount, api)
 
     // web3Client = await ClientFactory.createDefaultClient(
     //     DefaultProviderUrls.MAINNET,
@@ -129,32 +132,13 @@ describe('unit tests', () => {
   })
 
   test('sendOperations', async () => {
-    const transfer: TransferOperation = {
-      amount: Mas.fromMas(0n),
-      fee: Mas.fromString('0.01'),
-      type: OperationType.Transaction,
-      expirePeriod: 2,
-      recipientAddress: Address.fromString(
-        'AU12vgqgRjUDLCDpfokrggn8rD5aem7xDmcNKrbvKzjmKmFK2xVwL'
-      ),
-    }
-
-    let serialized = OperationManager.serialize(transfer)
-    const txIds = await web3Client.sendOperations([
-      {
-        data: serialized,
-        publicKey: deployerAccount.publicKey.toString(),
-        signature: (await deployerAccount.sign(serialized)).toString(),
-      },
-    ])
-
-    // const txIds = await web3Client.wallet().sendTransaction({
-    //     amount: Mas.fromMas(0n),
-    //     fee: Mas.fromString('0.01'),
-    //     recipientAddress: 'AU12vgqgRjUDLCDpfokrggn8rD5aem7xDmcNKrbvKzjmKmFK2xVwL',
-    // } as ITransactionData)
-    expect(txIds.length > 0)
-    operationId = txIds[0]
+    let op = await accountOperation.transfer(
+      'AU12vgqgRjUDLCDpfokrggn8rD5aem7xDmcNKrbvKzjmKmFK2xVwL',
+      Mas.fromNanoMas(1n),
+      { fee: Mas.fromString('0.01') }
+    )
+    expect(op.id.length > 0)
+    operationId = op.id
   })
 
   test('getMultipleEndorsements', async () => {
@@ -250,15 +234,16 @@ describe('unit tests', () => {
 
   test('executeReadOnlyCall', async () => {
     let arg: ReadOnlyCallParams = {
-      maxGas: 1000000n,
+      maxGas: 2100000n,
       target: Address.fromString(
-        'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
+        'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP'
       ),
       func: 'hello',
       caller: Address.fromString(
         'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
       ),
     }
+
     const response = await api.executeReadOnlyCall(arg as ReadOnlyCallParams)
     expect(response).toHaveProperty('result')
     ExecuteReadOnlyResponse.strictCheck(response)

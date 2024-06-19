@@ -1,4 +1,6 @@
 import type { Config } from '@jest/types'
+const dotenv = require('dotenv')
+dotenv.config()
 
 const config: Config.InitialOptions = {
   displayName: 'massa-web3',
@@ -12,7 +14,11 @@ const config: Config.InitialOptions = {
     '^.+\\.jsx?$': 'babel-jest',
   },
   testMatch: ['<rootDir>/test/**/*.(spec|test).ts?(x)'],
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/dist/',
+    '<rootDir>/open_rpc/',
+  ],
   transformIgnorePatterns: ['/node_modules/(?!big-varint).+\\.js$'],
 }
 
