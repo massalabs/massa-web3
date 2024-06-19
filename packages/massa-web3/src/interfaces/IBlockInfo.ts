@@ -1,5 +1,57 @@
 import { ISlot } from '@massalabs/web3-utils'
-import { OpType } from './OperationTypes'
+
+type Denunciation = {
+  public_key: string
+  slot: number
+  hash_1: string
+  hash_2: string
+  signature_1: string
+  signature_2: string
+}
+
+export type BlockHeaderDenunciation = Denunciation
+export type EndorsementDenunciation = Denunciation & { index: number }
+
+export type Endorsement = {
+  content: {
+    slot: ISlot
+    index: number
+    endorsed_block: string
+  }
+  signature: string
+  content_creator_pub_key: string
+  content_creator_address: string
+  id: string
+}
+
+export type BlockHeaderContent = {
+  current_version: number
+  announced_version: number | null
+  operation_merkle_root: string
+  parents: string[]
+  slot: ISlot
+  endorsements: Endorsement[]
+  denunciations: BlockHeaderDenunciation | EndorsementDenunciation
+}
+
+export type BlockHeader = {
+  content: BlockHeaderContent
+  signature: string
+  content_creator_pub_key: string
+  content_creator_address: string
+  id: string
+}
+
+export type BlockInfoContent = {
+  is_final: boolean
+  is_in_blockclique: boolean
+  is_candidate: boolean
+  is_discarded: boolean
+  block: {
+    header: BlockHeader
+    operations: string[]
+  }
+}
 
 /**
  * Represents information about a block.
@@ -10,37 +62,5 @@ import { OpType } from './OperationTypes'
  */
 export interface IBlockInfo {
   id: string // BlockId
-  content: null | {
-    is_final: boolean
-    is_stale: boolean
-    block: {
-      header: {
-        content: {
-          endorsed_block: string // Block ID
-          index: number
-          sender_public_key: string
-          slot: ISlot // Endorsed block slot: different from block's slot
-        }
-        signature: string
-      }
-      operation_merkle_root: string // Hash of all operations
-      parents: string[] // Block IDs, as many as thread count
-      slot: ISlot
-    }
-    signature: string
-    operations: [
-      {
-        content: {
-          expire_period: number
-          fee: string // Represents an Amount in coins
-          op: OpType
-          sender_public_key: string
-        }
-        signature: string
-      },
-    ]
-  }
-  is_final: boolean
-  is_in_blockclique: boolean
-  is_stale: boolean
+  content: BlockInfoContent
 }
