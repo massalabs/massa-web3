@@ -117,7 +117,12 @@ export class PublicAPI {
           executedDenunciationsChanges:
             res.state_changes.executed_denunciations_changes,
           executionTrailHashChange:
-            res.state_changes.execution_trail_hash_change,
+            typeof res.state_changes.execution_trail_hash_change === 'string'
+              ? { type: 'Keep' }
+              : {
+                  type: 'Set',
+                  value: res.state_changes.execution_trail_hash_change.Set,
+                },
         },
       },
     }

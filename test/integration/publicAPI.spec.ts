@@ -1,32 +1,15 @@
 import {
   AddressFilter,
   EventFilter,
+  ExecuteReadOnlyResponse,
   ReadOnlyBytecodeExecution,
-  ReadOnlyCall,
   Slot,
 } from '../../src/generated/client'
 import { createCheckers } from 'ts-interface-checker'
-import validator from '../../open_rpc/generated/client-ti'
-import { SmartContract } from '../../src/smartContract'
+import validator from '../../src/generated/client-ti'
 
-// import {
-//     CHAIN_ID,
-//     Client,
-//     ClientFactory,
-//     DefaultProviderUrls,
-//     IAccount,
-//     ITransactionData,
-//     WalletClient,
-//     fromMAS,
-// } from '../../packages/massa-web3/src'
 import { JsonRPCClient, ReadOnlyCallParams } from '../../src/client'
-import {
-  Address,
-  Mas,
-  OperationManager,
-  OperationType,
-  TransferOperation,
-} from '../../src/basicElements'
+import { Address, Mas } from '../../src/basicElements'
 import { Account } from '../../src/account'
 import { AccountOperation } from '../../src/accountOperation'
 
@@ -43,6 +26,7 @@ const {
   OperationInfo,
   SCOutputEvent,
   ExecuteReadOnlyResponse,
+  ReadOnlyCallResult,
 } = createCheckers(validator)
 
 const mainnetWalletTestPrivateKey = process.env.MAINNET_WALLET_TEST_PRIVATE_KEY
@@ -66,13 +50,6 @@ describe('unit tests', () => {
     api = JsonRPCClient.mainnet()
 
     accountOperation = new AccountOperation(deployerAccount, api)
-
-    // web3Client = await ClientFactory.createDefaultClient(
-    //     DefaultProviderUrls.MAINNET,
-    //     CHAIN_ID.MainNet,
-    //     true,
-    //     deployerAccount
-    // )
   })
 
   test('getStatus', async () => {
@@ -198,7 +175,7 @@ describe('unit tests', () => {
 
   test('executeReadOnlyBytecode', async () => {
     const response = await api.executeReadOnlyBytecode({
-      max_gas: 100000,
+      max_gas: 2100000,
       bytecode: [65, 66],
       address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
     })
@@ -233,43 +210,31 @@ describe('unit tests', () => {
   })
 
   test('executeReadOnlyCall', async () => {
-    let arg: ReadOnlyCallParams = {
+    let params: ReadOnlyCallParams = {
       maxGas: 2100000n,
       target: Address.fromString(
-        'AS12qzyNBDnwqq2vYwvUMHzrtMkVp6nQGJJ3TETVKF5HCd4yymzJP'
+        'AS124ZqPefYDWqboB2jzj9U19aDCmz57TUJzdbiLpfcsj2HsGLYCk'
       ),
-      func: 'hello',
+      func: 'receive',
       caller: Address.fromString(
-        'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
+        'AS124ZqPefYDWqboB2jzj9U19aDCmz57TUJzdbiLpfcsj2HsGLYCk'
       ),
     }
 
-    const response = await api.executeReadOnlyCall(arg as ReadOnlyCallParams)
-    expect(response).toHaveProperty('result')
-    ExecuteReadOnlyResponse.strictCheck(response)
-  })
+    let response: any[] = await api.connector.execute_read_only_call([
+      {
+        max_gas: Number(params.maxGas),
+        target_address: params.target.toString(),
+        target_function: params.func,
+        parameter: params.parameter ? Array.from(params.parameter) : [],
+        caller_address: params.caller.toString(),
+        coins: params.coins ? Mas.toString(params.coins) : null,
+        fee: params.fee ? Mas.toString(params.fee) : null,
+      },
+    ])
 
-  test('executeMultipleReadOnlyCall', async () => {
-    let sc = SmartContract.fromAddress(
-      api,
-      Address.fromString(
-        'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
-      ),
-      deployerAccount
-    )
-    const response = await sc.read('hello')
-
-    // let arg = {
-    //     max_gas: 1000000,
-    //     target_address: 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x',
-    //     target_function: 'hello',
-    //     parameter: [],
-    //     caller_address: null,
-    //     coins: null,
-    //     fee: null,
-    // }
-    // const responses = await api.executeMultipleReadOnlyCall([arg, arg])
-    expect(response).toHaveLength(1)
-    ExecuteReadOnlyResponse.strictCheck(response)
+    response.forEach((resp) => {
+      ExecuteReadOnlyResponse.strictCheck(resp)
+    })
   })
 })

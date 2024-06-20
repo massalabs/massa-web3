@@ -20,7 +20,7 @@
         "build-esm": "tsc --project tsconfig.esm.json",
         "build-commonjs": "tsc --project tsconfig.commonjs.json",
         "build": "npm-run-all clean-dist build-*",
-        "generate:download": "curl -o open_rpc/massa.api.json https://raw.githubusercontent.com/massalabs/massa/main/massa-node/base_config/openrpc.json",
+        "generate:download": "curl -o open_rpc/massa.api.json https://raw.githubusercontent.com/massalabs/massa/d218af4b109be79038b0fbdfc28c200be297ce65/massa-node/base_config/openrpc.json",
         "generate:client": "open-rpc-generator generate -c open_rpc/openrpc.config.json && mv tmp/client/typescript/src/index.ts src/generated/client.ts && rm -r tmp && rm open_rpc/massa.api.json",
         "generate:test": "ts-interface-builder src/generated/client.ts",
         "generate:deployer": "ts-node src/deployerGeneration/generate-deployer.ts",
