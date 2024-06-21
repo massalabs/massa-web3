@@ -7,6 +7,7 @@ on:
     paths:
       - 'src/client/**'
       - 'test/integration/publicAPI.spec.ts'
+      - '.github/workflows/openrpc-test.yml'
   workflow_call:
 
 env:
