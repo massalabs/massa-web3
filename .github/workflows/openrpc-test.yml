@@ -3,6 +3,11 @@ name: (open-rpc) Test OpenRPC spec
 on:
   schedule:
     - cron: "0 2 * * *"
+  push:
+    paths:
+      - 'src/client/**'
+      - 'test/integration/publicAPI.spec.ts'
+  workflow_call:
 
 env:
   MAINNET_WALLET_TEST_PRIVATE_KEY: ${{ secrets.MAINNET_WALLET_TEST_PRIVATE_KEY }}
@@ -43,6 +48,12 @@ jobs:
       - name: Generate OpenRPC spec
         run: |
           npm run generate
+
+      # check if generated file is different from committed file
+      - name: Check if OpenRPC spec is up to date
+        run: |
+          git diff --exit-code src/generated
+        continue-on-error: false
 
       - name: Test OpenRPC spec
         run: |
