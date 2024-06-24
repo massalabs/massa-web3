@@ -45,10 +45,22 @@ export type ReadOnlyCallResult = {
       posChanges: Record<string, unknown>
       executedOpsChanges: Record<string, unknown>
       executedDenunciationsChanges: Record<string, unknown>
-      executionTrailHashChange: string
+      executionTrailHashChange: SetOrKeep<string>
     }
   }
 }
+
+type Set<T> = {
+  type: 'Set'
+  value: T
+}
+
+type Keep = {
+  type: 'Keep'
+}
+
+// generic type
+export type SetOrKeep<T> = Set<T> | Keep
 
 /*
  * Blockchain client functions needed by the Operation class to send operations to the blockchain.

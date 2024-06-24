@@ -117,7 +117,12 @@ export class PublicAPI {
           executedDenunciationsChanges:
             res.state_changes.executed_denunciations_changes,
           executionTrailHashChange:
-            res.state_changes.execution_trail_hash_change,
+            typeof res.state_changes.execution_trail_hash_change === 'string'
+              ? { type: 'Keep' }
+              : {
+                  type: 'Set',
+                  value: res.state_changes.execution_trail_hash_change.Set,
+                },
         },
       },
     }
@@ -143,7 +148,7 @@ export class PublicAPI {
     return this.connector.get_addresses(addresses)
   }
 
-  async getAddressesBytecode(addressFilter: AddressFilter): Promise<string> {
+  async getAddressesBytecode(addressFilter: AddressFilter): Promise<number[]> {
     return this.connector
       .get_addresses_bytecode([addressFilter])
       .then((r) => r[FIRST])
@@ -151,7 +156,7 @@ export class PublicAPI {
 
   async executeMultipleGetAddressesBytecode(
     addressFilters: AddressFilter[]
-  ): Promise<string[]> {
+  ): Promise<number[][]> {
     return this.connector.get_addresses_bytecode(addressFilters)
   }
 
