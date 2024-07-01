@@ -224,6 +224,9 @@ export class Account {
    *
    * @param key - The environment variable key containing the private key.
    *
+   * @remarks
+   * The `PRIVATE_KEY` or the provided key is required in the environment variables.
+   *
    * @returns An account instance.
    */
   static async fromEnv(key?: string): Promise<Account> {
