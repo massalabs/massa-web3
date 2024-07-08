@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    uses: ./.github/workflows/workspace-check-formatting-and-run-tests.yml
+    uses: ./.github/workflows/check-formatting-and-run-tests.yml
   publish-npm-next:
     needs: test
     runs-on: ubuntu-latest
