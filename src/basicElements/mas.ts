@@ -75,7 +75,7 @@ export function fromNanoMas(value: U64): Mas {
 }
 
 /**
- * Converts a decimal value to the smallest unit of the Massa currency.
+ * Converts a decimal value in Mas to the smallest unit of the Massa currency.
  *
  * @param value - The decimal value.
  * @returns The value in the smallest unit of the Massa currency.

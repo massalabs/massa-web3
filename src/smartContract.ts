@@ -19,6 +19,7 @@ import { execute } from './basicElements/bytecode'
 import { Mas } from './basicElements/mas'
 import { U64 } from './basicElements/serializers/number/u64'
 import { rawEventDecode } from './utils/events'
+import { minBigInt } from './utils/maths'
 
 export const MAX_GAS_CALL = 4294167295n
 export const MIN_GAS_CALL = 2100000n
@@ -296,7 +297,8 @@ export class SmartContract {
       throw new Error(result.info.error)
     }
 
+    const gasCost = BigInt(result.info.gasCost)
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    return BigInt(result.info.gasCost * 1.2)
+    return minBigInt(gasCost + (gasCost * 20n) / 100n, MAX_GAS_CALL)
   }
 }
