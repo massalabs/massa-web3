@@ -2,8 +2,19 @@ import { Version } from './crypto/interfaces/versioner'
 import Sealer from './crypto/interfaces/sealer'
 import { PasswordSeal } from './crypto/passwordSeal'
 import { Address, PrivateKey, PublicKey, Signature } from './basicElements'
-import { readFileSync, existsSync } from 'fs'
-import yaml from 'js-yaml'
+
+let fs: typeof import('fs') | undefined
+let yaml: typeof import('js-yaml') | undefined
+
+if (typeof window === 'undefined') {
+  // Running in Node.js
+  import('fs').then((module) => {
+    fs = module
+  })
+  import('js-yaml').then((module) => {
+    yaml = module
+  })
+}
 
 /**
  * A class representing an account.
@@ -239,12 +250,15 @@ export class Account {
    * @returns An account instance.
    */
   static async fromYaml(path: string, password: string): Promise<Account> {
+    if (typeof window !== 'undefined' || !fs || !yaml) {
+      throw new Error('This function is not available in the browser')
+    }
     // check that file exists
-    if (!existsSync(path)) {
+    if (!fs.existsSync(path)) {
       throw new Error(`wallet file "${path}" does not exist.`)
     }
 
-    const ks = yaml.load(readFileSync(path, 'utf8')) as AccountKeyStore
+    const ks = yaml.load(fs.readFileSync(path, 'utf8')) as AccountKeyStore
     return Account.fromKeyStore(ks, password)
   }
 }
