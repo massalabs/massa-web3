@@ -1,6 +1,14 @@
 import { U8, U16, U32, U64, U128, U256 } from '..'
 import { FIRST, ONE, ZERO } from '../../../utils'
 
+function mustBeValidSigned(sizeInBits: number, value: bigint): void {
+  const min = -(BigInt(ONE) << (BigInt(sizeInBits) - BigInt(ONE)))
+  const max = (BigInt(ONE) << (BigInt(sizeInBits) - BigInt(ONE))) - BigInt(ONE)
+  if (value < min || value > max) {
+    throw new Error(`value ${value} is out of range for an I${sizeInBits}.`)
+  }
+}
+
 function mustBeValidUnsigned(sizeInBits: number, value: bigint): void {
   if (value < BigInt(ZERO)) {
     throw new Error("negative value can't be serialized as unsigned integer.")
@@ -10,22 +18,37 @@ function mustBeValidUnsigned(sizeInBits: number, value: bigint): void {
   }
 }
 
-export function unsignedToByte(sizeInBits: number, value: bigint): Uint8Array {
-  mustBeValidUnsigned(sizeInBits, value)
+export function integerToByte(
+  sizeInBits: number,
+  value: bigint,
+  signed = false
+): Uint8Array {
+  signed
+    ? mustBeValidSigned(sizeInBits, value)
+    : mustBeValidUnsigned(sizeInBits, value)
+
   const buffer = new ArrayBuffer(sizeInBits / U8.SIZE_BIT)
   const view = new DataView(buffer)
   switch (sizeInBits) {
     case U8.SIZE_BIT:
-      view.setUint8(FIRST, Number(value))
+      signed
+        ? view.setInt8(FIRST, Number(value))
+        : view.setUint8(FIRST, Number(value))
       break
     case U16.SIZE_BIT:
-      view.setUint16(FIRST, Number(value), true)
+      signed
+        ? view.setInt16(FIRST, Number(value), true)
+        : view.setUint16(FIRST, Number(value), true)
       break
     case U32.SIZE_BIT:
-      view.setUint32(FIRST, Number(value), true)
+      signed
+        ? view.setInt32(FIRST, Number(value), true)
+        : view.setUint32(FIRST, Number(value), true)
       break
     case U64.SIZE_BIT:
-      view.setBigUint64(FIRST, value, true)
+      signed
+        ? view.setBigInt64(FIRST, value, true)
+        : view.setBigUint64(FIRST, value, true)
       break
     case U128.SIZE_BIT:
       setBigUint128(view, value)
@@ -34,14 +57,17 @@ export function unsignedToByte(sizeInBits: number, value: bigint): Uint8Array {
       setBigUint256(view, value)
       break
     default:
-      throw new Error(`unsupported U${sizeInBits} serialization.`)
+      throw new Error(
+        `unsupported ${signed ? 'I' : 'U'}${sizeInBits} serialization.`
+      )
   }
   return new Uint8Array(view.buffer)
 }
 
-export function unsignedFromByte(
+export function integerFromByte(
   sizeInBits: number,
   bytes: Uint8Array,
+  signed = false,
   index = FIRST
 ): bigint {
   if (bytes.length < index + sizeInBits / U8.SIZE_BIT) {
@@ -50,30 +76,42 @@ export function unsignedFromByte(
   const view = new DataView(bytes.buffer)
   switch (sizeInBits) {
     case U8.SIZE_BIT:
-      return BigInt(view.getUint8(index))
+      return signed ? BigInt(view.getInt8(index)) : BigInt(view.getUint8(index))
     case U16.SIZE_BIT:
-      return BigInt(view.getUint16(index, true))
+      return signed
+        ? BigInt(view.getInt16(index, true))
+        : BigInt(view.getUint16(index, true))
     case U32.SIZE_BIT:
-      return BigInt(view.getUint32(index, true))
+      return signed
+        ? BigInt(view.getInt32(index, true))
+        : BigInt(view.getUint32(index, true))
     case U64.SIZE_BIT:
-      return view.getBigUint64(index, true)
+      return signed
+        ? view.getBigInt64(index, true)
+        : view.getBigUint64(index, true)
     case U128.SIZE_BIT:
-      return getBigUint128(view, index)
+      return signed ? getBigInt128(view, index) : getBigUint128(view, index)
     case U256.SIZE_BIT:
-      return getBigUint256(view, index)
+      return signed ? getBigInt256(view, index) : getBigUint256(view, index)
     default:
-      throw new Error(`unsupported U${sizeInBits} deserialization`)
+      throw new Error(
+        `unsupported ${signed ? 'I' : 'U'}${sizeInBits} deserialization`
+      )
   }
 }
-export function numberToUnsigned(
+
+export function numberToInteger(
   sizeInBits: number,
-  value: number | bigint
+  value: number | bigint,
+  signed = false
 ): bigint {
   if (typeof value === 'number' && !Number.isSafeInteger(value)) {
     throw new Error(`value ${value} is not a safe integer.`)
   }
   const int = BigInt(value)
-  mustBeValidUnsigned(sizeInBits, int)
+  signed
+    ? mustBeValidSigned(sizeInBits, int)
+    : mustBeValidUnsigned(sizeInBits, int)
   return int
 }
 
@@ -109,4 +147,12 @@ function getBigUint256(view: DataView, offset: number): bigint {
   }
 
   return result
+}
+
+function getBigInt128(view: DataView, offset: number): bigint {
+  return BigInt.asIntN(U128.SIZE_BIT, getBigUint128(view, offset))
+}
+
+function getBigInt256(view: DataView, offset: number): bigint {
+  return BigInt.asIntN(U256.SIZE_BIT, getBigUint256(view, offset))
 }
