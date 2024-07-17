@@ -1,6 +1,8 @@
+import { ZERO } from '../utils/noMagic'
 import {
   Bit,
   U8,
+  U16,
   U32,
   U64,
   U128,
@@ -9,19 +11,19 @@ import {
   bytesToArray,
   bytesToF32,
   bytesToF64,
-  bytesToI128,
-  bytesToI32,
-  bytesToI64,
   bytesToSerializableObjectArray,
   bytesToStr,
   deserializeObj,
   f32ToBytes,
   f64ToBytes,
-  i128ToBytes,
-  i32ToBytes,
-  i64ToBytes,
   serializableObjectsArrayToBytes,
   strToBytes,
+  I8,
+  I16,
+  I32,
+  I64,
+  I128,
+  I256,
 } from './serializers'
 
 /**
@@ -57,13 +59,17 @@ export enum ArgTypes {
   STRING,
   BOOL,
   U8,
+  U16,
   U32,
   U64,
-  I128,
   U128,
   U256,
+  I8,
+  I16,
   I32,
   I64,
+  I128,
+  I256,
   F32,
   F64,
   ARRAY,
@@ -77,13 +83,17 @@ export enum ArrayTypes {
   STRING,
   BOOL,
   U8,
+  U16,
   U32,
   U64,
-  I128,
   U128,
   U256,
+  I8,
+  I16,
   I32,
   I64,
+  I128,
+  I256,
   F32,
   F64,
 }
@@ -104,10 +114,7 @@ export type NativeType = string | boolean | number | bigint
 
 const BYTES_32_OFFSET = 4
 const BYTES_64_OFFSET = 8
-export const BYTES_128_OFFSET = 16
-export const BYTES_256_OFFSET = 32
 export const DEFAULT_OFFSET = 0
-const ZERO = 0
 
 /**
  * Storage and serialization class for remote function call arguments.
@@ -197,6 +204,18 @@ export class Args {
   }
 
   /**
+   * Returns the next unsigned short integer in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextU16(): U16.U16 {
+    return this.nextInteger(U16.fromBuffer)
+  }
+
+  /**
    * Returns the next unsigned integer in the serialized byte array.
    *
    * @remarks
@@ -221,21 +240,6 @@ export class Args {
   }
 
   /**
-   * Returns the next int128 in the serialized byte array.
-   *
-   * @remarks
-   * Increments to offset to point the data after the one that as been deserialized in the byte array.
-   *
-   * @returns the deserialized number.
-   */
-  public nextI128(): bigint {
-    const value = bytesToI128(this.serialized, this.offset)
-
-    this.offset += BYTES_128_OFFSET
-    return value
-  }
-
-  /**
    * Returns the next uint128 in the serialized byte array.
    *
    * @remarks
@@ -243,7 +247,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextU128(): bigint {
+  public nextU128(): U128.U128 {
     return this.nextInteger(U128.fromBuffer)
   }
 
@@ -255,8 +259,80 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextU256(): bigint {
+  public nextU256(): U256.U256 {
     return this.nextInteger(U256.fromBuffer)
+  }
+
+  /**
+   * Returns the next signed byte in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextI8(): I8.I8 {
+    return this.nextInteger(I8.fromBuffer)
+  }
+
+  /**
+   * Returns the next signed short integer in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextI16(): I16.I16 {
+    return this.nextInteger(I16.fromBuffer)
+  }
+
+  /**
+   * Returns the next signed integer in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextI32(): I32.I32 {
+    return this.nextInteger(I32.fromBuffer)
+  }
+
+  /**
+   * Returns the next signed long integer in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextI64(): I64.I64 {
+    return this.nextInteger(I64.fromBuffer)
+  }
+
+  /**
+   * Returns the next signed long integer in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextI128(): I128.I128 {
+    return this.nextInteger(I128.fromBuffer)
+  }
+
+  /**
+   * Returns the next signed long integer in the serialized byte array.
+   *
+   * @remarks
+   * Increments to offset to point the data after the one that as been deserialized in the byte array.
+   *
+   * @returns the deserialized number.
+   */
+  public nextI256(): I256.I256 {
+    return this.nextInteger(I256.fromBuffer)
   }
 
   /**
@@ -269,36 +345,6 @@ export class Args {
    */
   nextBool(): boolean {
     return !!this.serialized[this.offset++]
-  }
-
-  /**
-   * Returns the next signed integer in the serialized byte array.
-   *
-   * @remarks
-   * Increments to offset to point the data after the one that as been deserialized in the byte array.
-   *
-   * @returns the deserialized number.
-   */
-  public nextI32(): number {
-    const value = bytesToI32(this.serialized, this.offset)
-
-    this.offset += BYTES_32_OFFSET
-    return value
-  }
-
-  /**
-   * Returns the next signed long integer in the serialized byte array.
-   *
-   * @remarks
-   * Increments to offset to point the data after the one that as been deserialized in the byte array.
-   *
-   * @returns the deserialized number.
-   */
-  public nextI64(): bigint {
-    const value = bytesToI64(this.serialized, this.offset)
-
-    this.offset += BYTES_64_OFFSET
-    return BigInt(value)
   }
 
   /**
@@ -440,20 +486,10 @@ export class Args {
     return this
   }
 
-  /**
-   * Adds a boolean to the serialized arguments.
-   *
-   * @param value - the boolean to add.
-   *
-   * @returns the serialized arguments to be able to chain `add` method calls.
-   */
-  public addBool(value: boolean): this {
-    this.serialized = Args.concatArrays(
-      this.serialized,
-      U8.toBytes(value ? Bit.ONE : Bit.ZERO)
-    )
-    this.offset++
-    this.argsList.push({ type: ArgTypes.BOOL, value: value })
+  public addU16(value: U16.U16): this {
+    this.serialized = Args.concatArrays(this.serialized, U16.toBytes(value))
+    this.offset += U16.SIZE_BYTE
+    this.argsList.push({ type: ArgTypes.U16, value: value })
     return this
   }
 
@@ -480,24 +516,8 @@ export class Args {
    */
   public addU64(value: U64.U64): this {
     this.serialized = Args.concatArrays(this.serialized, U64.toBytes(value))
-
     this.offset += U64.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U64, value: value })
-    return this
-  }
-
-  /**
-   * Adds a signed long integer to the serialized arguments.
-   *
-   * @param value - the number to add.
-   *
-   * @returns the serialized arguments to be able to chain `add` method calls.
-   */
-  public addI128(bigInt: bigint): this {
-    this.serialized = Args.concatArrays(this.serialized, i128ToBytes(bigInt))
-
-    this.offset += BYTES_128_OFFSET
-    this.argsList.push({ type: ArgTypes.I128, value: bigInt })
     return this
   }
 
@@ -510,7 +530,6 @@ export class Args {
    */
   public addU128(bigInt: U128.U128): this {
     this.serialized = Args.concatArrays(this.serialized, U128.toBytes(bigInt))
-
     this.offset += U128.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U128, value: bigInt })
     return this
@@ -523,11 +542,38 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU256(bigInt: bigint): this {
+  public addU256(bigInt: U256.U256): this {
     this.serialized = Args.concatArrays(this.serialized, U256.toBytes(bigInt))
-
     this.offset += U256.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U256, value: bigInt })
+    return this
+  }
+
+  /**
+   * Adds a signed byte to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addI8(value: I8.I8): this {
+    this.serialized = Args.concatArrays(this.serialized, I8.toBytes(value))
+    this.offset++
+    this.argsList.push({ type: ArgTypes.I8, value: value })
+    return this
+  }
+
+  /**
+   * Adds a signed short integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addI16(value: I16.I16): this {
+    this.serialized = Args.concatArrays(this.serialized, I16.toBytes(value))
+    this.offset += I16.SIZE_BYTE
+    this.argsList.push({ type: ArgTypes.I16, value: value })
     return this
   }
 
@@ -538,9 +584,9 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI32(value: number): this {
-    this.serialized = Args.concatArrays(this.serialized, i32ToBytes(value))
-    this.offset += BYTES_32_OFFSET
+  public addI32(value: I32.I32): this {
+    this.serialized = Args.concatArrays(this.serialized, I32.toBytes(value))
+    this.offset += I32.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.I32, value: value })
     return this
   }
@@ -552,10 +598,55 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI64(bigInt: bigint): this {
-    this.serialized = Args.concatArrays(this.serialized, i64ToBytes(bigInt))
-    this.offset += BYTES_64_OFFSET
-    this.argsList.push({ type: ArgTypes.I64, value: bigInt })
+  public addI64(value: I64.I64): this {
+    this.serialized = Args.concatArrays(this.serialized, I64.toBytes(value))
+    this.offset += I64.SIZE_BYTE
+    this.argsList.push({ type: ArgTypes.I64, value: value })
+    return this
+  }
+
+  /**
+   * Adds a signed long integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addI128(value: I128.I128): this {
+    this.serialized = Args.concatArrays(this.serialized, I128.toBytes(value))
+    this.offset += I128.SIZE_BYTE
+    this.argsList.push({ type: ArgTypes.I128, value: value })
+    return this
+  }
+
+  /**
+   * Adds a signed long integer to the serialized arguments.
+   *
+   * @param value - the number to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addI256(value: I256.I256): this {
+    this.serialized = Args.concatArrays(this.serialized, I256.toBytes(value))
+    this.offset += I256.SIZE_BYTE
+    this.argsList.push({ type: ArgTypes.I256, value: value })
+    return this
+  }
+
+  /**
+   * Adds a boolean to the serialized arguments.
+   *
+   * @param value - the boolean to add.
+   *
+   * @returns the serialized arguments to be able to chain `add` method calls.
+   */
+  public addBool(value: boolean): this {
+    this.serialized = Args.concatArrays(
+      this.serialized,
+      U8.toBytes(value ? Bit.ONE : Bit.ZERO)
+    )
+    this.offset++
+    this.argsList.push({ type: ArgTypes.BOOL, value: value })
     return this
   }
 

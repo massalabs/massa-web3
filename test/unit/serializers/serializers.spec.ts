@@ -6,23 +6,19 @@ import {
   U64,
   U128,
   U256,
-  I128_MAX,
-  I128_MIN,
+  I8,
+  I16,
+  I32,
+  I64,
+  I128,
+  I256,
   boolToByte,
   byteToBool,
   bytesToF32,
   bytesToF64,
-  bytesToI128,
-  bytesToI16,
-  bytesToI32,
-  bytesToI64,
   bytesToStr,
   f32ToBytes,
   f64ToBytes,
-  i128ToBytes,
-  i16ToBytes,
-  i32ToBytes,
-  i64ToBytes,
   strToBytes,
 } from '../../../src/basicElements/serializers'
 
@@ -73,7 +69,7 @@ describe('Serialization tests', () => {
   })
   it('ser/deser i16', () => {
     const val = 123
-    expect(bytesToI16(i16ToBytes(val))).toEqual(val)
+    expect(I16.fromBytes(I16.toBytes(I16.fromNumber(val)))).toEqual(BigInt(val))
   })
   // Duplicate of serializedInteger.spec.ts?
   it('ser/deser u32', () => {
@@ -120,15 +116,15 @@ describe('Serialization tests', () => {
 
   it('ser/deser i128', () => {
     const val = -123456789123456789n
-    expect(bytesToI128(i128ToBytes(val))).toEqual(val)
+    expect(I128.fromBytes(I128.toBytes(I128.fromNumber(val)))).toEqual(val)
   })
   it('ser/deser i128', () => {
-    const val = I128_MAX
-    expect(bytesToI128(i128ToBytes(val))).toEqual(val)
+    const val = I128.MAX
+    expect(I128.fromBytes(I128.toBytes(I128.fromNumber(val)))).toEqual(val)
   })
   it('ser/deser i128', () => {
-    const val = I128_MIN
-    expect(bytesToI128(i128ToBytes(val))).toEqual(val)
+    const val = I128.MIN
+    expect(I128.fromBytes(I128.toBytes(I128.fromNumber(val)))).toEqual(val)
   })
 
   it('ser/deser u128', () => {
@@ -175,26 +171,26 @@ describe('Serialization tests', () => {
   })
   it('ser/deser i32', () => {
     const val = -666
-    expect(bytesToI32(i32ToBytes(val))).toEqual(val)
+    expect(I32.fromBytes(I32.toBytes(I32.fromNumber(val)))).toEqual(BigInt(val))
   })
   it('throws an error when trying to serialize an invalid int32 value', () => {
     const invalidValue = Math.pow(2, 31)
     const args = new Args()
 
-    expect(() => args.addI32(invalidValue)).toThrow(
-      `Unable to serialize invalid int32 value ${invalidValue}`
+    expect(() => args.addI32(I32.fromNumber(invalidValue))).toThrow(
+      `value ${invalidValue} is out of range for an I32.`
     )
   })
   it('ser/deser i64', () => {
     const val = BigInt(-666)
-    expect(bytesToI64(i64ToBytes(val))).toEqual(val)
+    expect(I64.fromBytes(I64.toBytes(I64.fromNumber(val)))).toEqual(val)
   })
   it('throws an error when trying to serialize an invalid int64 value', () => {
     const invalidValue = BigInt('9223372036854775808')
     const args = new Args()
 
     expect(() => args.addI64(invalidValue)).toThrow(
-      `Unable to serialize invalid int64 value ${invalidValue.toString()}`
+      `value ${invalidValue} is out of range for an I64.`
     )
   })
   it('ser/deser f32', () => {

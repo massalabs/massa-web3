@@ -19,13 +19,6 @@ export * from './strings'
 export * from './numbers'
 
 /**
- * This module exports functions needed to process numeric data, such as integers and
- * floating point numbers and their binary representations in Uint8Array.
- * The functions handle signed and unsigned integers bignumbers integers.
- */
-export * from './bignum'
-
-/**
  * This module exports encoding and decoding functions for booleans.
  */
 export * from './bool'
