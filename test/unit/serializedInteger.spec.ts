@@ -1,4 +1,17 @@
-import { U8, U16, U32, U64, U256, U128 } from '../../src/basicElements'
+import {
+  U8,
+  U16,
+  U32,
+  U64,
+  U128,
+  U256,
+  I8,
+  I16,
+  I32,
+  I64,
+  I128,
+  I256,
+} from '../../src/basicElements'
 
 describe('Integer serialization', () => {
   test('U8', async () => {
@@ -399,5 +412,367 @@ describe('Integer serialization', () => {
         16
       )
     ).toThrow('not enough bytes to read the value.')
+  })
+
+  test('I8', async () => {
+    expect(I8.SIZE_BIT).toBe(8)
+    expect(I8.MAX).toBe(127n)
+    expect(I8.MIN).toBe(-128n)
+
+    expect(I8.fromNumber(127)).toBe(127n)
+    expect(I8.fromNumber(-128)).toBe(-128n)
+    expect(I8.fromNumber(0)).toBe(0n)
+    expect(() => I8.fromNumber(128)).toThrow(
+      'value 128 is out of range for an I8.'
+    )
+    expect(() => I8.fromNumber(-129)).toThrow(
+      'value -129 is out of range for an I8.'
+    )
+    expect(() => I8.fromNumber(1.1)).toThrow('value 1.1 is not a safe integer.')
+
+    expect(I8.fromBytes(new Uint8Array([127]))).toBe(127n)
+    expect(I8.fromBytes(new Uint8Array([0]))).toBe(0n)
+    expect(I8.fromBytes(new Uint8Array([128]))).toBe(-128n)
+    expect(() => I8.fromBytes(new Uint8Array())).toThrow(
+      'not enough bytes to read the value.'
+    )
+
+    expect(I8.toBytes(127n)).toEqual(Uint8Array.from([127]))
+    expect(I8.toBytes(0n)).toEqual(Uint8Array.from([0]))
+    expect(I8.toBytes(-128n)).toEqual(Uint8Array.from([128]))
+
+    expect(I8.fromBuffer(new Uint8Array([127]), 0)).toEqual({
+      value: 127n,
+      offset: 1,
+    })
+    expect(I8.fromBuffer(new Uint8Array([0]), 0)).toEqual({
+      value: 0n,
+      offset: 1,
+    })
+    expect(I8.fromBuffer(new Uint8Array([128]), 0)).toEqual({
+      value: -128n,
+      offset: 1,
+    })
+    expect(() => I8.fromBuffer(new Uint8Array(), 0)).toThrow(
+      'not enough bytes to read the value.'
+    )
+  })
+
+  test('I16', async () => {
+    expect(I16.SIZE_BIT).toBe(16)
+    expect(I16.MAX).toBe(32767n)
+    expect(I16.MIN).toBe(-32768n)
+
+    expect(I16.fromNumber(32767)).toBe(32767n)
+    expect(I16.fromNumber(-32768)).toBe(-32768n)
+    expect(I16.fromNumber(0)).toBe(0n)
+    expect(() => I16.fromNumber(32768)).toThrow(
+      'value 32768 is out of range for an I16.'
+    )
+    expect(() => I16.fromNumber(-32769)).toThrow(
+      'value -32769 is out of range for an I16.'
+    )
+    expect(() => I16.fromNumber(1.1)).toThrow(
+      'value 1.1 is not a safe integer.'
+    )
+
+    expect(I16.fromBytes(new Uint8Array([255, 127]))).toBe(32767n)
+    expect(I16.fromBytes(new Uint8Array([0, 0]))).toBe(0n)
+    expect(I16.fromBytes(new Uint8Array([0, 128]))).toBe(-32768n)
+    expect(() => I16.fromBytes(new Uint8Array([255]))).toThrow(
+      'not enough bytes to read the value.'
+    )
+
+    expect(I16.toBytes(32767n)).toEqual(Uint8Array.from([255, 127]))
+    expect(I16.toBytes(0n)).toEqual(Uint8Array.from([0, 0]))
+    expect(I16.toBytes(-32768n)).toEqual(Uint8Array.from([0, 128]))
+
+    expect(I16.fromBuffer(new Uint8Array([255, 127]), 0)).toEqual({
+      value: 32767n,
+      offset: 2,
+    })
+    expect(I16.fromBuffer(new Uint8Array([0, 0]), 0)).toEqual({
+      value: 0n,
+      offset: 2,
+    })
+    expect(I16.fromBuffer(new Uint8Array([0, 128]), 0)).toEqual({
+      value: -32768n,
+      offset: 2,
+    })
+    expect(() => I16.fromBuffer(new Uint8Array([255]), 0)).toThrow(
+      'not enough bytes to read the value.'
+    )
+  })
+
+  test('I32', async () => {
+    expect(I32.SIZE_BIT).toBe(32)
+    expect(I32.MAX).toBe(2147483647n)
+    expect(I32.MIN).toBe(-2147483648n)
+
+    expect(I32.fromNumber(2147483647)).toBe(2147483647n)
+    expect(I32.fromNumber(-2147483648)).toBe(-2147483648n)
+    expect(I32.fromNumber(0)).toBe(0n)
+    expect(() => I32.fromNumber(2147483648)).toThrow(
+      'value 2147483648 is out of range for an I32.'
+    )
+    expect(() => I32.fromNumber(-2147483649)).toThrow(
+      'value -2147483649 is out of range for an I32.'
+    )
+    expect(() => I32.fromNumber(1.1)).toThrow(
+      'value 1.1 is not a safe integer.'
+    )
+
+    expect(I32.fromBytes(new Uint8Array([255, 255, 255, 127]))).toBe(
+      2147483647n
+    )
+    expect(I32.fromBytes(new Uint8Array([0, 0, 0, 0]))).toBe(0n)
+    expect(I32.fromBytes(new Uint8Array([0, 0, 0, 128]))).toBe(-2147483648n)
+    expect(() => I32.fromBytes(new Uint8Array([255, 255, 255]))).toThrow(
+      'not enough bytes to read the value.'
+    )
+
+    expect(I32.toBytes(2147483647n)).toEqual(
+      Uint8Array.from([255, 255, 255, 127])
+    )
+    expect(I32.toBytes(0n)).toEqual(Uint8Array.from([0, 0, 0, 0]))
+    expect(I32.toBytes(-2147483648n)).toEqual(Uint8Array.from([0, 0, 0, 128]))
+
+    expect(I32.fromBuffer(new Uint8Array([255, 255, 255, 127]), 0)).toEqual({
+      value: 2147483647n,
+      offset: 4,
+    })
+    expect(I32.fromBuffer(new Uint8Array([0, 0, 0, 0]), 0)).toEqual({
+      value: 0n,
+      offset: 4,
+    })
+    expect(I32.fromBuffer(new Uint8Array([0, 0, 0, 128]), 0)).toEqual({
+      value: -2147483648n,
+      offset: 4,
+    })
+    expect(() => I32.fromBuffer(new Uint8Array([255, 255, 255]), 0)).toThrow(
+      'not enough bytes to read the value.'
+    )
+  })
+
+  test('I64', async () => {
+    expect(I64.SIZE_BIT).toBe(64)
+    expect(I64.MAX).toBe(9223372036854775807n)
+    expect(I64.MIN).toBe(-9223372036854775808n)
+
+    expect(I64.fromNumber(Number.MAX_SAFE_INTEGER)).toBe(9_007_199_254_740_991n)
+    expect(I64.fromNumber(-Number.MAX_SAFE_INTEGER)).toBe(
+      -9_007_199_254_740_991n
+    )
+    expect(I64.fromNumber(0)).toBe(0n)
+    expect(() => I64.fromNumber(9223372036854775808n)).toThrow(
+      'value 9223372036854775808 is out of range for an I64.'
+    )
+    expect(() => I64.fromNumber(-9223372036854775809n)).toThrow(
+      'value -9223372036854775809 is out of range for an I64.'
+    )
+    expect(() => I64.fromNumber(1.1)).toThrow(
+      'value 1.1 is not a safe integer.'
+    )
+
+    expect(
+      I64.fromBytes(new Uint8Array([255, 255, 255, 255, 255, 255, 255, 127]))
+    ).toBe(9223372036854775807n)
+    expect(I64.fromBytes(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]))).toBe(0n)
+    expect(I64.fromBytes(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 128]))).toBe(
+      -9223372036854775808n
+    )
+    expect(() =>
+      I64.fromBytes(new Uint8Array([255, 255, 255, 255, 255, 255, 255]))
+    ).toThrow('not enough bytes to read the value.')
+
+    expect(I64.toBytes(9223372036854775807n)).toEqual(
+      Uint8Array.from([255, 255, 255, 255, 255, 255, 255, 127])
+    )
+    expect(I64.toBytes(0n)).toEqual(Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 0]))
+    expect(I64.toBytes(-9223372036854775808n)).toEqual(
+      Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 128])
+    )
+
+    expect(
+      I64.fromBuffer(
+        new Uint8Array([255, 255, 255, 255, 255, 255, 255, 127]),
+        0
+      )
+    ).toEqual({
+      value: 9223372036854775807n,
+      offset: 8,
+    })
+    expect(I64.fromBuffer(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]), 0)).toEqual(
+      {
+        value: 0n,
+        offset: 8,
+      }
+    )
+    expect(
+      I64.fromBuffer(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 128]), 0)
+    ).toEqual({
+      value: -9223372036854775808n,
+      offset: 8,
+    })
+    expect(() =>
+      I64.fromBuffer(new Uint8Array([255, 255, 255, 255, 255, 255, 255]), 0)
+    ).toThrow('not enough bytes to read the value.')
+  })
+
+  test('I128', async () => {
+    expect(I128.SIZE_BIT).toBe(128)
+    expect(I128.MAX).toBe(170141183460469231731687303715884105727n)
+    expect(I128.MIN).toBe(-170141183460469231731687303715884105728n)
+
+    expect(I128.fromNumber(170141183460469231731687303715884105727n)).toBe(
+      170141183460469231731687303715884105727n
+    )
+    expect(I128.fromNumber(-170141183460469231731687303715884105728n)).toBe(
+      -170141183460469231731687303715884105728n
+    )
+    expect(I128.fromNumber(0)).toBe(0n)
+    expect(() =>
+      I128.fromNumber(170141183460469231731687303715884105728n)
+    ).toThrow(
+      'value 170141183460469231731687303715884105728 is out of range for an I128.'
+    )
+    expect(() =>
+      I128.fromNumber(-170141183460469231731687303715884105729n)
+    ).toThrow(
+      'value -170141183460469231731687303715884105729 is out of range for an I128.'
+    )
+    expect(() => I128.fromNumber(1.1)).toThrow(
+      'value 1.1 is not a safe integer.'
+    )
+
+    const maxBytes = new Uint8Array([
+      255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+      127,
+    ])
+    const minBytes = new Uint8Array([
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128,
+    ])
+    expect(I128.fromBytes(maxBytes)).toBe(
+      170141183460469231731687303715884105727n
+    )
+    expect(I128.fromBytes(new Uint8Array(16))).toBe(0n)
+    expect(I128.fromBytes(minBytes)).toBe(
+      -170141183460469231731687303715884105728n
+    )
+    expect(() => I128.fromBytes(new Uint8Array(15))).toThrow(
+      'not enough bytes to read the value.'
+    )
+
+    expect(I128.toBytes(170141183460469231731687303715884105727n)).toEqual(
+      maxBytes
+    )
+    expect(I128.toBytes(0n)).toEqual(new Uint8Array(16))
+    expect(I128.toBytes(-170141183460469231731687303715884105728n)).toEqual(
+      minBytes
+    )
+
+    expect(I128.fromBuffer(maxBytes, 0)).toEqual({
+      value: 170141183460469231731687303715884105727n,
+      offset: 16,
+    })
+    expect(I128.fromBuffer(new Uint8Array(16), 0)).toEqual({
+      value: 0n,
+      offset: 16,
+    })
+    expect(I128.fromBuffer(minBytes, 0)).toEqual({
+      value: -170141183460469231731687303715884105728n,
+      offset: 16,
+    })
+    expect(() => I128.fromBuffer(new Uint8Array(15), 0)).toThrow(
+      'not enough bytes to read the value.'
+    )
+  })
+
+  test('I256', async () => {
+    expect(I256.SIZE_BIT).toBe(256)
+    expect(I256.MAX).toBe(
+      57896044618658097711785492504343953926634992332820282019728792003956564819967n
+    )
+    expect(I256.MIN).toBe(
+      -57896044618658097711785492504343953926634992332820282019728792003956564819968n
+    )
+
+    expect(
+      I256.fromNumber(
+        5789604461865809771178549250434395392663499233282028201972879200395656481n
+      )
+    ).toBe(
+      5789604461865809771178549250434395392663499233282028201972879200395656481n
+    )
+    expect(
+      I256.fromNumber(
+        -57896044618658097711785492504343953926634992332820282019728792003956564n
+      )
+    ).toBe(
+      -57896044618658097711785492504343953926634992332820282019728792003956564n
+    )
+    expect(I256.fromNumber(0)).toBe(0n)
+    expect(() =>
+      I256.fromNumber(
+        115792089237316195423570985008687907853269984665640564039457584007913129639936n
+      )
+    ).toThrow(
+      'value 115792089237316195423570985008687907853269984665640564039457584007913129639936 is out of range for an I256.'
+    )
+    expect(() =>
+      I256.fromNumber(
+        -115792089237316195423570985008687907853269984665640564039457584007913129639937n
+      )
+    ).toThrow(
+      'value -115792089237316195423570985008687907853269984665640564039457584007913129639937 is out of range for an I256.'
+    )
+    expect(() => I256.fromNumber(1.1)).toThrow(
+      'value 1.1 is not a safe integer.'
+    )
+
+    const maxBytes = new Uint8Array(32).fill(255)
+    maxBytes[31] = 127
+    const minBytes = new Uint8Array(32).fill(0)
+    minBytes[31] = 128
+    expect(I256.fromBytes(maxBytes)).toBe(
+      57896044618658097711785492504343953926634992332820282019728792003956564819967n
+    )
+    expect(I256.fromBytes(new Uint8Array(32))).toBe(0n)
+    expect(I256.fromBytes(minBytes)).toBe(
+      -57896044618658097711785492504343953926634992332820282019728792003956564819968n
+    )
+    expect(() => I256.fromBytes(new Uint8Array(31))).toThrow(
+      'not enough bytes to read the value.'
+    )
+
+    expect(
+      I256.toBytes(
+        57896044618658097711785492504343953926634992332820282019728792003956564819967n
+      )
+    ).toEqual(maxBytes)
+    expect(I256.toBytes(0n)).toEqual(new Uint8Array(32))
+    expect(
+      I256.toBytes(
+        -57896044618658097711785492504343953926634992332820282019728792003956564819968n
+      )
+    ).toEqual(minBytes)
+
+    expect(I256.fromBuffer(maxBytes, 0)).toEqual({
+      value:
+        57896044618658097711785492504343953926634992332820282019728792003956564819967n,
+      offset: 32,
+    })
+    expect(I256.fromBuffer(new Uint8Array(32), 0)).toEqual({
+      value: 0n,
+      offset: 32,
+    })
+    expect(I256.fromBuffer(minBytes, 0)).toEqual({
+      value:
+        -57896044618658097711785492504343953926634992332820282019728792003956564819968n,
+      offset: 32,
+    })
+    expect(() => I256.fromBuffer(new Uint8Array(31), 0)).toThrow(
+      'not enough bytes to read the value.'
+    )
   })
 })

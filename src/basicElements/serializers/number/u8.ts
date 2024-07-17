@@ -1,5 +1,5 @@
 import { ONE } from '../../../utils'
-import { numberToUnsigned, unsignedFromByte, unsignedToByte } from './integers'
+import { numberToInteger, integerFromByte, integerToByte } from './integers'
 
 export type U8 = bigint
 
@@ -15,7 +15,7 @@ export const MAX = (BigInt(ONE) << BigInt(SIZE_BIT)) - BigInt(ONE)
  * @throws if the value is negative or too large for U8
  */
 export function toBytes(value: U8): Uint8Array {
-  return unsignedToByte(SIZE_BIT, value)
+  return integerToByte(SIZE_BIT, value)
 }
 
 /**
@@ -28,7 +28,7 @@ export function toBytes(value: U8): Uint8Array {
  * @returns The U8 representation of the bytes
  */
 export function fromBytes(bytes: Uint8Array): U8 {
-  return unsignedFromByte(SIZE_BIT, bytes)
+  return integerFromByte(SIZE_BIT, bytes)
 }
 
 /**
@@ -41,7 +41,7 @@ export function fromBuffer(
   buffer: Uint8Array,
   offset: number
 ): { value: U8; offset: number } {
-  const value = unsignedFromByte(SIZE_BIT, buffer, offset)
+  const value = integerFromByte(SIZE_BIT, buffer, false, offset)
   offset += SIZE_BYTE
   return { value, offset }
 }
@@ -54,5 +54,5 @@ export function fromBuffer(
  * @throws if the value is not a safe integer, negative or too large for U8
  */
 export function fromNumber(value: number): U8 {
-  return numberToUnsigned(SIZE_BIT, value)
+  return numberToInteger(SIZE_BIT, value)
 }
