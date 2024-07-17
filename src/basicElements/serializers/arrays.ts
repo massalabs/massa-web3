@@ -6,16 +6,13 @@ import {
   ArrayTypes,
   DeserializedResult,
   Serializable,
-  BYTES_128_OFFSET,
-  BYTES_256_OFFSET,
   DEFAULT_OFFSET,
 } from '../args'
 import { bytesToStr } from './strings'
 import { byteToBool } from './bool'
-import { bytesToF32, bytesToF64, bytesToI32, bytesToI64 } from './numbers'
-import { bytesToI128 } from './bignum'
+import { bytesToF32, bytesToF64 } from './numbers'
 import { ZERO } from '../../utils'
-import { U8, U32, U64, U128, U256 } from '.'
+import { U8, U16, U32, U64, U128, U256, I8, I16, I32, I64, I128, I256 } from '.'
 
 const ZERO_LEN = 0
 /**
@@ -30,6 +27,7 @@ export function getDatatypeSize(type: ArrayTypes): number {
   switch (type) {
     case ArrayTypes.BOOL:
     case ArrayTypes.U8:
+    case ArrayTypes.I8:
       return U8.SIZE_BYTE
     case ArrayTypes.F32:
     case ArrayTypes.I32:
@@ -41,9 +39,9 @@ export function getDatatypeSize(type: ArrayTypes): number {
       return U64.SIZE_BYTE
     case ArrayTypes.I128:
     case ArrayTypes.U128:
-      return BYTES_128_OFFSET
+      return U128.SIZE_BYTE
     case ArrayTypes.U256:
-      return BYTES_256_OFFSET
+      return U256.SIZE_BYTE
     default:
       throw new Error(`Unsupported type: ${Object.keys(ArrayTypes)[type]}`)
   }
@@ -136,17 +134,8 @@ export function arrayToBytes(
       case ArrayTypes.U8:
         args.addU8(value as U8.U8)
         break
-      case ArrayTypes.F64:
-        args.addF64(value as number)
-        break
-      case ArrayTypes.F32:
-        args.addF32(value as number)
-        break
-      case ArrayTypes.I32:
-        args.addI32(value as number)
-        break
-      case ArrayTypes.I64:
-        args.addI64(value as bigint)
+      case ArrayTypes.U16:
+        args.addU16(value as U16.U16)
         break
       case ArrayTypes.U32:
         args.addU32(value as U32.U32)
@@ -154,14 +143,35 @@ export function arrayToBytes(
       case ArrayTypes.U64:
         args.addU64(value as U64.U64)
         break
-      case ArrayTypes.I128:
-        args.addI128(value as bigint)
-        break
       case ArrayTypes.U128:
-        args.addU128(value as bigint)
+        args.addU128(value as U128.U128)
         break
       case ArrayTypes.U256:
-        args.addU256(value as bigint)
+        args.addU256(value as U256.U256)
+        break
+      case ArrayTypes.I8:
+        args.addI8(value as I8.I8)
+        break
+      case ArrayTypes.I16:
+        args.addI16(value as I16.I16)
+        break
+      case ArrayTypes.I32:
+        args.addI32(value as I32.I32)
+        break
+      case ArrayTypes.I64:
+        args.addI64(value as I64.I64)
+        break
+      case ArrayTypes.I128:
+        args.addI128(value as I128.I128)
+        break
+      case ArrayTypes.I256:
+        args.addI256(value as I256.I256)
+        break
+      case ArrayTypes.F64:
+        args.addF64(value as number)
+        break
+      case ArrayTypes.F32:
+        args.addF32(value as number)
         break
       default:
         throw new Error(`Unsupported type: ${type}`)
@@ -211,17 +221,8 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
       case ArrayTypes.U8:
         result.push(U8.fromBytes(elt) as T)
         break
-      case ArrayTypes.F32:
-        result.push(bytesToF32(elt) as T)
-        break
-      case ArrayTypes.F64:
-        result.push(bytesToF64(elt) as T)
-        break
-      case ArrayTypes.I32:
-        result.push(bytesToI32(elt) as T)
-        break
-      case ArrayTypes.I64:
-        result.push(bytesToI64(elt) as T)
+      case ArrayTypes.U16:
+        result.push(U16.fromBytes(elt) as T)
         break
       case ArrayTypes.U32:
         result.push(U32.fromBytes(elt) as T)
@@ -229,14 +230,35 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
       case ArrayTypes.U64:
         result.push(U64.fromBytes(elt) as T)
         break
-      case ArrayTypes.I128:
-        result.push(bytesToI128(elt) as T)
-        break
       case ArrayTypes.U128:
         result.push(U128.fromBytes(elt) as T)
         break
       case ArrayTypes.U256:
         result.push(U256.fromBytes(elt) as T)
+        break
+      case ArrayTypes.I8:
+        result.push(I8.fromBytes(elt) as T)
+        break
+      case ArrayTypes.I16:
+        result.push(I16.fromBytes(elt) as T)
+        break
+      case ArrayTypes.I32:
+        result.push(I32.fromBytes(elt) as T)
+        break
+      case ArrayTypes.I64:
+        result.push(I64.fromBytes(elt) as T)
+        break
+      case ArrayTypes.I128:
+        result.push(I128.fromBytes(elt) as T)
+        break
+      case ArrayTypes.I256:
+        result.push(I256.fromBytes(elt) as T)
+        break
+      case ArrayTypes.F32:
+        result.push(bytesToF32(elt) as T)
+        break
+      case ArrayTypes.F64:
+        result.push(bytesToF64(elt) as T)
         break
     }
   }

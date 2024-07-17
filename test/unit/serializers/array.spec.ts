@@ -4,13 +4,7 @@ import {
   ISerializable,
   IDeserializedResult,
 } from '../../../src/basicElements/serializers/interface/ISerializable'
-import {
-  I128_MAX,
-  I128_MIN,
-  U8,
-  U32,
-  U64,
-} from '../../../src/basicElements/serializers'
+import { U8, U32, U64, I128, I32 } from '../../../src/basicElements/serializers'
 import {
   arrayToBytes,
   bytesToArray,
@@ -203,8 +197,8 @@ describe('array.ts functions', () => {
         123456789123456789n,
         -123456789123456789n,
         0n,
-        I128_MAX,
-        I128_MIN,
+        I128.MAX,
+        I128.MIN,
         -123456789123456789n,
       ]
 
@@ -227,7 +221,7 @@ describe('array.ts functions', () => {
     })
 
     it('converts a I32 array to bytes and back correctly', () => {
-      const dataArray = [-10, -20, -30, -40, -50]
+      const dataArray = [-10, -20, -30, -40, -50].map(I32.fromNumber)
       const byteArray = arrayToBytes(dataArray, ArrayTypes.I32)
       const arrayBack = bytesToArray(byteArray, ArrayTypes.I32)
       expect(arrayBack).toEqual(dataArray)
