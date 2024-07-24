@@ -1,9 +1,9 @@
 import { OperationStatus } from '../../src/basicElements'
-import { accountOperation } from './setup'
+import { provider } from './setup'
 
 describe('AccountOperation tests', () => {
   test('transfer', async () => {
-    const transfer = await accountOperation.transfer(
+    const transfer = await provider.transfer(
       'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
       1n
     )
@@ -12,7 +12,7 @@ describe('AccountOperation tests', () => {
 
   test('not enough fee', async () => {
     expect(
-      accountOperation.transfer(
+      provider.transfer(
         'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
         1n,
         { fee: 1n }

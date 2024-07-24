@@ -1,22 +1,20 @@
 import 'dotenv/config'
-import { JsonRPCClient } from '../../src/client'
 import { Account } from '../../src/account'
-import { AccountOperation } from '../../src/accountOperation'
 import { Mas } from '../../src/basicElements'
+import { Web3Provider } from '../../src/provider'
 
-export let client: JsonRPCClient
 export let account: Account
-export let accountOperation: AccountOperation
+export let provider: Web3Provider
 
 beforeAll(async () => {
-  client = JsonRPCClient.buildnet()
   account = await Account.fromEnv()
-  accountOperation = new AccountOperation(account, client)
+  provider = Web3Provider.newPublicBuildnetProvider(account)
+
   // eslint-disable-next-line no-console
   console.log(
     'Using account:',
     account.address.toString(),
     'with balance:',
-    Mas.toString(await accountOperation.fetchBalance())
+    Mas.toString(await provider.balance())
   )
 })

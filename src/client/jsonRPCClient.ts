@@ -1,4 +1,4 @@
-import { NETWORKS } from '../utils/networks'
+import { PublicApiUrl } from '..'
 import { PublicAPI, Transport } from './publicAPI'
 
 const HTTPS = 443
@@ -19,14 +19,14 @@ export class JsonRPCClient extends PublicAPI {
   }
 
   static buildnet(): JsonRPCClient {
-    return new JsonRPCClient(NETWORKS.buildnet)
+    return new JsonRPCClient(PublicApiUrl.Buildnet)
   }
 
   static testnet(): JsonRPCClient {
-    return new JsonRPCClient(NETWORKS.testnet)
+    return new JsonRPCClient(PublicApiUrl.Testnet)
   }
 
   static mainnet(): JsonRPCClient {
-    return new JsonRPCClient(NETWORKS.mainnet)
+    return new JsonRPCClient(PublicApiUrl.Mainnet)
   }
 }

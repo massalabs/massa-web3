@@ -8,15 +8,15 @@
  * A smart contract has an address and exposes functions that can be called multiple times.
  *
  */
-import { BlockchainClient } from '../client'
+import { PublicAPI } from '../client'
 import { ZERO } from '../utils'
 import { PrivateKey } from './keys'
 import { Operation } from './operation'
 import {
   OperationManager,
   ExecuteOperation,
-  calculateExpirePeriod,
   OperationType,
+  getAbsoluteExpirePeriod,
 } from './operationManager'
 import { U64 } from './serializers/number/u64'
 
@@ -47,18 +47,16 @@ function compile(_source: string): Promise<Uint8Array> {
  * @returns The operation.
  */
 export async function execute(
-  client: BlockchainClient,
+  client: PublicAPI,
   privateKey: PrivateKey,
   byteCode: Uint8Array,
   opts: ExecuteOption
 ): Promise<Operation> {
   const operation = new OperationManager(privateKey, client)
+
   const details: ExecuteOperation = {
     fee: opts?.fee ?? (await client.getMinimalFee()),
-    expirePeriod: calculateExpirePeriod(
-      await client.fetchPeriod(),
-      opts?.periodToLive
-    ),
+    expirePeriod: await getAbsoluteExpirePeriod(client, opts.periodToLive),
     type: OperationType.ExecuteSmartContractBytecode,
     maxCoins: opts?.maxCoins ?? BigInt(ZERO),
     maxGas: opts?.maxGas || MAX_GAS_EXECUTE,
