@@ -1,10 +1,5 @@
 import { Mas, OperationStatus } from '../basicElements'
-import {
-  SendOperationInput,
-  EventFilter as EvtFilter,
-  ReadOnlyCallParams,
-  ReadOnlyCallResult,
-} from '.'
+import { SendOperationInput, EventFilter as EvtFilter } from '.'
 import {
   OperationInput,
   Pagination,
@@ -32,6 +27,8 @@ import {
   AddressFilter,
 } from '../generated/client'
 import { FIRST } from '../utils'
+import { ReadOnlyCallResult, ReadSCParams } from '../provider'
+import { MAX_GAS_CALL } from '../smartContracts'
 
 export enum Transport {
   WebSocket = 'websocket',
@@ -83,16 +80,14 @@ export class PublicAPI {
     return this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions)
   }
 
-  async executeReadOnlyCall(
-    params: ReadOnlyCallParams
-  ): Promise<ReadOnlyCallResult> {
+  async executeReadOnlyCall(params: ReadSCParams): Promise<ReadOnlyCallResult> {
     const [res] = await this.connector.execute_read_only_call([
       {
-        max_gas: Number(params.maxGas),
-        target_address: params.target.toString(),
+        max_gas: Number(params.maxGas ?? MAX_GAS_CALL),
+        target_address: params.target,
         target_function: params.func,
-        parameter: params.parameter ? Array.from(params.parameter) : [],
-        caller_address: params.caller.toString(),
+        parameter: Array.from(params.parameter),
+        caller_address: params.caller,
         coins: params.coins ? Mas.toString(params.coins) : null,
         fee: params.fee ? Mas.toString(params.fee) : null,
       },

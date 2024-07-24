@@ -1,16 +1,16 @@
 import { unsigned } from 'big-varint'
 import { Address } from './address'
 import { PrivateKey, PublicKey } from './keys'
-import { BlockchainClient } from '../client'
+import { PublicAPI } from '../client'
 import { Signature } from './signature'
 import varint from 'varint'
 import { FIRST } from '../utils'
 import { U64 } from './serializers'
 import { Operation } from './operation'
 
-const PERIOD_TO_LIVE_DEFAULT = 10
-const PERIOD_TO_LIVE_MAX = 100
-const PERIOD_TO_LIVE_MIN = 1
+export const PERIOD_TO_LIVE_DEFAULT = 9
+export const PERIOD_TO_LIVE_MAX = 9
+export const PERIOD_TO_LIVE_MIN = 1
 
 /**
  * Operation types.
@@ -91,7 +91,7 @@ export type OperationDetails =
 export class OperationManager {
   constructor(
     public privateKey: PrivateKey,
-    public blockchainClient?: BlockchainClient
+    public blockchainClient?: PublicAPI
   ) {}
 
   /**
@@ -268,7 +268,6 @@ export class OperationManager {
     if (!this.blockchainClient) {
       throw new Error('blockchainClient is mandatory to send operations')
     }
-
     const chainId = await this.blockchainClient.getChainId()
     const signature = await this.sign(chainId, operation)
     const data = OperationManager.serialize(operation)
@@ -286,27 +285,30 @@ export class OperationManager {
 }
 
 /**
- * Calculates the expire period.
+ * Check the expire period validity.
  *
  * @remarks
  * If the periodToLive is too big, the node will silently reject the operation.
  * This is why the periodToLive is limited to an upper value.
  *
- * @param period - The current period.
  * @param periodToLive - The period to live.
  *
  * @returns The expire period.
  * @throws An error if the periodToLive is too low or too big.
  */
-export function calculateExpirePeriod(
-  period: number,
-  periodToLive = PERIOD_TO_LIVE_DEFAULT
-): number {
-  // Todo: adjust max value
+export function checkPeriodToLive(periodToLive = PERIOD_TO_LIVE_DEFAULT): void {
   if (periodToLive < PERIOD_TO_LIVE_MIN || periodToLive > PERIOD_TO_LIVE_MAX) {
     throw new Error(
       `periodToLive must be between ${PERIOD_TO_LIVE_MIN} and ${PERIOD_TO_LIVE_MAX}.`
     )
   }
-  return period + periodToLive
+}
+
+export async function getAbsoluteExpirePeriod(
+  client: PublicAPI,
+  periodToLive = PERIOD_TO_LIVE_DEFAULT
+): Promise<number> {
+  checkPeriodToLive(periodToLive)
+  const currentPeriod = await client.fetchPeriod()
+  return currentPeriod + periodToLive
 }

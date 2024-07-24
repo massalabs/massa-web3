@@ -6,10 +6,10 @@ import {
 } from '../../src/generated/client'
 import { createCheckers } from 'ts-interface-checker'
 import validator from '../../src/generated/client-ti'
-import { EventFilter } from '../../src/client'
-import { client } from './setup'
-import { MAX_GAS_CALL } from '../../src/smartContract'
-import { Address, bytesToStr } from '../../src/basicElements'
+import { EventFilter, PublicAPI } from '../../src/client'
+import { MAX_GAS_CALL } from '../../src/smartContracts'
+import { bytesToStr } from '../../src/basicElements'
+import { provider } from './setup'
 
 const {
   NodeStatus,
@@ -33,6 +33,11 @@ let operationId: string
 
 const TEST_USER = 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
 const TEST_CONTRACT = 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T'
+
+let client: PublicAPI
+beforeAll(() => {
+  client = provider.client
+})
 
 describe('client tests', () => {
   test('getStatus', async () => {
@@ -215,8 +220,8 @@ describe('client tests', () => {
   test('executeReadOnlyCall', async () => {
     let arg = {
       func: 'hello',
-      caller: Address.fromString(TEST_USER),
-      target: Address.fromString(TEST_CONTRACT),
+      caller: TEST_USER,
+      target: TEST_CONTRACT,
       maxGas: MAX_GAS_CALL,
       parameter: new Uint8Array(),
     }

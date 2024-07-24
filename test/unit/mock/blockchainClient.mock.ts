@@ -1,15 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { OperationStatus } from '../../../src/basicElements/operation'
-import {
-  BlockchainClient,
-  EventFilter,
-  SCOutputEvent,
-  SendOperationInput,
-} from '../../../src/client/interfaces'
+import { EventFilter, PublicAPI, SendOperationInput } from '../../../src/client'
 
 import { NodeStatus } from '../../../src/generated/client'
+import { SCOutputEvent } from '../../../src/provider'
 
-export const blockchainClientMock: BlockchainClient = {
+export const blockchainClientMock = {
   sendOperation: jest.fn((data: SendOperationInput) =>
     Promise.resolve('operationId')
   ),
@@ -35,4 +31,4 @@ export const blockchainClientMock: BlockchainClient = {
     } as any)
   ),
   status: () => Promise.resolve({} as NodeStatus),
-}
+} as any as PublicAPI

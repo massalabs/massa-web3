@@ -1,25 +1,54 @@
-import { Account } from './account'
+// a Web3Provider is the combination of a clientAPI and an private key account
+import { Provider } from '..'
 import {
+  Account,
   Address,
+  JsonRPCClient,
+  getAbsoluteExpirePeriod,
   Operation,
   OperationManager,
   OperationType,
   OptOpDetails,
   RollOperation,
   TransferOperation,
-  calculateExpirePeriod,
-} from './basicElements'
-import { Mas } from './basicElements/mas'
-import { BlockchainClient } from './client'
+  PublicApiUrl,
+} from '../..'
+import { Mas } from '../../basicElements/mas'
+import { SCProvider } from '.'
 
-/**
- * A class regrouping all the account operations.
- */
-export class AccountOperation {
-  constructor(
-    public account: Account,
-    public client: BlockchainClient
-  ) {}
+export class Web3Provider extends SCProvider implements Provider {
+  static fromRPCUrl(url: string, account: Account): Web3Provider {
+    return new Web3Provider(new JsonRPCClient(url), account)
+  }
+
+  static newPublicMainnetProvider(account: Account): Web3Provider {
+    return Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet, account)
+  }
+
+  static newPublicBuildnetProvider(account: Account): Web3Provider {
+    return Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet, account)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private readonly _accountName: string = 'Massa web3 account'
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private readonly _providerName: string = 'Massa web3 provider'
+
+  get accountName(): string {
+    return this._accountName
+  }
+
+  get providerName(): string {
+    return this._providerName
+  }
+
+  get address(): string {
+    return this.account.address.toString()
+  }
+
+  async balance(final = true): Promise<bigint> {
+    return this.client.getBalance(this.address.toString(), final)
+  }
 
   private async rollOperation(
     type: OperationType,
@@ -33,11 +62,12 @@ export class AccountOperation {
     if (amount <= 0) {
       throw new Error('amount of rolls must be a positive non-zero value.')
     }
+
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: RollOperation = {
       fee: opts?.fee ?? (await this.client.getMinimalFee()),
-      expirePeriod: calculateExpirePeriod(
-        await this.client.fetchPeriod(),
+      expirePeriod: await getAbsoluteExpirePeriod(
+        this.client,
         opts?.periodToLive
       ),
       type,
@@ -90,7 +120,7 @@ export class AccountOperation {
   ): Promise<Operation> {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     if (amount <= 0) {
-      throw new Error('amount to trasnfer must be a positive non-zero value.')
+      throw new Error('amount to transfer must be a positive non-zero value.')
     }
 
     if (typeof to === 'string') {
@@ -100,8 +130,8 @@ export class AccountOperation {
     const operation = new OperationManager(this.account.privateKey, this.client)
     const details: TransferOperation = {
       fee: opts?.fee ?? (await this.client.getMinimalFee()),
-      expirePeriod: calculateExpirePeriod(
-        await this.client.fetchPeriod(),
+      expirePeriod: await getAbsoluteExpirePeriod(
+        this.client,
         opts?.periodToLive
       ),
       type: OperationType.Transaction,
@@ -112,14 +142,7 @@ export class AccountOperation {
     return await operation.send(details)
   }
 
-  /**
-   * Fetches the balance of the account.
-   *
-   * @param speculative - Whether to fetch the speculative balance. Default is the final balance.
-   *
-   * @returns The balance of the account.
-   */
-  async fetchBalance(final = true): Promise<Mas> {
-    return this.client.getBalance(this.account.address.toString(), final)
-  }
+  // async sign(data: Buffer | Uint8Array | string): Promise<void> {
+  //   throw new Error("not implemented")
+  // }
 }

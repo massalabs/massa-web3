@@ -3,12 +3,17 @@ import {
   ExecuteOperation,
   OperationManager,
   OperationType,
+  PERIOD_TO_LIVE_DEFAULT,
+  PERIOD_TO_LIVE_MAX,
+  PERIOD_TO_LIVE_MIN,
   RollOperation,
   Signature,
   TransferOperation,
-  calculateExpirePeriod,
-} from '../../src/basicElements'
-import { PrivateKey, Address } from '../../src/basicElements'
+  getAbsoluteExpirePeriod,
+  PrivateKey,
+  Address,
+} from '../../src/'
+
 import 'dotenv/config'
 
 describe('Operation manager tests', () => {
@@ -226,36 +231,42 @@ describe('Operation manager tests', () => {
   })
 })
 
-describe('calculateExpirePeriod', () => {
-  test('returns correct expire period', () => {
-    const period = 1
-    const periodToLive = 10
-    const expectedExpirePeriod = period + periodToLive
-    const expirePeriod = calculateExpirePeriod(period, periodToLive)
+describe('Expire Period', () => {
+  let currentPeriod: number
+  beforeAll(async () => {
+    currentPeriod = await blockchainClientMock.fetchPeriod()
+  })
+
+  test('returns correct expire period', async () => {
+    const periodToLive = 5
+    const expectedExpirePeriod = currentPeriod + periodToLive
+    const expirePeriod = await getAbsoluteExpirePeriod(
+      blockchainClientMock,
+      periodToLive
+    )
     expect(expirePeriod).toBe(expectedExpirePeriod)
   })
 
-  test('returns correct expire period', () => {
-    const period = 1
-    const defaultPeriodToLive = 10
-    const expectedExpirePeriod = period + defaultPeriodToLive
-    const expirePeriod = calculateExpirePeriod(period)
-    expect(expirePeriod).toBe(expectedExpirePeriod)
+  test('returns default expire period', async () => {
+    const expirePeriod = await getAbsoluteExpirePeriod(blockchainClientMock)
+    expect(expirePeriod).toBe(currentPeriod + PERIOD_TO_LIVE_DEFAULT)
   })
 
-  test('throws error if periodToLive is less than 1', () => {
-    const period = 1
+  test('throws error if periodToLive is less than PERIOD_TO_LIVE_MIN', () => {
     const periodToLive = 0
-    expect(() => calculateExpirePeriod(period, periodToLive)).toThrow(
-      'periodToLive must be between 1 and 100'
+    expect(
+      getAbsoluteExpirePeriod(blockchainClientMock, periodToLive)
+    ).rejects.toThrow(
+      `periodToLive must be between ${PERIOD_TO_LIVE_MIN} and ${PERIOD_TO_LIVE_MAX}.`
     )
   })
-  test('throws error if periodToLive is greater than 100', () => {
-    const period = 1
-    const periodToLive = 101
 
-    expect(() => calculateExpirePeriod(period, periodToLive)).toThrow(
-      'periodToLive must be between 1 and 100'
+  test('throws error if periodToLive is greater than PERIOD_TO_LIVE_MAX', () => {
+    const periodToLive = 101
+    expect(
+      getAbsoluteExpirePeriod(blockchainClientMock, periodToLive)
+    ).rejects.toThrow(
+      `periodToLive must be between ${PERIOD_TO_LIVE_MIN} and ${PERIOD_TO_LIVE_MAX}.`
     )
   })
 })

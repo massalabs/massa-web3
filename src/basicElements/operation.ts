@@ -1,5 +1,5 @@
-import { SCOutputEvent } from '../client'
-import { BlockchainClient } from '../client'
+import { PublicAPI } from '../client'
+import { SCOutputEvent } from '../provider'
 
 const DEFAULT_WAIT_TIMEOUT_MS = 60000
 const DEFAULT_WAIT_PERIOD_MS = 500
@@ -9,7 +9,7 @@ const DEFAULT_WAIT_PERIOD_MS = 500
  */
 export class Operation {
   constructor(
-    public client: BlockchainClient,
+    public client: PublicAPI,
     public id: string
   ) {}
 

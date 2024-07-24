@@ -1,13 +1,14 @@
 import path from 'path'
 import fs from 'fs'
 import {
+  DeploySCOptions,
   MAX_GAS_CALL,
   MAX_GAS_DEPLOYMENT,
   MIN_GAS_CALL,
   SmartContract,
-} from '../../src/smartContract'
-import { account, client } from './setup'
-import { Args, bytesToStr, Mas } from '../../src/basicElements'
+} from '../../src/smartContracts'
+import { provider } from './setup'
+import { Address, Args, bytesToStr, Mas } from '../../src/basicElements'
 
 import { execute } from '../../src/basicElements/bytecode'
 
@@ -28,8 +29,8 @@ describe('Smart Contract', () => {
           maxGas: 4n,
         }
         const contract = await execute(
-          client,
-          account.privateKey,
+          provider.client,
+          provider.account.privateKey,
           byteCode,
           opts
         )
@@ -48,7 +49,7 @@ describe('Smart Contract', () => {
       }
 
       expect(
-        execute(client, account.privateKey, byteCode, opts)
+        execute(provider.client, provider.account.privateKey, byteCode, opts)
       ).rejects.toThrow(
         'Bad request: fee is too low provided: 0.000000001 , minimal_fees required: 0.01'
       )
@@ -57,26 +58,23 @@ describe('Smart Contract', () => {
 
   test('deploy', async () => {
     const byteCode = fs.readFileSync(contractPath)
+    const constructorArgs = new Args().addString('myName')
 
-    const deployContract = {
-      byteCode,
-      parameter: new Args().addString('myName').serialize(),
+    const deployOptions: DeploySCOptions = {
+      periodToLive: 2,
+      maxGas: MAX_GAS_DEPLOYMENT,
       coins: Mas.fromString('0.0016'),
     }
 
-    const deployOptions = {
-      periodToLive: 2,
-      maxGas: MAX_GAS_DEPLOYMENT,
-    }
-
     const contract = await SmartContract.deploy(
-      client,
-      account,
-      deployContract,
+      provider,
+      byteCode,
+      constructorArgs,
       deployOptions
     )
 
-    expect(contract.address.isEOA).toBeFalsy()
+    expect(Address.fromString(contract.address).isEOA).toBeFalsy()
+
     contractTest = contract
   }, 60000)
 
@@ -84,7 +82,7 @@ describe('Smart Contract', () => {
     test(
       'minimal call',
       async () => {
-        const op = await contractTest.call('event', new Uint8Array())
+        const op = await contractTest.call('event')
 
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
@@ -118,7 +116,6 @@ describe('Smart Contract', () => {
 
         const op = await contractTest.call('sendCoins', new Uint8Array(), {
           coins: coinAmount,
-          account: account,
         })
 
         const events = await op.getSpeculativeEvents()
@@ -178,7 +175,7 @@ describe('Smart Contract', () => {
           new Args().addString('myKey').serialize(),
           {
             fee: Mas.fromString('0.1'),
-            caller: account.address,
+            caller: provider.account.address.toString(),
           }
         )
 

@@ -1,6 +1,5 @@
 export * from './account'
-export * from './smartContract'
-export * from './accountOperation'
+export * from './smartContracts'
 export * from './basicElements'
 export * from './client'
 export * from './utils'
