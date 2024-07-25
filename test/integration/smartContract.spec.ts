@@ -11,6 +11,7 @@ import { provider } from './setup'
 import { Address, Args, bytesToStr, Mas } from '../../src/basicElements'
 
 import { execute } from '../../src/basicElements/bytecode'
+import { Operation } from '../../src/operation'
 
 const TIMEOUT = 61000
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
@@ -28,13 +29,15 @@ describe('Smart Contract', () => {
           coins: 3n,
           maxGas: 4n,
         }
-        const contract = await execute(
+
+        const opId = await execute(
           provider.client,
           provider.account.privateKey,
           byteCode,
           opts
         )
-        expect(await contract.getSpeculativeEvents()).toHaveLength(1)
+        const operation = new Operation(provider, opId)
+        expect(await operation.getSpeculativeEvents()).toHaveLength(1)
       },
       TIMEOUT
     )
@@ -83,7 +86,6 @@ describe('Smart Contract', () => {
       'minimal call',
       async () => {
         const op = await contractTest.call('event')
-
         const events = await op.getSpeculativeEvents()
         const firstEvent = events[0].data
         expect(firstEvent).toBe("I'm an event!")

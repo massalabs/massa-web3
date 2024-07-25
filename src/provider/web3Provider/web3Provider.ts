@@ -1,20 +1,24 @@
 // a Web3Provider is the combination of a clientAPI and an private key account
-import { Provider } from '..'
+import { CallSCParams, DeploySCParams, Provider, SCOutputEvent } from '..'
+import { SCProvider } from './smartContracts'
 import {
   Account,
   Address,
   JsonRPCClient,
+  PublicApiUrl,
+  SmartContract,
+} from '../..'
+import { Mas } from '../../basicElements/mas'
+import {
   getAbsoluteExpirePeriod,
   Operation,
   OperationManager,
+  OperationStatus,
   OperationType,
   OptOpDetails,
   RollOperation,
   TransferOperation,
-  PublicApiUrl,
-} from '../..'
-import { Mas } from '../../basicElements/mas'
-import { SCProvider } from '.'
+} from '../../operation'
 
 export class Web3Provider extends SCProvider implements Provider {
   static fromRPCUrl(url: string, account: Account): Web3Provider {
@@ -30,12 +34,10 @@ export class Web3Provider extends SCProvider implements Provider {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  private readonly _accountName: string = 'Massa web3 account'
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   private readonly _providerName: string = 'Massa web3 provider'
 
   get accountName(): string {
-    return this._accountName
+    return this.account.address.toString()
   }
 
   get providerName(): string {
@@ -73,8 +75,8 @@ export class Web3Provider extends SCProvider implements Provider {
       type,
       amount,
     }
-
-    return await operation.send(details)
+    const operationId = await operation.send(details)
+    return new Operation(this, operationId)
   }
 
   /**
@@ -138,11 +140,40 @@ export class Web3Provider extends SCProvider implements Provider {
       amount,
       recipientAddress: to,
     }
-
-    return await operation.send(details)
+    const operationId = await operation.send(details)
+    return new Operation(this, operationId)
   }
 
   // async sign(data: Buffer | Uint8Array | string): Promise<void> {
   //   throw new Error("not implemented")
   // }
+
+  public async callSC(params: CallSCParams): Promise<Operation> {
+    const operationId = await this.call(params)
+    return new Operation(this, operationId)
+  }
+
+  public async deploySC(params: DeploySCParams): Promise<SmartContract> {
+    const operationId = await this.deploy(params)
+
+    const operation = new Operation(this, operationId)
+    const deployedAddress = await operation.getDeployedAddress(
+      params.waitFinalExecution
+    )
+    return new SmartContract(this, deployedAddress)
+  }
+
+  public async getOperationStatus(opId: string): Promise<OperationStatus> {
+    return this.client.getOperationStatus(opId)
+  }
+
+  public async getOperationEvents(
+    operationId: string,
+    waitFinal: boolean
+  ): Promise<SCOutputEvent[]> {
+    return this.client.getEvents({
+      operationId,
+      isFinal: waitFinal,
+    })
+  }
 }

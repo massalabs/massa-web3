@@ -1,13 +1,13 @@
-import { OperationStatus } from '../../src/basicElements'
+import { OperationStatus } from '../../src/operation'
 import { provider } from './setup'
 
 describe('AccountOperation tests', () => {
   test('transfer', async () => {
-    const transfer = await provider.transfer(
+    const op = await provider.transfer(
       'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
       1n
     )
-    expect(await transfer.getStatus()).toBe(OperationStatus.NotFound)
+    expect(await op.getStatus()).toBe(OperationStatus.NotFound)
   })
 
   test('not enough fee', async () => {
