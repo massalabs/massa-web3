@@ -1,10 +1,12 @@
-import { Address, Operation, OptOpDetails, SmartContract } from '..'
+import { Address, SmartContract } from '..'
 import { Mas } from '../basicElements/mas'
+import { Operation, OperationStatus, OptOpDetails } from '../operation'
 import {
   CallSCParams,
   DeploySCParams,
   ReadOnlyCallResult,
   ReadSCParams,
+  SCOutputEvent,
 } from './'
 
 /**
@@ -76,4 +78,19 @@ export type Provider = {
    * @param params - deploySCParams.
    */
   deploySC(params: DeploySCParams): Promise<SmartContract>
+
+  /**
+   * Gets the status of an operation.
+   *
+   * @param OpId - Operation Id.
+   */
+  getOperationStatus(OpId: string): Promise<OperationStatus>
+
+  /**
+   * Gets Events of an operation.
+   *
+   * @param OpId - Operation Id.
+   * @param waitFinal - wait operation to be final.
+   */
+  getOperationEvents(OpId: string, waitFinal: boolean): Promise<SCOutputEvent[]>
 }

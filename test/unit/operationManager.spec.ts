@@ -1,20 +1,18 @@
 import { blockchainClientMock } from './mock/blockchainClient.mock'
+import { Signature, PrivateKey, Address } from '../../src/'
+
+import 'dotenv/config'
 import {
   ExecuteOperation,
+  getAbsoluteExpirePeriod,
   OperationManager,
   OperationType,
   PERIOD_TO_LIVE_DEFAULT,
   PERIOD_TO_LIVE_MAX,
   PERIOD_TO_LIVE_MIN,
   RollOperation,
-  Signature,
   TransferOperation,
-  getAbsoluteExpirePeriod,
-  PrivateKey,
-  Address,
-} from '../../src/'
-
-import 'dotenv/config'
+} from '../../src/operation'
 
 describe('Operation manager tests', () => {
   test('serialize - transfer', async () => {
@@ -227,7 +225,7 @@ describe('Operation manager tests', () => {
       publicKey: (await privateKey.getPublicKey()).toString(),
       signature: (await operationManager.sign(1n, transfer)).toString(),
     })
-    expect(operationId.id).toBe('operationId')
+    expect(operationId).toBe('operationId')
   })
 })
 

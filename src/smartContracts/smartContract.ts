@@ -1,4 +1,5 @@
-import { Operation, Args } from '..'
+import { Args } from '..'
+import { Operation } from '../operation'
 import {
   CallSCParams,
   DeploySCParams,
@@ -13,8 +14,8 @@ import { CallSCOptions, DeploySCOptions, ReadSCOptions } from './'
  */
 export class SmartContract {
   constructor(
-    public address: string,
-    public provider: Provider
+    public provider: Provider,
+    public address: string
   ) {}
 
   /**

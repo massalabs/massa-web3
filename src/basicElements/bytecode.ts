@@ -11,14 +11,12 @@
 import { PublicAPI } from '../client'
 import { ZERO } from '../utils'
 import { PrivateKey } from './keys'
-import { Operation } from './operation'
 import {
   OperationManager,
-  ExecuteOperation,
-  OperationType,
   getAbsoluteExpirePeriod,
-} from './operationManager'
+} from '../operation/operationManager'
 import { U64 } from './serializers/number/u64'
+import { ExecuteOperation, OperationType } from '../operation'
 
 export const MAX_GAS_EXECUTE = 3980167295n
 
@@ -51,7 +49,7 @@ export async function execute(
   privateKey: PrivateKey,
   byteCode: Uint8Array,
   opts: ExecuteOption
-): Promise<Operation> {
+): Promise<string> {
   const operation = new OperationManager(privateKey, client)
 
   const details: ExecuteOperation = {
@@ -64,5 +62,5 @@ export async function execute(
     datastore: opts.datastore,
   }
 
-  return await operation.send(details)
+  return operation.send(details)
 }

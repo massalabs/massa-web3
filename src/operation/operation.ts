@@ -1,5 +1,7 @@
-import { PublicAPI } from '../client'
-import { SCOutputEvent } from '../provider'
+import { Args, ArrayTypes } from '../basicElements'
+import { Provider, SCOutputEvent } from '../provider'
+import { ONE, rawEventDecode } from '../utils'
+import { OperationStatus } from './types'
 
 const DEFAULT_WAIT_TIMEOUT_MS = 60000
 const DEFAULT_WAIT_PERIOD_MS = 500
@@ -9,7 +11,7 @@ const DEFAULT_WAIT_PERIOD_MS = 500
  */
 export class Operation {
   constructor(
-    public client: PublicAPI,
+    public provider: Provider,
     public id: string
   ) {}
 
@@ -19,7 +21,7 @@ export class Operation {
    * @returns The status of the operation.
    */
   async getStatus(): Promise<OperationStatus> {
-    return await this.client.getOperationStatus(this.id)
+    return this.provider.getOperationStatus(this.id)
   }
 
   /**
@@ -93,10 +95,7 @@ export class Operation {
       return Promise.reject(new Error('Operation not found'))
     }
 
-    return this.client.getEvents({
-      operationId: this.id,
-      isFinal: true,
-    })
+    return this.provider.getOperationEvents(this.id, true)
   }
 
   /**
@@ -109,50 +108,28 @@ export class Operation {
       return Promise.reject(new Error('Operation not found'))
     }
 
-    return this.client.getEvents({
-      operationId: this.id,
-      isFinal: false,
-    })
+    return this.provider.getOperationEvents(this.id, false)
   }
-}
 
-/**
- * Operation status.
- *
- * @remarks
- * This enumeration captures the lifecycle stages of a blockchain operation, from initiation to finalization.
- *
- * @privateRemarks
- * Keeps the order of the stages in the lifecycle as it is used by the wait method.
- */
-export enum OperationStatus {
-  /**
-   * The operation has not been found within the blockchain, either because it is not yet processed or does not exist.
-   */
-  NotFound,
+  async getDeployedAddress(waitFinal = false): Promise<string> {
+    const events = waitFinal
+      ? await this.getFinalEvents()
+      : await this.getSpeculativeEvents()
 
-  /**
-   * The operation has been recognized and is awaiting inclusion in the blockchain ledger.
-   */
-  PendingInclusion,
+    const lastEvent = events.at(-ONE)
 
-  /**
-   * The operation has executed successfully; however, the block containing it has not yet been confirmed as final.
-   */
-  SpeculativeSuccess,
+    if (!lastEvent) {
+      throw new Error('no event received.')
+    }
 
-  /**
-   * The operation has failed; however, the block containing the failure has not yet been confirmed as final.
-   */
-  SpeculativeError,
+    if (lastEvent.context.is_error) {
+      const parsedData = JSON.parse(lastEvent.data)
+      throw new Error(parsedData.massa_execution_error)
+    }
 
-  /**
-   * The operation has executed successfully and the block containing it has been confirmed as final.
-   */
-  Success,
-
-  /**
-   * The operation has failed and the block containing the failure has been confirmed as final.
-   */
-  Error,
+    const contracts = new Args(
+      rawEventDecode(lastEvent.data)
+    ).nextArray<string>(ArrayTypes.STRING)
+    return contracts[0]
+  }
 }

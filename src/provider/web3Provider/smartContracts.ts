@@ -1,34 +1,25 @@
-import {
-  Account,
-  Args,
-  ArrayTypes,
-  CallOperation,
-  getAbsoluteExpirePeriod,
-  Operation,
-  OperationManager,
-  OperationType,
-  ONE,
-  ZERO,
-  minBigInt,
-  PublicAPI,
-  rawEventDecode,
-} from '../..'
+import { Account, ZERO, minBigInt, PublicAPI } from '../..'
 import { U64 } from '../../basicElements/serializers/number/u64'
 import { ErrorInsufficientBalance, ErrorMaxGas } from '../../errors'
-import { MAX_GAS_CALL, MIN_GAS_CALL, SmartContract } from '../../smartContracts'
+import { MAX_GAS_CALL, MIN_GAS_CALL } from '../../smartContracts'
 import {
   CallSCParams,
   DeploySCParams,
   ReadOnlyCallResult,
   ReadSCParams,
   GAS_ESTIMATION_TOLERANCE,
-  Web3Provider,
 } from '..'
 import * as StorageCost from '../../basicElements/storage'
 import { populateDatastore } from '../../dataStore'
 import { execute } from '../../basicElements/bytecode'
 import { DEPLOYER_BYTECODE } from '../../generated/deployer-bytecode'
 import { Mas } from '../../basicElements/mas'
+import {
+  CallOperation,
+  getAbsoluteExpirePeriod,
+  OperationManager,
+  OperationType,
+} from '../../operation'
 
 export class SCProvider {
   constructor(
@@ -50,7 +41,7 @@ export class SCProvider {
    * @param params - callSCParams.
    * @returns A promise that resolves to an Operation object representing the transaction.
    */
-  public async callSC(params: CallSCParams): Promise<Operation> {
+  public async call(params: CallSCParams): Promise<string> {
     const coins = params.coins ?? BigInt(ZERO)
     await this.checkAccountBalance(coins)
 
@@ -81,9 +72,8 @@ export class SCProvider {
       parameter: params.parameter,
     }
 
-    const operation = new OperationManager(this.account.privateKey, this.client)
-
-    return await operation.send(details)
+    const manager = new OperationManager(this.account.privateKey, this.client)
+    return manager.send(details)
   }
 
   /**
@@ -139,7 +129,7 @@ export class SCProvider {
    *
    * @throws If the account has insufficient balance to deploy the smart contract.
    */
-  public async deploySC(params: DeploySCParams): Promise<SmartContract> {
+  protected async deploy(params: DeploySCParams): Promise<string> {
     const coins = params.coins ?? BigInt(ZERO)
     const totalCost = StorageCost.smartContract(params.byteCode.length) + coins
 
@@ -148,50 +138,19 @@ export class SCProvider {
     const datastore = populateDatastore([
       {
         data: params.byteCode,
-        args: params.parameter,
+        args: params.parameter ?? new Uint8Array(),
         coins,
       },
     ])
 
     const fee = params.fee ?? (await this.client.getMinimalFee())
 
-    // const periodToLive = params.periodToLive ?? DEFAULT_PERIODS_TO_LIVE;
-
-    const operation = await execute(
-      this.client,
-      this.account.privateKey,
-      DEPLOYER_BYTECODE,
-      {
-        fee,
-        periodToLive: params.periodToLive,
-        maxCoins: totalCost,
-        maxGas: params.maxGas,
-        datastore,
-      }
-    )
-
-    const events = params.waitFinalExecution
-      ? await operation.getFinalEvents()
-      : await operation.getSpeculativeEvents()
-
-    const lastEvent = events.at(-ONE)
-
-    if (!lastEvent) {
-      throw new Error('no event received.')
-    }
-
-    if (lastEvent.context.is_error) {
-      const parsedData = JSON.parse(lastEvent.data)
-      throw new Error(parsedData.massa_execution_error)
-    }
-
-    const contracts = new Args(
-      rawEventDecode(lastEvent.data)
-    ).nextArray<string>(ArrayTypes.STRING)
-
-    return new SmartContract(
-      contracts[0],
-      new Web3Provider(this.client, this.account)
-    )
+    return execute(this.client, this.account.privateKey, DEPLOYER_BYTECODE, {
+      fee,
+      periodToLive: params.periodToLive,
+      maxCoins: totalCost,
+      maxGas: params.maxGas,
+      datastore,
+    })
   }
 }

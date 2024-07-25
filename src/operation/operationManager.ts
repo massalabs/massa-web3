@@ -1,89 +1,24 @@
 import { unsigned } from 'big-varint'
-import { Address } from './address'
-import { PrivateKey, PublicKey } from './keys'
+import { Address } from '../basicElements/address'
+import { PrivateKey, PublicKey } from '../basicElements/keys'
 import { PublicAPI } from '../client'
-import { Signature } from './signature'
+import { Signature } from '../basicElements/signature'
 import varint from 'varint'
 import { FIRST } from '../utils'
-import { U64 } from './serializers'
-import { Operation } from './operation'
+import { U64 } from '../basicElements/serializers'
+import {
+  BaseOperation,
+  CallOperation,
+  ExecuteOperation,
+  OperationDetails,
+  OperationType,
+  RollOperation,
+  TransferOperation,
+} from './types'
 
 export const PERIOD_TO_LIVE_DEFAULT = 9
 export const PERIOD_TO_LIVE_MAX = 9
 export const PERIOD_TO_LIVE_MIN = 1
-
-/**
- * Operation types.
- *
- * @remarks
- * The corresponding values are fixed by the node.
- */
-export enum OperationType {
-  Transaction,
-  RollBuy,
-  RollSell,
-  ExecuteSmartContractBytecode,
-  CallSmartContractFunction,
-}
-
-/**
- * Operation details.
- *
- * @remarks
- * Period to live is the number of periods the operation is valid for.
- * This value must be positive and if it's too big, the node will (silently?) reject the operation.
- *
- * If no fee is provided, minimal fee of connected node is used.
- * If no periodToLive is provided, the DefaultPeriodToLive is used.
- */
-export type OptOpDetails = {
-  fee?: U64.U64
-  periodToLive?: number
-}
-
-type BaseOperation = {
-  fee: U64.U64
-  expirePeriod: number
-  type: OperationType
-}
-
-export type RollOperation = BaseOperation & {
-  type: OperationType.RollBuy | OperationType.RollSell
-  amount: U64.U64
-}
-
-export type TransferOperation = BaseOperation & {
-  type: OperationType.Transaction
-  amount: U64.U64
-  recipientAddress: Address
-}
-
-export type BaseSmartContractOperation = BaseOperation & {
-  maxGas: U64.U64
-  coins: U64.U64
-}
-
-export type CallOperation = BaseSmartContractOperation & {
-  type: OperationType.CallSmartContractFunction
-  address: string
-  func: string
-  parameter: Uint8Array
-}
-
-// @see https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload
-export type ExecuteOperation = BaseOperation & {
-  maxGas: U64.U64
-  maxCoins: U64.U64
-  type: OperationType.ExecuteSmartContractBytecode
-  contractDataBinary: Uint8Array
-  datastore?: Map<Uint8Array, Uint8Array>
-}
-
-export type OperationDetails =
-  | RollOperation
-  | TransferOperation
-  | CallOperation
-  | ExecuteOperation
 
 /*
  * A class regrouping operation functions.
@@ -264,7 +199,7 @@ export class OperationManager {
    *
    * @returns An operation Id.
    */
-  async send(operation: OperationDetails): Promise<Operation> {
+  async send(operation: OperationDetails): Promise<string> {
     if (!this.blockchainClient) {
       throw new Error('blockchainClient is mandatory to send operations')
     }
@@ -273,14 +208,11 @@ export class OperationManager {
     const data = OperationManager.serialize(operation)
     const publicKey = await this.privateKey.getPublicKey()
 
-    return new Operation(
-      this.blockchainClient,
-      await this.blockchainClient.sendOperation({
-        data,
-        publicKey: publicKey.toString(),
-        signature: signature.toString(),
-      })
-    )
+    return this.blockchainClient.sendOperation({
+      data,
+      publicKey: publicKey.toString(),
+      signature: signature.toString(),
+    })
   }
 }
 

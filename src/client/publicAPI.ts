@@ -1,4 +1,4 @@
-import { Mas, OperationStatus } from '../basicElements'
+import { Mas } from '../basicElements'
 import { SendOperationInput, EventFilter as EvtFilter } from '.'
 import {
   OperationInput,
@@ -29,6 +29,7 @@ import {
 import { FIRST } from '../utils'
 import { ReadOnlyCallResult, ReadSCParams } from '../provider'
 import { MAX_GAS_CALL } from '../smartContracts'
+import { OperationStatus } from '../operation'
 
 export enum Transport {
   WebSocket = 'websocket',
