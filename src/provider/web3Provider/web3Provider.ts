@@ -16,15 +16,17 @@ import {
 } from '../..'
 import { Mas } from '../../basicElements/mas'
 import {
-  getAbsoluteExpirePeriod,
   Operation,
-  OperationManager,
   OperationStatus,
   OperationType,
   OptOpDetails,
   RollOperation,
   TransferOperation,
 } from '../../operation'
+import {
+  getAbsoluteExpirePeriod,
+  OperationManager,
+} from '../../operation/operationManager'
 
 export class Web3Provider extends SCProvider implements Provider {
   static fromRPCUrl(url: string, account: Account): Web3Provider {
