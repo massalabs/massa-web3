@@ -10,6 +10,7 @@ import { SCProvider } from './smartContracts'
 import {
   Account,
   Address,
+  EventFilter,
   JsonRPCClient,
   PublicApiUrl,
   SmartContract,
@@ -179,13 +180,7 @@ export class Web3Provider extends SCProvider implements Provider {
     return this.client.getOperationStatus(opId)
   }
 
-  public async getOperationEvents(
-    operationId: string,
-    waitFinal: boolean
-  ): Promise<SCOutputEvent[]> {
-    return this.client.getEvents({
-      operationId,
-      isFinal: waitFinal,
-    })
+  public async getEvents(filter: EventFilter): Promise<SCOutputEvent[]> {
+    return this.client.getEvents(filter)
   }
 }
