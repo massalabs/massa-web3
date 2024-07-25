@@ -7,6 +7,7 @@ import {
   ReadOnlyCallResult,
   ReadSCParams,
   SCOutputEvent,
+  SignedData,
 } from './'
 
 /**
@@ -25,11 +26,11 @@ export type Provider = {
   /** Initiates a balance retrieval request for the account. */
   balance(final: boolean): Promise<bigint>
 
-  // /**
-  //  * Signs data.
-  //  * @param data - Data to be signed (Buffer, Uint8Array, or string).
-  //  */
-  // sign(data: Buffer | Uint8Array | string): Promise<IAccountSignOutput>;
+  /**
+   * Signs data.
+   * @param data - Data to be signed (Buffer, Uint8Array, or string).
+   */
+  sign(data: Buffer | Uint8Array | string): Promise<SignedData>
 
   /**
    * Purchases rolls.

@@ -47,3 +47,10 @@ export type ReadOnlyCallResult = {
     }
   }
 }
+
+export type SignedData = {
+  /** Public key of the signer account */
+  publicKey: string
+  /** Base58 encoded representation of the signature */
+  base58signature: string
+}
