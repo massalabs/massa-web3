@@ -1,4 +1,4 @@
-import { Address, SmartContract } from '..'
+import { Address, EventFilter, SmartContract } from '..'
 import { Mas } from '../basicElements/mas'
 import { Operation, OperationStatus, OptOpDetails } from '../operation'
 import {
@@ -93,5 +93,5 @@ export type Provider = {
    * @param OpId - Operation Id.
    * @param waitFinal - wait operation to be final.
    */
-  getOperationEvents(OpId: string, waitFinal: boolean): Promise<SCOutputEvent[]>
+  getEvents(filter: EventFilter): Promise<SCOutputEvent[]>
 }

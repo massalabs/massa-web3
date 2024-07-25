@@ -95,7 +95,7 @@ export class Operation {
       return Promise.reject(new Error('Operation not found'))
     }
 
-    return this.provider.getOperationEvents(this.id, true)
+    return this.provider.getEvents({ operationId: this.id, isFinal: true })
   }
 
   /**
@@ -108,7 +108,7 @@ export class Operation {
       return Promise.reject(new Error('Operation not found'))
     }
 
-    return this.provider.getOperationEvents(this.id, false)
+    return this.provider.getEvents({ operationId: this.id, isFinal: false })
   }
 
   async getDeployedAddress(waitFinal = false): Promise<string> {
