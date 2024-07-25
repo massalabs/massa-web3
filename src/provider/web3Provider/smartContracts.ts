@@ -14,12 +14,11 @@ import { populateDatastore } from '../../dataStore'
 import { execute } from '../../basicElements/bytecode'
 import { DEPLOYER_BYTECODE } from '../../generated/deployer-bytecode'
 import { Mas } from '../../basicElements/mas'
+import { CallOperation, OperationType } from '../../operation'
 import {
-  CallOperation,
   getAbsoluteExpirePeriod,
   OperationManager,
-  OperationType,
-} from '../../operation'
+} from '../../operation/operationManager'
 
 export class SCProvider {
   constructor(

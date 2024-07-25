@@ -4,15 +4,17 @@ import { Signature, PrivateKey, Address } from '../../src/'
 import 'dotenv/config'
 import {
   ExecuteOperation,
-  getAbsoluteExpirePeriod,
-  OperationManager,
   OperationType,
-  PERIOD_TO_LIVE_DEFAULT,
-  PERIOD_TO_LIVE_MAX,
-  PERIOD_TO_LIVE_MIN,
   RollOperation,
   TransferOperation,
 } from '../../src/operation'
+import {
+  getAbsoluteExpirePeriod,
+  OperationManager,
+  PERIOD_TO_LIVE_DEFAULT,
+  PERIOD_TO_LIVE_MAX,
+  PERIOD_TO_LIVE_MIN,
+} from '../../src/operation/operationManager'
 
 describe('Operation manager tests', () => {
   test('serialize - transfer', async () => {
