@@ -1,5 +1,11 @@
 // a Web3Provider is the combination of a clientAPI and an private key account
-import { CallSCParams, DeploySCParams, Provider, SCOutputEvent } from '..'
+import {
+  CallSCParams,
+  DeploySCParams,
+  Provider,
+  SCOutputEvent,
+  SignedData,
+} from '..'
 import { SCProvider } from './smartContracts'
 import {
   Account,
@@ -144,9 +150,13 @@ export class Web3Provider extends SCProvider implements Provider {
     return new Operation(this, operationId)
   }
 
-  // async sign(data: Buffer | Uint8Array | string): Promise<void> {
-  //   throw new Error("not implemented")
-  // }
+  // eslint-disable-next-line class-methods-use-this
+  public async sign(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: Buffer | Uint8Array | string
+  ): Promise<SignedData> {
+    throw new Error('not implemented')
+  }
 
   public async callSC(params: CallSCParams): Promise<Operation> {
     const operationId = await this.call(params)
