@@ -34,11 +34,11 @@ export class Web3Provider extends SCProvider implements Provider {
     return new Web3Provider(new JsonRPCClient(url), account)
   }
 
-  static newPublicMainnetProvider(account: Account): Web3Provider {
+  static mainnet(account: Account): Web3Provider {
     return Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet, account)
   }
 
-  static newPublicBuildnetProvider(account: Account): Web3Provider {
+  static buildnet(account: Account): Web3Provider {
     return Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet, account)
   }
 

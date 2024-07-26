@@ -8,7 +8,7 @@ export let provider: Web3Provider
 
 beforeAll(async () => {
   account = await Account.fromEnv()
-  provider = Web3Provider.newPublicBuildnetProvider(account)
+  provider = Web3Provider.buildnet(account)
 
   // eslint-disable-next-line no-console
   console.log(
