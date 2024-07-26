@@ -1,4 +1,5 @@
 import { Address } from '../basicElements'
+import { Mas } from '../basicElements/mas'
 import { U64 } from '../basicElements/serializers/number/u64'
 
 /**
@@ -98,6 +99,16 @@ export type CallOperation = BaseSmartContractOperation & {
   address: string
   func: string
   parameter: Uint8Array
+}
+
+export type ReadOnlyParams = {
+  parameter: Uint8Array
+  coins?: Mas
+  fee?: Mas
+  maxGas?: U64
+  func: string
+  target: string
+  caller: string
 }
 
 // @see https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload

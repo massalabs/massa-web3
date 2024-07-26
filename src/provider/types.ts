@@ -1,3 +1,4 @@
+import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64 } from '../basicElements/serializers/number/u64'
 import { EventExecutionContext } from '../generated/client'
@@ -8,6 +9,7 @@ export type SCOutputEvent = {
 }
 
 type CallSCCommons = {
+  parameter?: Args | Uint8Array
   coins?: Mas
   fee?: Mas
   maxGas?: U64
@@ -17,7 +19,6 @@ export type ReadSCParams = CallSCCommons & {
   func: string
   target: string
   caller: string
-  parameter: Uint8Array
 }
 
 export type CallSCParams = ReadSCParams & {
@@ -25,7 +26,6 @@ export type CallSCParams = ReadSCParams & {
 }
 
 export type DeploySCParams = CallSCCommons & {
-  parameter?: Uint8Array
   byteCode: Uint8Array
   periodToLive?: number
   waitFinalExecution?: boolean

@@ -164,6 +164,17 @@ describe('Smart Contract', () => {
         expect(value).toBe('myValue')
       })
 
+      test('Read only call with not serialized args', async () => {
+        const result = await contractTest.read(
+          'getValueFromKey',
+          new Args().addString('myKey')
+        )
+
+        const value = bytesToStr(result.value)
+
+        expect(value).toBe('myValue')
+      })
+
       test('Read only call with invalid function name', async () => {
         const result = await contractTest.read('invalidFunction')
 
