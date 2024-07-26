@@ -3,3 +3,9 @@ export enum PublicApiUrl {
   Testnet = 'https://testnet.massa.net/api/v2',
   Buildnet = 'https://buildnet.massa.net/api/v2',
 }
+
+export enum NetworkName {
+  Mainnet = 'mainnet',
+  Testnet = 'testnet',
+  Buildnet = 'buildnet',
+}
