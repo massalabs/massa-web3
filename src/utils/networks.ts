@@ -4,7 +4,7 @@ export enum PublicApiUrl {
   Buildnet = 'https://buildnet.massa.net/api/v2',
 }
 
-export enum Network {
+export enum NetworkName {
   Mainnet = 'mainnet',
   Testnet = 'testnet',
   Buildnet = 'buildnet',
