@@ -27,9 +27,9 @@ import {
   AddressFilter,
 } from '../generated/client'
 import { FIRST } from '../utils'
-import { ReadOnlyCallResult, ReadSCParams } from '../provider'
+import { ReadOnlyCallResult } from '../provider'
 import { MAX_GAS_CALL } from '../smartContracts'
-import { OperationStatus } from '../operation'
+import { OperationStatus, ReadOnlyParams } from '../operation'
 
 export enum Transport {
   WebSocket = 'websocket',
@@ -81,7 +81,9 @@ export class PublicAPI {
     return this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions)
   }
 
-  async executeReadOnlyCall(params: ReadSCParams): Promise<ReadOnlyCallResult> {
+  async executeReadOnlyCall(
+    params: ReadOnlyParams
+  ): Promise<ReadOnlyCallResult> {
     const [res] = await this.connector.execute_read_only_call([
       {
         max_gas: Number(params.maxGas ?? MAX_GAS_CALL),

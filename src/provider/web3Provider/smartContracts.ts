@@ -32,7 +32,13 @@ export class SCProvider {
    * @returns A promise that resolves to a ReadOnlyCallResult.
    */
   async readSC(params: ReadSCParams): Promise<ReadOnlyCallResult> {
-    return this.client.executeReadOnlyCall(params)
+    const args = params.parameter ?? new Uint8Array()
+    const readOnlyParams = {
+      ...params,
+      parameter:
+        args instanceof Uint8Array ? args : Uint8Array.from(args.serialize()),
+    }
+    return this.client.executeReadOnlyCall(readOnlyParams)
   }
 
   /**
@@ -43,6 +49,10 @@ export class SCProvider {
   public async call(params: CallSCParams): Promise<string> {
     const coins = params.coins ?? BigInt(ZERO)
     await this.checkAccountBalance(coins)
+
+    const args = params.parameter ?? new Uint8Array()
+    const parameter =
+      args instanceof Uint8Array ? args : Uint8Array.from(args.serialize())
 
     const fee = params.fee ?? (await this.client.getMinimalFee())
 
@@ -68,7 +78,7 @@ export class SCProvider {
       maxGas,
       address: params.target,
       func: params.func,
-      parameter: params.parameter,
+      parameter,
     }
 
     const manager = new OperationManager(this.account.privateKey, this.client)
@@ -134,10 +144,14 @@ export class SCProvider {
 
     await this.checkAccountBalance(totalCost)
 
+    const args = params.parameter ?? new Uint8Array()
+    const parameter =
+      args instanceof Uint8Array ? args : Uint8Array.from(args.serialize())
+
     const datastore = populateDatastore([
       {
         data: params.byteCode,
-        args: params.parameter ?? new Uint8Array(),
+        args: parameter,
         coins,
       },
     ])
