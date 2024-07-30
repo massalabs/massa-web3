@@ -1,22 +1,6 @@
 # Dependencies Report
 
 The following is a list of all the dependencies for this package:
-## [@open-rpc/client-js](git+https://github.com/open-rpc/client-js.git)
-
-**License:** Apache-2.0 - perpetual
-
-**Used version:** 1.8.1
-
-**Many thanks to:** 
-
-## [@open-rpc/schema-utils-js](git+https://github.com/open-rpc/schema-utils-js.git)
-
-**License:** Apache-2.0 - perpetual
-
-**Used version:** 1.15.0
-
-**Many thanks to:** 
-
 ## [@noble/ed25519](git+https://github.com/paulmillr/noble-ed25519.git)
 
 **License:** MIT - perpetual
@@ -33,6 +17,22 @@ The following is a list of all the dependencies for this package:
 
 **Many thanks to:** Paul Miller (https://paulmillr.com)
 
+## [@open-rpc/client-js](git+https://github.com/open-rpc/client-js.git)
+
+**License:** Apache-2.0 - perpetual
+
+**Used version:** 1.8.1
+
+**Many thanks to:** 
+
+## [@open-rpc/schema-utils-js](git+https://github.com/open-rpc/schema-utils-js.git)
+
+**License:** Apache-2.0 - perpetual
+
+**Used version:** 1.15.0
+
+**Many thanks to:** 
+
 ## [big-varint](git+https://github.com/joeltg/big-varint.git)
 
 **License:** MIT - perpetual
@@ -45,7 +45,7 @@ The following is a list of all the dependencies for this package:
 
 **License:** MIT - perpetual
 
-**Used version:** 3.0.1
+**Used version:** 4.0.0
 
 **Many thanks to:** Daniel Cousens
 
@@ -281,6 +281,14 @@ The following is a list of all the dependencies for this package:
 
 **Many thanks to:** [Isaac Z. Schlueter](i@izs.me> (http://blog.izs.me/)
 
+## [ts-interface-builder](git+https://github.com/gristlabs/ts-interface-builder.git)
+
+**License:** Apache-2.0 - perpetual
+
+**Used version:** 0.3.3
+
+**Many thanks to:** Dmitry S, Grist Labs
+
 ## [ts-interface-checker](git+https://github.com/gristlabs/ts-interface-checker.git)
 
 **License:** Apache-2.0 - perpetual
@@ -304,14 +312,6 @@ The following is a list of all the dependencies for this package:
 **Used version:** 10.9.2
 
 **Many thanks to:** Blake Embrey hello@blakeembrey.com http://blakeembrey.me
-
-## [ts-interface-builder](git+https://github.com/gristlabs/ts-interface-builder.git)
-
-**License:** Apache-2.0 - perpetual
-
-**Used version:** 0.3.3
-
-**Many thanks to:** Dmitry S, Grist Labs
 
 ## [typedoc](git://github.com/TypeStrong/TypeDoc.git)
 
