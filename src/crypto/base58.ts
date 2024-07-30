@@ -1,4 +1,4 @@
-import { encode, decode } from 'bs58check'
+import bs58check from 'bs58check'
 import Serializer from './interfaces/serializer'
 
 /**
@@ -7,11 +7,11 @@ import Serializer from './interfaces/serializer'
 export default class Base58 implements Serializer {
   // eslint-disable-next-line class-methods-use-this -- Expected by the interface.
   serialize(data: Uint8Array): string {
-    return encode(data)
+    return bs58check.encode(data)
   }
 
   // eslint-disable-next-line class-methods-use-this -- Expected by the interface.
   deserialize(data: string): Uint8Array {
-    return decode(data)
+    return bs58check.decode(data)
   }
 }
