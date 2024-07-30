@@ -1,5 +1,9 @@
 import { Mas } from '../basicElements'
-import { SendOperationInput, EventFilter as EvtFilter } from '.'
+import {
+  SendOperationInput,
+  EventFilter as EvtFilter,
+  ReadOnlyCallResult,
+} from '.'
 import {
   OperationInput,
   Pagination,
@@ -27,7 +31,6 @@ import {
   AddressFilter,
 } from '../generated/client'
 import { FIRST } from '../utils'
-import { ReadOnlyCallResult } from '../provider'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
 

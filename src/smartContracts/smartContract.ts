@@ -4,7 +4,7 @@ import {
   CallSCParams,
   DeploySCParams,
   Provider,
-  ReadOnlyCallResult,
+  ReadSCData,
   ReadSCParams,
 } from '../provider'
 import { CallSCOptions, DeploySCOptions, ReadSCOptions } from './'
@@ -30,11 +30,9 @@ export class SmartContract {
     args: Args | Uint8Array = new Uint8Array(),
     options: CallSCOptions = {}
   ): Promise<Operation> {
-    const parameter =
-      args instanceof Uint8Array ? args : Uint8Array.from(args.serialize())
     const callParams: CallSCParams = {
       func,
-      parameter,
+      parameter: args,
       target: this.address,
       ...options,
       caller: this.provider.address,
@@ -54,12 +52,10 @@ export class SmartContract {
     func: string,
     args: Args | Uint8Array = new Uint8Array(),
     options: ReadSCOptions = {}
-  ): Promise<ReadOnlyCallResult> {
-    const parameter =
-      args instanceof Uint8Array ? args : Uint8Array.from(args.serialize())
+  ): Promise<ReadSCData> {
     const readParams: ReadSCParams = {
       func,
-      parameter,
+      parameter: args,
       target: this.address,
       ...options,
       caller: options.caller ?? this.provider.address,
@@ -80,14 +76,9 @@ export class SmartContract {
     constructorArgs: Args | Uint8Array = new Uint8Array(),
     options: DeploySCOptions = {}
   ): Promise<SmartContract> {
-    const parameter =
-      constructorArgs instanceof Uint8Array
-        ? constructorArgs
-        : Uint8Array.from(constructorArgs.serialize())
-
     const deployParams: DeploySCParams = {
       byteCode,
-      parameter,
+      parameter: constructorArgs,
       ...options,
     }
     return provider.deploySC(deployParams)

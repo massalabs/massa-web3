@@ -1,5 +1,6 @@
 import { Args, ArrayTypes } from '../basicElements'
-import { Provider, SCOutputEvent } from '../provider'
+import { SCEvent } from '../client'
+import { Provider } from '../provider'
 import { ONE, rawEventDecode } from '../utils'
 import { OperationStatus } from './types'
 
@@ -90,7 +91,7 @@ export class Operation {
    *
    * @returns The events of the operation.
    */
-  async getFinalEvents(): Promise<SCOutputEvent[]> {
+  async getFinalEvents(): Promise<SCEvent[]> {
     if ((await this.waitFinalExecution()) === OperationStatus.NotFound) {
       return Promise.reject(new Error('Operation not found'))
     }
@@ -103,7 +104,7 @@ export class Operation {
    *
    * @returns The speculative events of the operation.
    */
-  async getSpeculativeEvents(): Promise<SCOutputEvent[]> {
+  async getSpeculativeEvents(): Promise<SCEvent[]> {
     if ((await this.waitSpeculativeExecution()) === OperationStatus.NotFound) {
       return Promise.reject(new Error('Operation not found'))
     }

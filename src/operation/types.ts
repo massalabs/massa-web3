@@ -58,7 +58,7 @@ export enum OperationType {
 }
 
 /**
- * Operation details.
+ * Operation options.
  *
  * @remarks
  * Period to live is the number of periods the operation is valid for.
@@ -67,7 +67,7 @@ export enum OperationType {
  * If no fee is provided, minimal fee of connected node is used.
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
  */
-export type OptOpDetails = {
+export type OperationOptions = {
   fee?: U64
   periodToLive?: number
 }

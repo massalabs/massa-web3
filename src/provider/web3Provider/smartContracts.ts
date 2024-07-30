@@ -5,9 +5,9 @@ import { MAX_GAS_CALL, MIN_GAS_CALL } from '../../smartContracts'
 import {
   CallSCParams,
   DeploySCParams,
-  ReadOnlyCallResult,
   ReadSCParams,
   GAS_ESTIMATION_TOLERANCE,
+  ReadSCData,
 } from '..'
 import * as StorageCost from '../../basicElements/storage'
 import { populateDatastore } from '../../dataStore'
@@ -29,9 +29,9 @@ export class SCProvider {
   /**
    * Reads smart contract function.
    * @param params - readSCParams.
-   * @returns A promise that resolves to a ReadOnlyCallResult.
+   * @returns A promise that resolves to a ReadSCData.
    */
-  async readSC(params: ReadSCParams): Promise<ReadOnlyCallResult> {
+  async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const args = params.parameter ?? new Uint8Array()
     const readOnlyParams = {
       ...params,
