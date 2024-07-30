@@ -1,12 +1,7 @@
 import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64 } from '../basicElements/serializers/number/u64'
-import { EventExecutionContext } from '../generated/client'
-
-export type SCOutputEvent = {
-  data: string
-  context: EventExecutionContext
-}
+import { SCEvent } from '../client'
 
 type CallSCCommons = {
   parameter?: Args | Uint8Array
@@ -31,20 +26,12 @@ export type DeploySCParams = CallSCCommons & {
   waitFinalExecution?: boolean
 }
 
-export type ReadOnlyCallResult = {
+export type ReadSCData = {
   value: Uint8Array
   info: {
-    gasCost: number
     error?: string
-    events: SCOutputEvent[]
-    stateChanges: {
-      ledgerChanges: Record<string, unknown>
-      asyncPoolChanges: Record<string, unknown>[]
-      posChanges: Record<string, unknown>
-      executedOpsChanges: Record<string, unknown>
-      executedDenunciationsChanges: Record<string, unknown>
-      executionTrailHashChange: string
-    }
+    events: SCEvent[]
+    gasCost: number
   }
 }
 
@@ -52,5 +39,5 @@ export type SignedData = {
   /** Public key of the signer account */
   publicKey: string
   /** Base58 encoded representation of the signature */
-  base58signature: string
+  signature: string
 }

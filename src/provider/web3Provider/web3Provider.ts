@@ -1,18 +1,16 @@
 // a Web3Provider is the combination of a clientAPI and an private key account
-import {
-  CallSCParams,
-  DeploySCParams,
-  Provider,
-  SCOutputEvent,
-  SignedData,
-} from '..'
+import { CallSCParams, DeploySCParams, Provider, SignedData } from '..'
 import { SCProvider } from './smartContracts'
 import {
   Account,
   Address,
+  CHAIN_ID,
   EventFilter,
   JsonRPCClient,
+  Network,
+  NetworkName,
   PublicApiUrl,
+  SCEvent,
   SmartContract,
 } from '../..'
 import { Mas } from '../../basicElements/mas'
@@ -20,7 +18,7 @@ import {
   Operation,
   OperationStatus,
   OperationType,
-  OptOpDetails,
+  OperationOptions,
   RollOperation,
   TransferOperation,
 } from '../../operation'
@@ -61,10 +59,26 @@ export class Web3Provider extends SCProvider implements Provider {
     return this.client.getBalance(this.address.toString(), final)
   }
 
+  async networkInfos(): Promise<Network> {
+    const chainId = await this.client.getChainId()
+    let name = 'Unknown'
+    if (chainId === CHAIN_ID.Mainnet) {
+      name = NetworkName.Mainnet
+    } else if (chainId === CHAIN_ID.Buildnet) {
+      name = NetworkName.Buildnet
+    }
+
+    return {
+      name,
+      chainId,
+      url: this.client.connector.transport.uri,
+    }
+  }
+
   private async rollOperation(
     type: OperationType,
     amount: Mas,
-    opts?: OptOpDetails
+    opts?: OperationOptions
   ): Promise<Operation> {
     if (type !== OperationType.RollBuy && type !== OperationType.RollSell) {
       throw new Error('Invalid roll operation type.')
@@ -97,7 +111,7 @@ export class Web3Provider extends SCProvider implements Provider {
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async buyRolls(amount: Mas, opts?: OptOpDetails): Promise<Operation> {
+  async buyRolls(amount: Mas, opts?: OperationOptions): Promise<Operation> {
     return this.rollOperation(OperationType.RollBuy, amount, opts)
   }
 
@@ -110,7 +124,7 @@ export class Web3Provider extends SCProvider implements Provider {
    * @returns The ID of the operation.
    * @throws If the amount of rolls is not a positive non-zero value.
    */
-  async sellRolls(amount: Mas, opts?: OptOpDetails): Promise<Operation> {
+  async sellRolls(amount: Mas, opts?: OperationOptions): Promise<Operation> {
     return this.rollOperation(OperationType.RollSell, amount, opts)
   }
 
@@ -127,7 +141,7 @@ export class Web3Provider extends SCProvider implements Provider {
   async transfer(
     to: Address | string,
     amount: Mas,
-    opts?: OptOpDetails
+    opts?: OperationOptions
   ): Promise<Operation> {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     if (amount <= 0) {
@@ -180,7 +194,7 @@ export class Web3Provider extends SCProvider implements Provider {
     return this.client.getOperationStatus(opId)
   }
 
-  public async getEvents(filter: EventFilter): Promise<SCOutputEvent[]> {
+  public async getEvents(filter: EventFilter): Promise<SCEvent[]> {
     return this.client.getEvents(filter)
   }
 }
