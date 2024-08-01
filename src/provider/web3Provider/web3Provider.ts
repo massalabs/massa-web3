@@ -72,6 +72,7 @@ export class Web3Provider extends SCProvider implements Provider {
       name,
       chainId,
       url: this.client.connector.transport.uri,
+      minimalFee: await this.client.getMinimalFee(),
     }
   }
 
