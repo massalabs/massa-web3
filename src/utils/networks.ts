@@ -22,4 +22,5 @@ export type Network = {
   name: NetworkName | string
   chainId: bigint
   url?: string
+  minimalFee: bigint
 }
