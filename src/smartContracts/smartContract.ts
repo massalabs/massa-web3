@@ -58,7 +58,6 @@ export class SmartContract {
       parameter: args,
       target: this.address,
       ...options,
-      caller: options.caller ?? this.provider.address,
     }
     return this.provider.readSC(readParams)
   }

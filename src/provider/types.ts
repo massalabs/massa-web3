@@ -13,7 +13,7 @@ type CallSCCommons = {
 export type ReadSCParams = CallSCCommons & {
   func: string
   target: string
-  caller: string
+  caller?: string
 }
 
 export type CallSCParams = ReadSCParams & {

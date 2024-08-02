@@ -33,8 +33,10 @@ export class SCProvider {
    */
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const args = params.parameter ?? new Uint8Array()
+    const caller = params.caller ?? this.account.address.toString()
     const readOnlyParams = {
       ...params,
+      caller,
       parameter:
         args instanceof Uint8Array ? args : Uint8Array.from(args.serialize()),
     }
