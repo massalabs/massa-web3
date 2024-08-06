@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-non-null-assertion */
+
 import { Mas } from '../basicElements'
 import {
   SendOperationInput,
   EventFilter as EvtFilter,
   ReadOnlyCallResult,
+  TransportOptions,
+  Transport,
+  ClientOptions,
 } from '.'
 import {
   OperationInput,
@@ -33,19 +38,7 @@ import {
 import { FIRST } from '../utils'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
-
-export enum Transport {
-  WebSocket = 'websocket',
-  HTTP = 'http',
-  HTTPS = 'https',
-  PostMessageWindow = 'postmessagewindow',
-  PostMessageIframe = 'postmessageiframe',
-}
-
-type JSONAPIOptions = {
-  path?: string
-  protocol?: string
-}
+import { DEFAULT_RETRY_OPTS, withRetry } from './retry'
 
 export class PublicAPI {
   connector: MassaOpenRPCSpecification
@@ -56,7 +49,8 @@ export class PublicAPI {
     transport: Transport,
     host: string,
     port: number,
-    opts: JSONAPIOptions = {}
+    opts: TransportOptions = {},
+    public options: Partial<ClientOptions> = {}
   ) {
     this.connector = new MassaOpenRPCSpecification({
       transport: {
@@ -67,37 +61,49 @@ export class PublicAPI {
         protocol: opts.protocol,
       },
     })
+    if (!this.options.retry) {
+      this.options.retry = DEFAULT_RETRY_OPTS
+    }
   }
 
-  /* eslint-disable @typescript-eslint/naming-convention */
   async executeReadOnlyBytecode(
     readOnlyBytecodeExecution: ReadOnlyBytecodeExecution
   ): Promise<ExecuteReadOnlyResponse> {
-    return this.connector
-      .execute_read_only_bytecode([readOnlyBytecodeExecution])
-      .then((r) => r[FIRST])
+    return withRetry(
+      () =>
+        this.connector.execute_read_only_bytecode([readOnlyBytecodeExecution]),
+      this.options.retry!
+    ).then((r) => r[FIRST])
   }
 
   async executeMultipleReadOnlyBytecode(
     readOnlyBytecodeExecutions: ReadOnlyBytecodeExecution[]
   ): Promise<ExecuteReadOnlyResponse[]> {
-    return this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions)
+    return withRetry(
+      () =>
+        this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions),
+      this.options.retry!
+    )
   }
 
   async executeReadOnlyCall(
     params: ReadOnlyParams
   ): Promise<ReadOnlyCallResult> {
-    const [res] = await this.connector.execute_read_only_call([
-      {
-        max_gas: Number(params.maxGas ?? MAX_GAS_CALL),
-        target_address: params.target,
-        target_function: params.func,
-        parameter: Array.from(params.parameter),
-        caller_address: params.caller,
-        coins: params.coins ? Mas.toString(params.coins) : null,
-        fee: params.fee ? Mas.toString(params.fee) : null,
-      },
-    ])
+    const [res] = await withRetry(
+      () =>
+        this.connector.execute_read_only_call([
+          {
+            max_gas: Number(params.maxGas ?? MAX_GAS_CALL),
+            target_address: params.target,
+            target_function: params.func,
+            parameter: Array.from(params.parameter),
+            caller_address: params.caller,
+            coins: params.coins ? Mas.toString(params.coins) : null,
+            fee: params.fee ? Mas.toString(params.fee) : null,
+          },
+        ]),
+      this.options.retry!
+    )
 
     if (!res) {
       throw new Error('No result returned from execute_read_only_call')
@@ -127,7 +133,10 @@ export class PublicAPI {
   async executeMultipleReadOnlyCall(
     readOnlyCalls: ReadOnlyCall[]
   ): Promise<ExecuteReadOnlyResponse[]> {
-    return this.connector.execute_read_only_call(readOnlyCalls)
+    return withRetry(
+      () => this.connector.execute_read_only_call(readOnlyCalls),
+      this.options.retry!
+    )
   }
 
   async getAddressInfo(address: string): Promise<AddressInfo> {
@@ -141,36 +150,52 @@ export class PublicAPI {
   }
 
   async getMultipleAddressInfo(addresses: string[]): Promise<AddressInfo[]> {
-    return this.connector.get_addresses(addresses)
+    return withRetry(
+      () => this.connector.get_addresses(addresses),
+      this.options.retry!
+    )
   }
 
   async getAddressesBytecode(addressFilter: AddressFilter): Promise<string> {
-    return this.connector
-      .get_addresses_bytecode([addressFilter])
-      .then((r) => r[FIRST])
+    return withRetry(
+      () => this.connector.get_addresses_bytecode([addressFilter]),
+      this.options.retry!
+    ).then((r) => r[FIRST])
   }
 
   async executeMultipleGetAddressesBytecode(
     addressFilters: AddressFilter[]
   ): Promise<string[]> {
-    return this.connector.get_addresses_bytecode(addressFilters)
+    return withRetry(
+      () => this.connector.get_addresses_bytecode(addressFilters),
+      this.options.retry!
+    )
   }
 
   async getBlock(blockId: BlockId): Promise<BlockInfo> {
-    return this.connector.get_blocks([blockId]).then((r) => r[FIRST])
+    return withRetry(
+      () => this.connector.get_blocks([blockId]),
+      this.options.retry!
+    ).then((r) => r[FIRST])
   }
 
   // todo should return an array of blockInfo, right?
   async getMultipleBlocks(blockIds: BlockId[]): Promise<BlockInfo[]> {
-    return this.connector.get_blocks(blockIds)
+    return withRetry(
+      () => this.connector.get_blocks(blockIds),
+      this.options.retry!
+    )
   }
 
   async getBlockcliqueBlock(slot: Slot): Promise<Block> {
-    return this.connector.get_blockclique_block_by_slot(slot)
+    return withRetry(
+      () => this.connector.get_blockclique_block_by_slot(slot),
+      this.options.retry!
+    )
   }
 
   async getCliques(): Promise<Clique[]> {
-    return this.connector.get_cliques()
+    return withRetry(() => this.connector.get_cliques(), this.options.retry!)
   }
 
   // todo should be DatastoreEntries as multiple entries can be fetched at once
@@ -178,14 +203,20 @@ export class PublicAPI {
   async getDatastoreEntries(
     inputs: DatastoreEntryInput[]
   ): Promise<DatastoreEntryOutput[]> {
-    return this.connector.get_datastore_entries(inputs)
+    return withRetry(
+      () => this.connector.get_datastore_entries(inputs),
+      this.options.retry!
+    )
   }
 
   // why it's not a 2d array?
   async getMultipleDatastoresEntries(
     datastoreEntryInput: DatastoreEntryInput[]
   ): Promise<DatastoreEntryOutput[]> {
-    return this.connector.get_datastore_entries(datastoreEntryInput)
+    return withRetry(
+      () => this.connector.get_datastore_entries(datastoreEntryInput),
+      this.options.retry!
+    )
   }
 
   async getDatastoreEntry(
@@ -193,17 +224,24 @@ export class PublicAPI {
     address: string
   ): Promise<DatastoreEntryOutput> {
     const result = Array.from(key, (char) => char.charCodeAt(FIRST))
-    return this.connector
-      .get_datastore_entries([{ key: result, address: address }])
-      .then((r) => r[FIRST])
+    return withRetry(
+      () => this.connector.get_datastore_entries([{ key: result, address }]),
+      this.options.retry!
+    ).then((r) => r[FIRST])
   }
 
   async getSlotTransfers(slot: Slot): Promise<Transfer[]> {
-    return this.connector.get_slots_transfers([slot]).then((r) => r[FIRST])
+    return withRetry(
+      () => this.connector.get_slots_transfers([slot]),
+      this.options.retry!
+    ).then((r) => r[FIRST])
   }
 
   async getMultipleSlotTransfers(slots: Slot[]): Promise<Transfer[][]> {
-    return this.connector.get_slots_transfers(slots)
+    return withRetry(
+      () => this.connector.get_slots_transfers(slots),
+      this.options.retry!
+    )
   }
 
   async getEndorsement(endorsementId: string): Promise<EndorsementInfo> {
@@ -213,38 +251,44 @@ export class PublicAPI {
   async getMultipleEndorsements(
     endorsementIds: string[]
   ): Promise<EndorsementInfo[]> {
-    return this.connector.get_endorsements(endorsementIds)
+    return withRetry(
+      () => this.connector.get_endorsements(endorsementIds),
+      this.options.retry!
+    )
   }
 
   async getEvents(filter: EvtFilter): Promise<SCOutputEvent[]> {
     filter = {
       start: filter.start,
       end: filter.end,
-
-      /* eslint-disable @typescript-eslint/naming-convention */
-      // It is mandatory to follow the Massa api format.
       emitter_address: filter.smartContractAddress,
       original_caller_address: filter.callerAddress,
       original_operation_id: filter.operationId,
       is_final: filter.isFinal,
       is_error: filter.isError,
-      /* eslint-enable @typescript-eslint/naming-convention */
     } as EventFilter
 
-    const events = await this.connector.get_filtered_sc_output_event(filter)
-
-    return events
+    return withRetry(
+      () => this.connector.get_filtered_sc_output_event(filter),
+      this.options.retry!
+    )
   }
 
   async getGraphInterval(
     start?: number,
     end?: number
   ): Promise<GraphInterval[]> {
-    return this.connector.get_graph_interval({ start, end })
+    return withRetry(
+      () => this.connector.get_graph_interval({ start, end }),
+      this.options.retry!
+    )
   }
 
   async getOperations(operationIds: string[]): Promise<OperationInfo[]> {
-    return this.connector.get_operations(operationIds)
+    return withRetry(
+      () => this.connector.get_operations(operationIds),
+      this.options.retry!
+    )
   }
 
   async getOperation(operationId: string): Promise<OperationInfo> {
@@ -277,10 +321,17 @@ export class PublicAPI {
 
   // todo rename PageRequest pagination
   async getStakers(pagination: Pagination): Promise<Staker[]> {
-    return this.connector.get_stakers(pagination)
+    return withRetry(
+      () => this.connector.get_stakers(pagination),
+      this.options.retry!
+    )
   }
+
   async status(): Promise<NodeStatus> {
-    this.lastStatus = await this.connector.get_status()
+    this.lastStatus = await withRetry(
+      () => this.connector.get_status(),
+      this.options.retry!
+    )
     return this.lastStatus
   }
 
@@ -313,10 +364,8 @@ export class PublicAPI {
     data: SendOperationInput
   ): OperationInput {
     return {
-      /* eslint-disable @typescript-eslint/naming-convention */
       serialized_content: Array.from(data.data),
       creator_public_key: data.publicKey,
-      /* eslint-enable @typescript-eslint/naming-convention */
       signature: data.signature,
     }
   }
@@ -326,13 +375,15 @@ export class PublicAPI {
   }
 
   async sendOperations(data: SendOperationInput[]): Promise<OperationId[]> {
-    return this.connector.send_operations(
+    return this.sendMultipleOperations(
       data.map((e) => PublicAPI.convertOperationInput(e))
     )
   }
 
   async sendMultipleOperations(data: OperationInput[]): Promise<OperationId[]> {
-    return this.connector.send_operations(data)
+    return withRetry(
+      () => this.connector.send_operations(data),
+      this.options.retry!
+    )
   }
-  /* eslint-enable @typescript-eslint/naming-convention */
 }
