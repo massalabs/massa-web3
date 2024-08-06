@@ -6,6 +6,7 @@ describe('Provider tests', () => {
     const infos = await provider.networkInfos()
     expect(infos).toEqual({
       name: NetworkName.Buildnet,
+      minimalFee: 10000000n,
       chainId: CHAIN_ID.Buildnet,
       url: 'https://buildnet.massa.net:443/api/v2',
     })
