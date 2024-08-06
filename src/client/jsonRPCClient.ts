@@ -1,5 +1,6 @@
 import { PublicApiUrl } from '..'
-import { PublicAPI, Transport } from './publicAPI'
+import { Transport } from './types'
+import { PublicAPI } from './publicAPI'
 
 const HTTPS = 443
 const HTTP = 80

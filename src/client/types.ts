@@ -1,5 +1,22 @@
 import { EventExecutionContext, Slot } from '../generated/client'
 
+export enum Transport {
+  WebSocket = 'websocket',
+  HTTP = 'http',
+  HTTPS = 'https',
+  PostMessageWindow = 'postmessagewindow',
+  PostMessageIframe = 'postmessageiframe',
+}
+
+export type TransportOptions = {
+  path?: string
+  protocol?: string
+}
+
+export type ClientOptions = {
+  retry: { retries: number; delay: number }
+}
+
 export type SCEvent = {
   data: string
   context: EventExecutionContext
