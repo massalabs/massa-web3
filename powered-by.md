@@ -241,7 +241,7 @@ The following is a list of all the dependencies for this package:
 
 **Many thanks to:** [Vladimir Zapparov](dervus.grim@gmail.com)
 
-## [lint-staged](git+https://github.com/okonet/lint-staged.git)
+## [lint-staged](git+https://github.com/lint-staged/lint-staged.git)
 
 **License:** MIT - perpetual
 
