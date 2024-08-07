@@ -1,4 +1,5 @@
 import { Args, U256 } from '../basicElements'
+import { Operation } from '../operation'
 import { ReadSCOptions, SmartContract } from '../smartContracts'
 
 export class MRC20 extends SmartContract {
@@ -9,6 +10,18 @@ export class MRC20 extends SmartContract {
       options
     )
     return U256.fromBytes(res.value)
+  }
+
+  async transfer(
+    to: string,
+    amount: bigint,
+    options?: ReadSCOptions
+  ): Promise<Operation> {
+    return this.call(
+      'transfer',
+      new Args().addString(to).addU256(amount),
+      options
+    )
   }
   // TODO: Implement the rest of the functions
 }
