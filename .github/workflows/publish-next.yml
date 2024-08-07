@@ -5,10 +5,13 @@ on:
     branches: [next]
 
 jobs:
-  test:
+  integration-tests:
     uses: ./.github/workflows/integration-tests.yml
+    secrets:
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
   publish-npm-next:
-    needs: test
+    needs: integration-tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
