@@ -13,7 +13,7 @@ beforeAll(async () => {
   // eslint-disable-next-line no-console
   console.log(
     'Using account:',
-    account.address.toString(),
+    provider.address,
     'with balance:',
     Mas.toString(await provider.balance())
   )

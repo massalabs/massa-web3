@@ -1,8 +1,10 @@
-name: 'coverage repport'
+name: coverage repport
 on:
     push:
 
 jobs:
+    test:
+      uses: ./.github/workflows/unit-tests.yml
     coverage:
         runs-on: ubuntu-latest
         steps:

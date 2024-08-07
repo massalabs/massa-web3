@@ -1,4 +1,4 @@
-name: (workspace) Npm nightly publish
+name: Npm nightly publish
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    uses: ./.github/workflows/workspace-check-formatting-and-run-tests.yml
+    uses: ./.github/workflows/unit-tests.yml
   publish-npm-dev:
     needs: test
     runs-on: ubuntu-latest
