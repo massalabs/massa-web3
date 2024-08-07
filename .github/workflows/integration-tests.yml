@@ -1,12 +1,11 @@
-name: (workspace) Integration tests
+name: (next) Integration tests
 
 on:
-  schedule:
-    # Every day at 00:00 UTC
-    - cron: "0 0 * * *"
   workflow_call:
 
 jobs:
+  test:
+    uses: ./.github/workflows/unit-tests.yml
   integration-tests:
     runs-on: ubuntu-latest
 
@@ -22,5 +21,5 @@ jobs:
 
       - name: Run integration tests
         env:
-          PRIVATE_KEY: ${{ secrets.WALLET_SECRET_KEY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: npm run test:integration

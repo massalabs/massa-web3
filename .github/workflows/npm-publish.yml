@@ -1,4 +1,4 @@
-name: (workspace) NPM Publish
+name: NPM Publish latest
 
 on:
   release:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    uses: ./.github/workflows/workspace-check-formatting-and-run-tests.yml
+    uses: ./.github/workflows/unit-tests.yml
 
   publish-npm:
     needs: test

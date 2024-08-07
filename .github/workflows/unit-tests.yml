@@ -1,7 +1,6 @@
-name: (workspace) Check Formatting and Run Tests
+name: Check Formatting and Run unit tests
 
 on:
-  push:
   workflow_call:
 
 jobs:
