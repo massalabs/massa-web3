@@ -6,6 +6,8 @@ import { Web3Provider } from '../../src/provider'
 export let account: Account
 export let provider: Web3Provider
 
+jest.setTimeout(120_000)
+
 beforeAll(async () => {
   account = await Account.fromEnv()
   provider = Web3Provider.buildnet(account)

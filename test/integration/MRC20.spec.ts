@@ -10,8 +10,17 @@ describe('Token wrapper tests', () => {
     usdcContract = new MRC20(provider, USDC)
   })
 
-  test('balanceOf', async () => {
+  test('transfer', async () => {
+    const amount = 1_000n
     const balance = await usdcContract.balanceOf(provider.address)
-    expect(balance).toBeGreaterThan(0n)
+
+    const operation = await usdcContract.transfer(
+      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
+      amount
+    )
+    await operation.waitSpeculativeExecution()
+
+    const newBalance = await usdcContract.balanceOf(provider.address)
+    expect(newBalance).toBe(balance - amount)
   })
 })
