@@ -1,42 +1,101 @@
-# massa-web3 ![Node CI](https://github.com/massalabs/massa-web3/workflows/Node.js%20CI/badge.svg)
-
-![check-code-coverage](https://img.shields.io/badge/coverage-95.25%25-green)
+# massa-web3 ![Node CI](https://github.com/massalabs/massa-web3/workflows/Node.js%20CI/badge.svg) ![check-code-coverage](https://img.shields.io/badge/coverage-95.25%25-green)
 
 > **PREREQUISITES:**
 > 
->    - NodeJS 14+
+>    - NodeJS 18+
 >    - npm / yarn (see package.json)
 
-
-Massa-web3 is a TypeScript library that enables you to communicate with the Massa blockchain. It offers an interface to retrieve data directly from the blockchain, interact with smart contracts, acquire and monitor events, and perform additional actions.
-
+Massa-web3 is an exhaustive TypeScript library that enables you to communicate with the Massa blockchain. It offers an interface to retrieve data directly from the blockchain, interact with smart contracts, acquire and monitor events, and perform additional actions. The library can be used both in browser environments and Node.js runtime.
 
 ## Installation
 
-`Massa-web3` could be used as a library for frameworks or as a stand-alone bundled js file which can be easily loaded into the browser.
+`Massa-web3` can be used as a library for frameworks.
 
 ### Library (Node.js/React/Vue.js) usage
 
-> npm install @massalabs/massa-web3
+```shell
+npm install @massalabs/massa-web3
+````
 
-### Browser usage
+## Browser usage
 
-If you want to use `massa-web3` in the browser directly, you can add the following script to your html file:
+For maintenance reasons, a standalone version of the library is no longer provided. To use `massa-web3` in a vanilla JavaScript project, you will need to use a bundler like Vite.
 
-```ts
-<script
-    type="text/javascript"
-    src="https://cdn.jsdelivr.net/npm/@massalabs/massa-web3@x.x.x/bundle.js"
-></script>
-```
+### Using Vite with npx
 
-whereby the x.x.x is one of the available released versions under
-[Massa-web3's releases page](https://github.com/massalabs/massa-web3/releases):
+1. **Create a Vite Project:**
 
-In your code, once the script is fully loaded, just use `window.massa` to access all `massa-web3` exports.
+   Use `npx` to create a new Vite project:
 
-```ts
-<script>console.log("Massa Web3 ", window.massa);</script>
+   ```shell
+   npx create-vite@latest my-massa-project --template vanilla
+   cd my-massa-project
+   ```
+
+
+2. **Install Massa-Web3:**
+
+   Install the Massa-Web3 libraries:
+
+   ```shell
+   npm install @massalabs/massa-web3
+   npm install @massalabs/wallet-provider
+   ```
+
+3. **Import Massa-Web3:**
+
+   Import the libraries in your `index.html` file and make sure to have a wallet installed (here we use massa station as an example):
+
+   ```html
+   <script type="module">
+     import * as massa from "@massalabs/massa-web3";
+     import * as walletPro from "@massalabs/wallet-provider";
+
+     async function main() {
+       try {
+         let providerList = await walletPro.providers();
+         console.log("Providers:", providerList);
+
+         const provider = providerList.find(
+           (provider) => provider.name() === "MASSASTATION" // or BEARBY
+         );
+
+         let accounts = await provider.accounts();
+
+         if (accounts.length === 0) {
+           console.log("No accounts found");
+           return;
+         }
+
+         console.log("Accounts:", accounts);
+
+         const account = accounts[0];
+
+         if (!account || !provider) {
+           return;
+         }
+
+         const client = await massa.ClientFactory.fromWalletProvider(
+           provider,
+           account
+         );
+
+         console.log("Client:", client);
+       } catch (e) {
+         console.log(e);
+       }
+     }
+
+     main();
+   </script>
+   ```
+
+#### Running the Vite Project
+
+Run the Vite project:
+
+```shell
+npm run dev
 ```
 
 ## Documentation
