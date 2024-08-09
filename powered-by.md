@@ -65,6 +65,14 @@ The following is a list of all the dependencies for this package:
 
 **Many thanks to:** n/a
 
+## [lodash.isequal](git+https://github.com/lodash/lodash.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 4.5.0
+
+**Many thanks to:** [John-David Dalton](john.david.dalton@gmail.com> (http://allyoucanleet.com/)
+
 ## [secure-random](git+https://github.com/jprichardson/secure-random.git)
 
 **License:** MIT - perpetual
