@@ -8,13 +8,12 @@ import { createCheckers } from 'ts-interface-checker'
 import validator from '../../src/generated/client-ti'
 import { EventFilter, PublicAPI } from '../../src/client'
 import { MAX_GAS_CALL } from '../../src/smartContracts'
-import { bytesToStr } from '../../src/basicElements'
+import { bytesToStr, strToBytes } from '../../src/basicElements'
 import { provider } from './setup'
 
 const {
   NodeStatus,
   AddressInfo,
-  DatastoreEntryOutput,
   EndorsementInfo,
   Clique,
   GraphInterval,
@@ -32,7 +31,10 @@ let someBlockIds: string[]
 let operationId: string
 
 const TEST_USER = 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
-const TEST_CONTRACT = 'AS12DgPnd9rAy31iX2j7gTLAs63tcRfP9WvbCq5yrfnwaqxZmP77T'
+// Hello contract from toolkit
+const NAME_KEY = 'name_key'
+const NAME_VAL = 'Massa'
+const TEST_CONTRACT = 'AS12N5DvTVwvaLbaniMgDJqKwJ3uXBGwzzGuB1f6fjeSx3nhhahTE'
 
 let client: PublicAPI
 beforeAll(() => {
@@ -104,22 +106,41 @@ describe('client tests', () => {
     endorsements.forEach((e) => EndorsementInfo.strictCheck(e))
   })
 
+  test('getDataStoreKeys', async () => {
+    const keys = await client.getDataStoreKeys(TEST_CONTRACT)
+    expect(keys).toHaveLength(1)
+    expect(bytesToStr(keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getDataStoreKeys with filter', async () => {
+    const keys = await client.getDataStoreKeys(
+      TEST_CONTRACT,
+      strToBytes(NAME_KEY)
+    )
+    expect(keys).toHaveLength(1)
+    expect(bytesToStr(keys[0])).toBe(NAME_KEY)
+  })
+
   test('getDatastoreEntry', async () => {
-    const entry = await client.getDatastoreEntry('', TEST_CONTRACT)
-    DatastoreEntryOutput.strictCheck(entry)
+    const entry = await client.getDatastoreEntry(NAME_KEY, TEST_CONTRACT)
+    expect(bytesToStr(entry)).toBe(NAME_VAL)
+  })
+
+  test('getDatastoreEntry speculative', async () => {
+    const entry = await client.getDatastoreEntry(NAME_KEY, TEST_CONTRACT, false)
+    expect(bytesToStr(entry)).toBe(NAME_VAL)
   })
 
   test('getDatastoreEntries', async () => {
-    let str1 = ''
-    let result = Array.from(str1, (char) => char.charCodeAt(0))
     const entries = await client.getDatastoreEntries([
       {
         address: TEST_CONTRACT,
-        key: result,
+        key: strToBytes(NAME_KEY),
       },
     ])
 
-    entries.forEach((entry) => DatastoreEntryOutput.strictCheck(entry))
+    expect(entries).toHaveLength(1)
+    expect(bytesToStr(entries[0])).toBe(NAME_VAL)
   })
 
   test.skip('sendOperations', async () => {
@@ -229,7 +250,7 @@ describe('client tests', () => {
     const response = await client.executeReadOnlyCall(arg)
     expect(response).toHaveProperty('value')
 
-    expect(bytesToStr(response.value)).toBe('Hello, World!')
+    expect(bytesToStr(response.value)).toBe(`Hello, ${NAME_VAL}!`)
   })
 
   test('executeMultipleReadOnlyCall', async () => {

@@ -1975,28 +1975,24 @@
                 "title": "DatastoreEntryOutput",
                 "description": "Datastore entry",
                 "type": "object",
+                "required": [
+                    "candidate_value",
+                    "final_value"
+                ],
                 "properties": {
                     "candidate_value": {
-                        "description": "",
-                        "oneOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
+                        "description": "The candidate datastore entry value bytes",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
                     },
                     "final_value": {
-                        "description": "",
-                        "oneOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
+                        "description": "The final datastore entry value bytes",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
                     }
                 },
                 "additionalProperties": false
