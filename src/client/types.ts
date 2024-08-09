@@ -54,3 +54,8 @@ export type ReadOnlyCallResult = {
     }
   }
 }
+
+export type DatastoreEntry = {
+  address: string
+  key: Uint8Array
+}

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-non-null-assertion */
 
-import { Mas } from '../basicElements'
+import { Mas, strToBytes } from '../basicElements'
 import {
   SendOperationInput,
   EventFilter as EvtFilter,
@@ -8,13 +8,12 @@ import {
   TransportOptions,
   Transport,
   ClientOptions,
+  DatastoreEntry,
 } from '.'
 import {
   OperationInput,
   Pagination,
-  EventFilter,
   DatastoreEntryOutput,
-  DatastoreEntryInput,
   ExecuteReadOnlyResponse,
   MassaOpenRPCSpecification,
   ReadOnlyCall,
@@ -35,10 +34,11 @@ import {
   OperationId,
   AddressFilter,
 } from '../generated/client'
-import { FIRST } from '../utils'
+import { FIRST, ZERO } from '../utils'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
 import { DEFAULT_RETRY_OPTS, withRetry } from './retry'
+import isEqual from 'lodash.isequal'
 
 export class PublicAPI {
   connector: MassaOpenRPCSpecification
@@ -198,36 +198,51 @@ export class PublicAPI {
     return withRetry(() => this.connector.get_cliques(), this.options.retry!)
   }
 
-  // todo should be DatastoreEntries as multiple entries can be fetched at once
-  // to check: why it's not an array?
-  async getDatastoreEntries(
-    inputs: DatastoreEntryInput[]
-  ): Promise<DatastoreEntryOutput[]> {
-    return withRetry(
-      () => this.connector.get_datastore_entries(inputs),
-      this.options.retry!
-    )
+  async getDataStoreKeys(
+    contract: string,
+    filter: Uint8Array = new Uint8Array(),
+    final = true
+  ): Promise<Uint8Array[]> {
+    const addrInfo = await this.getAddressInfo(contract)
+    const keys = final
+      ? addrInfo.final_datastore_keys
+      : addrInfo.candidate_datastore_keys
+    return keys
+      .filter(
+        (key) =>
+          !filter.length ||
+          isEqual(Uint8Array.from(key.slice(ZERO, filter.length)), filter)
+      )
+      .map((key) => Uint8Array.from(key))
   }
 
-  // why it's not a 2d array?
-  async getMultipleDatastoresEntries(
-    datastoreEntryInput: DatastoreEntryInput[]
-  ): Promise<DatastoreEntryOutput[]> {
-    return withRetry(
-      () => this.connector.get_datastore_entries(datastoreEntryInput),
+  async getDatastoreEntries(
+    inputs: DatastoreEntry[],
+    final = true
+  ): Promise<Uint8Array[]> {
+    const entriesQuery = inputs.map((entry) => ({
+      key: Array.from(entry.key),
+      address: entry.address,
+    }))
+    const res = await withRetry(
+      () => this.connector.get_datastore_entries(entriesQuery),
       this.options.retry!
+    )
+
+    return res.map((r: DatastoreEntryOutput) =>
+      Uint8Array.from(final ? r.final_value : r.candidate_value)
     )
   }
 
   async getDatastoreEntry(
-    key: string,
-    address: string
-  ): Promise<DatastoreEntryOutput> {
-    const result = Array.from(key, (char) => char.charCodeAt(FIRST))
-    return withRetry(
-      () => this.connector.get_datastore_entries([{ key: result, address }]),
-      this.options.retry!
-    ).then((r) => r[FIRST])
+    key: string | Uint8Array,
+    address: string,
+    final = true
+  ): Promise<Uint8Array> {
+    const byteKey: Uint8Array = typeof key === 'string' ? strToBytes(key) : key
+    return this.getDatastoreEntries([{ key: byteKey, address }], final).then(
+      (r) => r[FIRST]
+    )
   }
 
   async getSlotTransfers(slot: Slot): Promise<Transfer[]> {
@@ -258,7 +273,7 @@ export class PublicAPI {
   }
 
   async getEvents(filter: EvtFilter): Promise<SCOutputEvent[]> {
-    filter = {
+    const formattedFilter = {
       start: filter.start,
       end: filter.end,
       emitter_address: filter.smartContractAddress,
@@ -266,10 +281,10 @@ export class PublicAPI {
       original_operation_id: filter.operationId,
       is_final: filter.isFinal,
       is_error: filter.isError,
-    } as EventFilter
+    }
 
     return withRetry(
-      () => this.connector.get_filtered_sc_output_event(filter),
+      () => this.connector.get_filtered_sc_output_event(formattedFilter),
       this.options.retry!
     )
   }
