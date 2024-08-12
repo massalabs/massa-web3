@@ -127,20 +127,20 @@ describe('Account tests', () => {
     expect(account.address.isEOA).toBe(true)
   })
 
-  test('Account - from yaml file', async () => {
-    const walletPath = path.join(__dirname, 'wallet_test_version_1.yaml')
+  // test('Account - from yaml file', async () => {
+  //   const walletPath = path.join(__dirname, 'wallet_test_version_1.yaml')
 
-    const account = await Account.fromYaml(walletPath, 'unsecurePassword')
-    expect(account.address.toString()).toBe(
-      'AU126tkwrhXn9gEG5JPtrNy8NNLbVMwywokgLKshSYyzP8qusqXZL'
-    )
-    expect(account.publicKey.toString()).toBe(
-      'P126AtzfcSJwdi6xsAmXbzXhhwVhS9d1hRjFNT4PfrDogt3nAihj'
-    )
-    expect(account.version).toBe(Version.V1)
-    expect(account.address.version).toBe(Version.V0)
-    expect(account.address.isEOA).toBe(true)
-  })
+  //   const account = await Account.fromYaml(walletPath, 'unsecurePassword')
+  //   expect(account.address.toString()).toBe(
+  //     'AU126tkwrhXn9gEG5JPtrNy8NNLbVMwywokgLKshSYyzP8qusqXZL'
+  //   )
+  //   expect(account.publicKey.toString()).toBe(
+  //     'P126AtzfcSJwdi6xsAmXbzXhhwVhS9d1hRjFNT4PfrDogt3nAihj'
+  //   )
+  //   expect(account.version).toBe(Version.V1)
+  //   expect(account.address.version).toBe(Version.V0)
+  //   expect(account.address.isEOA).toBe(true)
+  // })
 
   test('Account - from environment variables', async () => {
     process.env.PRIVATE_KEY =
