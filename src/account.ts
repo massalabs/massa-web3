@@ -3,29 +3,6 @@ import Sealer from './crypto/interfaces/sealer'
 import { PasswordSeal } from './crypto/passwordSeal'
 import { Address, PrivateKey, PublicKey, Signature } from './basicElements'
 
-let fs: typeof import('fs') | undefined
-let yaml: typeof import('js-yaml') | undefined
-
-if (typeof window === 'undefined') {
-  console.log('Running in Node.js')
-  // Running in Node.js
-  import('fs')
-    .then((module) => {
-      fs = module
-    })
-    .catch(() => {
-      // ignore error
-    })
-
-  import('js-yaml')
-    .then((module) => {
-      yaml = module
-    })
-    .catch(() => {
-      // ignore error
-    })
-}
-
 /**
  * A class representing an account.
  */
@@ -254,23 +231,24 @@ export class Account {
     return Account.fromPrivateKey(PrivateKey.fromEnv(key))
   }
 
-  /**
-   * Uses the environment variables to create an account.
-   *
-   * @returns An account instance.
-   */
-  static async fromYaml(path: string, password: string): Promise<Account> {
-    if (typeof window !== 'undefined' || !fs || !yaml) {
-      throw new Error('This function is not available in the browser')
-    }
-    // check that file exists
-    if (!fs.existsSync(path)) {
-      throw new Error(`wallet file "${path}" does not exist.`)
-    }
+  // TODO fix js-yaml import in browser
+  // /**
+  //  * Uses the environment variables to create an account.
+  //  *
+  //  * @returns An account instance.
+  //  */
+  // static async fromYaml(path: string, password: string): Promise<Account> {
+  //   if (typeof window !== 'undefined' || !fs || !yaml) {
+  //     throw new Error('This function is not available in the browser')
+  //   }
+  //   // check that file exists
+  //   if (!fs.existsSync(path)) {
+  //     throw new Error(`wallet file "${path}" does not exist.`)
+  //   }
 
-    const ks = yaml.load(fs.readFileSync(path, 'utf8')) as AccountKeyStore
-    return Account.fromKeyStore(ks, password)
-  }
+  //   const ks = yaml.load(fs.readFileSync(path, 'utf8')) as AccountKeyStore
+  //   return Account.fromKeyStore(ks, password)
+  // }
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
