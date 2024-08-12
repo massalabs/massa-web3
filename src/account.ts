@@ -7,13 +7,23 @@ let fs: typeof import('fs') | undefined
 let yaml: typeof import('js-yaml') | undefined
 
 if (typeof window === 'undefined') {
+  console.log('Running in Node.js')
   // Running in Node.js
-  import('fs').then((module) => {
-    fs = module
-  })
-  import('js-yaml').then((module) => {
-    yaml = module
-  })
+  import('fs')
+    .then((module) => {
+      fs = module
+    })
+    .catch(() => {
+      // ignore error
+    })
+
+  import('js-yaml')
+    .then((module) => {
+      yaml = module
+    })
+    .catch(() => {
+      // ignore error
+    })
 }
 
 /**
