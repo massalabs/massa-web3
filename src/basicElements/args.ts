@@ -1,6 +1,4 @@
-import { ZERO } from '../utils/noMagic'
 import {
-  Bit,
   U8,
   U16,
   U32,
@@ -643,7 +641,7 @@ export class Args {
   public addBool(value: boolean): this {
     this.serialized = Args.concatArrays(
       this.serialized,
-      U8.toBytes(value ? Bit.ONE : Bit.ZERO)
+      U8.toBytes(value ? 1n : 0n)
     )
     this.offset++
     this.argsList.push({ type: ArgTypes.BOOL, value: value })
@@ -712,7 +710,7 @@ export class Args {
     if (size > maxSize) {
       // eslint-disable-next-line no-console
       console.warn('input string is too long, it will be truncated')
-      value = value.slice(ZERO, maxSize)
+      value = value.slice(0, maxSize)
     }
 
     const serialized = strToBytes(value)

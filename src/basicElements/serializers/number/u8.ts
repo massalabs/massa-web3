@@ -1,11 +1,10 @@
-import { ONE } from '../../../utils'
 import { numberToInteger, integerFromByte, integerToByte } from './integers'
 
 export type U8 = bigint
 
 export const SIZE_BYTE = 1
 export const SIZE_BIT = 8
-export const MAX = (BigInt(ONE) << BigInt(SIZE_BIT)) - BigInt(ONE)
+export const MAX = (1n << BigInt(SIZE_BIT)) - 1n
 
 /**
  * Converts an U8 value to bytes

@@ -1,5 +1,4 @@
 import Decimal from 'decimal.js'
-import { FIRST, ONE } from '../utils'
 import { U64, fromNumber } from './serializers/number/u64'
 
 export const NB_DECIMALS = 9
@@ -90,8 +89,8 @@ export function fromString(value: string): Mas {
     throw new Error('invalid format')
   }
 
-  const integerPart = parts[FIRST]
-  const decimalPart = parts[ONE] || ''
+  const integerPart = parts[0]
+  const decimalPart = parts[1] || ''
   if (decimalPart.length > NB_DECIMALS) {
     throw new Error(ERROR_VALUE_TOO_LARGE)
   }
@@ -113,7 +112,7 @@ export function toString(
   value: Mas,
   decimalPlaces: number | null = null
 ): string {
-  if (BigInt(value) >= BigInt(ONE) << BigInt(SIZE_U256_BIT)) {
+  if (BigInt(value) >= 1n << BigInt(SIZE_U256_BIT)) {
     throw new Error(ERROR_VALUE_TOO_LARGE)
   }
 

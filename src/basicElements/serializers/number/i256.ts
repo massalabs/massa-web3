@@ -1,13 +1,11 @@
-import { ONE } from '../../../utils'
 import { numberToInteger, integerFromByte, integerToByte } from './integers'
 
 export type I256 = bigint
 
 export const SIZE_BYTE = 32
 export const SIZE_BIT = 256
-export const MIN = -(BigInt(ONE) << (BigInt(SIZE_BIT) - BigInt(ONE)))
-export const MAX =
-  (BigInt(ONE) << (BigInt(SIZE_BIT) - BigInt(ONE))) - BigInt(ONE)
+export const MIN = -(1n << (BigInt(SIZE_BIT) - 1n))
+export const MAX = (1n << (BigInt(SIZE_BIT) - 1n)) - 1n
 
 /**
  * Converts an I256 value to bytes

@@ -9,7 +9,6 @@
  *
  */
 import { PublicAPI } from '../client'
-import { ZERO } from '../utils'
 import { PrivateKey } from './keys'
 import {
   OperationManager,
@@ -56,7 +55,7 @@ export async function execute(
     fee: opts?.fee ?? (await client.getMinimalFee()),
     expirePeriod: await getAbsoluteExpirePeriod(client, opts.periodToLive),
     type: OperationType.ExecuteSmartContractBytecode,
-    maxCoins: opts?.maxCoins ?? BigInt(ZERO),
+    maxCoins: opts?.maxCoins ?? 0n,
     maxGas: opts?.maxGas || MAX_GAS_EXECUTE,
     contractDataBinary: byteCode,
     datastore: opts.datastore,

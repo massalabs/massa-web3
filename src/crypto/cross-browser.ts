@@ -5,8 +5,6 @@
  * If you extend this module, please check that the functions are working in both Node.js and the browser.
  */
 
-import { FIRST } from '../utils/noMagic'
-
 const KEY_SIZE_BYTES = 32
 const IV_SIZE_BYTES = 12
 const AUTH_TAG_SIZE_BYTES = 16
@@ -196,7 +194,7 @@ export async function aesGCMDecrypt(
     )
     const decrypted = Buffer.concat([
       decipher.update(
-        encryptedData.slice(FIRST, encryptedData.length - AUTH_TAG_SIZE_BYTES)
+        encryptedData.slice(0, encryptedData.length - AUTH_TAG_SIZE_BYTES)
       ),
       decipher.final(),
     ])

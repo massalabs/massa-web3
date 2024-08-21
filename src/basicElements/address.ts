@@ -2,7 +2,6 @@ import Base58 from '../crypto/base58'
 import Serializer from '../crypto/interfaces/serializer'
 import { Version, Versioner } from '../crypto/interfaces/versioner'
 import VarintVersioner from '../crypto/varintVersioner'
-import { FIRST } from '../utils'
 import { PublicKey } from './keys'
 import varint from 'varint'
 
@@ -231,7 +230,7 @@ export class Address {
    */
   static extractFromBuffer(
     data: Uint8Array,
-    offset = FIRST
+    offset = 0
   ): { data: Uint8Array; length: number } {
     // addr type
     varint.decode(data, offset)

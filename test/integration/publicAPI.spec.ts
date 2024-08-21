@@ -44,8 +44,8 @@ beforeAll(() => {
 describe('client tests', () => {
   test('getStatus', async () => {
     const status = await client.status()
-    lastSlot.period = status.last_slot!.period
-    lastSlot.thread = status.last_slot!.thread
+    lastSlot.period = status.last_slot.period
+    lastSlot.thread = status.last_slot.thread
     NodeStatus.check(status)
   })
 
