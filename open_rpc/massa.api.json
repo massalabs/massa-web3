@@ -2682,6 +2682,7 @@
                     "current_cycle_time",
                     "next_cycle_time",
                     "network_stats",
+                    "last_slot",
                     "next_slot",
                     "node_id",
                     "pool_stats",

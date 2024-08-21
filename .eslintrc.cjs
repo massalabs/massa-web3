@@ -20,6 +20,7 @@ module.exports = {
             enforceConst: true,
             detectObjects: true,
             ignoreEnums: true,
+            ignore: [0,1]
           },
         ],
         '@typescript-eslint/ban-tslint-comment': 'off',

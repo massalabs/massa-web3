@@ -140,7 +140,7 @@ export class PublicAPI {
   }
 
   async getAddressInfo(address: string): Promise<AddressInfo> {
-    return this.getMultipleAddressInfo([address]).then((r) => r[FIRST])
+    return this.getMultipleAddressInfo([address]).then((r) => r[0])
   }
 
   async getBalance(address: string, final = true): Promise<Mas.Mas> {
@@ -160,7 +160,7 @@ export class PublicAPI {
     return withRetry(
       () => this.connector.get_addresses_bytecode([addressFilter]),
       this.options.retry!
-    ).then((r) => r[FIRST])
+    ).then((r) => r[0])
   }
 
   async executeMultipleGetAddressesBytecode(
@@ -373,6 +373,11 @@ export class PublicAPI {
       throw new Error('last slot: not available')
     }
     return status.last_slot.period
+  }
+
+  async getCurrentSlot(): Promise<Slot> {
+    const { last_slot } = await this.status()
+    return last_slot
   }
 
   private static convertOperationInput(
