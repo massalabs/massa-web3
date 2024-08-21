@@ -34,7 +34,6 @@ import {
   OperationId,
   AddressFilter,
 } from '../generated/client'
-import { FIRST, ZERO } from '../utils'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
 import { DEFAULT_RETRY_OPTS, withRetry } from './retry'
@@ -73,7 +72,7 @@ export class PublicAPI {
       () =>
         this.connector.execute_read_only_bytecode([readOnlyBytecodeExecution]),
       this.options.retry!
-    ).then((r) => r[FIRST])
+    ).then((r) => r[0])
   }
 
   async executeMultipleReadOnlyBytecode(
@@ -176,7 +175,7 @@ export class PublicAPI {
     return withRetry(
       () => this.connector.get_blocks([blockId]),
       this.options.retry!
-    ).then((r) => r[FIRST])
+    ).then((r) => r[0])
   }
 
   // todo should return an array of blockInfo, right?
@@ -211,7 +210,7 @@ export class PublicAPI {
       .filter(
         (key) =>
           !filter.length ||
-          isEqual(Uint8Array.from(key.slice(ZERO, filter.length)), filter)
+          isEqual(Uint8Array.from(key.slice(0, filter.length)), filter)
       )
       .map((key) => Uint8Array.from(key))
   }
@@ -241,7 +240,7 @@ export class PublicAPI {
   ): Promise<Uint8Array> {
     const byteKey: Uint8Array = typeof key === 'string' ? strToBytes(key) : key
     return this.getDatastoreEntries([{ key: byteKey, address }], final).then(
-      (r) => r[FIRST]
+      (r) => r[0]
     )
   }
 
@@ -249,7 +248,7 @@ export class PublicAPI {
     return withRetry(
       () => this.connector.get_slots_transfers([slot]),
       this.options.retry!
-    ).then((r) => r[FIRST])
+    ).then((r) => r[0])
   }
 
   async getMultipleSlotTransfers(slots: Slot[]): Promise<Transfer[][]> {
@@ -260,7 +259,7 @@ export class PublicAPI {
   }
 
   async getEndorsement(endorsementId: string): Promise<EndorsementInfo> {
-    return this.getMultipleEndorsements([endorsementId]).then((r) => r[FIRST])
+    return this.getMultipleEndorsements([endorsementId]).then((r) => r[0])
   }
 
   async getMultipleEndorsements(
@@ -307,7 +306,7 @@ export class PublicAPI {
   }
 
   async getOperation(operationId: string): Promise<OperationInfo> {
-    return this.getOperations([operationId]).then((r) => r[FIRST])
+    return this.getOperations([operationId]).then((r) => r[0])
   }
 
   async getOperationStatus(operationId: string): Promise<OperationStatus> {
@@ -391,7 +390,7 @@ export class PublicAPI {
   }
 
   async sendOperation(data: SendOperationInput): Promise<OperationId> {
-    return this.sendOperations([data]).then((r) => r[FIRST])
+    return this.sendOperations([data]).then((r) => r[0])
   }
 
   async sendOperations(data: SendOperationInput[]): Promise<OperationId[]> {

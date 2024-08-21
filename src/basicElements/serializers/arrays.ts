@@ -11,10 +11,8 @@ import {
 import { bytesToStr } from './strings'
 import { byteToBool } from './bool'
 import { bytesToF32, bytesToF64 } from './numbers'
-import { ZERO } from '../../utils'
 import { U8, U16, U32, U64, U128, U256, I8, I16, I32, I64, I128, I256 } from '.'
 
-const ZERO_LEN = 0
 /**
  * Get the byte size of a typed array unit.
  *
@@ -61,7 +59,7 @@ export function serializableObjectsArrayToBytes<T extends Serializable<T>>(
   return source.reduce(
     (acc, curr) => Args.concatArrays(acc, curr.serialize()),
     //eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    new Uint8Array(ZERO_LEN)
+    new Uint8Array(0)
   )
 }
 
@@ -196,7 +194,7 @@ export function bytesToArray<T>(source: Uint8Array, type: ArrayTypes): T[] {
 
   let byteOffset = DEFAULT_OFFSET
   const result: T[] = []
-  let elementSize = ZERO
+  let elementSize = 0
 
   if (type !== ArrayTypes.STRING) {
     elementSize = getDatatypeSize(type)

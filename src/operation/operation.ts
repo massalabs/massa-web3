@@ -1,7 +1,7 @@
 import { Args, ArrayTypes } from '../basicElements'
 import { SCEvent } from '../client'
 import { Provider } from '../provider'
-import { ONE, rawEventDecode } from '../utils'
+import { rawEventDecode } from '../utils'
 import { OperationStatus } from './types'
 
 const DEFAULT_WAIT_TIMEOUT_MS = 60000
@@ -117,7 +117,7 @@ export class Operation {
       ? await this.getFinalEvents()
       : await this.getSpeculativeEvents()
 
-    const lastEvent = events.at(-ONE)
+    const lastEvent = events.at(-1)
 
     if (!lastEvent) {
       throw new Error('no event received.')

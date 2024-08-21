@@ -2,7 +2,6 @@
  * This module aim's to provide number variable types serialization and conversion helper functions.
  */
 
-import { ZERO } from '../../utils/noMagic'
 import { U32, U64 } from '.'
 
 /**
@@ -16,7 +15,7 @@ import { U32, U64 } from '.'
 export function f32ToBytes(val: number): Uint8Array {
   const buffer = new ArrayBuffer(U32.SIZE_BYTE)
   const view = new DataView(buffer)
-  view.setFloat32(ZERO, val, true)
+  view.setFloat32(0, val, true)
   return new Uint8Array(view.buffer)
 }
 
@@ -29,7 +28,7 @@ export function f32ToBytes(val: number): Uint8Array {
  * @returns The deserialized f32 value
  *
  */
-export function bytesToF32(arr: Uint8Array, offset = ZERO): number {
+export function bytesToF32(arr: Uint8Array, offset = 0): number {
   const view = new DataView(arr.buffer)
   return view.getFloat32(offset, true)
 }
@@ -45,7 +44,7 @@ export function bytesToF32(arr: Uint8Array, offset = ZERO): number {
 export function f64ToBytes(val: number): Uint8Array {
   const buffer = new ArrayBuffer(U64.SIZE_BYTE)
   const view = new DataView(buffer)
-  view.setFloat64(ZERO, val, true)
+  view.setFloat64(0, val, true)
   return new Uint8Array(view.buffer)
 }
 
@@ -58,7 +57,7 @@ export function f64ToBytes(val: number): Uint8Array {
  * @returns The deserialized f64 value
  *
  */
-export function bytesToF64(arr: Uint8Array, offset = ZERO): number {
+export function bytesToF64(arr: Uint8Array, offset = 0): number {
   const view = new DataView(arr.buffer)
   return view.getFloat64(offset, true)
 }

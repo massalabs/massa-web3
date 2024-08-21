@@ -1,4 +1,4 @@
-import { Account, ZERO, minBigInt, PublicAPI } from '../..'
+import { Account, minBigInt, PublicAPI } from '../..'
 import { U64 } from '../../basicElements/serializers/number/u64'
 import { ErrorInsufficientBalance, ErrorMaxGas } from '../../errors'
 import { MAX_GAS_CALL, MIN_GAS_CALL } from '../../smartContracts'
@@ -49,7 +49,7 @@ export class SCProvider {
    * @returns A promise that resolves to an Operation object representing the transaction.
    */
   public async call(params: CallSCParams): Promise<string> {
-    const coins = params.coins ?? BigInt(ZERO)
+    const coins = params.coins ?? 0n
     await this.checkAccountBalance(coins)
 
     const args = params.parameter ?? new Uint8Array()
@@ -112,7 +112,7 @@ export class SCProvider {
   }
 
   protected async checkAccountBalance(coins: Mas): Promise<void> {
-    if (coins > BigInt(ZERO)) {
+    if (coins > 0n) {
       const balance = await this.client.getBalance(
         this.account.address.toString()
       )
@@ -141,7 +141,7 @@ export class SCProvider {
    * @throws If the account has insufficient balance to deploy the smart contract.
    */
   protected async deploy(params: DeploySCParams): Promise<string> {
-    const coins = params.coins ?? BigInt(ZERO)
+    const coins = params.coins ?? 0n
     const totalCost = StorageCost.smartContract(params.byteCode.length) + coins
 
     await this.checkAccountBalance(totalCost)

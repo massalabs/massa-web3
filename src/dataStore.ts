@@ -1,7 +1,6 @@
-import { ZERO_BYTE, ONE, ZERO } from './utils'
 import { Args, U64, U8 } from './basicElements'
 
-const CONTRACTS_NUMBER_KEY = new Uint8Array([ZERO_BYTE])
+const CONTRACTS_NUMBER_KEY = new Uint8Array([0])
 
 type DatastoreContract = {
   data: Uint8Array
@@ -17,8 +16,8 @@ type DatastoreContract = {
  */
 function coinsKey(offset: number): Uint8Array {
   return new Args()
-    .addU64(BigInt(offset + ONE))
-    .addUint8Array(U8.toBytes(BigInt(ONE)))
+    .addU64(BigInt(offset + 1))
+    .addUint8Array(U8.toBytes(1n))
     .serialize()
 }
 
@@ -30,8 +29,8 @@ function coinsKey(offset: number): Uint8Array {
  */
 function argsKey(offset: number): Uint8Array {
   return new Args()
-    .addU64(BigInt(offset + ONE))
-    .addUint8Array(U8.toBytes(BigInt(ZERO)))
+    .addU64(BigInt(offset + 1))
+    .addUint8Array(U8.toBytes(0n))
     .serialize()
 }
 
@@ -42,7 +41,7 @@ function argsKey(offset: number): Uint8Array {
  * @returns A Uint8Array representing the key.
  */
 function contractKey(offset: number): Uint8Array {
-  return U64.toBytes(BigInt(offset + ONE))
+  return U64.toBytes(BigInt(offset + 1))
 }
 
 /**

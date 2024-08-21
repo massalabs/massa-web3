@@ -4,7 +4,6 @@ import { PrivateKey, PublicKey } from '../basicElements/keys'
 import { PublicAPI } from '../client'
 import { Signature } from '../basicElements/signature'
 import varint from 'varint'
-import { FIRST } from '../utils'
 import { U64 } from '../basicElements/serializers'
 import {
   BaseOperation,
@@ -106,7 +105,7 @@ export class OperationManager {
    * @returns An new instance of OperationDetails representing the deserialized operation.
    */
   static deserialize(data: Uint8Array): OperationDetails {
-    let offset = FIRST
+    let offset = 0
 
     // eslint-disable-next-line func-style
     const nextVarInt = (): bigint => {
@@ -164,7 +163,7 @@ export class OperationManager {
     // u64ToBytes is little endian
     const networkId = new Uint8Array(U64.SIZE_BYTE)
     const view = new DataView(networkId.buffer)
-    view.setBigUint64(FIRST, chainId, false)
+    view.setBigUint64(0, chainId, false)
 
     const data = OperationManager.serialize(operation)
     const publicKeyBytes = key.toBytes()

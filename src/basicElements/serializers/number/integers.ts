@@ -1,19 +1,18 @@
 import { U8, U16, U32, U64, U128, U256 } from '..'
-import { FIRST, ONE, ZERO } from '../../../utils'
 
 function mustBeValidSigned(sizeInBits: number, value: bigint): void {
-  const min = -(BigInt(ONE) << (BigInt(sizeInBits) - BigInt(ONE)))
-  const max = (BigInt(ONE) << (BigInt(sizeInBits) - BigInt(ONE))) - BigInt(ONE)
+  const min = -(1n << (BigInt(sizeInBits) - 1n))
+  const max = (1n << (BigInt(sizeInBits) - 1n)) - 1n
   if (value < min || value > max) {
     throw new Error(`value ${value} is out of range for an I${sizeInBits}.`)
   }
 }
 
 function mustBeValidUnsigned(sizeInBits: number, value: bigint): void {
-  if (value < BigInt(ZERO)) {
+  if (value < 0n) {
     throw new Error("negative value can't be serialized as unsigned integer.")
   }
-  if (value >= BigInt(ONE) << BigInt(sizeInBits)) {
+  if (value >= 1n << BigInt(sizeInBits)) {
     throw new Error(`value ${value} is too large for an U${sizeInBits}.`)
   }
 }
@@ -31,24 +30,22 @@ export function integerToByte(
   const view = new DataView(buffer)
   switch (sizeInBits) {
     case U8.SIZE_BIT:
-      signed
-        ? view.setInt8(FIRST, Number(value))
-        : view.setUint8(FIRST, Number(value))
+      signed ? view.setInt8(0, Number(value)) : view.setUint8(0, Number(value))
       break
     case U16.SIZE_BIT:
       signed
-        ? view.setInt16(FIRST, Number(value), true)
-        : view.setUint16(FIRST, Number(value), true)
+        ? view.setInt16(0, Number(value), true)
+        : view.setUint16(0, Number(value), true)
       break
     case U32.SIZE_BIT:
       signed
-        ? view.setInt32(FIRST, Number(value), true)
-        : view.setUint32(FIRST, Number(value), true)
+        ? view.setInt32(0, Number(value), true)
+        : view.setUint32(0, Number(value), true)
       break
     case U64.SIZE_BIT:
       signed
-        ? view.setBigInt64(FIRST, value, true)
-        : view.setBigUint64(FIRST, value, true)
+        ? view.setBigInt64(0, value, true)
+        : view.setBigUint64(0, value, true)
       break
     case U128.SIZE_BIT:
       setBigUint128(view, value)
@@ -68,7 +65,7 @@ export function integerFromByte(
   sizeInBits: number,
   bytes: Uint8Array,
   signed = false,
-  index = FIRST
+  index = 0
 ): bigint {
   if (bytes.length < index + sizeInBits / U8.SIZE_BIT) {
     throw new Error('not enough bytes to read the value.')
@@ -116,7 +113,7 @@ export function numberToInteger(
 }
 
 function setBigUint128(view: DataView, value: bigint): void {
-  const offset = ZERO
+  const offset = 0
   view.setBigUint64(offset, value & U64.MAX, true)
   view.setBigUint64(offset + U64.SIZE_BYTE, value >> BigInt(U64.SIZE_BIT), true)
 }
@@ -129,8 +126,8 @@ function getBigUint128(view: DataView, offset: number): bigint {
 }
 
 function setBigUint256(view: DataView, value: bigint): void {
-  let offset = ZERO
-  for (let i = ZERO; i < U256.SIZE_BYTE / U64.SIZE_BYTE; i++) {
+  let offset = 0
+  for (let i = 0; i < U256.SIZE_BYTE / U64.SIZE_BYTE; i++) {
     view.setBigUint64(offset, value & U64.MAX, true)
     offset += U64.SIZE_BYTE
     value >>= BigInt(U64.SIZE_BIT)
@@ -138,10 +135,10 @@ function setBigUint256(view: DataView, value: bigint): void {
 }
 
 function getBigUint256(view: DataView, offset: number): bigint {
-  let result = BigInt(ZERO)
+  let result = 0n
   const nbParts = U256.SIZE_BYTE / U64.SIZE_BYTE
 
-  for (let i = ZERO; i < nbParts; i++) {
+  for (let i = 0; i < nbParts; i++) {
     const part = view.getBigUint64(offset + i * U64.SIZE_BYTE, true)
     result = result | (part << BigInt(i * U64.SIZE_BIT))
   }

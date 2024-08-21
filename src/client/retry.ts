@@ -1,5 +1,3 @@
-import { ZERO } from '../utils'
-
 const DEFAULT_RETRIES = 3
 const DEFAULT_DELAY = 300
 
@@ -18,7 +16,7 @@ export function withRetry<T>(
       fn()
         .then(resolve)
         .catch((error) => {
-          if (opt.retries === ZERO) {
+          if (opt.retries === 0) {
             reject(error)
           } else {
             opt.retries--
