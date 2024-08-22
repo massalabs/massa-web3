@@ -233,7 +233,7 @@ The following is a list of all the dependencies for this package:
 
 **Many thanks to:** n/a
 
-## [jest-puppeteer](git+https://github.com/argos-ci/jest-puppeteer.git)
+## [jest-puppeteer](https://github.com/argos-ci/jest-puppeteer.git)
 
 **License:** n/a - perpetual
 
@@ -344,6 +344,14 @@ The following is a list of all the dependencies for this package:
 **Used version:** 7.11.0
 
 **Many thanks to:** n/a
+
+## [wait-for-expect](git+https://github.com/TheBrainFamily/wait-for-expect.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 3.0.2
+
+**Many thanks to:** Lukasz Gandecki
 
 ## [bufferutil](git+https://github.com/websockets/bufferutil.git)
 
