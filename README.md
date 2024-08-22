@@ -32,6 +32,3 @@ If you would like to contribute to `massa-web3`, please read the [CONTRIBUTING f
 
 ## License
 `massa-web3` is released under the [MIT License](LICENSE).
-
-## Powered By
-`massa-web3` is developed with love by MassaLabs and powered by a variety of [open-source projects](powered-by.md).
