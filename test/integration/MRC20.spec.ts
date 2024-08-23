@@ -1,4 +1,4 @@
-import { EventPoller } from '../../src'
+import { EventPoller, Mas } from '../../src'
 import { MRC20 } from '../../src/contracts-wrappers'
 import { provider } from './setup'
 
@@ -59,7 +59,10 @@ describe('Token wrapper tests', () => {
     const amount = 123_000_000n
     let operation = await usdcContract.increaseAllowance(
       'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-      amount
+      amount,
+      {
+        coins: Mas.fromString('0.1'),
+      }
     )
     await operation.waitSpeculativeExecution()
 

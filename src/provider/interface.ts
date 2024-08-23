@@ -7,6 +7,7 @@ import {
   ReadSCData,
   ReadSCParams,
   SignedData,
+  NodeStatusInfo,
 } from './'
 
 /**
@@ -38,4 +39,5 @@ export type Provider = {
   deploySC(params: DeploySCParams): Promise<SmartContract>
   getOperationStatus(opId: string): Promise<OperationStatus>
   getEvents(filter: EventFilter): Promise<SCEvent[]>
+  getStatus(): Promise<NodeStatusInfo>
 }

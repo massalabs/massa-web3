@@ -1,5 +1,11 @@
 // a Web3Provider is the combination of a clientAPI and an private key account
-import { CallSCParams, DeploySCParams, Provider, SignedData } from '..'
+import {
+  CallSCParams,
+  DeploySCParams,
+  NodeStatusInfo,
+  Provider,
+  SignedData,
+} from '..'
 import { SCProvider } from './smartContracts'
 import {
   Account,
@@ -26,6 +32,7 @@ import {
   getAbsoluteExpirePeriod,
   OperationManager,
 } from '../../operation/operationManager'
+import { formatNodeStatusObject } from '../../utils/formatObjects/nodeStatusInfo'
 
 export class Web3Provider extends SCProvider implements Provider {
   static fromRPCUrl(url: string, account: Account): Web3Provider {
@@ -197,5 +204,10 @@ export class Web3Provider extends SCProvider implements Provider {
 
   public async getEvents(filter: EventFilter): Promise<SCEvent[]> {
     return this.client.getEvents(filter)
+  }
+
+  public async getStatus(): Promise<NodeStatusInfo> {
+    const status = await this.client.status()
+    return formatNodeStatusObject(status)
   }
 }
