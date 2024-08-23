@@ -42,7 +42,7 @@ describe('SC Event tests', () => {
 
   test('poll transfer event from operationId', async () => {
     const amount = 1_000n
-    const { lastSlot: currentSlot } = await provider.getStatus()
+    const { lastSlot: currentSlot } = await provider.getNodeStatus()
 
     const operation = await usdcContract.transfer(
       'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',

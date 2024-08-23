@@ -13,7 +13,7 @@ describe('Provider tests', () => {
   })
 
   test('Node Status', async () => {
-    const status = await provider.getStatus()
+    const status = await provider.getNodeStatus()
     expect(status.config).toBeDefined()
     expect(status.connectedNodes).toBeDefined()
     expect(status.consensusStats).toBeDefined()

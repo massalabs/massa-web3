@@ -39,5 +39,5 @@ export type Provider = {
   deploySC(params: DeploySCParams): Promise<SmartContract>
   getOperationStatus(opId: string): Promise<OperationStatus>
   getEvents(filter: EventFilter): Promise<SCEvent[]>
-  getStatus(): Promise<NodeStatusInfo>
+  getNodeStatus(): Promise<NodeStatusInfo>
 }

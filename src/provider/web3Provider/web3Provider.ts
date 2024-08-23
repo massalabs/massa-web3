@@ -32,7 +32,7 @@ import {
   getAbsoluteExpirePeriod,
   OperationManager,
 } from '../../operation/operationManager'
-import { formatNodeStatusObject } from '../../utils/formatObjects/nodeStatusInfo'
+import { formatNodeStatusObject } from '../../client/formatObjects'
 
 export class Web3Provider extends SCProvider implements Provider {
   static fromRPCUrl(url: string, account: Account): Web3Provider {
@@ -206,7 +206,7 @@ export class Web3Provider extends SCProvider implements Provider {
     return this.client.getEvents(filter)
   }
 
-  public async getStatus(): Promise<NodeStatusInfo> {
+  public async getNodeStatus(): Promise<NodeStatusInfo> {
     const status = await this.client.status()
     return formatNodeStatusObject(status)
   }

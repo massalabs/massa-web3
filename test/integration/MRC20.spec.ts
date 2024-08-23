@@ -59,10 +59,7 @@ describe('Token wrapper tests', () => {
     const amount = 123_000_000n
     let operation = await usdcContract.increaseAllowance(
       'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-      amount,
-      {
-        coins: Mas.fromString('0.1'),
-      }
+      amount
     )
     await operation.waitSpeculativeExecution()
 
