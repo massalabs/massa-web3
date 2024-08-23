@@ -1,7 +1,7 @@
 import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64 } from '../basicElements/serializers/number/u64'
-import { SCEvent } from '../client'
+import { SCEvent, Slot } from '../client'
 
 type CallSCCommons = {
   parameter?: Args | Uint8Array
@@ -40,4 +40,68 @@ export type SignedData = {
   publicKey: string
   /** Base58 encoded representation of the signature */
   signature: string
+}
+
+export type NodeStatusInfo = {
+  config: Config
+  connectedNodes: Record<string, unknown>
+  consensusStats: ConsensusStats
+  currentCycle: number
+  currentTime: number
+  currentCycleTime: number
+  nextCycleTime: number
+  lastSlot: Slot
+  nextSlot: Slot
+  networkStats: NetworkStats
+  nodeId: string
+  nodeIp?: null | string
+  poolStats: PoolStats
+  version: Version
+  executionStats: ExecutionStats
+  chainId: number
+  minimalFees?: string
+}
+
+export type Config = {
+  blockReward: string
+  deltaF0: number
+  endTimestamp?: number | null
+  genesisTimestamp: number
+  maxBlockSize?: number
+  operationValidityPeriods: number
+  periodsPerCycle: number
+  rollPrice: string
+  t0: number
+  threadCount: number
+}
+
+export type ConnectedNodes = Record<string, unknown>
+
+export type ConsensusStats = {
+  cliqueCount: number
+  endTimespan: number
+  finalBlockCount: number
+  staleBlockCount: number
+  startTimespan: number
+}
+
+export type NetworkStats = {
+  activeNodeCount: number
+  bannedPeerCount: number
+  inConnectionCount: number
+  knownPeerCount: number
+  outConnectionCount: number
+}
+
+export type PoolStats = number[]
+
+export type Version = string
+
+export type ExecutionStats = {
+  timeWindowStart: number
+  timeWindowEnd: number
+  finalBlockCount: number
+  finalExecutedOperationsCount: number
+  activeCursor: Slot
+  finalCursor: Slot
 }
