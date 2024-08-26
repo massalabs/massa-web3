@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events'
 import { Provider } from '../provider'
 import { EventFilter, NB_THREADS, SCEvent, Slot } from '../client'
 
@@ -23,7 +22,7 @@ function nextSlot(prevSlot: Slot): Slot {
 /**
  * The EventPoller class provides a convenient way to poll events from the Massa network.
  */
-export class EventPoller extends EventEmitter {
+export class EventPoller extends EventTarget {
   private intervalId: NodeJS.Timeout
   private lastSlot: Slot
 
@@ -44,30 +43,36 @@ export class EventPoller extends EventEmitter {
 
   private poll = async (): Promise<void> => {
     try {
-      // get all events using the filter.
       if (this.lastSlot) {
         this.eventsFilter.start = nextSlot(this.lastSlot)
+      } else {
+        this.lastSlot = this.eventsFilter.start || nextSlot(this.lastSlot)
       }
 
       const events = await this.provider.getEvents(this.eventsFilter)
 
       if (events.length) {
-        this.emit(ON_MASSA_EVENT_DATA, events)
+        this.dispatchEvent(
+          new CustomEvent(ON_MASSA_EVENT_DATA, {
+            detail: events,
+          })
+        )
         this.lastSlot = events[events.length - 1].context.slot
       }
     } catch (ex) {
-      this.emit(ON_MASSA_EVENT_ERROR, ex)
+      this.dispatchEvent(
+        new CustomEvent(ON_MASSA_EVENT_ERROR, {
+          detail: ex,
+        })
+      )
     }
-
-    // reset the interval.
-    this.intervalId = setTimeout(this.poll, this.pollIntervalMs)
   }
 
   /**
    * Stops polling for events.
    */
   private stop = (): void => {
-    if (this.intervalId?.hasRef()) {
+    if (this.intervalId) {
       clearInterval(this.intervalId)
     }
   }
@@ -101,14 +106,20 @@ export class EventPoller extends EventEmitter {
   ): { stopPolling: () => void } {
     const eventPoller = new EventPoller(provider, eventsFilter, pollIntervalMs)
     if (onData) {
-      eventPoller.on(ON_MASSA_EVENT_DATA, (data: SCEvent[]) => {
-        onData(data)
-      })
+      eventPoller.addEventListener(
+        ON_MASSA_EVENT_DATA,
+        (e: CustomEvent<SCEvent[]>) => {
+          onData(e.detail)
+        }
+      )
     }
     if (onError) {
-      eventPoller.on(ON_MASSA_EVENT_ERROR, (e) => {
-        onError(e)
-      })
+      eventPoller.addEventListener(
+        ON_MASSA_EVENT_ERROR,
+        (e: CustomEvent<Error>) => {
+          onError(e.detail)
+        }
+      )
     }
 
     eventPoller.start()
