@@ -1,5 +1,6 @@
 import { Provider } from '../provider'
 import { EventFilter, NB_THREADS, SCEvent, Slot } from '../client'
+import EventEmitter from 'eventemitter3'
 
 /** Smart Contracts Event Poller */
 export const ON_MASSA_EVENT_DATA = 'ON_MASSA_EVENT'
@@ -22,7 +23,7 @@ function nextSlot(prevSlot: Slot): Slot {
 /**
  * The EventPoller class provides a convenient way to poll events from the Massa network.
  */
-export class EventPoller extends EventTarget {
+export class EventPoller extends EventEmitter {
   private intervalId: NodeJS.Timeout
   private lastSlot: Slot
 
@@ -52,19 +53,11 @@ export class EventPoller extends EventTarget {
       const events = await this.provider.getEvents(this.eventsFilter)
 
       if (events.length) {
-        this.dispatchEvent(
-          new CustomEvent(ON_MASSA_EVENT_DATA, {
-            detail: events,
-          })
-        )
+        this.emit(ON_MASSA_EVENT_DATA, events)
         this.lastSlot = events[events.length - 1].context.slot
       }
     } catch (ex) {
-      this.dispatchEvent(
-        new CustomEvent(ON_MASSA_EVENT_ERROR, {
-          detail: ex,
-        })
-      )
+      this.emit(ON_MASSA_EVENT_ERROR, ex)
     }
   }
 
@@ -106,20 +99,10 @@ export class EventPoller extends EventTarget {
   ): { stopPolling: () => void } {
     const eventPoller = new EventPoller(provider, eventsFilter, pollIntervalMs)
     if (onData) {
-      eventPoller.addEventListener(
-        ON_MASSA_EVENT_DATA,
-        (e: CustomEvent<SCEvent[]>) => {
-          onData(e.detail)
-        }
-      )
+      eventPoller.on(ON_MASSA_EVENT_DATA, onData)
     }
     if (onError) {
-      eventPoller.addEventListener(
-        ON_MASSA_EVENT_ERROR,
-        (e: CustomEvent<Error>) => {
-          onError(e.detail)
-        }
-      )
+      eventPoller.on(ON_MASSA_EVENT_ERROR, onError)
     }
 
     eventPoller.start()
