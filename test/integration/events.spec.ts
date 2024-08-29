@@ -67,4 +67,30 @@ describe('SC Event tests', () => {
     })
     stopPolling()
   })
+
+  test('poll transfer event without start slot', async () => {
+    const amount = 1_000n
+
+    const operation = await usdcContract.transfer(
+      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
+      amount
+    )
+    await operation.waitSpeculativeExecution()
+
+    let events: SCEvent[] = []
+
+    const filter: EventFilter = {
+      operationId: operation.id,
+    }
+
+    const { stopPolling } = EventPoller.start(provider, filter, (data) => {
+      events = data
+    })
+
+    await waitForExpect(() => {
+      expect(events.length).toEqual(1)
+      expect(events[0].data).toEqual('TRANSFER SUCCESS')
+    })
+    stopPolling()
+  })
 })

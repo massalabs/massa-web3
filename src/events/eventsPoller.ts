@@ -46,8 +46,6 @@ export class EventPoller extends EventEmitter {
     try {
       if (this.lastSlot) {
         this.eventsFilter.start = nextSlot(this.lastSlot)
-      } else {
-        this.lastSlot = this.eventsFilter.start || nextSlot(this.lastSlot)
       }
 
       const events = await this.provider.getEvents(this.eventsFilter)
