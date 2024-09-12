@@ -1,4 +1,4 @@
-import { unsigned } from 'big-varint'
+import * as unsigned from './big-varint'
 import { Address } from '../basicElements/address'
 import { PrivateKey, PublicKey } from '../basicElements/keys'
 import { PublicAPI } from '../client'

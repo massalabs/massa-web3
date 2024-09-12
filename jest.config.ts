@@ -13,7 +13,6 @@ const config: Config.InitialOptions = {
   },
   testMatch: ['<rootDir>/test/**/*.(spec|test).ts?(x)'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
-  transformIgnorePatterns: ['/node_modules/(?!big-varint).+\\.js$'],
 }
 
 export default config

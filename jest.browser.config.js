@@ -10,5 +10,4 @@ module.exports = {
     ],
     '^.+\\.jsx?$': 'babel-jest',
   },
-  transformIgnorePatterns: ['node_modules/(?!(big-varint)/)'],
 }
