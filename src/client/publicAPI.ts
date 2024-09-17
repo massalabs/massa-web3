@@ -155,7 +155,7 @@ export class PublicAPI {
     )
   }
 
-  async getAddressesBytecode(addressFilter: AddressFilter): Promise<string> {
+  async getAddressesBytecode(addressFilter: AddressFilter): Promise<number[]> {
     return withRetry(
       () => this.connector.get_addresses_bytecode([addressFilter]),
       this.options.retry!
@@ -164,7 +164,7 @@ export class PublicAPI {
 
   async executeMultipleGetAddressesBytecode(
     addressFilters: AddressFilter[]
-  ): Promise<string[]> {
+  ): Promise<number[][]> {
     return withRetry(
       () => this.connector.get_addresses_bytecode(addressFilters),
       this.options.retry!
@@ -218,7 +218,7 @@ export class PublicAPI {
   async getDatastoreEntries(
     inputs: DatastoreEntry[],
     final = true
-  ): Promise<Uint8Array[]> {
+  ): Promise<string[]> {
     const entriesQuery = inputs.map((entry) => ({
       key: Array.from(entry.key),
       address: entry.address,
@@ -228,16 +228,20 @@ export class PublicAPI {
       this.options.retry!
     )
 
-    return res.map((r: DatastoreEntryOutput) =>
-      Uint8Array.from(final ? r.final_value : r.candidate_value)
-    )
+    return res.map((r: DatastoreEntryOutput) => {
+      const result = final ? r.final_value : r.candidate_value
+      if (!result) {
+        throw new Error('Datastore entry not found')
+      }
+      return result
+    })
   }
 
   async getDatastoreEntry(
     key: string | Uint8Array,
     address: string,
     final = true
-  ): Promise<Uint8Array> {
+  ): Promise<string[] | string> {
     const byteKey: Uint8Array = typeof key === 'string' ? strToBytes(key) : key
     return this.getDatastoreEntries([{ key: byteKey, address }], final).then(
       (r) => r[0]
@@ -374,7 +378,7 @@ export class PublicAPI {
     return status.last_slot.period
   }
 
-  async getCurrentSlot(): Promise<Slot> {
+  async getCurrentSlot(): Promise<Slot | undefined> {
     const { last_slot } = await this.status()
     return last_slot
   }

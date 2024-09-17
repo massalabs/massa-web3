@@ -1,4 +1,7 @@
-import { EventExecutionContext } from '../generated/client'
+import {
+  EventExecutionContext,
+  ObjectOfStringDoaGddGANwpLofVw,
+} from '../generated/client'
 
 export enum Transport {
   WebSocket = 'websocket',
@@ -55,7 +58,7 @@ export type ReadOnlyCallResult = {
       posChanges: Record<string, unknown>
       executedOpsChanges: Record<string, unknown>
       executedDenunciationsChanges: Record<string, unknown>
-      executionTrailHashChange: string
+      executionTrailHashChange: string | ObjectOfStringDoaGddGANwpLofVw
     }
   }
 }

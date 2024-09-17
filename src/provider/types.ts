@@ -50,7 +50,7 @@ export type NodeStatusInfo = {
   currentTime: number
   currentCycleTime: number
   nextCycleTime: number
-  lastSlot: Slot
+  lastSlot?: Slot
   nextSlot: Slot
   networkStats: NetworkStats
   nodeId: string
