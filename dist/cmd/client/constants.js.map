@@ -1,0 +1,1 @@
+{"version":3,"file":"constants.js","sourceRoot":"","sources":["../../../src/client/constants.ts"],"names":[],"mappings":";;;AAAa,QAAA,UAAU,GAAG,EAAE,CAAA","sourcesContent":["export const NB_THREADS = 32\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"constants.js","sourceRoot":"","sources":["../../../../src/provider/web3Provider/constants.ts"],"names":[],"mappings":";;;AAAa,QAAA,wBAAwB,GAAG,GAAG,CAAA,CAAC,MAAM","sourcesContent":["export const GAS_ESTIMATION_TOLERANCE = 20n // 20%\n"]}

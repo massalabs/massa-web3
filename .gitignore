@@ -61,7 +61,7 @@ typings/
 .next
 
 # build folder
-dist/
+./dist/
 
 # bundle files
 bundle.*
