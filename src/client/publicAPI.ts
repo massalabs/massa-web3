@@ -119,6 +119,7 @@ export class PublicAPI {
           ledgerChanges: res.state_changes.ledger_changes,
           asyncPoolChanges: res.state_changes.async_pool_changes,
           posChanges: res.state_changes.pos_changes,
+          deferredCallChanges: res.state_changes.deferred_call_changes,
           executedOpsChanges: res.state_changes.executed_ops_changes,
           executedDenunciationsChanges:
             res.state_changes.executed_denunciations_changes,

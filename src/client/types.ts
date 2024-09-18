@@ -56,6 +56,7 @@ export type ReadOnlyCallResult = {
       ledgerChanges: Record<string, unknown>
       asyncPoolChanges: Record<string, unknown>[]
       posChanges: Record<string, unknown>
+      deferredCallChanges: Record<string, unknown>
       executedOpsChanges: Record<string, unknown>
       executedDenunciationsChanges: Record<string, unknown>
       executionTrailHashChange: string | ObjectOfStringDoaGddGANwpLofVw
