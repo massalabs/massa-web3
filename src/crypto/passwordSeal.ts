@@ -17,7 +17,7 @@ function createKey(password: string, salt: Buffer): Promise<Uint8Array> {
   const opts: PBKDF2Options = {
     iterations: OWASP_ITERATIONS,
     keyLength: KEY_SIZE_BYTES,
-    hash: 'SHA-256',
+    hash: 'sha256',
   }
   return pbkdf2(password, salt, opts)
 }
