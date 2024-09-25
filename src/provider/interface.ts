@@ -40,4 +40,16 @@ export type Provider = {
   getOperationStatus(opId: string): Promise<OperationStatus>
   getEvents(filter: EventFilter): Promise<SCEvent[]>
   getNodeStatus(): Promise<NodeStatusInfo>
+
+  /** Storage */
+  getStorageKeys(
+    address: string,
+    filter: Uint8Array | string,
+    final?: boolean
+  ): Promise<Uint8Array[]>
+  readStorage(
+    address: string,
+    keys: Uint8Array[] | string[],
+    final?: boolean
+  ): Promise<Uint8Array[]>
 }
