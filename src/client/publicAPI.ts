@@ -219,10 +219,14 @@ export class PublicAPI {
     inputs: DatastoreEntry[],
     final = true
   ): Promise<Uint8Array[]> {
-    const entriesQuery = inputs.map((entry) => ({
-      key: Array.from(entry.key),
-      address: entry.address,
-    }))
+    const entriesQuery = inputs.map((entry) => {
+      const byteKey: Uint8Array =
+        typeof entry.key === 'string' ? strToBytes(entry.key) : entry.key
+      return {
+        key: Array.from(byteKey),
+        address: entry.address,
+      }
+    })
     const res = await withRetry(
       () => this.connector.get_datastore_entries(entriesQuery),
       this.options.retry!
@@ -238,10 +242,7 @@ export class PublicAPI {
     address: string,
     final = true
   ): Promise<Uint8Array> {
-    const byteKey: Uint8Array = typeof key === 'string' ? strToBytes(key) : key
-    return this.getDatastoreEntries([{ key: byteKey, address }], final).then(
-      (r) => r[0]
-    )
+    return this.getDatastoreEntries([{ key, address }], final).then((r) => r[0])
   }
 
   async getSlotTransfers(slot: Slot): Promise<Transfer[]> {

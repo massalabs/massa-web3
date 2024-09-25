@@ -1,4 +1,10 @@
-import { Account, minBigInt, PublicAPI } from '../..'
+import {
+  Account,
+  DatastoreEntry,
+  minBigInt,
+  PublicAPI,
+  strToBytes,
+} from '../..'
 import { U64 } from '../../basicElements/serializers/number/u64'
 import { ErrorInsufficientBalance, ErrorMaxGas } from '../../errors'
 import { MAX_GAS_CALL, MIN_GAS_CALL } from '../../smartContracts'
@@ -167,5 +173,24 @@ export class SCProvider {
       maxGas: params.maxGas,
       datastore,
     })
+  }
+
+  public async getStorageKeys(
+    address: string,
+    filter: Uint8Array | string = new Uint8Array(),
+    final = true
+  ): Promise<Uint8Array[]> {
+    const filterBytes: Uint8Array =
+      typeof filter === 'string' ? strToBytes(filter) : filter
+    return this.client.getDataStoreKeys(address, filterBytes, final)
+  }
+
+  public async readStorage(
+    address: string,
+    keys: Uint8Array[] | string[],
+    final = true
+  ): Promise<Uint8Array[]> {
+    const entries: DatastoreEntry[] = keys.map((key) => ({ address, key }))
+    return this.client.getDatastoreEntries(entries, final)
   }
 }
