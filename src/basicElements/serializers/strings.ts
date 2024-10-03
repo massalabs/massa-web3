@@ -12,7 +12,7 @@ export function strToBytes(str: string): Uint8Array {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     return new Uint8Array(0)
   }
-  return new Uint8Array(Buffer.from(str, 'utf-8'))
+  return new TextEncoder().encode(str)
 }
 
 /**
