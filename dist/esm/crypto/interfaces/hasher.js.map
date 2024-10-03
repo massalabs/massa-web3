@@ -1,0 +1,1 @@
+{"version":3,"file":"hasher.js","sourceRoot":"","sources":["../../../../src/crypto/interfaces/hasher.ts"],"names":[],"mappings":"","sourcesContent":["// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- True interface.\nexport default interface Hasher {\n  hash(data: Buffer | Uint8Array | string): Uint8Array\n}\n"]}

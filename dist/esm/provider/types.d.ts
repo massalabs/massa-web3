@@ -1,0 +1,94 @@
+import { Args } from '../basicElements';
+import { Mas } from '../basicElements/mas';
+import { U64 } from '../basicElements/serializers/number/u64';
+import { SCEvent, Slot } from '../client';
+type CallSCCommons = {
+    parameter?: Args | Uint8Array;
+    coins?: Mas;
+    fee?: Mas;
+    maxGas?: U64;
+};
+export type ReadSCParams = CallSCCommons & {
+    func: string;
+    target: string;
+    caller?: string;
+};
+export type CallSCParams = ReadSCParams & {
+    periodToLive?: number;
+};
+export type DeploySCParams = CallSCCommons & {
+    byteCode: Uint8Array;
+    periodToLive?: number;
+    waitFinalExecution?: boolean;
+};
+export type ReadSCData = {
+    value: Uint8Array;
+    info: {
+        error?: string;
+        events: SCEvent[];
+        gasCost: number;
+    };
+};
+export type SignedData = {
+    /** Public key of the signer account */
+    publicKey: string;
+    /** Base58 encoded representation of the signature */
+    signature: string;
+};
+export type NodeStatusInfo = {
+    config: Config;
+    connectedNodes: Record<string, unknown>;
+    consensusStats: ConsensusStats;
+    currentCycle: number;
+    currentTime: number;
+    currentCycleTime: number;
+    nextCycleTime: number;
+    lastSlot: Slot;
+    nextSlot: Slot;
+    networkStats: NetworkStats;
+    nodeId: string;
+    nodeIp?: null | string;
+    poolStats: PoolStats;
+    version: Version;
+    executionStats: ExecutionStats;
+    chainId: number;
+    minimalFees?: string;
+};
+export type Config = {
+    blockReward: string;
+    deltaF0: number;
+    endTimestamp?: number | null;
+    genesisTimestamp: number;
+    maxBlockSize?: number;
+    operationValidityPeriods: number;
+    periodsPerCycle: number;
+    rollPrice: string;
+    t0: number;
+    threadCount: number;
+};
+export type ConnectedNodes = Record<string, unknown>;
+export type ConsensusStats = {
+    cliqueCount: number;
+    endTimespan: number;
+    finalBlockCount: number;
+    staleBlockCount: number;
+    startTimespan: number;
+};
+export type NetworkStats = {
+    activeNodeCount: number;
+    bannedPeerCount: number;
+    inConnectionCount: number;
+    knownPeerCount: number;
+    outConnectionCount: number;
+};
+export type PoolStats = number[];
+export type Version = string;
+export type ExecutionStats = {
+    timeWindowStart: number;
+    timeWindowEnd: number;
+    finalBlockCount: number;
+    finalExecutedOperationsCount: number;
+    activeCursor: Slot;
+    finalCursor: Slot;
+};
+export {};

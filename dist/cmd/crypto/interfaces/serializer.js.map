@@ -1,0 +1,1 @@
+{"version":3,"file":"serializer.js","sourceRoot":"","sources":["../../../../src/crypto/interfaces/serializer.ts"],"names":[],"mappings":"","sourcesContent":["// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- True interface.\nexport default interface Serializer {\n  serialize(data: Uint8Array): string\n  deserialize(data: string): Uint8Array\n}\n"]}

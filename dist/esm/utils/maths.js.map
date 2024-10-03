@@ -1,0 +1,1 @@
+{"version":3,"file":"maths.js","sourceRoot":"","sources":["../../../src/utils/maths.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,SAAS,CAAC,CAAS,EAAE,CAAS;IAC5C,OAAO,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAA;AACtB,CAAC","sourcesContent":["export function minBigInt(a: bigint, b: bigint): bigint {\n  return a < b ? a : b\n}\n"]}

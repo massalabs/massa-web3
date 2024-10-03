@@ -1,0 +1,1 @@
+{"version":3,"file":"constants.js","sourceRoot":"","sources":["../../../src/smartContracts/constants.ts"],"names":[],"mappings":";;;AAAa,QAAA,YAAY,GAAG,WAAW,CAAA;AAC1B,QAAA,YAAY,GAAG,QAAQ,CAAA;AACvB,QAAA,kBAAkB,GAAG,WAAW,CAAA","sourcesContent":["export const MAX_GAS_CALL = 4294167295n\nexport const MIN_GAS_CALL = 2100000n\nexport const MAX_GAS_DEPLOYMENT = 3980167295n\n"]}
