@@ -54,7 +54,7 @@ export class SCProvider {
    * @param params - callSCParams.
    * @returns A promise that resolves to an Operation object representing the transaction.
    */
-  public async call(params: CallSCParams): Promise<string> {
+  protected async call(params: CallSCParams): Promise<string> {
     const coins = params.coins ?? 0n
     await this.checkAccountBalance(coins)
 
