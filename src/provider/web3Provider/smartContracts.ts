@@ -169,7 +169,7 @@ export class SCProvider {
     return execute(this.client, this.account.privateKey, DEPLOYER_BYTECODE, {
       fee,
       periodToLive: params.periodToLive,
-      maxCoins: totalCost,
+      maxCoins: params?.maxCoins ?? totalCost,
       maxGas: params.maxGas,
       datastore,
     })
