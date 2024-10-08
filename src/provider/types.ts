@@ -21,6 +21,7 @@ export type CallSCParams = ReadSCParams & {
 }
 
 export type DeploySCParams = CallSCCommons & {
+  maxCoins?: Mas
   byteCode: Uint8Array
   periodToLive?: number
   waitFinalExecution?: boolean
