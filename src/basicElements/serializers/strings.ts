@@ -1,5 +1,3 @@
-import { isNode } from '../../utils/isNode'
-
 /**
  * Converts utf-16 string to a Uint8Array.
  *
@@ -26,21 +24,5 @@ export function bytesToStr(arr: Uint8Array): string {
   if (!arr.length) {
     return ''
   }
-
-  if (isNode()) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/naming-convention
-    const { StringDecoder } = require('string_decoder')
-    const decoder = new StringDecoder('utf-8')
-
-    return decoder.write(Buffer.from(arr))
-  }
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  let { TextDecoder } = window
-  if (typeof TextDecoder === 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    TextDecoder = require('util').TextDecoder
-  }
-  const textDecoder = new TextDecoder('utf-8')
-
-  return textDecoder.decode(arr)
+  return new TextDecoder().decode(arr)
 }
