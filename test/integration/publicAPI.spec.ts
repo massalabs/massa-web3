@@ -5,7 +5,7 @@ import {
   Slot,
 } from '../../src/generated/client'
 import { createCheckers } from 'ts-interface-checker'
-import validator from '../../src/generated/client-ti'
+import validator from '../generated/client-types-ti'
 import { EventFilter, PublicAPI } from '../../src/client'
 import { MAX_GAS_CALL } from '../../src/smartContracts'
 import { bytesToStr, strToBytes } from '../../src/basicElements'
