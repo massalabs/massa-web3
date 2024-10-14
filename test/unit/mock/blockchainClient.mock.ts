@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { PublicAPI, SCEvent } from '../../../src/client'
-import { NodeStatus } from '../../../src/generated/client'
+import { NodeStatus } from '../../../src/generated/client-types'
 
 export const blockchainClientMock = {
   sendOperation: jest.fn().mockResolvedValue('operationId'),

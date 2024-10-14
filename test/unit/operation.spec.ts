@@ -1,5 +1,5 @@
 import { Operation } from '../../src/operation'
-import { EventExecutionContext } from '../../src/generated/client'
+import { EventExecutionContext } from '../../src/generated/client-types'
 import { OperationStatus } from '../../src/operation'
 import { blockchainClientMock } from './mock/blockchainClient.mock'
 import { providerMock } from './mock/provider.mock'

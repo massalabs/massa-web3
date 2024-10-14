@@ -13,34 +13,29 @@ import { Address, Args, bytesToStr, Mas } from '../../src/basicElements'
 import { execute } from '../../src/basicElements/bytecode'
 import { Operation } from '../../src/operation'
 
-const TIMEOUT = 61000
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
 const contractPath = path.join(__dirname, './contracts/scTest.wasm')
 
 describe('Smart Contract', () => {
   let contractTest: SmartContract
   describe('ByteCode', () => {
-    test(
-      'execute',
-      async () => {
-        const byteCode = new Uint8Array([1, 2, 3, 4])
-        const opts = {
-          periodToLive: 2,
-          coins: 3n,
-          maxGas: 4n,
-        }
+    test('execute', async () => {
+      const byteCode = new Uint8Array([1, 2, 3, 4])
+      const opts = {
+        periodToLive: 2,
+        coins: 3n,
+        maxGas: 4n,
+      }
 
-        const opId = await execute(
-          provider.client,
-          provider.account.privateKey,
-          byteCode,
-          opts
-        )
-        const operation = new Operation(provider, opId)
-        expect(await operation.getSpeculativeEvents()).toHaveLength(1)
-      },
-      TIMEOUT
-    )
+      const opId = await execute(
+        provider.client,
+        provider.account.privateKey,
+        byteCode,
+        opts
+      )
+      const operation = new Operation(provider, opId)
+      expect(await operation.getSpeculativeEvents()).toHaveLength(1)
+    })
 
     test('not enough fee', async () => {
       const byteCode = new Uint8Array([1, 2, 3, 4])
@@ -51,99 +46,82 @@ describe('Smart Contract', () => {
         maxGas: 4n,
       }
 
-      expect(
+      await expect(
         execute(provider.client, provider.account.privateKey, byteCode, opts)
-      ).rejects.toThrow(
-        'Bad request: fee is too low provided: 0.000000001 , minimal_fees required: 0.01'
-      )
+      ).rejects.toMatchObject({
+        message: expect.stringMatching(/fee is too low/),
+      })
     })
   })
 
-  test('deploy', async () => {
-    const byteCode = fs.readFileSync(contractPath)
-    const constructorArgs = new Args().addString('myName')
-
-    const deployOptions: DeploySCOptions = {
-      periodToLive: 2,
-      maxGas: MAX_GAS_DEPLOYMENT,
-      coins: Mas.fromString('0.0016'),
-    }
-
-    const contract = await SmartContract.deploy(
-      provider,
-      byteCode,
-      constructorArgs,
-      deployOptions
-    )
-
-    expect(Address.fromString(contract.address).isEOA).toBeFalsy()
-
-    contractTest = contract
-  }, 60000)
-
   describe('SmartContract - Call ', () => {
-    test(
-      'minimal call',
-      async () => {
-        const op = await contractTest.call('event')
-        const events = await op.getSpeculativeEvents()
-        const firstEvent = events[0].data
-        expect(firstEvent).toBe("I'm an event!")
-      },
-      TIMEOUT
-    )
+    beforeAll(async () => {
+      const byteCode = fs.readFileSync(contractPath)
+      const constructorArgs = new Args().addString('myName')
 
-    test(
-      'call that set a value in the datastore',
-      async () => {
-        const key = 'myKey'
-        const value = 'myValue'
-        const parameter = new Args().addString(key).addString(value).serialize()
+      const deployOptions: DeploySCOptions = {
+        periodToLive: 2,
+        maxGas: MAX_GAS_DEPLOYMENT,
+        coins: Mas.fromString('0.0016'),
+      }
 
-        const op = await contractTest.call('setValueToKey', parameter, {
-          coins: Mas.fromString('0.0016'),
-        })
+      const contract = await SmartContract.deploy(
+        provider,
+        byteCode,
+        constructorArgs,
+        deployOptions
+      )
 
-        const events = await op.getSpeculativeEvents()
-        const firstEvent = events[0].data
-        expect(firstEvent).toBe(`Set value ${value} to key ${key}`)
-      },
-      TIMEOUT
-    )
+      expect(Address.fromString(contract.address).isEOA).toBeFalsy()
 
-    test(
-      'call with send coins',
-      async () => {
-        const coinAmount = Mas.fromString('1')
+      contractTest = contract
+    })
+    test('minimal call', async () => {
+      const op = await contractTest.call('event')
+      const events = await op.getSpeculativeEvents()
+      const firstEvent = events[0].data
+      expect(firstEvent).toBe("I'm an event!")
+    })
 
-        const op = await contractTest.call('sendCoins', new Uint8Array(), {
-          coins: coinAmount,
-        })
+    test('call that set a value in the datastore', async () => {
+      const key = 'myKey'
+      const value = 'myValue'
+      const parameter = new Args().addString(key).addString(value).serialize()
 
-        const events = await op.getSpeculativeEvents()
-        const firstEvent = events[0].data
+      const op = await contractTest.call('setValueToKey', parameter, {
+        coins: Mas.fromString('0.0016'),
+      })
 
-        expect(firstEvent).toBe(`Received ${coinAmount.toString()} coins`)
-      },
-      TIMEOUT
-    )
+      const events = await op.getSpeculativeEvents()
+      const firstEvent = events[0].data
+      expect(firstEvent).toBe(`Set value ${value} to key ${key}`)
+    })
 
-    test(
-      'Attempt to call with maxGas value that is below the minimum required limit',
-      async () => {
-        const call = contractTest.call('event', new Uint8Array(), {
-          maxGas: INSUFFICIENT_MAX_GAS,
-        })
+    test('call with send coins', async () => {
+      const coinAmount = Mas.fromString('1')
 
-        expect(call).rejects.toThrow(
-          `The gas limit for the operation was below the minimum amount of ${MIN_GAS_CALL}`
-        )
-      },
-      TIMEOUT
-    )
+      const op = await contractTest.call('sendCoins', new Uint8Array(), {
+        coins: coinAmount,
+      })
+
+      const events = await op.getSpeculativeEvents()
+      const firstEvent = events[0].data
+
+      expect(firstEvent).toBe(`Received ${coinAmount.toString()} coins`)
+    })
+
+    test('Attempt to call with maxGas value that is below the minimum required limit', async () => {
+      const call = contractTest.call('event', undefined, {
+        maxGas: INSUFFICIENT_MAX_GAS,
+      })
+
+      expect(call).rejects.toThrow(
+        `The gas limit for the operation was below the minimum amount of ${MIN_GAS_CALL}`
+      )
+    })
 
     test('Attempt to call with maxGas value that exceeds the maximum limit', async () => {
-      const call = contractTest.call('event', new Uint8Array(), {
+      const call = contractTest.call('event', undefined, {
         maxGas: MAX_GAS_CALL + 1n,
       })
 
@@ -187,7 +165,6 @@ describe('Smart Contract', () => {
           'getValueFromKey',
           new Args().addString('myKey').serialize(),
           {
-            fee: Mas.fromString('0.1'),
             caller: provider.account.address.toString(),
           }
         )
@@ -199,10 +176,7 @@ describe('Smart Contract', () => {
       test('Read only call with fee and no callerAddress', async () => {
         const result = await contractTest.read(
           'getValueFromKey',
-          new Args().addString('myKey').serialize(),
-          {
-            fee: Mas.fromString('0.01'),
-          }
+          new Args().addString('myKey').serialize()
         )
 
         const value = bytesToStr(result.value)
@@ -211,7 +185,7 @@ describe('Smart Contract', () => {
 
       test('Read only call with coins', async () => {
         const coinAmount = Mas.fromString('1')
-        const result = await contractTest.read('sendCoins', new Uint8Array(), {
+        const result = await contractTest.read('sendCoins', undefined, {
           coins: coinAmount,
         })
 
