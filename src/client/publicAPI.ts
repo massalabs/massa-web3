@@ -1,108 +1,59 @@
-/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import { Mas, strToBytes } from '../basicElements'
 import {
   SendOperationInput,
   EventFilter as EvtFilter,
   ReadOnlyCallResult,
-  TransportOptions,
-  Transport,
   ClientOptions,
   DatastoreEntry,
 } from '.'
-import {
-  OperationInput,
-  Pagination,
-  DatastoreEntryOutput,
-  ExecuteReadOnlyResponse,
-  MassaOpenRPCSpecification,
-  ReadOnlyCall,
-  ReadOnlyBytecodeExecution,
-  AddressInfo,
-  Block,
-  BlockId,
-  BlockInfo,
-  Clique,
-  Transfer,
-  Slot,
-  EndorsementInfo,
-  GraphInterval,
-  NodeStatus,
-  OperationInfo,
-  SCOutputEvent,
-  Staker,
-  OperationId,
-  AddressFilter,
-} from '../generated/client'
+import * as t from '../generated/client-types'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
-import { DEFAULT_RETRY_OPTS, withRetry } from './retry'
 import isEqual from 'lodash.isequal'
+import { Connector } from './connector'
 
 export class PublicAPI {
-  connector: MassaOpenRPCSpecification
-  lastStatus: NodeStatus
+  connector: Connector
+  lastStatus: t.NodeStatus
 
   // eslint-disable-next-line max-params
   constructor(
-    transport: Transport,
-    host: string,
-    port: number,
-    opts: TransportOptions = {},
+    public url: string,
     public options: Partial<ClientOptions> = {}
   ) {
-    this.connector = new MassaOpenRPCSpecification({
-      transport: {
-        type: transport,
-        host,
-        port,
-        path: opts.path,
-        protocol: opts.protocol,
-      },
-    })
-    if (!this.options.retry) {
-      this.options.retry = DEFAULT_RETRY_OPTS
-    }
+    this.connector = new Connector(url, this.options)
   }
 
   async executeReadOnlyBytecode(
-    readOnlyBytecodeExecution: ReadOnlyBytecodeExecution
-  ): Promise<ExecuteReadOnlyResponse> {
-    return withRetry(
-      () =>
-        this.connector.execute_read_only_bytecode([readOnlyBytecodeExecution]),
-      this.options.retry!
-    ).then((r) => r[0])
+    readOnlyBytecodeExecution: t.ReadOnlyBytecodeExecution
+  ): Promise<t.ExecuteReadOnlyResponse> {
+    return this.connector
+      .execute_read_only_bytecode([readOnlyBytecodeExecution])
+      .then((r) => r[0])
   }
 
   async executeMultipleReadOnlyBytecode(
-    readOnlyBytecodeExecutions: ReadOnlyBytecodeExecution[]
-  ): Promise<ExecuteReadOnlyResponse[]> {
-    return withRetry(
-      () =>
-        this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions),
-      this.options.retry!
-    )
+    readOnlyBytecodeExecutions: t.ReadOnlyBytecodeExecution[]
+  ): Promise<t.ExecuteReadOnlyResponse[]> {
+    return this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions)
   }
 
   async executeReadOnlyCall(
     params: ReadOnlyParams
   ): Promise<ReadOnlyCallResult> {
-    const [res] = await withRetry(
-      () =>
-        this.connector.execute_read_only_call([
-          {
-            max_gas: Number(params.maxGas ?? MAX_GAS_CALL),
-            target_address: params.target,
-            target_function: params.func,
-            parameter: Array.from(params.parameter),
-            caller_address: params.caller,
-            coins: params.coins ? Mas.toString(params.coins) : null,
-            fee: params.fee ? Mas.toString(params.fee) : null,
-          },
-        ]),
-      this.options.retry!
-    )
+    const [res] = await this.connector.execute_read_only_call([
+      {
+        max_gas: Number(params.maxGas ?? MAX_GAS_CALL),
+        target_address: params.target,
+        target_function: params.func,
+        parameter: Array.from(params.parameter),
+        caller_address: params.caller,
+        coins: params.coins ? Mas.toString(params.coins) : null,
+        fee: params.fee ? Mas.toString(params.fee) : null,
+      },
+    ])
 
     if (!res) {
       throw new Error('No result returned from execute_read_only_call')
@@ -130,15 +81,12 @@ export class PublicAPI {
   }
 
   async executeMultipleReadOnlyCall(
-    readOnlyCalls: ReadOnlyCall[]
-  ): Promise<ExecuteReadOnlyResponse[]> {
-    return withRetry(
-      () => this.connector.execute_read_only_call(readOnlyCalls),
-      this.options.retry!
-    )
+    readOnlyCalls: t.ReadOnlyCall[]
+  ): Promise<t.ExecuteReadOnlyResponse[]> {
+    return this.connector.execute_read_only_call(readOnlyCalls)
   }
 
-  async getAddressInfo(address: string): Promise<AddressInfo> {
+  async getAddressInfo(address: string): Promise<t.AddressInfo> {
     return this.getMultipleAddressInfo([address]).then((r) => r[0])
   }
 
@@ -148,53 +96,37 @@ export class PublicAPI {
     })
   }
 
-  async getMultipleAddressInfo(addresses: string[]): Promise<AddressInfo[]> {
-    return withRetry(
-      () => this.connector.get_addresses(addresses),
-      this.options.retry!
-    )
+  async getMultipleAddressInfo(addresses: string[]): Promise<t.AddressInfo[]> {
+    return this.connector.get_addresses(addresses)
   }
 
-  async getAddressesBytecode(addressFilter: AddressFilter): Promise<string> {
-    return withRetry(
-      () => this.connector.get_addresses_bytecode([addressFilter]),
-      this.options.retry!
-    ).then((r) => r[0])
+  async getAddressesBytecode(addressFilter: t.AddressFilter): Promise<string> {
+    return this.connector
+      .get_addresses_bytecode([addressFilter])
+      .then((r) => r[0])
   }
 
   async executeMultipleGetAddressesBytecode(
-    addressFilters: AddressFilter[]
+    addressFilters: t.AddressFilter[]
   ): Promise<string[]> {
-    return withRetry(
-      () => this.connector.get_addresses_bytecode(addressFilters),
-      this.options.retry!
-    )
+    return this.connector.get_addresses_bytecode(addressFilters)
   }
 
-  async getBlock(blockId: BlockId): Promise<BlockInfo> {
-    return withRetry(
-      () => this.connector.get_blocks([blockId]),
-      this.options.retry!
-    ).then((r) => r[0])
+  async getBlock(blockId: t.BlockId): Promise<t.BlockInfo> {
+    return this.connector.get_blocks([blockId]).then((r) => r[0])
   }
 
   // todo should return an array of blockInfo, right?
-  async getMultipleBlocks(blockIds: BlockId[]): Promise<BlockInfo[]> {
-    return withRetry(
-      () => this.connector.get_blocks(blockIds),
-      this.options.retry!
-    )
+  async getMultipleBlocks(blockIds: t.BlockId[]): Promise<t.BlockInfo[]> {
+    return this.connector.get_blocks(blockIds)
   }
 
-  async getBlockcliqueBlock(slot: Slot): Promise<Block> {
-    return withRetry(
-      () => this.connector.get_blockclique_block_by_slot(slot),
-      this.options.retry!
-    )
+  async getBlockcliqueBlock(slot: t.Slot): Promise<t.Block> {
+    return this.connector.get_blockclique_block_by_slot(slot)
   }
 
-  async getCliques(): Promise<Clique[]> {
-    return withRetry(() => this.connector.get_cliques(), this.options.retry!)
+  async getCliques(): Promise<t.Clique[]> {
+    return this.connector.get_cliques()
   }
 
   async getDataStoreKeys(
@@ -227,12 +159,9 @@ export class PublicAPI {
         address: entry.address,
       }
     })
-    const res = await withRetry(
-      () => this.connector.get_datastore_entries(entriesQuery),
-      this.options.retry!
-    )
+    const res = await this.connector.get_datastore_entries(entriesQuery)
 
-    return res.map((r: DatastoreEntryOutput) =>
+    return res.map((r: t.DatastoreEntryOutput) =>
       Uint8Array.from(final ? r.final_value : r.candidate_value)
     )
   }
@@ -245,34 +174,25 @@ export class PublicAPI {
     return this.getDatastoreEntries([{ key, address }], final).then((r) => r[0])
   }
 
-  async getSlotTransfers(slot: Slot): Promise<Transfer[]> {
-    return withRetry(
-      () => this.connector.get_slots_transfers([slot]),
-      this.options.retry!
-    ).then((r) => r[0])
+  async getSlotTransfers(slot: t.Slot): Promise<t.Transfer[]> {
+    return this.connector.get_slots_transfers([slot]).then((r) => r[0])
   }
 
-  async getMultipleSlotTransfers(slots: Slot[]): Promise<Transfer[][]> {
-    return withRetry(
-      () => this.connector.get_slots_transfers(slots),
-      this.options.retry!
-    )
+  async getMultipleSlotTransfers(slots: t.Slot[]): Promise<t.Transfer[][]> {
+    return this.connector.get_slots_transfers(slots)
   }
 
-  async getEndorsement(endorsementId: string): Promise<EndorsementInfo> {
+  async getEndorsement(endorsementId: string): Promise<t.EndorsementInfo> {
     return this.getMultipleEndorsements([endorsementId]).then((r) => r[0])
   }
 
   async getMultipleEndorsements(
     endorsementIds: string[]
-  ): Promise<EndorsementInfo[]> {
-    return withRetry(
-      () => this.connector.get_endorsements(endorsementIds),
-      this.options.retry!
-    )
+  ): Promise<t.EndorsementInfo[]> {
+    return this.connector.get_endorsements(endorsementIds)
   }
 
-  async getEvents(filter: EvtFilter): Promise<SCOutputEvent[]> {
+  async getEvents(filter: EvtFilter): Promise<t.SCOutputEvent[]> {
     const formattedFilter = {
       start: filter.start,
       end: filter.end,
@@ -283,30 +203,21 @@ export class PublicAPI {
       is_error: filter.isError,
     }
 
-    return withRetry(
-      () => this.connector.get_filtered_sc_output_event(formattedFilter),
-      this.options.retry!
-    )
+    return this.connector.get_filtered_sc_output_event(formattedFilter)
   }
 
   async getGraphInterval(
     start?: number,
     end?: number
-  ): Promise<GraphInterval[]> {
-    return withRetry(
-      () => this.connector.get_graph_interval({ start, end }),
-      this.options.retry!
-    )
+  ): Promise<t.GraphInterval[]> {
+    return this.connector.get_graph_interval({ start, end })
   }
 
-  async getOperations(operationIds: string[]): Promise<OperationInfo[]> {
-    return withRetry(
-      () => this.connector.get_operations(operationIds),
-      this.options.retry!
-    )
+  async getOperations(operationIds: string[]): Promise<t.OperationInfo[]> {
+    return this.connector.get_operations(operationIds)
   }
 
-  async getOperation(operationId: string): Promise<OperationInfo> {
+  async getOperation(operationId: string): Promise<t.OperationInfo> {
     return this.getOperations([operationId]).then((r) => r[0])
   }
 
@@ -335,18 +246,12 @@ export class PublicAPI {
   }
 
   // todo rename PageRequest pagination
-  async getStakers(pagination: Pagination): Promise<Staker[]> {
-    return withRetry(
-      () => this.connector.get_stakers(pagination),
-      this.options.retry!
-    )
+  async getStakers(pagination: t.Pagination): Promise<t.Staker[]> {
+    return this.connector.get_stakers(pagination)
   }
 
-  async status(): Promise<NodeStatus> {
-    this.lastStatus = await withRetry(
-      () => this.connector.get_status(),
-      this.options.retry!
-    )
+  async status(): Promise<t.NodeStatus> {
+    this.lastStatus = await this.connector.get_status()
     return this.lastStatus
   }
 
@@ -375,14 +280,14 @@ export class PublicAPI {
     return status.last_slot.period
   }
 
-  async getCurrentSlot(): Promise<Slot> {
+  async getCurrentSlot(): Promise<t.Slot> {
     const { last_slot } = await this.status()
     return last_slot
   }
 
   private static convertOperationInput(
     data: SendOperationInput
-  ): OperationInput {
+  ): t.OperationInput {
     return {
       serialized_content: Array.from(data.data),
       creator_public_key: data.publicKey,
@@ -390,20 +295,19 @@ export class PublicAPI {
     }
   }
 
-  async sendOperation(data: SendOperationInput): Promise<OperationId> {
+  async sendOperation(data: SendOperationInput): Promise<t.OperationId> {
     return this.sendOperations([data]).then((r) => r[0])
   }
 
-  async sendOperations(data: SendOperationInput[]): Promise<OperationId[]> {
+  async sendOperations(data: SendOperationInput[]): Promise<t.OperationId[]> {
     return this.sendMultipleOperations(
       data.map((e) => PublicAPI.convertOperationInput(e))
     )
   }
 
-  async sendMultipleOperations(data: OperationInput[]): Promise<OperationId[]> {
-    return withRetry(
-      () => this.connector.send_operations(data),
-      this.options.retry!
-    )
+  async sendMultipleOperations(
+    data: t.OperationInput[]
+  ): Promise<t.OperationId[]> {
+    return this.connector.send_operations(data)
   }
 }

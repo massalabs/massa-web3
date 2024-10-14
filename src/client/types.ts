@@ -1,21 +1,8 @@
-import { EventExecutionContext } from '../generated/client'
-
-export enum Transport {
-  WebSocket = 'websocket',
-  HTTP = 'http',
-  HTTPS = 'https',
-  PostMessageWindow = 'postmessagewindow',
-  PostMessageIframe = 'postmessageiframe',
-}
+import { EventExecutionContext } from '../generated/client-types'
 
 export type Slot = {
   period: number
   thread: number
-}
-
-export type TransportOptions = {
-  path?: string
-  protocol?: string
 }
 
 export type ClientOptions = {

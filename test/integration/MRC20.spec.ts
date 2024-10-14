@@ -1,4 +1,3 @@
-import { EventPoller, Mas } from '../../src'
 import { MRC20 } from '../../src/contracts-wrappers'
 import { provider } from './setup'
 

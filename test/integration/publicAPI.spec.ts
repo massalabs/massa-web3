@@ -3,7 +3,7 @@ import {
   ReadOnlyBytecodeExecution,
   ReadOnlyCall,
   Slot,
-} from '../../src/generated/client'
+} from '../../src/generated/client-types'
 import { createCheckers } from 'ts-interface-checker'
 import validator from '../generated/client-types-ti'
 import { EventFilter, PublicAPI } from '../../src/client'

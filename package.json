@@ -29,7 +29,7 @@
         "test:browser": "jest --config=jest.browser.config.js",
         "test:cov": "jest --detectOpenHandles --coverage --forceExit",
         "test:cov:watch": "jest --detectOpenHandles --coverage --watch",
-        "test:integration": "jest --detectOpenHandles --forceExit ./test/integration",
+        "test:integration": "jest --forceExit --runInBand ./test/integration",
         "test:all": "npm run test && npm run test:integration",
         "test:watch:all": "jest --watchAll",
         "check-types": "tsc --noEmit",
@@ -61,14 +61,10 @@
     "dependencies": {
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
-        "@open-rpc/client-js": "^1.8.1",
-        "@open-rpc/meta-schema": "^1.14.9",
-        "@open-rpc/schema-utils-js": "^2.0.5",
         "bs58check": "^4.0.0",
         "decimal.js": "^10.4.3",
         "dotenv": "^16.0.3",
         "eventemitter3": "^5.0.1",
-        "lodash": "^4.17.21",
         "lodash.isequal": "^4.5.0",
         "secure-random": "^1.1.2",
         "varint": "^6.0.0"

@@ -1,4 +1,4 @@
-import { NodeStatus } from '../generated/client'
+import { NodeStatus } from '../generated/client-types'
 import { NodeStatusInfo } from '../provider'
 
 export function formatNodeStatusObject(status: NodeStatus): NodeStatusInfo {

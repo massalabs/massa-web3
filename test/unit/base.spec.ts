@@ -1,5 +1,5 @@
-import { ErrorBase } from './base'
-import { ErrorCodes } from './utils/codes'
+import { ErrorBase } from '../../src/errors/base'
+import { ErrorCodes } from '../../src/errors/utils/codes'
 
 test('ErrorBase', () => {
   expect(new ErrorBase('An error occurred.').message).toBe(`An error occurred.`)

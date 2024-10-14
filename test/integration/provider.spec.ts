@@ -8,7 +8,7 @@ describe('Provider tests', () => {
       name: NetworkName.Buildnet,
       minimalFee: 10000000n,
       chainId: CHAIN_ID.Buildnet,
-      url: 'https://buildnet.massa.net:443/api/v2',
+      url: 'https://buildnet.massa.net/api/v2',
     })
   })
 
