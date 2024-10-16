@@ -34,6 +34,11 @@ export class MRC20 extends SmartContract {
       new Args().addString(address),
       options
     )
+
+    if (res.value.length === 0) {
+      return 0n
+    }
+
     return U256.fromBytes(res.value)
   }
 
@@ -59,6 +64,11 @@ export class MRC20 extends SmartContract {
       new Args().addString(ownerAddress).addString(spenderAddress),
       options
     )
+
+    if (res.value.length === 0) {
+      return 0n
+    }
+
     return U256.fromBytes(res.value)
   }
 
