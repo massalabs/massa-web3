@@ -1,11 +1,10 @@
 import { MRC20 } from '../../src/contracts-wrappers'
 import { provider } from './setup'
 
-const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
+describe('Generic token wrapper tests', () => {
+  let usdcContract: MRC20
+  const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
 
-let usdcContract: MRC20
-
-describe('Token wrapper tests', () => {
   beforeAll(async () => {
     usdcContract = new MRC20(provider, USDC)
   })
