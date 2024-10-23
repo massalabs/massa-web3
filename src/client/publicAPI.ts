@@ -160,10 +160,10 @@ export class PublicAPI {
       }
     })
     const res = await this.connector.get_datastore_entries(entriesQuery)
-
-    return res.map((r: t.DatastoreEntryOutput) =>
-      Uint8Array.from(final ? r.final_value : r.candidate_value)
-    )
+    return res.map((r: t.DatastoreEntryOutput) => {
+      const val = final ? r.final_value : r.candidate_value
+      return Uint8Array.from(val ?? [])
+    })
   }
 
   async getDatastoreEntry(

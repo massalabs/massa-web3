@@ -17,7 +17,6 @@ const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
 const contractPath = path.join(__dirname, './contracts/scTest.wasm')
 
 describe('Smart Contract', () => {
-  let contractTest: SmartContract
   describe('ByteCode', () => {
     test('execute', async () => {
       const byteCode = new Uint8Array([1, 2, 3, 4])
@@ -55,6 +54,8 @@ describe('Smart Contract', () => {
   })
 
   describe('SmartContract - Call ', () => {
+    let contractTest: SmartContract
+
     beforeAll(async () => {
       const byteCode = fs.readFileSync(contractPath)
       const constructorArgs = new Args().addString('myName')
@@ -65,17 +66,16 @@ describe('Smart Contract', () => {
         coins: Mas.fromString('0.0016'),
       }
 
-      const contract = await SmartContract.deploy(
+      contractTest = await SmartContract.deploy(
         provider,
         byteCode,
         constructorArgs,
         deployOptions
       )
 
-      expect(Address.fromString(contract.address).isEOA).toBeFalsy()
-
-      contractTest = contract
+      expect(Address.fromString(contractTest.address).isEOA).toBeFalsy()
     })
+
     test('minimal call', async () => {
       const op = await contractTest.call('event')
       const events = await op.getSpeculativeEvents()
@@ -130,82 +130,80 @@ describe('Smart Contract', () => {
       )
     })
 
-    describe('Read', () => {
-      test('Read only call', async () => {
-        const result = await contractTest.read(
-          'getValueFromKey',
-          new Args().addString('myKey').serialize()
-        )
+    test('Read only call', async () => {
+      const result = await contractTest.read(
+        'getValueFromKey',
+        new Args().addString('myKey').serialize()
+      )
 
-        const value = bytesToStr(result.value)
+      const value = bytesToStr(result.value)
 
-        expect(value).toBe('myValue')
+      expect(value).toBe('myValue')
+    })
+
+    test('Read only call with not serialized args', async () => {
+      const result = await contractTest.read(
+        'getValueFromKey',
+        new Args().addString('myKey')
+      )
+
+      const value = bytesToStr(result.value)
+
+      expect(value).toBe('myValue')
+    })
+
+    test('Read only call with invalid function name', async () => {
+      const result = await contractTest.read('invalidFunction')
+
+      expect(result.info.error).toContain('Missing export invalidFunction')
+    })
+
+    // Read with fee
+    test('Read only call with fee', async () => {
+      const result = await contractTest.read(
+        'getValueFromKey',
+        new Args().addString('myKey').serialize(),
+        {
+          caller: provider.account.address.toString(),
+        }
+      )
+
+      const value = bytesToStr(result.value)
+      expect(value).toBe('myValue')
+    })
+
+    test('Read only call with fee and no callerAddress', async () => {
+      const result = await contractTest.read(
+        'getValueFromKey',
+        new Args().addString('myKey').serialize()
+      )
+
+      const value = bytesToStr(result.value)
+      expect(value).toBe('myValue')
+    })
+
+    test('Read only call with coins', async () => {
+      const coinAmount = Mas.fromString('1')
+      const result = await contractTest.read('sendCoins', undefined, {
+        coins: coinAmount,
       })
 
-      test('Read only call with not serialized args', async () => {
-        const result = await contractTest.read(
-          'getValueFromKey',
-          new Args().addString('myKey')
-        )
+      expect(result.info.events[0].data).toBe(
+        `Received ${coinAmount.toString()} coins`
+      )
+    })
 
-        const value = bytesToStr(result.value)
+    test('Read only call with maxGas', async () => {
+      const result = await contractTest.read(
+        'getValueFromKey',
+        new Args().addString('myKey').serialize(),
+        {
+          maxGas: MAX_GAS_CALL,
+        }
+      )
 
-        expect(value).toBe('myValue')
-      })
-
-      test('Read only call with invalid function name', async () => {
-        const result = await contractTest.read('invalidFunction')
-
-        expect(result.info.error).toContain('Missing export invalidFunction')
-      })
-
-      // Read with fee
-      test('Read only call with fee', async () => {
-        const result = await contractTest.read(
-          'getValueFromKey',
-          new Args().addString('myKey').serialize(),
-          {
-            caller: provider.account.address.toString(),
-          }
-        )
-
-        const value = bytesToStr(result.value)
-        expect(value).toBe('myValue')
-      })
-
-      test('Read only call with fee and no callerAddress', async () => {
-        const result = await contractTest.read(
-          'getValueFromKey',
-          new Args().addString('myKey').serialize()
-        )
-
-        const value = bytesToStr(result.value)
-        expect(value).toBe('myValue')
-      })
-
-      test('Read only call with coins', async () => {
-        const coinAmount = Mas.fromString('1')
-        const result = await contractTest.read('sendCoins', undefined, {
-          coins: coinAmount,
-        })
-
-        expect(result.info.events[0].data).toBe(
-          `Received ${coinAmount.toString()} coins`
-        )
-      })
-
-      test('Read only call with maxGas', async () => {
-        const result = await contractTest.read(
-          'getValueFromKey',
-          new Args().addString('myKey').serialize(),
-          {
-            maxGas: MAX_GAS_CALL,
-          }
-        )
-
-        const value = bytesToStr(result.value)
-        expect(value).toBe('myValue')
-      })
+      const value = bytesToStr(result.value)
+      expect(value).toBe('myValue')
     })
   })
 })
