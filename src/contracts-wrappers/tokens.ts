@@ -20,7 +20,7 @@ export const BUILDNET_TOKENS = {
   WETHbt: 'AS12RmCXTA9NZaTBUBnRJuH66AGNmtEfEoqXKxLdmrTybS6GFJPFs',
 }
 
-function checkNetwork(provider: Provider, isMainnet: boolean): void {
+export function checkNetwork(provider: Provider, isMainnet: boolean): void {
   provider.networkInfos().then((network: Network) => {
     if (isMainnet && network.chainId !== CHAIN_ID.Mainnet) {
       console.warn('This contract is only available on mainnet')
