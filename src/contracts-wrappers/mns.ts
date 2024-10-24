@@ -20,7 +20,6 @@ export const MNS_CONTRACTS = {
  *
  * @example
  * ```typescript
- * const provider = new Provider();
  * const mns = await MNS.mainnet(provider);
  * const address = await mns.resolve("example");
  * ```

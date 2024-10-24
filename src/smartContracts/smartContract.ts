@@ -44,7 +44,7 @@ export class SmartContract {
   /**
    * Executes a smart contract read operation
    * @param func - The smart contract function to be called.
-   * @param parameter - Parameter for the function call in Uint8Array format.
+   * @param args - Parameter for the function call in Uint8Array format.
    * @param options - Includes optional parameters like fee, maxGas, coins, and periodToLive.
    * @returns A promise that resolves to the result of the read operation.
    */
@@ -64,8 +64,9 @@ export class SmartContract {
 
   /**
    * Executes a smart contract read operation
-   * @param func - The smart contract function to be called.
-   * @param parameter - Parameter for the function call in Uint8Array format.
+   * @param provider - Web3 provider.
+   * @param byteCode - Compiled SmartContract bytecode.
+   * @param constructorArgs - Parameter for call of constructor function.
    * @param options - Includes optional parameters like fee, maxGas, coins, and periodToLive.
    * @returns A promise that resolves to the result of the read operation.
    */

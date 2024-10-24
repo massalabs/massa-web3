@@ -2,6 +2,25 @@ import { Args, bytesToStr, U256, U8 } from '../basicElements'
 import { Operation } from '../operation'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 
+/**
+ * @class MRC20
+ *
+ *
+ * Class representing an MRC20 token smart contract.
+ * Extends the SmartContract class to provide methods for interacting with an MRC20 token.
+ * MRC20 contract is available here: https://github.com/massalabs/massa-standards/blob/main/smart-contracts/assembly/contracts/FT/token.ts
+ *
+ *  @example
+ * ```typescript
+ * const token = new MRC20(provider, <tokenAddr>);
+ * const balance = await token.balanceOf(<accountAddr>);
+ * console.log(`Your balance: ${balance}`);
+ *
+ * const transferOperation = await token.transfer(<recipientAddr>, BigInt(10000));
+ * console.log(`Transfer operation id: ${transferOperation.id}`);
+ * ```
+ */
+
 export class MRC20 extends SmartContract {
   async version(options?: ReadSCOptions): Promise<string> {
     const res = await this.read('version', undefined, options)
