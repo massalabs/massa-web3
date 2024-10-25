@@ -27,12 +27,12 @@ export const MNS_CONTRACTS = {
  */
 
 export class MNS extends SmartContract {
-  static async mainnet(provider: Provider): Promise<MNS> {
+  static mainnet(provider: Provider): MNS {
     checkNetwork(provider, true)
     return new MNS(provider, MNS_CONTRACTS.mainnet)
   }
 
-  static async buildnet(provider: Provider): Promise<MNS> {
+  static buildnet(provider: Provider): MNS {
     checkNetwork(provider, false)
     return new MNS(provider, MNS_CONTRACTS.buildnet)
   }
