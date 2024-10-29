@@ -5,10 +5,13 @@ on:
     branches: [main, buildnet]
 
 jobs:
-  test:
-    uses: ./.github/workflows/unit-tests.yml
+  integration-tests:
+    uses: ./.github/workflows/integration-tests.yml
+    secrets:
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
   publish-npm-dev:
-    needs: test
+    needs: integration-tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

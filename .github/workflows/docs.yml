@@ -1,4 +1,4 @@
-name: (workspace) Deploy documentation
+name: Deploy documentation
 
 on:
   push:
@@ -26,3 +26,4 @@ jobs:
           key: ${{ secrets.MASSANET_SSHKEY }}
           source: "./massa-web3"
           target: "/var/www/type-doc"
+          port: 22000
