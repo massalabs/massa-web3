@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { ArrayTypes } from '../../../src/basicElements/args'
+import { Args, ArrayTypes } from '../../../src/basicElements/args'
 import {
   ISerializable,
   IDeserializedResult,
@@ -286,6 +286,16 @@ describe('array.ts functions', () => {
       expect(() => arrayToBytes(dataArray, unsupportedType)).toThrow(
         `Unsupported type: ${unsupportedType}`
       )
+    })
+
+    it('string array', () => {
+      const dataArray = ['bonjour', 'hello', 'hola', 'hallo', 'ciao']
+      const byteArray = new Args()
+        .addArray(dataArray, ArrayTypes.STRING)
+        .serialize()
+      const arrayBack = new Args(byteArray).nextArray(ArrayTypes.STRING)
+
+      expect(arrayBack).toEqual(dataArray)
     })
   })
 })

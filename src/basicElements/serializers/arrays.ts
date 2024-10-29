@@ -130,40 +130,40 @@ export function arrayToBytes(
         args.addBool(value as boolean)
         break
       case ArrayTypes.U8:
-        args.addU8(value as U8.U8)
+        args.addU8(value as U8.U8_t)
         break
       case ArrayTypes.U16:
-        args.addU16(value as U16.U16)
+        args.addU16(value as U16.U16_t)
         break
       case ArrayTypes.U32:
-        args.addU32(value as U32.U32)
+        args.addU32(value as U32.U32_t)
         break
       case ArrayTypes.U64:
-        args.addU64(value as U64.U64)
+        args.addU64(value as U64.U64_t)
         break
       case ArrayTypes.U128:
-        args.addU128(value as U128.U128)
+        args.addU128(value as U128.U128_t)
         break
       case ArrayTypes.U256:
-        args.addU256(value as U256.U256)
+        args.addU256(value as U256.U256_t)
         break
       case ArrayTypes.I8:
-        args.addI8(value as I8.I8)
+        args.addI8(value as I8.I8_t)
         break
       case ArrayTypes.I16:
-        args.addI16(value as I16.I16)
+        args.addI16(value as I16.I16_t)
         break
       case ArrayTypes.I32:
-        args.addI32(value as I32.I32)
+        args.addI32(value as I32.I32_t)
         break
       case ArrayTypes.I64:
-        args.addI64(value as I64.I64)
+        args.addI64(value as I64.I64_t)
         break
       case ArrayTypes.I128:
-        args.addI128(value as I128.I128)
+        args.addI128(value as I128.I128_t)
         break
       case ArrayTypes.I256:
-        args.addI256(value as I256.I256)
+        args.addI256(value as I256.I256_t)
         break
       case ArrayTypes.F64:
         args.addF64(value as number)

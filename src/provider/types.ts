@@ -1,13 +1,13 @@
 import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
-import { U64 } from '../basicElements/serializers/number/u64'
+import { U64_t } from '../basicElements/serializers/number/u64'
 import { SCEvent, Slot } from '../client'
 
 type CallSCCommons = {
   parameter?: Args | Uint8Array
   coins?: Mas
   fee?: Mas
-  maxGas?: U64
+  maxGas?: U64_t
 }
 
 export type ReadSCParams = CallSCCommons & {

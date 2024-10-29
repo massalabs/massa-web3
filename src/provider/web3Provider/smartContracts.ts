@@ -5,7 +5,7 @@ import {
   PublicAPI,
   strToBytes,
 } from '../..'
-import { U64 } from '../../basicElements/serializers/number/u64'
+import { U64_t } from '../../basicElements/serializers/number/u64'
 import { ErrorInsufficientBalance, ErrorMaxGas } from '../../errors'
 import { MAX_GAS_CALL, MIN_GAS_CALL } from '../../smartContracts'
 import {
@@ -102,7 +102,7 @@ export class SCProvider {
    * @throws If the read operation returns an error.
    * @returns The gas estimation for the function.
    */
-  protected async getGasEstimation(params: CallSCParams): Promise<U64> {
+  protected async getGasEstimation(params: CallSCParams): Promise<U64_t> {
     const result = await this.readSC(params)
 
     if (result.info.error) {

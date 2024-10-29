@@ -197,7 +197,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextU8(): U8.U8 {
+  public nextU8(): U8.U8_t {
     return this.nextInteger(U8.fromBuffer)
   }
 
@@ -209,7 +209,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextU16(): U16.U16 {
+  public nextU16(): U16.U16_t {
     return this.nextInteger(U16.fromBuffer)
   }
 
@@ -221,7 +221,7 @@ export class Args {
    *
    * @returns the deserialized number
    */
-  public nextU32(): U32.U32 {
+  public nextU32(): U32.U32_t {
     return this.nextInteger(U32.fromBuffer)
   }
 
@@ -233,7 +233,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextU64(): U64.U64 {
+  public nextU64(): U64.U64_t {
     return this.nextInteger(U64.fromBuffer)
   }
 
@@ -245,7 +245,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextU128(): U128.U128 {
+  public nextU128(): U128.U128_t {
     return this.nextInteger(U128.fromBuffer)
   }
 
@@ -257,7 +257,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextU256(): U256.U256 {
+  public nextU256(): U256.U256_t {
     return this.nextInteger(U256.fromBuffer)
   }
 
@@ -269,7 +269,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextI8(): I8.I8 {
+  public nextI8(): I8.I8_t {
     return this.nextInteger(I8.fromBuffer)
   }
 
@@ -281,7 +281,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextI16(): I16.I16 {
+  public nextI16(): I16.I16_t {
     return this.nextInteger(I16.fromBuffer)
   }
 
@@ -293,7 +293,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextI32(): I32.I32 {
+  public nextI32(): I32.I32_t {
     return this.nextInteger(I32.fromBuffer)
   }
 
@@ -305,7 +305,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextI64(): I64.I64 {
+  public nextI64(): I64.I64_t {
     return this.nextInteger(I64.fromBuffer)
   }
 
@@ -317,7 +317,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextI128(): I128.I128 {
+  public nextI128(): I128.I128_t {
     return this.nextInteger(I128.fromBuffer)
   }
 
@@ -329,7 +329,7 @@ export class Args {
    *
    * @returns the deserialized number.
    */
-  public nextI256(): I256.I256 {
+  public nextI256(): I256.I256_t {
     return this.nextInteger(I256.fromBuffer)
   }
 
@@ -477,14 +477,14 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU8(value: U8.U8): this {
+  public addU8(value: U8.U8_t): this {
     this.serialized = Args.concatArrays(this.serialized, U8.toBytes(value))
     this.offset++
     this.argsList.push({ type: ArgTypes.U8, value: value })
     return this
   }
 
-  public addU16(value: U16.U16): this {
+  public addU16(value: U16.U16_t): this {
     this.serialized = Args.concatArrays(this.serialized, U16.toBytes(value))
     this.offset += U16.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U16, value: value })
@@ -498,7 +498,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU32(value: U32.U32): this {
+  public addU32(value: U32.U32_t): this {
     this.serialized = Args.concatArrays(this.serialized, U32.toBytes(value))
     this.offset += U32.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U32, value: value })
@@ -512,7 +512,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU64(value: U64.U64): this {
+  public addU64(value: U64.U64_t): this {
     this.serialized = Args.concatArrays(this.serialized, U64.toBytes(value))
     this.offset += U64.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U64, value: value })
@@ -526,7 +526,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU128(bigInt: U128.U128): this {
+  public addU128(bigInt: U128.U128_t): this {
     this.serialized = Args.concatArrays(this.serialized, U128.toBytes(bigInt))
     this.offset += U128.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U128, value: bigInt })
@@ -540,7 +540,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addU256(bigInt: U256.U256): this {
+  public addU256(bigInt: U256.U256_t): this {
     this.serialized = Args.concatArrays(this.serialized, U256.toBytes(bigInt))
     this.offset += U256.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.U256, value: bigInt })
@@ -554,7 +554,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI8(value: I8.I8): this {
+  public addI8(value: I8.I8_t): this {
     this.serialized = Args.concatArrays(this.serialized, I8.toBytes(value))
     this.offset++
     this.argsList.push({ type: ArgTypes.I8, value: value })
@@ -568,7 +568,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI16(value: I16.I16): this {
+  public addI16(value: I16.I16_t): this {
     this.serialized = Args.concatArrays(this.serialized, I16.toBytes(value))
     this.offset += I16.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.I16, value: value })
@@ -582,7 +582,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI32(value: I32.I32): this {
+  public addI32(value: I32.I32_t): this {
     this.serialized = Args.concatArrays(this.serialized, I32.toBytes(value))
     this.offset += I32.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.I32, value: value })
@@ -596,7 +596,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI64(value: I64.I64): this {
+  public addI64(value: I64.I64_t): this {
     this.serialized = Args.concatArrays(this.serialized, I64.toBytes(value))
     this.offset += I64.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.I64, value: value })
@@ -610,7 +610,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI128(value: I128.I128): this {
+  public addI128(value: I128.I128_t): this {
     this.serialized = Args.concatArrays(this.serialized, I128.toBytes(value))
     this.offset += I128.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.I128, value: value })
@@ -624,7 +624,7 @@ export class Args {
    *
    * @returns the serialized arguments to be able to chain `add` method calls.
    */
-  public addI256(value: I256.I256): this {
+  public addI256(value: I256.I256_t): this {
     this.serialized = Args.concatArrays(this.serialized, I256.toBytes(value))
     this.offset += I256.SIZE_BYTE
     this.argsList.push({ type: ArgTypes.I256, value: value })

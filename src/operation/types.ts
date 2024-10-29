@@ -1,6 +1,6 @@
 import { Address } from '../basicElements'
 import { Mas } from '../basicElements/mas'
-import { U64 } from '../basicElements/serializers/number/u64'
+import { U64_t } from '../basicElements/serializers/number/u64'
 
 /**
  * Operation status.
@@ -68,30 +68,30 @@ export enum OperationType {
  * If no periodToLive is provided, the DefaultPeriodToLive is used.
  */
 export type OperationOptions = {
-  fee?: U64
+  fee?: U64_t
   periodToLive?: number
 }
 
 export type BaseOperation = {
-  fee: U64
+  fee: U64_t
   expirePeriod: number
   type: OperationType
 }
 
 export type RollOperation = BaseOperation & {
   type: OperationType.RollBuy | OperationType.RollSell
-  amount: U64
+  amount: U64_t
 }
 
 export type TransferOperation = BaseOperation & {
   type: OperationType.Transaction
-  amount: U64
+  amount: U64_t
   recipientAddress: Address
 }
 
 export type BaseSmartContractOperation = BaseOperation & {
-  maxGas: U64
-  coins: U64
+  maxGas: U64_t
+  coins: U64_t
 }
 
 export type CallOperation = BaseSmartContractOperation & {
@@ -105,7 +105,7 @@ export type ReadOnlyParams = {
   parameter: Uint8Array
   coins?: Mas
   fee?: Mas
-  maxGas?: U64
+  maxGas?: U64_t
   func: string
   target: string
   caller: string
@@ -113,8 +113,8 @@ export type ReadOnlyParams = {
 
 // @see https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload
 export type ExecuteOperation = BaseOperation & {
-  maxGas: U64
-  maxCoins: U64
+  maxGas: U64_t
+  maxCoins: U64_t
   type: OperationType.ExecuteSmartContractBytecode
   contractDataBinary: Uint8Array
   datastore?: Map<Uint8Array, Uint8Array>
