@@ -1,0 +1,21 @@
+name: coverage repport
+on:
+    push:
+
+jobs:
+    test:
+      uses: ./.github/workflows/unit-tests.yml
+    coverage:
+        runs-on: ubuntu-latest
+        needs: test
+        steps:
+            - uses: actions/checkout@v3
+            - uses: jwalton/gh-find-current-pr@v1
+              id: findPr
+
+            - uses: ArtiomTr/jest-coverage-report-action@v2
+              with:
+                custom-title: Coverage report for experimental massa-web3
+                prnumber: ${{ steps.findPr.outputs.number }}
+                working-directory: ./
+                test-script: npm test

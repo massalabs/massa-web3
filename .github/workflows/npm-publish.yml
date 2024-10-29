@@ -1,0 +1,32 @@
+name: NPM Publish latest
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  integration-tests:
+    uses: ./.github/workflows/integration-tests.yml
+    secrets:
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
+  publish-npm:
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+
+      - name: Extract tag
+        id: get_tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
+      - run: ./scripts/publish.sh ${{ steps.get_tag.outputs.TAG }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}

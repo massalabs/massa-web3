@@ -1,0 +1,23 @@
+name: Check Formatting and Run unit tests
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
+      - run: npm run fmt:check
+      - name: unit test
+        run: npm test
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}

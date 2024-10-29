@@ -2,7 +2,7 @@
 
 echo "Running coverage script..."
 echo "Coverage: $COVERAGE"
-echo "Project: $PROJECT"
+echo "Project: massa-web3"
 
 # Define the color based on coverage threshold
 determine_color() {
@@ -18,19 +18,10 @@ determine_color() {
 }
 
 filename="README.md"
-
-declare -A project_map
-project_map=( ["massa-web3"]=9 ["web3-utils"]=18 ) 
-
-line_number=${project_map[$PROJECT]}
-
-# If no line number found, exit the script
-if [ -z "$line_number" ]; then
-    echo "Project '$PROJECT' not found in the map."
-    exit 1
-fi
+line_number=9  # Hardcoding the line number for massa-web3
 
 echo "Line number: $line_number"
+
 # Extract the current coverage badge from the specified line
 coverageLine=$(sed -n "${line_number}p" $filename)
 
@@ -39,12 +30,11 @@ regex="!\[check-code-coverage\]\(https://img.shields.io/badge/coverage-([0-9]+([
 
 echo "Coverage line: $coverageLine"
 
-
 if [[ $coverageLine =~ $regex ]]; then
     oldCoverage="${BASH_REMATCH[1]}"
-    echo "Coverage for $PROJECT is $oldCoverage%"
+    echo "Coverage for massa-web3 is $oldCoverage%"
 else
-    echo "No coverage found for $PROJECT."
+    echo "No coverage found for massa-web3."
     exit 1
 fi
 
@@ -53,13 +43,13 @@ color=$(determine_color $COVERAGE)
 
 # Update the coverage badge if the difference in coverage is greater than or equal to 1%
 if (( $(echo "$COVERAGE != $oldCoverage" | bc -l) )); then
-    echo "Updating badge for $PROJECT."
+    echo "Updating badge for massa-web3."
     newLine="![check-code-coverage](https://img.shields.io/badge/coverage-$COVERAGE%25-$color)"
     sed -i "${line_number}s#.*#${newLine}#" $filename
-    echo "Updated badge for $PROJECT."
+    echo "Updated badge for massa-web3."
     coverageLine=$(sed -n "${line_number}p" $filename)
     
     echo "Coverage line: $coverageLine"
 else
-    echo "Coverage for $PROJECT has not changed. Skipping update."
+    echo "Coverage for massa-web3 has not changed. Skipping update."
 fi

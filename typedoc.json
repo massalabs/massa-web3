@@ -1,0 +1,9 @@
+{
+    "navigation": {
+        "includeGroups": true
+    },
+    "navigationLinks": {
+        "Main documentation": "https://docs.massa.net/"
+    },
+    "entryPoints": ["src"]
+}
