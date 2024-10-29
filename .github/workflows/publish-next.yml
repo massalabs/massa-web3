@@ -1,0 +1,24 @@
+name: Npm publish next
+
+on:
+  push:
+    branches: [next]
+
+jobs:
+  integration-tests:
+    uses: ./.github/workflows/integration-tests.yml
+    secrets:
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
+  publish-npm-next:
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org
+      - run: ./scripts/publish-next.sh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
