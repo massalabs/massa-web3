@@ -1,6 +1,7 @@
 import { numberToInteger, integerFromByte, integerToByte } from './integers'
 
-export type I32 = bigint
+//eslint-disable-next-line @typescript-eslint/naming-convention
+export type I32_t = bigint
 
 export const SIZE_BYTE = 4
 export const SIZE_BIT = 32
@@ -14,7 +15,7 @@ export const MAX = (1n << (BigInt(SIZE_BIT) - 1n)) - 1n
  * @returns The bytes representation of the number
  * @throws if the value is out of range for I32
  */
-export function toBytes(value: I32): Uint8Array {
+export function toBytes(value: I32_t): Uint8Array {
   return integerToByte(SIZE_BIT, value, true)
 }
 
@@ -27,7 +28,7 @@ export function toBytes(value: I32): Uint8Array {
  * @param bytes - The bytes to convert
  * @returns The I32 representation of the bytes
  */
-export function fromBytes(bytes: Uint8Array): I32 {
+export function fromBytes(bytes: Uint8Array): I32_t {
   return integerFromByte(SIZE_BIT, bytes, true)
 }
 
@@ -40,7 +41,7 @@ export function fromBytes(bytes: Uint8Array): I32 {
 export function fromBuffer(
   buffer: Uint8Array,
   offset: number
-): { value: I32; offset: number } {
+): { value: I32_t; offset: number } {
   const value = integerFromByte(SIZE_BIT, buffer, true, offset)
   offset += SIZE_BYTE
   return { value, offset }
@@ -53,6 +54,6 @@ export function fromBuffer(
  * @returns The I32 representation of the number
  * @throws if the value is not a safe integer or out of range for I32
  */
-export function fromNumber(value: number): I32 {
+export function fromNumber(value: number): I32_t {
   return numberToInteger(SIZE_BIT, value, true)
 }

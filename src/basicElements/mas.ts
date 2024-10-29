@@ -1,5 +1,5 @@
 import Decimal from 'decimal.js'
-import { U64, fromNumber } from './serializers/number/u64'
+import { U64_t, fromNumber } from './serializers/number/u64'
 
 export const NB_DECIMALS = 9
 export const SIZE_U256_BIT = 256
@@ -12,7 +12,7 @@ export const ERROR_VALUE_TOO_LARGE = 'value is too large.'
  * Defines 'Mas' as a type for representing nano massa,
  * the smallest unit in Massa currency equivalent to 10^9.
  */
-export type Mas = U64
+export type Mas = U64_t
 
 /**
  * Converts an integer value to the smallest unit of the Massa currency.
@@ -24,7 +24,7 @@ export type Mas = U64
  *
  * @throws An error if the value is not a safe integer.
  */
-export function fromMas(value: U64): Mas {
+export function fromMas(value: U64_t): Mas {
   return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS))
 }
 
@@ -38,7 +38,7 @@ export function fromMas(value: U64): Mas {
  *
  * @throws An error if the value is not a safe integer.
  */
-export function fromMilliMas(value: U64): Mas {
+export function fromMilliMas(value: U64_t): Mas {
   const milli = 3
   return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS - milli))
 }
@@ -53,7 +53,7 @@ export function fromMilliMas(value: U64): Mas {
  *
  * @throws An error if the value is not a safe integer.
  */
-export function fromMicroMas(value: U64): Mas {
+export function fromMicroMas(value: U64_t): Mas {
   const micro = 6
   return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS - micro))
 }
@@ -68,7 +68,7 @@ export function fromMicroMas(value: U64): Mas {
  *
  * @throws An error if the value is not a safe integer.
  */
-export function fromNanoMas(value: U64): Mas {
+export function fromNanoMas(value: U64_t): Mas {
   const nano = 9
   return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS - nano))
 }
