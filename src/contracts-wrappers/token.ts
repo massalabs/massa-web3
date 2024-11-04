@@ -22,24 +22,45 @@ import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
  */
 
 export class MRC20 extends SmartContract {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private _version: string
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private _name: string
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private _symbol: string
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private _decimals: number
+
   async version(options?: ReadSCOptions): Promise<string> {
+    if (this._version) {
+      return this._version
+    }
     const res = await this.read('version', undefined, options)
-    return bytesToStr(res.value)
+    return (this._version = bytesToStr(res.value))
   }
 
   async name(options?: ReadSCOptions): Promise<string> {
+    if (this._name) {
+      return this._name
+    }
     const res = await this.read('name', undefined, options)
-    return bytesToStr(res.value)
+    return (this._name = bytesToStr(res.value))
   }
 
   async symbol(options?: ReadSCOptions): Promise<string> {
+    if (this._symbol) {
+      return this._symbol
+    }
     const res = await this.read('symbol', undefined, options)
-    return bytesToStr(res.value)
+    return (this._symbol = bytesToStr(res.value))
   }
 
   async decimals(options?: ReadSCOptions): Promise<number> {
+    if (this._decimals) {
+      return this._decimals
+    }
     const res = await this.read('decimals', undefined, options)
-    return Number(U8.fromBytes(res.value))
+    return (this._decimals = Number(U8.fromBytes(res.value)))
   }
 
   async totalSupply(options?: ReadSCOptions): Promise<bigint> {
