@@ -18,6 +18,17 @@ export const CHAIN_ID = {
   Buildnet: 77658366n,
 }
 
+export function getNetworkNameByChainId(
+  chainId: bigint
+): NetworkName | undefined {
+  for (const [key, value] of Object.entries(CHAIN_ID)) {
+    if (value === chainId) {
+      return NetworkName[key as keyof typeof NetworkName]
+    }
+  }
+  return undefined
+}
+
 export type Network = {
   name: NetworkName | string
   chainId: bigint

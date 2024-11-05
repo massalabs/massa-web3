@@ -10,6 +10,7 @@ export const MAINNET_TOKENS = {
   WETHe: 'AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY',
   WETHb: 'AS125oPLYRTtfVjpWisPZVTLjBhCFfQ1jDsi75XNtRm1NZux54eCj',
   PUR: 'AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan',
+  WMAS: 'AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9',
 }
 
 export const BUILDNET_TOKENS = {
@@ -18,6 +19,7 @@ export const BUILDNET_TOKENS = {
   USDCs: 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL',
   USDTbt: 'AS12ix1Qfpue7BB8q6mWVtjNdNE9UV3x4MaUo7WhdUubov8sJ3CuP',
   WETHbt: 'AS12RmCXTA9NZaTBUBnRJuH66AGNmtEfEoqXKxLdmrTybS6GFJPFs',
+  WMAS: 'AS12FW5Rs5YN2zdpEnqwj4iHUUPt9R4Eqjq2qtpJFNKW3mn33RuLU',
 }
 
 export function checkNetwork(provider: Provider, isMainnet: boolean): void {
@@ -74,6 +76,13 @@ export class PUR extends MRC20 {
   }
 }
 
+export class WMAS extends MRC20 {
+  constructor(public provider: Provider) {
+    checkNetwork(provider, true)
+    super(provider, MAINNET_TOKENS.WMAS)
+  }
+}
+
 ///////////////// BUILDNET TOKENS //////////////////////
 
 export class DAIs extends MRC20 {
@@ -108,5 +117,12 @@ export class WETHbt extends MRC20 {
   constructor(public provider: Provider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.WETHbt)
+  }
+}
+
+export class WMASBuildnet extends MRC20 {
+  constructor(public provider: Provider) {
+    checkNetwork(provider, false)
+    super(provider, BUILDNET_TOKENS.WMAS)
   }
 }
