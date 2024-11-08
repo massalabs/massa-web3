@@ -35,7 +35,6 @@ export class SmartContract {
       parameter: args,
       target: this.address,
       ...options,
-      caller: this.provider.address,
     }
 
     return this.provider.callSC(callParams)

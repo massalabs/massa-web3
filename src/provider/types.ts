@@ -3,24 +3,30 @@ import { Mas } from '../basicElements/mas'
 import { U64_t } from '../basicElements/serializers/number/u64'
 import { SCEvent, Slot } from '../client'
 
-type CallSCCommons = {
-  parameter?: Args | Uint8Array
+type OperationParams = {
   coins?: Mas
   fee?: Mas
   maxGas?: U64_t
 }
 
-export type ReadSCParams = CallSCCommons & {
+type CallSCCommons = {
   func: string
   target: string
-  caller?: string
+  parameter?: Args | Uint8Array
 }
 
-export type CallSCParams = ReadSCParams & {
-  periodToLive?: number
-}
+export type ReadSCParams = CallSCCommons &
+  OperationParams & {
+    caller?: string
+  }
 
-export type DeploySCParams = CallSCCommons & {
+export type CallSCParams = CallSCCommons &
+  OperationParams & {
+    periodToLive?: number
+  }
+
+export type DeploySCParams = OperationParams & {
+  parameter?: Args | Uint8Array
   maxCoins?: Mas
   byteCode: Uint8Array
   periodToLive?: number
