@@ -62,7 +62,7 @@ export class SmartContract {
   }
 
   /**
-   * Executes a smart contract read operation
+   * Deploy a SmartContract byteCode
    * @param provider - Web3 provider.
    * @param byteCode - Compiled SmartContract bytecode.
    * @param constructorArgs - Parameter for call of constructor function.

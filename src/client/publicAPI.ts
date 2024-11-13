@@ -217,12 +217,18 @@ export class PublicAPI {
     return this.connector.get_operations(operationIds)
   }
 
-  async getOperation(operationId: string): Promise<t.OperationInfo> {
+  async getOperation(
+    operationId: string
+  ): Promise<t.OperationInfo | undefined> {
     return this.getOperations([operationId]).then((r) => r[0])
   }
 
   async getOperationStatus(operationId: string): Promise<OperationStatus> {
     const op = await this.getOperation(operationId)
+
+    if (!op) {
+      return OperationStatus.NotFound
+    }
 
     if (op.op_exec_status === null) {
       if (op.is_operation_final === null) {
