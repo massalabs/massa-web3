@@ -2,6 +2,7 @@
 import {
   CallSCParams,
   DeploySCParams,
+  ExecuteScParams,
   NodeStatusInfo,
   Provider,
   SignedData,
@@ -186,6 +187,10 @@ export class Web3Provider extends SCProvider implements Provider {
   public async callSC(params: CallSCParams): Promise<Operation> {
     const operationId = await this.call(params)
     return new Operation(this, operationId)
+  }
+
+  public async executeSC(params: ExecuteScParams): Promise<Operation> {
+    return new Operation(this, await this.executeSc(params))
   }
 
   public async deploySC(params: DeploySCParams): Promise<SmartContract> {

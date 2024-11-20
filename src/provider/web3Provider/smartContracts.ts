@@ -14,6 +14,7 @@ import {
   ReadSCParams,
   GAS_ESTIMATION_TOLERANCE,
   ReadSCData,
+  ExecuteScParams,
 } from '..'
 import * as StorageCost from '../../basicElements/storage'
 import { populateDatastore } from '../../dataStore'
@@ -47,6 +48,23 @@ export class SCProvider {
         args instanceof Uint8Array ? args : Uint8Array.from(args.serialize()),
     }
     return this.client.executeReadOnlyCall(readOnlyParams)
+  }
+
+  /**
+   * Executes a smart contract without deploying it.
+   * @param params - callSCParams.
+   * @returns A promise that resolves to an Operation object representing the transaction.
+   * TODO: Explain the context of executeSc calls. (balance, storage ...)
+   */
+  async executeSc(params: ExecuteScParams): Promise<string> {
+    const fee = params.fee ?? (await this.client.getMinimalFee())
+    return execute(this.client, this.account.privateKey, params.byteCode, {
+      fee,
+      periodToLive: params.periodToLive,
+      maxCoins: params.maxCoins,
+      maxGas: params.maxGas,
+      datastore: params.datastore,
+    })
   }
 
   /**
