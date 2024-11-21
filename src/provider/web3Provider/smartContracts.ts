@@ -1,8 +1,10 @@
 import {
   Account,
   DatastoreEntry,
+  DEPLOYER_BYTECODE,
   minBigInt,
   PublicAPI,
+  StorageCost,
   strToBytes,
 } from '../..'
 import { U64_t } from '../../basicElements/serializers/number/u64'
@@ -16,10 +18,10 @@ import {
   ReadSCData,
   ExecuteScParams,
 } from '..'
-import * as StorageCost from '../../basicElements/storage'
+
 import { populateDatastore } from '../../dataStore'
 import { execute } from '../../basicElements/bytecode'
-import { DEPLOYER_BYTECODE } from '../../generated/deployer-bytecode'
+
 import { Mas } from '../../basicElements/mas'
 import { CallOperation, OperationType } from '../../operation'
 import {
