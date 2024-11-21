@@ -38,8 +38,8 @@ export type ExecuteScParams = {
   datastore?: Map<Uint8Array, Uint8Array>
   periodToLive?: number
   fee?: Mas
-  maxGas?: U64_t
-  maxCoins?: U64_t
+  maxGas?: Mas
+  maxCoins?: Mas
 }
 
 export type ReadSCData = {

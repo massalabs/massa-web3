@@ -55,9 +55,8 @@ export class SCProvider {
    * @see {@link https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload} for more information on how to setup datastore.
    */
   async executeSc(params: ExecuteScParams): Promise<string> {
-    const fee = params.fee ?? (await this.client.getMinimalFee())
     return execute(this.client, this.account.privateKey, params.byteCode, {
-      fee,
+      fee: params.fee,
       periodToLive: params.periodToLive,
       maxCoins: params.maxCoins,
       maxGas: params.maxGas,
