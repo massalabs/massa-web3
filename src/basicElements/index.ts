@@ -1,6 +1,7 @@
 export * from './address'
 export * from './signature'
 export * from './keys'
+export * as StorageCost from './storage'
 export * from './storage'
 export * from './args'
 export * from './serializers'
