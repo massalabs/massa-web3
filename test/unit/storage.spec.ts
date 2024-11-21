@@ -1,5 +1,5 @@
 import * as Mas from '../../src/basicElements/mas'
-import * as StorageCost from '../../src/basicElements/storage'
+import { StorageCost } from '../../src/basicElements/storage'
 
 const STORAGE_BYTE_COST = Mas.fromString('0.0001')
 const BASE_ACCOUNT_CREATION_COST = Mas.fromString('0.001')
