@@ -189,6 +189,20 @@ export class Web3Provider extends SCProvider implements Provider {
     return new Operation(this, operationId)
   }
 
+  /**
+   * Executes Binary Smart Contract Code Onchain
+   *
+   * Executes a binary code (smart contract) directly on the blockchain without deploying or storing it.
+   * This function is particularly useful for one-off actions or tasks that require blockchain execution
+   * but do not need the persistence or state of a deployed smart contract.
+   *
+   * @remarks
+   * If the execution involves storing data or spending coins, the sender's address (i.e., the user's address
+   * initiating the contract execution) will be used.
+   *
+   * @see {@link https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload} for more details
+   * on the setup and usage of the datastore during execution.
+   */
   public async executeSC(params: ExecuteScParams): Promise<Operation> {
     return new Operation(this, await this.executeSc(params))
   }

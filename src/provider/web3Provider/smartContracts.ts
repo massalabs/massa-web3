@@ -51,10 +51,8 @@ export class SCProvider {
   }
 
   /**
-   * Executes a smart contract without deploying it.
-   * @param params - callSCParams.
-   * @returns A promise that resolves to an Operation object representing the transaction.
-   * TODO: Explain the context of executeSc calls. (balance, storage ...)
+   * Executes Binary Smart Contract Code Onchain.
+   * @see {@link https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload} for more information on how to setup datastore.
    */
   async executeSc(params: ExecuteScParams): Promise<string> {
     const fee = params.fee ?? (await this.client.getMinimalFee())
