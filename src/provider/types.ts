@@ -33,6 +33,15 @@ export type DeploySCParams = OperationParams & {
   waitFinalExecution?: boolean
 }
 
+export type ExecuteScParams = {
+  byteCode: Uint8Array
+  datastore?: Map<Uint8Array, Uint8Array>
+  periodToLive?: number
+  fee?: Mas
+  maxGas?: Mas
+  maxCoins?: Mas
+}
+
 export type ReadSCData = {
   value: Uint8Array
   info: {

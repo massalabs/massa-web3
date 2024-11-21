@@ -14,6 +14,7 @@ import {
   ReadSCParams,
   GAS_ESTIMATION_TOLERANCE,
   ReadSCData,
+  ExecuteScParams,
 } from '..'
 import * as StorageCost from '../../basicElements/storage'
 import { populateDatastore } from '../../dataStore'
@@ -47,6 +48,20 @@ export class SCProvider {
         args instanceof Uint8Array ? args : Uint8Array.from(args.serialize()),
     }
     return this.client.executeReadOnlyCall(readOnlyParams)
+  }
+
+  /**
+   * Executes Binary Smart Contract Code Onchain.
+   * @see {@link https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload} for more information on how to setup datastore.
+   */
+  async executeSc(params: ExecuteScParams): Promise<string> {
+    return execute(this.client, this.account.privateKey, params.byteCode, {
+      fee: params.fee,
+      periodToLive: params.periodToLive,
+      maxCoins: params.maxCoins,
+      maxGas: params.maxGas,
+      datastore: params.datastore,
+    })
   }
 
   /**

@@ -8,6 +8,7 @@ import {
   ReadSCParams,
   SignedData,
   NodeStatusInfo,
+  ExecuteScParams,
 } from './'
 
 /**
@@ -36,6 +37,7 @@ export type Provider = {
   ): Promise<Operation>
   callSC(params: CallSCParams): Promise<Operation>
   readSC(params: ReadSCParams): Promise<ReadSCData>
+  executeSC(params: ExecuteScParams): Promise<Operation>
   deploySC(params: DeploySCParams): Promise<SmartContract>
   getOperationStatus(opId: string): Promise<OperationStatus>
   getEvents(filter: EventFilter): Promise<SCEvent[]>
