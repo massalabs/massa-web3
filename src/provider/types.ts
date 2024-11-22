@@ -39,7 +39,7 @@ export type ExecuteScParams = {
   periodToLive?: number
   fee?: Mas
   maxGas?: Mas
-  maxCoins?: Mas
+  maxCoins: Mas
 }
 
 export type ReadSCData = {
