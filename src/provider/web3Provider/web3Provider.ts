@@ -176,12 +176,14 @@ export class Web3Provider extends SCProvider implements Provider {
     return new Operation(this, operationId)
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public async sign(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    data: Buffer | Uint8Array | string
-  ): Promise<SignedData> {
-    throw new Error('not implemented')
+  public async sign(data: Uint8Array | string): Promise<SignedData> {
+    const bytes =
+      typeof data === 'string' ? new TextEncoder().encode(data) : data
+    const sig = await this.account.sign(bytes)
+    return {
+      publicKey: this.account.publicKey.toString(),
+      signature: sig.toString(),
+    }
   }
 
   public async callSC(params: CallSCParams): Promise<Operation> {

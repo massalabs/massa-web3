@@ -3,6 +3,11 @@ import { Mas } from '../basicElements/mas'
 import { U64_t } from '../basicElements/serializers/number/u64'
 import { SCEvent, Slot } from '../client'
 
+export type SignOptions = {
+  description?: string
+  displayData?: boolean
+}
+
 type OperationParams = {
   coins?: Mas
   fee?: Mas

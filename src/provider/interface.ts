@@ -9,6 +9,7 @@ import {
   SignedData,
   NodeStatusInfo,
   ExecuteScParams,
+  SignOptions,
 } from './'
 
 /**
@@ -27,7 +28,10 @@ export type Provider = {
   /** Initiates a balance retrieval request for the account. */
   balance(final: boolean): Promise<bigint>
   networkInfos(): Promise<Network>
-  sign(data: Buffer | Uint8Array | string): Promise<SignedData>
+  sign(
+    data: Uint8Array | string,
+    signOptions?: SignOptions
+  ): Promise<SignedData>
   buyRolls(amount: Mas, opts?: OperationOptions): Promise<Operation>
   sellRolls(amount: Mas, opts?: OperationOptions): Promise<Operation>
   transfer(
