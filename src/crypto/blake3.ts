@@ -6,7 +6,7 @@ import Hasher from './interfaces/hasher'
  */
 export default class Blake3 implements Hasher {
   // eslint-disable-next-line class-methods-use-this -- Expected by the interface.
-  hash(data: Buffer | Uint8Array | string): Uint8Array {
+  hash(data: Uint8Array | string): Uint8Array {
     return hashBlake3(data)
   }
 }

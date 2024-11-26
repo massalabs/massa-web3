@@ -78,7 +78,7 @@ export class Account {
    *
    * @returns A boolean indicating whether the signature is valid.
    */
-  verify(message: Uint8Array, signature: Signature): Promise<boolean> {
+  verify(message: Uint8Array | string, signature: Signature): Promise<boolean> {
     return this.publicKey.verify(message, signature)
   }
 

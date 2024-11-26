@@ -342,7 +342,7 @@ export class PublicKey {
    * @returns A boolean indicating whether the signature is valid.
    */
   public async verify(
-    data: Uint8Array,
+    data: Uint8Array | string,
     signature: Signature
   ): Promise<boolean> {
     const { data: rawSignature } = this.versioner.extract(signature.toBytes())
