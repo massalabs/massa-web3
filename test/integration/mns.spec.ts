@@ -22,10 +22,12 @@ describe('MNS tests', () => {
   })
 
   test('alloc, update target and free', async () => {
-    const domain = 'trloloooooooooooooooololololzss'
+    const domain = createRandomString(15)
+
     let operation = await mns.alloc(domain, provider.address, {
       coins: 1049000000n,
     })
+
     await operation.waitFinalExecution()
 
     // check resolution
@@ -50,3 +52,12 @@ describe('MNS tests', () => {
     expect(res).toBe('')
   }, 300000)
 })
+
+function createRandomString(length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz'
+  let result = ''
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
+}
