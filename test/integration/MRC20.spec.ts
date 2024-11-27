@@ -1,4 +1,4 @@
-import { account, Account } from '../../src'
+import { Account } from '../../src'
 import { MRC20 } from '../../src/contracts-wrappers'
 import { provider } from './setup'
 
@@ -94,18 +94,18 @@ describe('Generic token wrapper tests', () => {
       expect(balance).toBe(0n)
     }
 
-    const operation = await usdcContract.transfer(
-      recipientAddresses[0],
-      amounts[0]
-    )
+    await usdcContract.transfer(recipientAddresses[0], amounts[0])
 
     const operation2 = await usdcContract.transfer(
       recipientAddresses[1],
       amounts[1]
     )
-    await operation2.waitFinalExecution()
+    await operation2.waitSpeculativeExecution()
 
-    const recipientBalance = await usdcContract.balancesOf(recipientAddresses)
+    const recipientBalance = await usdcContract.balancesOf(
+      recipientAddresses,
+      false
+    )
 
     expect(recipientBalance[0].balance).toBe(amounts[0])
     expect(recipientBalance[0].address).toBe(recipientAddresses[0])

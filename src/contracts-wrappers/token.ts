@@ -1,4 +1,4 @@
-import { Args, bytesToStr, strToBytes, U256, U8 } from '../basicElements'
+import { Args, bytesToStr, U256, U8 } from '../basicElements'
 import { Operation } from '../operation'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 
@@ -85,7 +85,10 @@ export class MRC20 extends SmartContract {
     return U256.fromBytes(res.value)
   }
 
-  async balancesOf(addresses: string[]): Promise<
+  async balancesOf(
+    addresses: string[],
+    final = true
+  ): Promise<
     {
       address: string
       balance: bigint
@@ -93,8 +96,8 @@ export class MRC20 extends SmartContract {
   > {
     const res = await this.provider.readStorage(
       this.address,
-      addresses.map((a) => strToBytes(`BALANCE${a}`)),
-      true
+      addresses.map((a) => `BALANCE${a}`),
+      final
     )
 
     return res.map((v, i) => ({
