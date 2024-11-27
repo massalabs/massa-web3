@@ -85,6 +85,27 @@ export class MRC20 extends SmartContract {
     return U256.fromBytes(res.value)
   }
 
+  async balancesOf(
+    addresses: string[],
+    final = true
+  ): Promise<
+    {
+      address: string
+      balance: bigint
+    }[]
+  > {
+    const res = await this.provider.readStorage(
+      this.address,
+      addresses.map((a) => `BALANCE${a}`),
+      final
+    )
+
+    return res.map((v, i) => ({
+      address: addresses[i],
+      balance: v.length ? U256.fromBytes(v) : 0n,
+    }))
+  }
+
   async transfer(
     to: string,
     amount: bigint,
