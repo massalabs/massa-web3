@@ -89,12 +89,16 @@ describe('Generic token wrapper tests', () => {
       await (await Account.generate()).address.toString(),
     ]
 
-    const b = await usdcContract.balancesOf(recipientAddresses)
-    for (const { address, balance } of b) {
+    const resBalances = await usdcContract.balancesOf(recipientAddresses)
+    for (const { balance } of resBalances) {
       expect(balance).toBe(0n)
     }
 
-    await usdcContract.transfer(recipientAddresses[0], amounts[0])
+    const operation1 = await usdcContract.transfer(
+      recipientAddresses[0],
+      amounts[0]
+    )
+    await operation1.waitSpeculativeExecution()
 
     const operation2 = await usdcContract.transfer(
       recipientAddresses[1],
