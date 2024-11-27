@@ -9,3 +9,5 @@ export * from './contracts-wrappers'
 export * from './events'
 export * from './generated'
 export * from './dataStore'
+import dotenv from 'dotenv'
+dotenv.config()
