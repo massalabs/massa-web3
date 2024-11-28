@@ -250,6 +250,14 @@ export class PublicAPI {
     return this.connector.get_stakers(pagination)
   }
 
+  async getDeferredCallQuote(params: t.DeferredCallsQuoteRequest[]): Promise<t.DeferredCallsQuoteResponse[]> {
+    return this.connector.get_deferred_call_quote(params)
+  }
+
+  async getDeferredCallInfo(params: string[]): Promise<t.DeferredCallResponse[]> {
+    return this.connector.get_deferred_call_info(params)
+  }
+
   async status(): Promise<t.NodeStatus> {
     this.lastStatus = await this.connector.get_status()
     return this.lastStatus

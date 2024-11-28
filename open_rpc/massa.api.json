@@ -2,7 +2,7 @@
     "openrpc": "1.2.4",
     "info": {
         "title": "Massa OpenRPC Specification",
-        "version": "MAIN.2.1",
+        "version": "MAIN.2.3",
         "description": "Massa OpenRPC Specification document. Find more information on https://docs.massa.net/docs/build/api/jsonrpc",
         "termsOfService": "https://open-rpc.org",
         "contact": {
@@ -148,8 +148,10 @@
                 "schema": {
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "format": "byte"
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
                     }
                 },
                 "name": "Addresses bytecode array"
@@ -486,6 +488,105 @@
             "name": "get_status",
             "summary": "Summary of the current state",
             "description": "Summary of the current state: time, last final blocks (hash, thread, slot, timestamp), clique count, connected nodes count."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "req",
+                    "description": "Deferred calls quote request",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DeferredCallsQuoteRequest"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/DeferredCallsQuoteResponse"
+                    }
+                },
+                "name": "DeferredCallsQuoteResponse"
+            },
+            "name": "get_deferred_call_quote",
+            "summary": "Get deferred call quote",
+            "description": "Returns if slot is available and the price to book the requested gas."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "arg",
+                    "description": "Deferred calls ids",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/DeferredCallResponse"
+                    }
+                },
+                "name": "DeferredCallResponse"
+            },
+            "name": "get_deferred_call_info",
+            "summary": "Get deferred calls information",
+            "description": "Returns information about deferred calls."
+        },
+        {
+            "tags": [
+                {
+                    "name": "public",
+                    "description": "Massa public api"
+                }
+            ],
+            "params": [
+                {
+                    "name": "slots",
+                    "description": "Deferred calls ids",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Slot"
+                        }
+                    },
+                    "required": true
+                }
+            ],
+            "result": {
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/DeferredCallsSlotResponse"
+                    }
+                },
+                "name": "DeferredCallResponse"
+            },
+            "name": "get_deferred_call_ids_by_slot",
+            "summary": "List deferred call ids by slot",
+            "description": "Returns deferred calls list for given slots."
         },
         {
             "tags": [
@@ -1584,6 +1685,9 @@
                 },
                 "additionalProperties": false
             },
+            "Amount": {
+                "type": "integer"
+            },
             "ApiRequest": {
                 "title": "ApiRequest",
                 "description": "ApiRequest for apiV2",
@@ -1803,7 +1907,7 @@
                         "type": "number"
                     },
                     "end_timestamp": {
-                        "description": "(Only in tesnets)\nTime in milliseconds when the blockclique started.",
+                        "description": "(Only in testnets)\nTime in milliseconds when the blockclique started.",
                         "oneOf": [
                             {
                                 "type": "null"
@@ -1975,19 +2079,12 @@
                 "title": "DatastoreEntryOutput",
                 "description": "Datastore entry",
                 "type": "object",
-                "required": [
-                    "candidate_value",
-                    "final_value"
-                ],
                 "properties": {
                     "candidate_value": {
-                        "description": "The candidate datastore entry value bytes",
+                        "description": "",
                         "oneOf": [
                             {
-                                "type": "array",
-                                "items": {
-                                    "type": "integer"
-                                }
+                                "type": "string"
                             },
                             {
                                 "type": "null"
@@ -1995,13 +2092,10 @@
                         ]
                     },
                     "final_value": {
-                        "description": "The final datastore entry value bytes",
+                        "description": "",
                         "oneOf": [
                             {
-                                "type": "array",
-                                "items": {
-                                    "type": "integer"
-                                }
+                                "type": "string"
                             },
                             {
                                 "type": "null"
@@ -2010,6 +2104,127 @@
                     }
                 },
                 "additionalProperties": false
+            },
+            "DeferredCall": {
+                "title": "DeferredCall",
+                "type": "object",
+                "required": [
+                    "sender_address",
+                    "target_slot",
+                    "target_address",
+                    "target_function",
+                    "parameters",
+                    "coins",
+                    "max_gas",
+                    "fee",
+                    "cancelled"
+                ],
+                "properties": {
+                    "sender_address": {
+                        "$ref": "#/components/schemas/Address"
+                    },
+                    "target_slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "target_address": {
+                        "$ref": "#/components/schemas/Address"
+                    },
+                    "target_function": {
+                        "type": "string"
+                    },
+                    "parameters": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "coins": {
+                        "type": "number"
+                    },
+                    "max_gas": {
+                        "type": "number"
+                    },
+                    "fee": {
+                        "type": "number"
+                    },
+                    "cancelled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "DeferredCallsQuoteRequest": {
+                "title": "DeferredCallsQuoteRequest",
+                "type": "object",
+                "required": [
+                    "target_slot",
+                    "max_gas_request",
+                    "params_size"
+                ],
+                "properties": {
+                    "target_slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "max_gas_request": {
+                        "type": "number"
+                    },
+                    "params_size": {
+                        "type": "number"
+                    }
+                }
+            },
+            "DeferredCallsQuoteResponse": {
+                "title": "DeferredCallsQuoteResponse",
+                "type": "object",
+                "required": [
+                    "target_slot",
+                    "max_gas_request",
+                    "available",
+                    "price"
+                ],
+                "properties": {
+                    "target_slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "max_gas_request": {
+                        "type": "number"
+                    },
+                    "available": {
+                        "type": "boolean"
+                    },
+                    "price": {
+                        "type": "number"
+                    }
+                }
+            },
+            "DeferredCallResponse": {
+                "title": "DeferredCallResponse",
+                "type": "object",
+                "required": [
+                    "call_id",
+                    "call"
+                ],
+                "properties": {
+                    "call_id": {
+                        "type": "string"
+                    },
+                    "call": {
+                        "$ref": "#/components/schemas/DeferredCall"
+                    }
+                }
+            },
+            "DeferredCallsSlotResponse": {
+                "type": "object",
+                "properties": {
+                    "slot": {
+                        "$ref": "#/components/schemas/Slot"
+                    },
+                    "call_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
             },
             "Denunciation": {
                 "oneOf": [
@@ -2128,7 +2343,7 @@
                         "type": "number"
                     },
                     "active_cursor": {
-                        "descritpion": "active execution cursor slot",
+                        "description": "active execution cursor slot",
                         "$ref": "#/components/schemas/Slot"
                     },
                     "final_cursor": {
@@ -2402,8 +2617,15 @@
                         "description": "When was it generated"
                     },
                     "block": {
-                        "$ref": "#/components/schemas/BlockId",
-                        "description": "Block Id"
+                        "description": "Block Id",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/BlockId"
+                            }
+                        ]
                     },
                     "read_only": {
                         "description": "Wether the event was generated during  read only call",
@@ -2421,8 +2643,15 @@
                         "type": "number"
                     },
                     "origin_operation_id": {
-                        "$ref": "#/components/schemas/OperationId",
-                        "description": "Origin operation id"
+                        "description": "Origin operation id",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/OperationId"
+                            }
+                        ]
                     },
                     "is_final": {
                         "description": "Whether the event is final",
@@ -2621,34 +2850,6 @@
                 },
                 "additionalProperties": false
             },
-            "LedgerInfo": {
-                "title": "SceLedgerInfo",
-                "required": [
-                    "balance",
-                    "datastore"
-                ],
-                "type": "object",
-                "properties": {
-                    "balance": {
-                        "description": "Represent an amount",
-                        "type": "string"
-                    },
-                    "module": {
-                        "description": "Stored bytecode",
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
-                    },
-                    "datastore": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/DataStore"
-                        }
-                    }
-                },
-                "additionalProperties": false
-            },
             "NetworkStats": {
                 "title": "NetworkStats",
                 "description": "Network stats",
@@ -2696,7 +2897,6 @@
                     "current_cycle_time",
                     "next_cycle_time",
                     "network_stats",
-                    "last_slot",
                     "next_slot",
                     "node_id",
                     "pool_stats",
@@ -2778,7 +2978,7 @@
                         "type": "number"
                     },
                     "minimal_fees": {
-                        "description": "Minimal fee",
+                        "description": "Minimal fees to include operation in a block",
                         "type": "string"
                     }
                 },
@@ -2911,7 +3111,7 @@
                         "$ref": "#/components/schemas/Transaction",
                         "description": "transfer coins from sender to recipient"
                     },
-                    "ExecutSC": {
+                    "ExecuteSC": {
                         "$ref": "#/components/schemas/ExecuteSC",
                         "description": "Execute a smart contract."
                     },
@@ -3081,10 +3281,7 @@
                     "max_gas",
                     "target_address",
                     "target_function",
-                    "parameter",
-                    "caller_address",
-                    "coins",
-                    "fee"
+                    "parameter"
                 ],
                 "type": "object",
                 "properties": {
@@ -3125,6 +3322,7 @@
                                 "type": "null"
                             },
                             {
+                                "description": "Amount in coins",
                                 "type": "string"
                             }
                         ]
@@ -3152,8 +3350,7 @@
                         "description": "Included in case of success. The result of the execution",
                         "type": "array",
                         "items": {
-                            "format": "byte",
-                            "type": "string"
+                            "type": "number"
                         }
                     },
                     "Error": {
@@ -3333,6 +3530,7 @@
                 "required": [
                     "async_pool_changes",
                     "executed_ops_changes",
+                    "deferred_call_changes",
                     "ledger_changes",
                     "pos_changes",
                     "executed_denunciations_changes",
@@ -3359,20 +3557,39 @@
                         "description": "executed operations changes",
                         "type": "object"
                     },
+                    "deferred_call_changes": {
+                        "description": "deferred call changes",
+                        "type": "object"
+                    },
                     "executed_denunciations_changes": {
                         "description": "executed denunciation changes",
                         "type": "object"
                     },
                     "execution_trail_hash_change": {
                         "description": "execution trail hash change",
-                        "type": "string"
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "Set": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "Set"
+                                ]
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
                     }
                 },
                 "additionalProperties": false
             },
             "Transaction": {
                 "title": "Transaction",
-                "description": "Transation",
+                "description": "Transaction",
                 "required": [
                     "amount",
                     "recipient_address"
@@ -3414,14 +3631,14 @@
                     },
                     "amount": {
                         "description": "Amount transferred",
-                        "type": "integer"
+                        "type": "string"
                     },
                     "effective_amount_received": {
                         "description": "Amount received by the receiver",
-                        "type": "integer"
+                        "type": "string"
                     },
                     "context": {
-                        "description": "Context of the transfer : operation or asyncronous execution",
+                        "description": "Context of the transfer : operation or asynchronous execution",
                         "type": "object"
                     },
                     "succeed": {

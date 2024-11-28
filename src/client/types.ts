@@ -51,3 +51,7 @@ export type DatastoreEntry = {
   address: string
   key: Uint8Array | string
 }
+
+export type DeferredCallQuoteResponse = {
+
+}
