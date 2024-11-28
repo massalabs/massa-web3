@@ -51,3 +51,10 @@ export type DatastoreEntry = {
   address: string
   key: Uint8Array | string
 }
+
+export type DeferredCallQuoteResponse = {
+  targetSlot: Slot;
+  maxGasRequest: number;
+  available: boolean;
+  price: number;
+}

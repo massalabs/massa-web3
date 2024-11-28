@@ -135,6 +135,32 @@ export class Connector {
     return this.client.request('get_status', {})
   }
 
+
+  /**
+   * Get a quote for a deferred call
+   */
+  public get_deferred_call_quote: t.GetDeferredCallQuote = (params) => {
+    return this.client.request('get_deferred_call_quote', params)
+  }
+
+  /**
+   * Get deferred call info
+   * @param string[] - deferred call ids
+   * @returns DeferredCallResponse[]
+   */
+  public get_deferred_call_info: t.GetDeferredCallInfo = (params) => {
+    return this.client.request('get_deferred_call_info', params)
+  }
+
+  /**
+   * Get deferred call ids by slot
+   * @param Slot[]
+   * @returns string[]
+   */
+  public get_deferred_call_ids_by_slot: t.GetDeferredCallIdsBySlot = (params) => {
+    return this.client.request('get_deferred_call_ids_by_slot', params)
+  }
+
   /**
    * Add a vec of new secret(private) keys for the node to use to stake
    */

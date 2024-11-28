@@ -83,10 +83,16 @@ export type StringDoaGddGA = string;
 export type OneOfNullQu0Arl1FStringDoaGddGAHzYKhN99 = NullQu0Arl1F | StringDoaGddGA;
 /**
  *
+ * Amount in coins
+ *
+ */
+export type StringUEOIWsxD = string;
+/**
+ *
  * Amount in coins, optional
  *
  */
-export type OneOfNullQu0Arl1FStringDoaGddGAEUSQB1KK = NullQu0Arl1F | StringDoaGddGA;
+export type OneOfNullQu0Arl1FStringUEOIWsxDWJnwaakv = NullQu0Arl1F | StringUEOIWsxD;
 /**
  *
  * Fee, optional
@@ -103,9 +109,9 @@ export interface ReadOnlyCall {
   target_address: StringYvGZTlwQ;
   target_function: StringBtBJC5Iw;
   parameter: UnorderedSetOfInteger2AHOqbcQzYHdsLoW;
-  caller_address: OneOfNullQu0Arl1FStringDoaGddGAHzYKhN99;
-  coins: OneOfNullQu0Arl1FStringDoaGddGAEUSQB1KK;
-  fee: OneOfNullQu0Arl1FStringDoaGddGANOhzhrxe;
+  caller_address?: OneOfNullQu0Arl1FStringDoaGddGAHzYKhN99;
+  coins?: OneOfNullQu0Arl1FStringUEOIWsxDWJnwaakv;
+  fee?: OneOfNullQu0Arl1FStringDoaGddGANOhzhrxe;
 }
 /**
  *
@@ -173,6 +179,12 @@ export type BooleanObf9WMA0 = boolean;
  *
  */
 export type BooleanAXlyTrPe = boolean;
+export interface DeferredCallsQuoteRequest {
+  target_slot: Slot;
+  max_gas_request: NumberHo1ClIqD;
+  params_size: NumberHo1ClIqD;
+  [k: string]: any;
+}
 /**
  *
  * `PrivateKey` is used for signature and decryption
@@ -227,13 +239,12 @@ export interface ExecuteAt {
   period: NumberHo1ClIqD;
   thread: NumberHo1ClIqD;
 }
-export type StringUJarsTOs = string;
 /**
  *
  * Included in case of success. The result of the execution
  *
  */
-export type UnorderedSetOfStringUJarsTOsgviiNMvH = StringUJarsTOs[];
+export type UnorderedSetOfNumberHo1ClIqDKTdDgRxH = NumberHo1ClIqD[];
 /**
  *
  * Included in case of error. The error message
@@ -246,7 +257,7 @@ export type StringOz2F8Z2Y = string;
  *
  */
 export interface ReadOnlyResult {
-  Ok?: UnorderedSetOfStringUJarsTOsgviiNMvH;
+  Ok?: UnorderedSetOfNumberHo1ClIqDKTdDgRxH;
   Error?: StringOz2F8Z2Y;
 }
 /**
@@ -255,6 +266,12 @@ export interface ReadOnlyResult {
  *
  */
 export type StringBt9L6T1F = string;
+/**
+ *
+ * Block Id
+ *
+ */
+export type OneOfBlockIdNullQu0Arl1FPrQcxUW9 = NullQu0Arl1F | BlockId;
 /**
  *
  * Wether the event was generated during  read only call
@@ -281,6 +298,12 @@ export type NumberHGt16B6Y = number;
 export type OperationId = string;
 /**
  *
+ * Origin operation id
+ *
+ */
+export type OneOfOperationIdNullQu0Arl1FHQguGgO5 = NullQu0Arl1F | OperationId;
+/**
+ *
  * Whether the event is final
  *
  */
@@ -298,11 +321,11 @@ export type BooleanIqtEc7R0 = boolean;
  */
 export interface EventExecutionContext {
   slot: Slot;
-  block?: BlockId;
+  block?: OneOfBlockIdNullQu0Arl1FPrQcxUW9;
   read_only: BooleanQYH7IQYB;
   call_stack: UnorderedSetOfAddressqhKJr2Tw;
   index_in_slot: NumberHGt16B6Y;
-  origin_operation_id?: OperationId;
+  origin_operation_id?: OneOfOperationIdNullQu0Arl1FHQguGgO5;
   is_final: BooleanSPcYqJj2;
   is_error?: BooleanIqtEc7R0;
 }
@@ -310,7 +333,7 @@ export interface SCOutputEvent {
   data: StringBt9L6T1F;
   context: EventExecutionContext;
 }
-export type UnorderedSetOfSCOutputEventHwhiOmzE = SCOutputEvent[];
+export type UnorderedSetOfSCOutputEventwrpyYBUS = SCOutputEvent[];
 /**
  *
  * The gas cost for the execution
@@ -344,28 +367,39 @@ export interface ObjectYWuwfL0B { [key: string]: any; }
 export interface ObjectTK16EAH4 { [key: string]: any; }
 /**
  *
+ * deferred call changes
+ *
+ */
+export interface Object8GtTSzoU { [key: string]: any; }
+/**
+ *
  * executed denunciation changes
  *
  */
 export interface Object413CQ8L2 { [key: string]: any; }
+export interface ObjectOfStringDoaGddGANwpLofVw {
+  Set: StringDoaGddGA;
+  [k: string]: any;
+}
 /**
  *
  * execution trail hash change
  *
  */
-export type StringIytPJwYq = string;
+export type OneOfObjectOfStringDoaGddGANwpLofVwStringDoaGddGAXjvqkj7F = ObjectOfStringDoaGddGANwpLofVw | StringDoaGddGA;
 export interface StateChanges {
   ledger_changes: ObjectD93Z4FAG;
   async_pool_changes: UnorderedSetOfObjectHAgrRKSz46QV1Tyv;
   pos_changes: ObjectYWuwfL0B;
   executed_ops_changes: ObjectTK16EAH4;
+  deferred_call_changes: Object8GtTSzoU;
   executed_denunciations_changes: Object413CQ8L2;
-  execution_trail_hash_change: StringIytPJwYq;
+  execution_trail_hash_change: OneOfObjectOfStringDoaGddGANwpLofVwStringDoaGddGAXjvqkj7F;
 }
 export interface ExecuteReadOnlyResponse {
   executed_at: ExecuteAt;
   result: ReadOnlyResult;
-  output_events: UnorderedSetOfSCOutputEventHwhiOmzE;
+  output_events: UnorderedSetOfSCOutputEventwrpyYBUS;
   gas_cost: NumberAIaYfWME;
   state_changes: StateChanges;
 }
@@ -658,26 +692,15 @@ export interface Clique {
   fitness: Number7BVjpZ2Z;
   is_blockclique: BooleanXIboFXzF;
 }
-/**
- *
- * The candidate datastore entry value bytes
- *
- */
-export type OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOy81SHPJsX = UnorderedSetOfInteger2AHOqbcQarZIQlOy | NullQu0Arl1F;
-/**
- *
- * The final datastore entry value bytes
- *
- */
-export type OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOyGOQJrRPK = UnorderedSetOfInteger2AHOqbcQarZIQlOy | NullQu0Arl1F;
+export type OneOfNullQu0Arl1FStringDoaGddGAUBejLf7Q = StringDoaGddGA | NullQu0Arl1F;
 /**
  *
  * Datastore entry
  *
  */
 export interface DatastoreEntryOutput {
-  candidate_value: OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOy81SHPJsX;
-  final_value: OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOyGOQJrRPK;
+  candidate_value?: OneOfNullQu0Arl1FStringDoaGddGAUBejLf7Q;
+  final_value?: OneOfNullQu0Arl1FStringDoaGddGAUBejLf7Q;
 }
 /**
  *
@@ -696,19 +719,19 @@ export type StringZyWeUFZ8 = string;
  * Amount transferred
  *
  */
-export type IntegerCOVAu0Eq = number;
+export type StringY2SYXWiA = string;
 /**
  *
  * Amount received by the receiver
  *
  */
-export type IntegerVC2Agt39 = number;
+export type StringYVXxb2TR = string;
 /**
  *
- * Context of the transfer : operation or asyncronous execution
+ * Context of the transfer : operation or asynchronous execution
  *
  */
-export interface Object0XCk2T5H { [key: string]: any; }
+export interface ObjectVq9C5HF8 { [key: string]: any; }
 /**
  *
  * True if the operation succeed otherwise false
@@ -735,14 +758,14 @@ export type StringUyVBK2CK = string;
 export interface Transfer {
   from: StringYVTrFSaQ;
   to: StringZyWeUFZ8;
-  amount: IntegerCOVAu0Eq;
-  effective_amount_received: IntegerVC2Agt39;
-  context: Object0XCk2T5H;
+  amount: StringY2SYXWiA;
+  effective_amount_received: StringYVXxb2TR;
+  context: ObjectVq9C5HF8;
   succeed: BooleanYDqyb5Vp;
   fee: NumberV8R93Gu7;
   block_id: StringUyVBK2CK;
 }
-export type UnorderedSetOfTransferQEyQHpyL = Transfer[];
+export type UnorderedSetOfTransferKPrtCcuK = Transfer[];
 /**
  *
  * Block Id
@@ -951,7 +974,7 @@ export interface RollSell {
  */
 export interface OperationType {
   Transaction?: Transaction;
-  ExecutSC?: ExecuteSC;
+  ExecuteSC?: ExecuteSC;
   CallSC?: CallSC;
   RollBuy?: RollBuy;
   RollSell?: RollSell;
@@ -1017,11 +1040,11 @@ export interface Staker { [key: string]: any; }
 export type Number2A9FvvYh = number;
 /**
  *
- * (Only in tesnets)
+ * (Only in testnets)
 Time in milliseconds when the blockclique started.
  *
  */
-export type OneOfNullQu0Arl1FNumberHo1ClIqDXysINzQy = NullQu0Arl1F | NumberHo1ClIqD;
+export type OneOfNullQu0Arl1FNumberHo1ClIqD73O8PHnh = NullQu0Arl1F | NumberHo1ClIqD;
 /**
  *
  * Time in milliseconds when the blockclique started.
@@ -1066,7 +1089,7 @@ export type NumberAxwlzLso = number;
 export interface Config {
   block_reward: StringNIrlyE1J;
   delta_f0: Number2A9FvvYh;
-  end_timestamp?: OneOfNullQu0Arl1FNumberHo1ClIqDXysINzQy;
+  end_timestamp?: OneOfNullQu0Arl1FNumberHo1ClIqD73O8PHnh;
   genesis_timestamp: NumberSgfzurLm;
   max_block_size?: NumberUwkWWxaa;
   operation_validity_periods: NumberTs6Cn6JQ;
@@ -1239,10 +1262,39 @@ export interface ExecutionStats {
 export type NumberBte4OVdF = number;
 /**
  *
- * Minimal fee
+ * Minimal fees to include operation in a block
  *
  */
-export type StringTXHumHoA = string;
+export type String3RwRd0Pa = string;
+export interface DeferredCallsQuoteResponse {
+  target_slot: Slot;
+  max_gas_request: NumberHo1ClIqD;
+  available: BooleanVyG3AETh;
+  price: NumberHo1ClIqD;
+  [k: string]: any;
+}
+export interface DeferredCall {
+  sender_address: Address;
+  target_slot: Slot;
+  target_address: Address;
+  target_function: StringDoaGddGA;
+  parameters: UnorderedSetOfNumberHo1ClIqDAokMKuEf;
+  coins: NumberHo1ClIqD;
+  max_gas: NumberHo1ClIqD;
+  fee: NumberHo1ClIqD;
+  cancelled: BooleanVyG3AETh;
+  [k: string]: any;
+}
+export interface DeferredCallResponse {
+  call_id: StringDoaGddGA;
+  call: DeferredCall;
+  [k: string]: any;
+}
+export interface ObjectOfSlotUnorderedSetOfStringDoaGddGADvj0XlFaWrpyYBUS {
+  slot?: Slot;
+  call_ids?: UnorderedSetOfStringDoaGddGADvj0XlFa;
+  [k: string]: any;
+}
 type AlwaysFalse = any;
 /**
  *
@@ -1302,7 +1354,7 @@ export interface FilledBlockInfoContent {
   block: FilledBlock;
 }
 export type UnorderedSetOfReadOnlyBytecodeExecutionK4Ht8Zdn = ReadOnlyBytecodeExecution[];
-export type UnorderedSetOfReadOnlyCallm6DMxyzd = ReadOnlyCall[];
+export type UnorderedSetOfReadOnlyCall0N8FWao7 = ReadOnlyCall[];
 export type UnorderedSetOfAddressjJsnATCO = Address[];
 export type UnorderedSetOfAddressFilteraFrapw7X = AddressFilter[];
 export type UnorderedSetOfBlockIdZXK9XY8A = BlockId[];
@@ -1326,8 +1378,10 @@ export interface ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq {
   start?: NumberHo1ClIqD;
   end?: NumberHo1ClIqD;
 }
+export type UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS = DeferredCallsQuoteRequest[];
 export type UnorderedSetOfPrivateKeyG69QLiLP = PrivateKey[];
 export type UnorderedSetOfStringBBdNk2Kup3WUWKiM = StringBBdNk2Ku[];
+export type StringUJarsTOs = string;
 export type UnorderedSetOfStringOGpKXaCP4RgV7KAw = StringOGpKXaCP[];
 export type UnorderedSetOfOperationInput9XcIbRG1 = OperationInput[];
 /**
@@ -1340,14 +1394,14 @@ export interface ApiRequest {
 }
 export type UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS = ExecuteReadOnlyResponse[];
 export type UnorderedSetOfAddressInfoCm3Tm6FQ = AddressInfo[];
-export type UnorderedSetOfStringUJarsTOsGY6FcFnU = StringUJarsTOs[];
+export type UnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfbuExLS5G = UnorderedSetOfNumberHo1ClIqDAokMKuEf[];
 export type UnorderedSetOfBlockInfowrpyYBUS = BlockInfo[];
 export type UnorderedSetOfCliqueeS9LyMHx = Clique[];
-export type UnorderedSetOfDatastoreEntryOutputhcgFMMvn = DatastoreEntryOutput[];
-export type UnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXU = UnorderedSetOfTransferQEyQHpyL[];
+export type UnorderedSetOfDatastoreEntryOutputgFkmXHTz = DatastoreEntryOutput[];
+export type UnorderedSetOfUnorderedSetOfTransferKPrtCcuKlkKPLj8D = UnorderedSetOfTransferKPrtCcuK[];
 export type UnorderedSetOfEndorsementInfowrpyYBUS = EndorsementInfo[];
 export type UnorderedSetOfGraphIntervalwrpyYBUS = GraphInterval[];
-export type UnorderedSetOfOperationInfoMdPofISE = OperationInfo[];
+export type UnorderedSetOfOperationInfohzGVbuvX = OperationInfo[];
 /**
  *
  * Node status
@@ -1370,8 +1424,11 @@ export interface NodeStatus {
   version: Version;
   execution_stats: ExecutionStats;
   chain_id: NumberBte4OVdF;
-  minimal_fees?: StringTXHumHoA;
+  minimal_fees: String3RwRd0Pa;
 }
+export type UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS = DeferredCallsQuoteResponse[];
+export type UnorderedSetOfDeferredCallResponsewrpyYBUS = DeferredCallResponse[];
+export type UnorderedSetOfObjectOfSlotUnorderedSetOfStringDoaGddGADvj0XlFaWrpyYBUSwrpyYBUS = ObjectOfSlotUnorderedSetOfStringDoaGddGADvj0XlFaWrpyYBUS[];
 export type UnorderedSetOfIpAddressWpGgzO6M = IpAddress[];
 /**
  *
@@ -1402,22 +1459,25 @@ export interface FilledBlockInfo {
  * Generated! Represents an alias to any of the provided schemas
  *
  */
-export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionK4Ht8ZdnUnorderedSetOfReadOnlyCallm6DMxyzdUnorderedSetOfAddressjJsnATCOUnorderedSetOfAddressFilteraFrapw7XUnorderedSetOfBlockIdZXK9XY8ASlotUnorderedSetOfDatastoreEntryInputBdlngHsZUnorderedSetOfSlotn0BdrHhhUnorderedSetOfStringDoaGddGADvj0XlFaEventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfStringDoaGddGADvj0XlFaPaginationUnorderedSetOfPrivateKeyG69QLiLPUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfAddressjJsnATCOStringUJarsTOsUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringOGpKXaCP4RgV7KAwUnorderedSetOfOperationInput9XcIbRG1ApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfoCm3Tm6FQUnorderedSetOfStringUJarsTOsGY6FcFnUUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueeS9LyMHxUnorderedSetOfDatastoreEntryOutputhcgFMMvnUnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXUUnorderedSetOfEndorsementInfowrpyYBUSUnorderedSetOfSCOutputEventHwhiOmzEUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfoMdPofISEUnorderedSetOfStakerX7P278VSNodeStatusAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfIpAddressWpGgzO6MUnorderedSetOfIpAddressWpGgzO6MAlwaysFalseUnorderedSetOfIpAddressWpGgzO6MAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentxrssVm84VersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionK4Ht8Zdn | UnorderedSetOfReadOnlyCallm6DMxyzd | UnorderedSetOfAddressjJsnATCO | UnorderedSetOfAddressFilteraFrapw7X | UnorderedSetOfBlockIdZXK9XY8A | Slot | UnorderedSetOfDatastoreEntryInputBdlngHsZ | UnorderedSetOfSlotn0BdrHhh | UnorderedSetOfStringDoaGddGADvj0XlFa | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | Pagination | UnorderedSetOfPrivateKeyG69QLiLP | UnorderedSetOfStringBBdNk2Kup3WUWKiM | StringUJarsTOs | UnorderedSetOfStringOGpKXaCP4RgV7KAw | UnorderedSetOfOperationInput9XcIbRG1 | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfoCm3Tm6FQ | UnorderedSetOfStringUJarsTOsGY6FcFnU | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueeS9LyMHx | UnorderedSetOfDatastoreEntryOutputhcgFMMvn | UnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXU | UnorderedSetOfEndorsementInfowrpyYBUS | UnorderedSetOfSCOutputEventHwhiOmzE | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfoMdPofISE | UnorderedSetOfStakerX7P278VS | NodeStatus | AlwaysFalse | UnorderedSetOfIpAddressWpGgzO6M | PubkeySig | UnorderedSetOfOperationId5TxbV4NZ | PagedVecStaker | UnorderedSetOfBlockParentxrssVm84 | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
+export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionK4Ht8ZdnUnorderedSetOfReadOnlyCall0N8FWao7UnorderedSetOfAddressjJsnATCOUnorderedSetOfAddressFilteraFrapw7XUnorderedSetOfBlockIdZXK9XY8ASlotUnorderedSetOfDatastoreEntryInputBdlngHsZUnorderedSetOfSlotn0BdrHhhUnorderedSetOfStringDoaGddGADvj0XlFaEventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfStringDoaGddGADvj0XlFaPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotn0BdrHhhUnorderedSetOfPrivateKeyG69QLiLPUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfAddressjJsnATCOStringUJarsTOsUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringOGpKXaCP4RgV7KAwUnorderedSetOfOperationInput9XcIbRG1ApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfoCm3Tm6FQUnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfbuExLS5GUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueeS9LyMHxUnorderedSetOfDatastoreEntryOutputgFkmXHTzUnorderedSetOfUnorderedSetOfTransferKPrtCcuKlkKPLj8DUnorderedSetOfEndorsementInfowrpyYBUSUnorderedSetOfSCOutputEventwrpyYBUSUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfohzGVbuvXUnorderedSetOfStakerX7P278VSNodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfObjectOfSlotUnorderedSetOfStringDoaGddGADvj0XlFaWrpyYBUSwrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfIpAddressWpGgzO6MUnorderedSetOfIpAddressWpGgzO6MAlwaysFalseUnorderedSetOfIpAddressWpGgzO6MAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentxrssVm84VersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionK4Ht8Zdn | UnorderedSetOfReadOnlyCall0N8FWao7 | UnorderedSetOfAddressjJsnATCO | UnorderedSetOfAddressFilteraFrapw7X | UnorderedSetOfBlockIdZXK9XY8A | Slot | UnorderedSetOfDatastoreEntryInputBdlngHsZ | UnorderedSetOfSlotn0BdrHhh | UnorderedSetOfStringDoaGddGADvj0XlFa | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | Pagination | UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS | UnorderedSetOfPrivateKeyG69QLiLP | UnorderedSetOfStringBBdNk2Kup3WUWKiM | StringUJarsTOs | UnorderedSetOfStringOGpKXaCP4RgV7KAw | UnorderedSetOfOperationInput9XcIbRG1 | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfoCm3Tm6FQ | UnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfbuExLS5G | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueeS9LyMHx | UnorderedSetOfDatastoreEntryOutputgFkmXHTz | UnorderedSetOfUnorderedSetOfTransferKPrtCcuKlkKPLj8D | UnorderedSetOfEndorsementInfowrpyYBUS | UnorderedSetOfSCOutputEventwrpyYBUS | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfohzGVbuvX | UnorderedSetOfStakerX7P278VS | NodeStatus | UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS | UnorderedSetOfDeferredCallResponsewrpyYBUS | UnorderedSetOfObjectOfSlotUnorderedSetOfStringDoaGddGADvj0XlFaWrpyYBUSwrpyYBUS | AlwaysFalse | UnorderedSetOfIpAddressWpGgzO6M | PubkeySig | UnorderedSetOfOperationId5TxbV4NZ | PagedVecStaker | UnorderedSetOfBlockParentxrssVm84 | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
 export type ExecuteReadOnlyBytecode = (ReadOnlyBytecodeExecution: UnorderedSetOfReadOnlyBytecodeExecutionK4Ht8Zdn) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
-export type ExecuteReadOnlyCall = (ReadOnlyCall: UnorderedSetOfReadOnlyCallm6DMxyzd) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
+export type ExecuteReadOnlyCall = (ReadOnlyCall: UnorderedSetOfReadOnlyCall0N8FWao7) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
 export type GetAddresses = (address: UnorderedSetOfAddressjJsnATCO) => Promise<UnorderedSetOfAddressInfoCm3Tm6FQ>;
-export type GetAddressesBytecode = (addressFilter: UnorderedSetOfAddressFilteraFrapw7X) => Promise<UnorderedSetOfStringUJarsTOsGY6FcFnU>;
+export type GetAddressesBytecode = (addressFilter: UnorderedSetOfAddressFilteraFrapw7X) => Promise<UnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfbuExLS5G>;
 export type GetBlocks = (blockId: UnorderedSetOfBlockIdZXK9XY8A) => Promise<UnorderedSetOfBlockInfowrpyYBUS>;
 export type GetBlockcliqueBlockBySlot = (slot: Slot) => Promise<Block>;
 export type GetCliques = () => Promise<UnorderedSetOfCliqueeS9LyMHx>;
-export type GetDatastoreEntries = (DatastoreEntryInputs: UnorderedSetOfDatastoreEntryInputBdlngHsZ) => Promise<UnorderedSetOfDatastoreEntryOutputhcgFMMvn>;
-export type GetSlotsTransfers = (slots: UnorderedSetOfSlotn0BdrHhh) => Promise<UnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXU>;
+export type GetDatastoreEntries = (DatastoreEntryInputs: UnorderedSetOfDatastoreEntryInputBdlngHsZ) => Promise<UnorderedSetOfDatastoreEntryOutputgFkmXHTz>;
+export type GetSlotsTransfers = (slots: UnorderedSetOfSlotn0BdrHhh) => Promise<UnorderedSetOfUnorderedSetOfTransferKPrtCcuKlkKPLj8D>;
 export type GetEndorsements = (endorsementId: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<UnorderedSetOfEndorsementInfowrpyYBUS>;
-export type GetFilteredScOutputEvent = (EventFilter: EventFilter) => Promise<UnorderedSetOfSCOutputEventHwhiOmzE>;
+export type GetFilteredScOutputEvent = (EventFilter: EventFilter) => Promise<UnorderedSetOfSCOutputEventwrpyYBUS>;
 export type GetGraphInterval = (TimeInterval: ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq) => Promise<UnorderedSetOfGraphIntervalwrpyYBUS>;
-export type GetOperations = (operationId: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<UnorderedSetOfOperationInfoMdPofISE>;
+export type GetOperations = (operationId: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<UnorderedSetOfOperationInfohzGVbuvX>;
 export type GetStakers = (PageRequest: Pagination) => Promise<UnorderedSetOfStakerX7P278VS>;
 export type GetStatus = () => Promise<NodeStatus>;
+export type GetDeferredCallQuote = (req: UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS) => Promise<UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS>;
+export type GetDeferredCallInfo = (arg: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<UnorderedSetOfDeferredCallResponsewrpyYBUS>;
+export type GetDeferredCallIdsBySlot = (slots: UnorderedSetOfSlotn0BdrHhh) => Promise<UnorderedSetOfObjectOfSlotUnorderedSetOfStringDoaGddGADvj0XlFaWrpyYBUSwrpyYBUS>;
 export type AddStakingSecretKeys = (SecretKeys: UnorderedSetOfPrivateKeyG69QLiLP) => Promise<AlwaysFalse>;
 export type GetStakingAddresses = () => Promise<UnorderedSetOfAddressjJsnATCO>;
 export type NodeAddToBootstrapBlacklist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
