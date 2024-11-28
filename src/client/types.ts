@@ -53,5 +53,8 @@ export type DatastoreEntry = {
 }
 
 export type DeferredCallQuoteResponse = {
-
+  targetSlot: Slot;
+  maxGasRequest: number;
+  available: boolean;
+  price: number;
 }
