@@ -1,9 +1,11 @@
 import { Operation } from '../../src/operation'
-import { EventExecutionContext } from '../../src/generated/client-types'
+import {
+  EventExecutionContext,
+  OutputEvents,
+} from '../../src/generated/client-types'
 import { OperationStatus } from '../../src/operation'
 import { blockchainClientMock } from './mock/blockchainClient.mock'
 import { providerMock } from './mock/provider.mock'
-import { SCEvent } from '../../src'
 
 const OPERATION_ID = 'testOperationID'
 const operation = new Operation(providerMock, OPERATION_ID)
@@ -55,7 +57,7 @@ describe('Operation tests', () => {
         data: 'moreData',
         context: {} as EventExecutionContext,
       },
-    ] as SCEvent[]
+    ] as OutputEvents
 
     jest
       .spyOn(blockchainClientMock, 'getOperationStatus')
@@ -83,7 +85,7 @@ describe('Operation tests', () => {
         data: 'moreData',
         context: {} as EventExecutionContext,
       },
-    ] as SCEvent[]
+    ] as OutputEvents
 
     jest
       .spyOn(blockchainClientMock, 'getOperationStatus')

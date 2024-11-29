@@ -1,16 +1,17 @@
 /**
  *
- * Max available gas
+ * Amount of gas
  *
  */
-export type NumberPsns2WbD = number;
+export type GasAmount = number;
 export type Integer2AHOqbcQ = number;
 /**
  *
- * Bytecode to execute
+ * Byte array
  *
  */
-export type UnorderedSetOfInteger2AHOqbcQjNvs9B0Z = Integer2AHOqbcQ[];
+export type Bytes = Integer2AHOqbcQ[];
+export type NullQu0Arl1F = null;
 /**
  *
  * Address
@@ -19,100 +20,73 @@ export type UnorderedSetOfInteger2AHOqbcQjNvs9B0Z = Integer2AHOqbcQ[];
 export type Address = string;
 /**
  *
- * An operation datastore
+ * Caller's address, optional
  *
  */
-export type UnorderedSetOfInteger2AHOqbcQtXvTMhya = Integer2AHOqbcQ[];
+export type AddressOption = NullQu0Arl1F | Address;
+export type UnorderedSetOfInteger2AHOqbcQarZIQlOy = Integer2AHOqbcQ[];
 /**
  *
- * Whether to start execution from final or active state
+ * Operation datastore TO FIX
  *
  */
-export type BooleanHNwwo80P = boolean;
+export type OperationDatastore = NullQu0Arl1F | UnorderedSetOfInteger2AHOqbcQarZIQlOy;
 /**
  *
- * Amount in coins, optional
+ * MAS amount in float string
  *
  */
-export type NumberZ1JdLCIz = number;
+export type Amount = string;
 /**
  *
- * Fee, optional
+ * MAS amount in float string
  *
  */
-export type NumberSnYk3VhE = number;
+export type AmountOption = NullQu0Arl1F | Amount;
 /**
  *
  * Read only bytecode execution
  *
  */
 export interface ReadOnlyBytecodeExecution {
-  max_gas: NumberPsns2WbD;
-  bytecode: UnorderedSetOfInteger2AHOqbcQjNvs9B0Z;
-  address?: Address;
-  operation_datastore?: UnorderedSetOfInteger2AHOqbcQtXvTMhya;
-  is_final?: BooleanHNwwo80P;
-  coins?: NumberZ1JdLCIz;
-  fee?: NumberSnYk3VhE;
+  max_gas: GasAmount;
+  bytecode: Bytes;
+  address?: AddressOption;
+  operation_datastore?: OperationDatastore;
+  fee?: AmountOption;
 }
-/**
- *
- * Target address
- *
- */
-export type StringYvGZTlwQ = string;
 /**
  *
  * Target function
  *
  */
-export type StringBtBJC5Iw = string;
+export type TargetFunction = string;
 /**
  *
- * Function parameter
+ * Serialized SC call params
  *
  */
-export type UnorderedSetOfInteger2AHOqbcQzYHdsLoW = Integer2AHOqbcQ[];
-export type NullQu0Arl1F = null;
-export type StringDoaGddGA = string;
-/**
- *
- * Caller's address, optional
- *
- */
-export type OneOfNullQu0Arl1FStringDoaGddGAHzYKhN99 = NullQu0Arl1F | StringDoaGddGA;
-/**
- *
- * Amount in coins, optional
- *
- */
-export type OneOfNullQu0Arl1FStringDoaGddGAEUSQB1KK = NullQu0Arl1F | StringDoaGddGA;
-/**
- *
- * Fee, optional
- *
- */
-export type OneOfNullQu0Arl1FStringDoaGddGANOhzhrxe = NullQu0Arl1F | StringDoaGddGA;
+export type SCCallParams = Integer2AHOqbcQ[];
 /**
  *
  * Read only call
  *
  */
 export interface ReadOnlyCall {
-  max_gas: NumberPsns2WbD;
-  target_address: StringYvGZTlwQ;
-  target_function: StringBtBJC5Iw;
-  parameter: UnorderedSetOfInteger2AHOqbcQzYHdsLoW;
-  caller_address: OneOfNullQu0Arl1FStringDoaGddGAHzYKhN99;
-  coins: OneOfNullQu0Arl1FStringDoaGddGAEUSQB1KK;
-  fee: OneOfNullQu0Arl1FStringDoaGddGANOhzhrxe;
+  max_gas: GasAmount;
+  target_address: Address;
+  target_function: TargetFunction;
+  parameter: SCCallParams;
+  caller_address: AddressOption;
+  coins: AmountOption;
+  fee: AmountOption;
 }
 /**
  *
- * true means final, false means candidate
+ * Operation is final
  *
  */
-export type Boolean7Xei3MDX = boolean;
+export type IsFinal = boolean;
 /**
  *
  * Address filter
@@ -120,7 +94,7 @@ export type Boolean7Xei3MDX = boolean;
  */
 export interface AddressFilter {
   address?: Address;
-  is_final?: Boolean7Xei3MDX;
+  is_final?: IsFinal;
 }
 /**
  *
@@ -128,11 +102,21 @@ export interface AddressFilter {
  *
  */
 export type BlockId = string;
-export type NumberHo1ClIqD = number;
-export type UnorderedSetOfInteger2AHOqbcQBha3UJIJ = Integer2AHOqbcQ[];
+/**
+ *
+ * after `expire_period` slot the operation won't be included in a block
+ *
+ */
+export type Period = number;
+/**
+ *
+ * Thread in which the operation can be included
+ *
+ */
+export type Thread = number;
 export interface DatastoreEntryInput {
   address: Address;
-  key: UnorderedSetOfInteger2AHOqbcQBha3UJIJ;
+  key: Bytes;
 }
 /**
  *
@@ -140,39 +124,28 @@ export interface DatastoreEntryInput {
  *
  */
 export interface Slot {
-  period: NumberHo1ClIqD;
-  thread: NumberHo1ClIqD;
+  period: Period;
+  thread: Thread;
 }
 /**
  *
- * Optional emitter address
+ * Endorsement id
  *
  */
-export type String5J7NQ8B1 = string;
+export type EndorsementId = string;
 /**
  *
- * Optional caller address
+ * Operation id
  *
  */
-export type StringCc6XlKeq = string;
+export type OperationId = string;
 /**
  *
- * Optional operation id
+ * Whether the event was generated in a failed executed or not
  *
  */
-export type StringUcQL9QGN = string;
-/**
- *
- * Optional filter to filter only candidate or final events
- *
- */
-export type BooleanObf9WMA0 = boolean;
-/**
- *
- * Optional filter to retrieve events generated in a failed execution
- *
- */
-export type BooleanAXlyTrPe = boolean;
+export type Error = boolean;
+export type NumberHo1ClIqD = number;
 /**
  *
  * `PrivateKey` is used for signature and decryption
@@ -181,16 +154,11 @@ export type BooleanAXlyTrPe = boolean;
 export type PrivateKey = string;
 /**
  *
- * Ip address
+ * Ipv4 or Ipv6 address
  *
  */
-export type StringBBdNk2Ku = string;
-/**
- *
- * ip address
- *
- */
-export type StringOGpKXaCP = string;
+export type IpAddress = string;
+export type StringDoaGddGA = string;
 /**
  *
  * the content creator public key
@@ -203,7 +171,6 @@ export type PublicKey = string;
  *
  */
 export type Signature = string;
-export type UnorderedSetOfInteger2AHOqbcQarZIQlOy = Integer2AHOqbcQ[];
 /**
  *
  * Operation input
@@ -212,7 +179,7 @@ export type UnorderedSetOfInteger2AHOqbcQarZIQlOy = Integer2AHOqbcQ[];
 export interface OperationInput {
   creator_public_key: PublicKey;
   signature: Signature;
-  serialized_content: UnorderedSetOfInteger2AHOqbcQarZIQlOy;
+  serialized_content: Bytes;
 }
 /**
  *
@@ -223,17 +190,6 @@ export interface Pagination {
   limit: NumberHo1ClIqD;
   offset: NumberHo1ClIqD;
 }
-export interface ExecuteAt {
-  period: NumberHo1ClIqD;
-  thread: NumberHo1ClIqD;
-}
-export type StringUJarsTOs = string;
-/**
- *
- * Included in case of success. The result of the execution
- *
- */
-export type UnorderedSetOfStringUJarsTOsgviiNMvH = StringUJarsTOs[];
 /**
  *
  * Included in case of error. The error message
@@ -246,51 +202,33 @@ export type StringOz2F8Z2Y = string;
  *
  */
 export interface ReadOnlyResult {
-  Ok?: UnorderedSetOfStringUJarsTOsgviiNMvH;
+  Ok?: Bytes;
   Error?: StringOz2F8Z2Y;
 }
 /**
  *
- * String of the event you sended
+ * String of the event
  *
  */
-export type StringBt9L6T1F = string;
+export type EventData = string;
 /**
  *
  * Wether the event was generated during  read only call
  *
  */
-export type BooleanQYH7IQYB = boolean;
+export type IsReadonly = boolean;
 /**
  *
  * Addresses, most recent at the end
  *
  */
-export type UnorderedSetOfAddressqhKJr2Tw = Address[];
+export type AddressStack = Address[];
 /**
  *
  * Index of the event in the slot
  *
  */
-export type NumberHGt16B6Y = number;
-/**
- *
- * Operation id
- *
- */
-export type OperationId = string;
-/**
- *
- * Whether the event is final
- *
- */
-export type BooleanSPcYqJj2 = boolean;
-/**
- *
- * Whether the event was generated in a failed executed or not
- *
- */
-export type BooleanIqtEc7R0 = boolean;
+export type IndexInSlot = number;
 /**
  *
  * Context generated by the execution context
@@ -299,24 +237,18 @@ export type BooleanIqtEc7R0 = boolean;
 export interface EventExecutionContext {
   slot: Slot;
   block?: BlockId;
-  read_only: BooleanQYH7IQYB;
-  call_stack: UnorderedSetOfAddressqhKJr2Tw;
-  index_in_slot: NumberHGt16B6Y;
+  read_only: IsReadonly;
+  call_stack: AddressStack;
+  index_in_slot: IndexInSlot;
   origin_operation_id?: OperationId;
-  is_final: BooleanSPcYqJj2;
-  is_error?: BooleanIqtEc7R0;
+  is_final: IsFinal;
+  is_error?: Error;
 }
 export interface SCOutputEvent {
-  data: StringBt9L6T1F;
+  data: EventData;
   context: EventExecutionContext;
 }
-export type UnorderedSetOfSCOutputEventHwhiOmzE = SCOutputEvent[];
-/**
- *
- * The gas cost for the execution
- *
- */
-export type NumberAIaYfWME = number;
+export type OutputEvents = SCOutputEvent[];
 /**
  *
  * ledger changes
@@ -363,58 +295,27 @@ export interface StateChanges {
   execution_trail_hash_change: StringIytPJwYq;
 }
 export interface ExecuteReadOnlyResponse {
-  executed_at: ExecuteAt;
+  executed_at: Slot;
   result: ReadOnlyResult;
-  output_events: UnorderedSetOfSCOutputEventHwhiOmzE;
-  gas_cost: NumberAIaYfWME;
+  output_events: OutputEvents;
+  gas_cost: GasAmount;
   state_changes: StateChanges;
 }
 /**
  *
- * The thread the address belongs to
+ * Amount of rolls
  *
  */
-export type NumberSYJcvZVm = number;
-/**
- *
- * The final balance
- *
- */
-export type StringFFlpWNJb = string;
-/**
- *
- * The final roll count
- *
- */
-export type NumberPAAsFK4N = number;
-export type UnorderedSetOfNumberHo1ClIqDAokMKuEf = NumberHo1ClIqD[];
-/**
- *
- * The final datastore keys
- *
- */
-export type UnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfIixaMtvV = UnorderedSetOfNumberHo1ClIqDAokMKuEf[];
-/**
- *
- * The candidate balance
- *
- */
-export type StringSZbUM3UB = string;
-/**
- *
- * The candidate roll count
- *
- */
-export type NumberUycrgn8X = number;
+export type RollAmount = number;
 /**
  *
  * The candidate datastore keys
  *
  */
-export type UnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfmvpf11Qe = UnorderedSetOfNumberHo1ClIqDAokMKuEf[];
-export interface ObjectOfSlotStringDoaGddGAQZyvCcRS {
+export type DatastoreKeys = Bytes[];
+export interface ObjectOfSlotAmountWrpyYBUS {
   slot?: Slot;
-  amount?: StringDoaGddGA;
+  amount?: Amount;
   [k: string]: any;
 }
 /**
@@ -422,14 +323,9 @@ export interface ObjectOfSlotStringDoaGddGAQZyvCcRS {
  * The deferred credits
  *
  */
-export type UnorderedSetOfObjectOfSlotStringDoaGddGAQZyvCcRS732D8Bc5 = ObjectOfSlotStringDoaGddGAQZyvCcRS[];
-/**
- *
- * The next block draws
- *
- */
-export type UnorderedSetOfSlotpnXhUhWs = Slot[];
-export interface ObjectOfSlotNumberHo1ClIqDMPMjgxrm {
+export type UnorderedSetOfObjectOfSlotAmountWrpyYBUSwrpyYBUS = ObjectOfSlotAmountWrpyYBUS[];
+export type UnorderedSetOfSlotwrpyYBUS = Slot[];
+export interface ObjectOfSlotNumberHo1ClIqDWrpyYBUS {
   slot?: Slot;
   index?: NumberHo1ClIqD;
   [k: string]: any;
@@ -439,87 +335,69 @@ export interface ObjectOfSlotNumberHo1ClIqDMPMjgxrm {
  * The next endorsement draws
  *
  */
-export type UnorderedSetOfObjectOfSlotNumberHo1ClIqDMPMjgxrm06Ae306Q = ObjectOfSlotNumberHo1ClIqDMPMjgxrm[];
+export type UnorderedSetOfObjectOfSlotNumberHo1ClIqDWrpyYBUSwrpyYBUS = ObjectOfSlotNumberHo1ClIqDWrpyYBUS[];
+export type UnorderedSetOfBlockIdwrpyYBUS = BlockId[];
 /**
  *
- * BlockIds of created blocks
+ * Operations
  *
  */
-export type UnorderedSetOfBlockIdpdDCfi0P = BlockId[];
-/**
- *
- * OperationIds of created operations
- *
- */
-export type UnorderedSetOfOperationId971EzIER = OperationId[];
-/**
- *
- * Endorsement id
- *
- */
-export type EndorsementId = string;
+export type UnorderedSetOfOperationIdwrpyYBUS = OperationId[];
 /**
  *
  * EndorsementIds of created endorsements
  *
  */
-export type UnorderedSetOfEndorsementIdNN27ZC1J = EndorsementId[];
-export type BooleanVyG3AETh = boolean;
-export type OneOfNullQu0Arl1FNumberHo1ClIqDKWtQwzS8 = NullQu0Arl1F | NumberHo1ClIqD;
+export type UnorderedSetOfEndorsementIdwrpyYBUS = EndorsementId[];
+export type OneOfRollAmountNullQu0Arl1FGg9ZJg6R = NullQu0Arl1F | RollAmount;
 export interface ExecutionAddressCycleInfo {
   cycle: NumberHo1ClIqD;
-  is_final: BooleanVyG3AETh;
+  is_final: IsFinal;
   ok_count: NumberHo1ClIqD;
   nok_count: NumberHo1ClIqD;
-  active_rolls?: OneOfNullQu0Arl1FNumberHo1ClIqDKWtQwzS8;
+  active_rolls?: OneOfRollAmountNullQu0Arl1FGg9ZJg6R;
 }
 /**
  *
  * Cycle infos
  *
  */
-export type UnorderedSetOfExecutionAddressCycleInfo8D3STgcL = ExecutionAddressCycleInfo[];
+export type UnorderedSetOfExecutionAddressCycleInfowrpyYBUS = ExecutionAddressCycleInfo[];
 export interface AddressInfo {
   address: Address;
-  thread: NumberSYJcvZVm;
-  final_balance: StringFFlpWNJb;
-  final_roll_count: NumberPAAsFK4N;
-  final_datastore_keys: UnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfIixaMtvV;
-  candidate_balance: StringSZbUM3UB;
-  candidate_roll_count: NumberUycrgn8X;
-  candidate_datastore_keys: UnorderedSetOfUnorderedSetOfNumberHo1ClIqDAokMKuEfmvpf11Qe;
-  deferred_credits: UnorderedSetOfObjectOfSlotStringDoaGddGAQZyvCcRS732D8Bc5;
-  next_block_draws: UnorderedSetOfSlotpnXhUhWs;
-  next_endorsement_draws: UnorderedSetOfObjectOfSlotNumberHo1ClIqDMPMjgxrm06Ae306Q;
-  created_blocks: UnorderedSetOfBlockIdpdDCfi0P;
-  created_operations: UnorderedSetOfOperationId971EzIER;
-  created_endorsements: UnorderedSetOfEndorsementIdNN27ZC1J;
-  cycle_infos: UnorderedSetOfExecutionAddressCycleInfo8D3STgcL;
+  thread: Thread;
+  final_balance: Amount;
+  final_roll_count: RollAmount;
+  final_datastore_keys: DatastoreKeys;
+  candidate_balance: Amount;
+  candidate_roll_count: RollAmount;
+  candidate_datastore_keys: DatastoreKeys;
+  deferred_credits: UnorderedSetOfObjectOfSlotAmountWrpyYBUSwrpyYBUS;
+  next_block_draws: UnorderedSetOfSlotwrpyYBUS;
+  next_endorsement_draws: UnorderedSetOfObjectOfSlotNumberHo1ClIqDWrpyYBUSwrpyYBUS;
+  created_blocks: UnorderedSetOfBlockIdwrpyYBUS;
+  created_operations: UnorderedSetOfOperationIdwrpyYBUS;
+  created_endorsements: UnorderedSetOfEndorsementIdwrpyYBUS;
+  cycle_infos: UnorderedSetOfExecutionAddressCycleInfowrpyYBUS;
 }
-/**
- *
- * true if final
- *
- */
-export type BooleanZxUVUy6M = boolean;
 /**
  *
  * true if candidate
  *
  */
-export type BooleanMazVJcyf = boolean;
+export type IsCandidate = boolean;
 /**
  *
  * true if discarded
  *
  */
-export type BooleanHJvzO9WE = boolean;
+export type IsDiscarded = boolean;
 /**
  *
- * true if in the greatest clique
+ * true if in the last clique
  *
  */
-export type BooleanHjqkwJfo = boolean;
+export type InBlockClique = boolean;
 /**
  *
  * Current version
@@ -532,7 +410,6 @@ export type NumberTbrodUsH = number;
  *
  */
 export type OneOfNullQu0Arl1FNumberHo1ClIqD4U4GpKJM = NullQu0Arl1F | NumberHo1ClIqD;
-export type UnorderedSetOfStringDoaGddGADvj0XlFa = StringDoaGddGA[];
 /**
  *
  * Endorsement content
@@ -543,9 +420,9 @@ export interface EndorsementContent {
   index: NumberHo1ClIqD;
   endorsed_block: BlockId;
 }
-export interface ObjectOfStringDoaGddGAEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUS {
+export interface ObjectOfSignatureEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUS {
   content?: EndorsementContent;
-  signature?: StringDoaGddGA;
+  signature?: Signature;
   content_creator_pub_key?: PublicKey;
   content_creator_address?: Address;
   id?: EndorsementId;
@@ -556,46 +433,41 @@ export interface ObjectOfStringDoaGddGAEndorsementIdPublicKeyAddressEndorsementC
  * Endorsements
  *
  */
-export type UnorderedSetOfObjectOfStringDoaGddGAEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUSwrpyYBUS = ObjectOfStringDoaGddGAEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUS[];
-export interface ObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUS {
-  public_key?: StringDoaGddGA;
-  slot?: Integer2AHOqbcQ;
+export type UnorderedSetOfObjectOfSignatureEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUSwrpyYBUS = ObjectOfSignatureEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUS[];
+export interface ObjectOfSlotSignatureSignaturePublicKeyInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUS {
+  public_key?: PublicKey;
+  slot?: Slot;
   index?: Integer2AHOqbcQ;
   hash_1?: StringDoaGddGA;
   hash_2?: StringDoaGddGA;
-  signature_1?: StringDoaGddGA;
-  signature_2?: StringDoaGddGA;
+  signature_1?: Signature;
+  signature_2?: Signature;
   [k: string]: any;
 }
-export interface ObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAWrpyYBUS {
-  public_key?: StringDoaGddGA;
-  slot?: Integer2AHOqbcQ;
+export interface ObjectOfSlotSignatureSignaturePublicKeyStringDoaGddGAStringDoaGddGAWrpyYBUS {
+  public_key?: PublicKey;
+  slot?: Slot;
   hash_1?: StringDoaGddGA;
   hash_2?: StringDoaGddGA;
-  signature_1?: StringDoaGddGA;
-  signature_2?: StringDoaGddGA;
+  signature_1?: Signature;
+  signature_2?: Signature;
   [k: string]: any;
 }
-export type OneOfObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAWrpyYBUSGJLAASWC = ObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUS | ObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAWrpyYBUS;
+export type OneOfObjectOfSlotSignatureSignaturePublicKeyInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfSlotSignatureSignaturePublicKeyStringDoaGddGAStringDoaGddGAWrpyYBUSTKq8XnCL = ObjectOfSlotSignatureSignaturePublicKeyInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUS | ObjectOfSlotSignatureSignaturePublicKeyStringDoaGddGAStringDoaGddGAWrpyYBUS;
 /**
  *
  * Denunciations
  *
  */
-export type UnorderedSetOfOneOfObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAWrpyYBUSGJLAASWCwrpyYBUS = OneOfObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAWrpyYBUSGJLAASWC[];
-/**
- *
- * header type
- *
- */
+export type UnorderedSetOfOneOfObjectOfSlotSignatureSignaturePublicKeyInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfSlotSignatureSignaturePublicKeyStringDoaGddGAStringDoaGddGAWrpyYBUSTKq8XnCLwrpyYBUS = OneOfObjectOfSlotSignatureSignaturePublicKeyInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfSlotSignatureSignaturePublicKeyStringDoaGddGAStringDoaGddGAWrpyYBUSTKq8XnCL[];
 export interface Header {
   current_version?: NumberTbrodUsH;
   announced_version?: OneOfNullQu0Arl1FNumberHo1ClIqD4U4GpKJM;
   operation_merkle_root: StringDoaGddGA;
-  parents: UnorderedSetOfStringDoaGddGADvj0XlFa;
+  parents: UnorderedSetOfBlockIdwrpyYBUS;
   slot: Slot;
-  endorsements?: UnorderedSetOfObjectOfStringDoaGddGAEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUSwrpyYBUS;
-  denunciations?: UnorderedSetOfOneOfObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfInteger2AHOqbcQStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAStringDoaGddGAWrpyYBUSGJLAASWCwrpyYBUS;
+  endorsements?: UnorderedSetOfObjectOfSignatureEndorsementIdPublicKeyAddressEndorsementContentWrpyYBUSwrpyYBUS;
+  denunciations?: UnorderedSetOfOneOfObjectOfSlotSignatureSignaturePublicKeyInteger2AHOqbcQStringDoaGddGAStringDoaGddGAWrpyYBUSObjectOfSlotSignatureSignaturePublicKeyStringDoaGddGAStringDoaGddGAWrpyYBUSTKq8XnCLwrpyYBUS;
 }
 /**
  *
@@ -609,25 +481,19 @@ export interface WrappedHeader {
   content_creator_address: Address;
   id?: BlockId;
 }
-/**
- *
- * Operations
- *
- */
-export type UnorderedSetOfStringDoaGddGAucaTsQyS = StringDoaGddGA[];
 export interface Block {
   header: WrappedHeader;
-  operations: UnorderedSetOfStringDoaGddGAucaTsQyS;
+  operations: UnorderedSetOfOperationIdwrpyYBUS;
 }
 export interface BlockInfoContent {
-  is_final: BooleanZxUVUy6M;
-  is_candidate: BooleanMazVJcyf;
-  is_discarded?: BooleanHJvzO9WE;
-  is_in_blockclique: BooleanHjqkwJfo;
+  is_final: IsFinal;
+  is_candidate: IsCandidate;
+  is_discarded?: IsDiscarded;
+  is_in_blockclique: InBlockClique;
   block: Block;
 }
 export interface BlockInfo {
-  id: StringDoaGddGA;
+  id: BlockId;
   content?: BlockInfoContent;
 }
 /**
@@ -660,89 +526,48 @@ export interface Clique {
 }
 /**
  *
- * The candidate datastore entry value bytes
- *
- */
-export type OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOy81SHPJsX = UnorderedSetOfInteger2AHOqbcQarZIQlOy | NullQu0Arl1F;
-/**
- *
  * The final datastore entry value bytes
  *
  */
-export type OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOyGOQJrRPK = UnorderedSetOfInteger2AHOqbcQarZIQlOy | NullQu0Arl1F;
+export type BytesOption = NullQu0Arl1F | Bytes;
 /**
  *
  * Datastore entry
  *
  */
 export interface DatastoreEntryOutput {
-  candidate_value: OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOy81SHPJsX;
-  final_value: OneOfNullQu0Arl1FUnorderedSetOfInteger2AHOqbcQarZIQlOyGOQJrRPK;
+  candidate_value: BytesOption;
+  final_value: BytesOption;
 }
 /**
  *
- * Address of the sender
+ * Context of the transfer : operation or asynchronous execution
  *
  */
-export type StringYVTrFSaQ = string;
-/**
- *
- * Address of the receiver
- *
- */
-export type StringZyWeUFZ8 = string;
-/**
- *
- * Amount transferred
- *
- */
-export type IntegerCOVAu0Eq = number;
-/**
- *
- * Amount received by the receiver
- *
- */
-export type IntegerVC2Agt39 = number;
-/**
- *
- * Context of the transfer : operation or asyncronous execution
- *
- */
-export interface Object0XCk2T5H { [key: string]: any; }
+export interface Context { [key: string]: any; }
 /**
  *
  * True if the operation succeed otherwise false
  *
  */
-export type BooleanYDqyb5Vp = boolean;
+export type IsSuccess = boolean;
 /**
  *
- * Fees passed to the operation
+ * MAS Transfer operation receipt
  *
  */
-export type NumberV8R93Gu7 = number;
-/**
- *
- * ID of the block in which the operation is included
- *
- */
-export type StringUyVBK2CK = string;
-/**
- *
- * Describe a transfer of MAS
- *
- */
-export interface Transfer {
-  from: StringYVTrFSaQ;
-  to: StringZyWeUFZ8;
-  amount: IntegerCOVAu0Eq;
-  effective_amount_received: IntegerVC2Agt39;
-  context: Object0XCk2T5H;
-  succeed: BooleanYDqyb5Vp;
-  fee: NumberV8R93Gu7;
-  block_id: StringUyVBK2CK;
+export interface TransferReceipt {
+  from: Address;
+  to: Address;
+  amount: Amount;
+  effective_amount_received: Amount;
+  context: Context;
+  succeed: IsSuccess;
+  fee: Amount;
+  block_id: BlockId;
 }
-export type UnorderedSetOfTransferQEyQHpyL = Transfer[];
+export type UnorderedSetOfTransferReceiptzpyvh8AY = TransferReceipt[];
+export type BooleanVyG3AETh = boolean;
 /**
  *
  * Block Id
@@ -759,7 +584,7 @@ export interface Endorsement {
   content_creator_pub_key: PublicKey;
   content_creator_address?: Address;
   id?: EndorsementId;
-  signature: StringDoaGddGA;
+  signature: Signature;
 }
 /**
  *
@@ -770,42 +595,30 @@ export interface EndorsementInfo {
   id: EndorsementId;
   in_pool: BooleanVyG3AETh;
   in_blocks: UnorderedSetOfBlockId7G1Sy5Qv;
-  is_final: BooleanVyG3AETh;
+  is_final: IsFinal;
   endorsement: Endorsement;
 }
 /**
  *
- * Public key
+ * true if incompatible with a final block
  *
  */
-export type StringVuVvWRdT = string;
-/**
- *
- * Block Id
- *
- */
-export type StringU8LlHDu1 = string;
+export type Stale = boolean;
 /**
  *
  * As many block Ids as there are threads
  *
  */
-export type UnorderedSetOfStringDoaGddGAMZnHm9WS = StringDoaGddGA[];
+export type UnorderedSetOfBlockIdNY3ZAj2A = BlockId[];
 export interface GraphInterval {
-  creator: StringVuVvWRdT;
-  id: StringU8LlHDu1;
-  is_final: BooleanVyG3AETh;
-  is_in_blockclique: BooleanVyG3AETh;
-  is_stale: BooleanVyG3AETh;
-  parents: UnorderedSetOfStringDoaGddGAMZnHm9WS;
+  creator: PublicKey;
+  id: BlockId;
+  is_final: IsFinal;
+  is_in_blockclique: InBlockClique;
+  is_stale: Stale;
+  parents: UnorderedSetOfBlockIdNY3ZAj2A;
   slot: Slot;
 }
-/**
- *
- * Operation id
- *
- */
-export type StringYTemzr68 = string;
 /**
  *
  * Block ids
@@ -825,124 +638,66 @@ export type BooleanSJ3TNusg = boolean;
  * True if the operation is final (for example in a final block)
  *
  */
-export type OneOfBooleanVyG3AEThNullQu0Arl1FCuqCzoUJ = NullQu0Arl1F | BooleanVyG3AETh;
-/**
- *
- * Thread in which the operation can be included
- *
- */
-export type NumberZoWtBk8U = number;
-/**
- *
- * the fee they have decided for this operation
- *
- */
-export type StringV3754ZDT = string;
-/**
- *
- * after `expire_period` slot the operation won't be included in a block
- *
- */
-export type NumberSbfeGjn7 = number;
-/**
- *
- * Represent an Amount in coins
- *
- */
-export type StringNIrlyE1J = string;
+export type IsFinalOperation = NullQu0Arl1F | IsFinal;
 /**
  *
  * transfer coins from sender to recipient
  *
  */
-export interface Transaction {
-  amount: StringNIrlyE1J;
-  recipient_address: StringDoaGddGA;
+export interface TransactionReceipt {
+  amount: Amount;
+  recipient_address: Address;
 }
-/**
- *
- * Vec of bytes to execute
- *
- */
-export type UnorderedSetOfNumberHo1ClIqDd5W02PgX = NumberHo1ClIqD[];
-/**
- *
- * Maximum amount of gas that the execution of the contract is allowed to cost.
- *
- */
-export type NumberQUXtpAPK = number;
-export interface ObjectOfUnorderedSetOfInteger2AHOqbcQarZIQlOyUnorderedSetOfInteger2AHOqbcQarZIQlOyDbxIogvI {
-  entry?: UnorderedSetOfInteger2AHOqbcQarZIQlOy;
-  bytes?: UnorderedSetOfInteger2AHOqbcQarZIQlOy;
-  [k: string]: any;
-}
+export type UnorderedSetOfBytes0JFPBP6Z = Bytes[];
 /**
  *
  * A tuple which contains (key, value)
  *
  */
-export interface Datastore { [key: string]: any; }
+export type DatastoreEntry = UnorderedSetOfBytes0JFPBP6Z[];
 /**
  *
  * Execute a smart contract.
  *
  */
-export interface ExecuteSC {
-  data: UnorderedSetOfNumberHo1ClIqDd5W02PgX;
-  max_gas: NumberQUXtpAPK;
-  datastore: Datastore;
+export interface ExecuteSCReceipt {
+  data: Bytes;
+  max_gas: GasAmount;
+  datastore: DatastoreEntry;
 }
 /**
  *
- * Function name
+ * Contract Function name to call
  *
  */
-export type String7HCIMJir = string;
-/**
- *
- * Parameter to pass to the function
- *
- */
-export type StringSjIor0MV = string;
-/**
- *
- * Amount
- *
- */
-export type Number5Mo1HId6 = number;
+export type FunctionName = string;
 /**
  *
  * Calls an exported function from a stored smart contract
  *
  */
-export interface CallSC {
+export interface CallSCReceipt {
   target_addr: Address;
-  target_func: String7HCIMJir;
-  param: StringSjIor0MV;
-  max_gas: NumberHo1ClIqD;
-  coins: Number5Mo1HId6;
+  target_func: FunctionName;
+  param: SCCallParams;
+  max_gas: GasAmount;
+  coins: Amount;
 }
-/**
- *
- * roll count
- *
- */
-export type NumberJdJmnq9D = number;
 /**
  *
  * the sender buys `roll_count` rolls. Roll price is defined in configuration
  *
  */
-export interface RollBuy {
-  roll_count: NumberJdJmnq9D;
+export interface RollBuyReceipt {
+  roll_count: RollAmount;
 }
 /**
  *
  * the sender sells `roll_count` rolls. Roll price is defined in configuration
  *
  */
-export interface RollSell {
-  roll_count: NumberJdJmnq9D;
+export interface RollSellReceipt {
+  roll_count: RollAmount;
 }
 /**
  *
@@ -950,11 +705,11 @@ export interface RollSell {
  *
  */
 export interface OperationType {
-  Transaction?: Transaction;
-  ExecutSC?: ExecuteSC;
-  CallSC?: CallSC;
-  RollBuy?: RollBuy;
-  RollSell?: RollSell;
+  Transaction?: TransactionReceipt;
+  ExecutSC?: ExecuteSCReceipt;
+  CallSC?: CallSCReceipt;
+  RollBuy?: RollBuyReceipt;
+  RollSell?: RollSellReceipt;
 }
 /**
  *
@@ -962,13 +717,13 @@ export interface OperationType {
  *
  */
 export interface Operation {
-  fee: StringV3754ZDT;
-  expire_period: NumberSbfeGjn7;
+  fee: Amount;
+  expire_period: Period;
   op: OperationType;
 }
 /**
  *
- * The operation itself
+ * signed operation
  *
  */
 export interface WrappedOperation {
@@ -990,17 +745,17 @@ export type OneOfBooleanVyG3AEThNullQu0Arl1FE3Qax0Os = NullQu0Arl1F | BooleanVyG
  *
  */
 export interface OperationInfo {
-  id: StringYTemzr68;
+  id: OperationId;
   in_blocks: UnorderedSetOfBlockIdyEy9Dvpn;
   in_pool: BooleanSJ3TNusg;
-  is_operation_final: OneOfBooleanVyG3AEThNullQu0Arl1FCuqCzoUJ;
-  thread: NumberZoWtBk8U;
+  is_operation_final: IsFinalOperation;
+  thread: Thread;
   operation: WrappedOperation;
   op_exec_status?: OneOfBooleanVyG3AEThNullQu0Arl1FE3Qax0Os;
 }
-export interface ObjectOfAddressNumberHo1ClIqDFbgdJFtJ {
+export interface ObjectOfAddressRollAmountUf3B9Cb5 {
   address?: Address;
-  active_rolls?: NumberHo1ClIqD;
+  active_rolls?: RollAmount;
   [k: string]: any;
 }
 /**
@@ -1064,20 +819,20 @@ export type NumberAxwlzLso = number;
  *
  */
 export interface Config {
-  block_reward: StringNIrlyE1J;
+  block_reward: Amount;
   delta_f0: Number2A9FvvYh;
   end_timestamp?: OneOfNullQu0Arl1FNumberHo1ClIqDXysINzQy;
   genesis_timestamp: NumberSgfzurLm;
   max_block_size?: NumberUwkWWxaa;
   operation_validity_periods: NumberTs6Cn6JQ;
   periods_per_cycle: NumberGrsxxfaH;
-  roll_price: StringNIrlyE1J;
+  roll_price: Amount;
   t0: Number8ImKBhpQ;
   thread_count: NumberAxwlzLso;
 }
-export interface ObjectOfStringDoaGddGAStringDoaGddGAXJdFCZe6 {
+export interface ObjectOfStringDoaGddGAIpAddressWrpyYBUS {
   node_id?: StringDoaGddGA;
-  ip_address?: StringDoaGddGA;
+  ip_address?: IpAddress;
   [k: string]: any;
 }
 /**
@@ -1181,7 +936,7 @@ export type StringOFgZzVe7 = string;
  * Optional node ip if provided
  *
  */
-export type OneOfNullQu0Arl1FStringDoaGddGANsst9HIR = NullQu0Arl1F | StringDoaGddGA;
+export type OneOfIpAddressNullQu0Arl1FXaFV5TPI = NullQu0Arl1F | IpAddress;
 /**
  *
  * Pool stats
@@ -1237,35 +992,11 @@ export interface ExecutionStats {
  *
  */
 export type NumberBte4OVdF = number;
-/**
- *
- * Minimal fee
- *
- */
-export type StringTXHumHoA = string;
 type AlwaysFalse = any;
-/**
- *
- * Ip address
- *
- */
-export type IpAddress = string;
-/**
- *
- * public key
- *
- */
-export type StringTPMT1Yxd = string;
-/**
- *
- * signature
- *
- */
-export type StringXHbmHEWh = string;
-export type UnorderedSetOfStakerX7P278VS = Staker[];
-export interface ObjectOfNumberHo1ClIqDBlockIdHCnqqlza {
+export type UnorderedSetOfStakerdplIH7J8 = Staker[];
+export interface ObjectOfPeriodBlockIdWrpyYBUS {
   BlockId?: BlockId;
-  period?: NumberHo1ClIqD;
+  period?: Period;
   [k: string]: any;
 }
 /**
@@ -1276,16 +1007,10 @@ export interface ObjectOfNumberHo1ClIqDBlockIdHCnqqlza {
 export interface BlockParent { [key: string]: any; }
 /**
  *
- * true if incompatible with a final block
- *
- */
-export type Boolean4XbLtRCK = boolean;
-/**
- *
  * Operations
  *
  */
-export type UnorderedSetOfOperationInfowrpyYBUS = OperationInfo[];
+export type Operations = OperationInfo[];
 /**
  *
  * filled block
@@ -1293,21 +1018,21 @@ export type UnorderedSetOfOperationInfowrpyYBUS = OperationInfo[];
  */
 export interface FilledBlock {
   header: WrappedHeader;
-  operations: UnorderedSetOfOperationInfowrpyYBUS;
+  operations: Operations;
 }
 export interface FilledBlockInfoContent {
-  is_final: BooleanZxUVUy6M;
-  is_stale: Boolean4XbLtRCK;
-  is_in_blockclique: BooleanHjqkwJfo;
+  is_final: IsFinal;
+  is_stale: Stale;
+  is_in_blockclique: InBlockClique;
   block: FilledBlock;
 }
-export type UnorderedSetOfReadOnlyBytecodeExecutionK4Ht8Zdn = ReadOnlyBytecodeExecution[];
-export type UnorderedSetOfReadOnlyCallm6DMxyzd = ReadOnlyCall[];
+export type UnorderedSetOfReadOnlyBytecodeExecutionZbvNyXvD = ReadOnlyBytecodeExecution[];
+export type UnorderedSetOfReadOnlyCallOGx8T3Ix = ReadOnlyCall[];
 export type UnorderedSetOfAddressjJsnATCO = Address[];
-export type UnorderedSetOfAddressFilteraFrapw7X = AddressFilter[];
+export type AddressList = AddressFilter[];
 export type UnorderedSetOfBlockIdZXK9XY8A = BlockId[];
-export type UnorderedSetOfDatastoreEntryInputBdlngHsZ = DatastoreEntryInput[];
-export type UnorderedSetOfSlotn0BdrHhh = Slot[];
+export type UnorderedSetOfDatastoreEntryInputLrTgdYH8 = DatastoreEntryInput[];
+export type UnorderedSetOfEndorsementIdqnHAk5M0 = EndorsementId[];
 /**
  *
  * Event filter
@@ -1316,20 +1041,27 @@ export type UnorderedSetOfSlotn0BdrHhh = Slot[];
 export interface EventFilter {
   start?: Slot;
   end?: Slot;
-  emitter_address?: String5J7NQ8B1;
-  original_caller_address?: StringCc6XlKeq;
-  original_operation_id?: StringUcQL9QGN;
-  is_final?: BooleanObf9WMA0;
-  is_error?: BooleanAXlyTrPe;
+  emitter_address?: Address;
+  original_caller_address?: Address;
+  original_operation_id?: OperationId;
+  is_final?: IsFinal;
+  is_error?: Error;
 }
 export interface ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq {
   start?: NumberHo1ClIqD;
   end?: NumberHo1ClIqD;
 }
+export type UnorderedSetOfOperationId5TxbV4NZ = OperationId[];
 export type UnorderedSetOfPrivateKeyG69QLiLP = PrivateKey[];
-export type UnorderedSetOfStringBBdNk2Kup3WUWKiM = StringBBdNk2Ku[];
-export type UnorderedSetOfStringOGpKXaCP4RgV7KAw = StringOGpKXaCP[];
-export type UnorderedSetOfOperationInput9XcIbRG1 = OperationInput[];
+/**
+ *
+ * Array of Ipv4 or Ipv6 address
+ *
+ */
+export type IpAddressList = IpAddress[];
+export type UnorderedSetOfStringDoaGddGADvj0XlFa = StringDoaGddGA[];
+export type UnorderedSetOfIpAddressiIc9WbOi = IpAddress[];
+export type UnorderedSetOfOperationInputx51DfMZX = OperationInput[];
 /**
  *
  * ApiRequest for apiV2
@@ -1339,15 +1071,15 @@ export interface ApiRequest {
   page_request?: Pagination;
 }
 export type UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS = ExecuteReadOnlyResponse[];
-export type UnorderedSetOfAddressInfoCm3Tm6FQ = AddressInfo[];
-export type UnorderedSetOfStringUJarsTOsGY6FcFnU = StringUJarsTOs[];
+export type UnorderedSetOfAddressInfowrpyYBUS = AddressInfo[];
+export type BytecodeList = Bytes[];
 export type UnorderedSetOfBlockInfowrpyYBUS = BlockInfo[];
 export type UnorderedSetOfCliqueeS9LyMHx = Clique[];
-export type UnorderedSetOfDatastoreEntryOutputhcgFMMvn = DatastoreEntryOutput[];
-export type UnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXU = UnorderedSetOfTransferQEyQHpyL[];
+export type UnorderedSetOfDatastoreEntryOutputgBhWTzxI = DatastoreEntryOutput[];
+export type UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7 = UnorderedSetOfTransferReceiptzpyvh8AY[];
 export type UnorderedSetOfEndorsementInfowrpyYBUS = EndorsementInfo[];
 export type UnorderedSetOfGraphIntervalwrpyYBUS = GraphInterval[];
-export type UnorderedSetOfOperationInfoMdPofISE = OperationInfo[];
+export type UnorderedSetOfOperationInfowrpyYBUS = OperationInfo[];
 /**
  *
  * Node status
@@ -1365,36 +1097,34 @@ export interface NodeStatus {
   network_stats: NetworkStats;
   next_slot: Slot;
   node_id: StringOFgZzVe7;
-  node_ip?: OneOfNullQu0Arl1FStringDoaGddGANsst9HIR;
+  node_ip?: OneOfIpAddressNullQu0Arl1FXaFV5TPI;
   pool_stats: PoolStats;
   version: Version;
   execution_stats: ExecutionStats;
   chain_id: NumberBte4OVdF;
-  minimal_fees?: StringTXHumHoA;
+  minimal_fees?: Amount;
 }
-export type UnorderedSetOfIpAddressWpGgzO6M = IpAddress[];
 /**
  *
  * Public key and a signature it has produced used for serialization/deserialization purpose
  *
  */
 export interface PubkeySig {
-  public_key: StringTPMT1Yxd;
-  signature: StringXHbmHEWh;
+  public_key: PublicKey;
+  signature: Signature;
 }
-export type UnorderedSetOfOperationId5TxbV4NZ = OperationId[];
 /**
  *
  * PagedVec of stakers for apiV2
  *
  */
 export interface PagedVecStaker {
-  content?: UnorderedSetOfStakerX7P278VS;
+  content?: UnorderedSetOfStakerdplIH7J8;
   total_count?: NumberHo1ClIqD;
 }
-export type UnorderedSetOfBlockParentxrssVm84 = BlockParent[];
+export type UnorderedSetOfBlockParentwrpyYBUS = BlockParent[];
 export interface FilledBlockInfo {
-  id: StringDoaGddGA;
+  id: OperationId;
   content?: FilledBlockInfoContent;
 }
 /**
@@ -1402,46 +1132,46 @@ export interface FilledBlockInfo {
  * Generated! Represents an alias to any of the provided schemas
  *
  */
-export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionK4Ht8ZdnUnorderedSetOfReadOnlyCallm6DMxyzdUnorderedSetOfAddressjJsnATCOUnorderedSetOfAddressFilteraFrapw7XUnorderedSetOfBlockIdZXK9XY8ASlotUnorderedSetOfDatastoreEntryInputBdlngHsZUnorderedSetOfSlotn0BdrHhhUnorderedSetOfStringDoaGddGADvj0XlFaEventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfStringDoaGddGADvj0XlFaPaginationUnorderedSetOfPrivateKeyG69QLiLPUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfAddressjJsnATCOStringUJarsTOsUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringBBdNk2Kup3WUWKiMUnorderedSetOfStringOGpKXaCP4RgV7KAwUnorderedSetOfOperationInput9XcIbRG1ApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfoCm3Tm6FQUnorderedSetOfStringUJarsTOsGY6FcFnUUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueeS9LyMHxUnorderedSetOfDatastoreEntryOutputhcgFMMvnUnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXUUnorderedSetOfEndorsementInfowrpyYBUSUnorderedSetOfSCOutputEventHwhiOmzEUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfoMdPofISEUnorderedSetOfStakerX7P278VSNodeStatusAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfIpAddressWpGgzO6MUnorderedSetOfIpAddressWpGgzO6MAlwaysFalseUnorderedSetOfIpAddressWpGgzO6MAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentxrssVm84VersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionK4Ht8Zdn | UnorderedSetOfReadOnlyCallm6DMxyzd | UnorderedSetOfAddressjJsnATCO | UnorderedSetOfAddressFilteraFrapw7X | UnorderedSetOfBlockIdZXK9XY8A | Slot | UnorderedSetOfDatastoreEntryInputBdlngHsZ | UnorderedSetOfSlotn0BdrHhh | UnorderedSetOfStringDoaGddGADvj0XlFa | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | Pagination | UnorderedSetOfPrivateKeyG69QLiLP | UnorderedSetOfStringBBdNk2Kup3WUWKiM | StringUJarsTOs | UnorderedSetOfStringOGpKXaCP4RgV7KAw | UnorderedSetOfOperationInput9XcIbRG1 | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfoCm3Tm6FQ | UnorderedSetOfStringUJarsTOsGY6FcFnU | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueeS9LyMHx | UnorderedSetOfDatastoreEntryOutputhcgFMMvn | UnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXU | UnorderedSetOfEndorsementInfowrpyYBUS | UnorderedSetOfSCOutputEventHwhiOmzE | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfoMdPofISE | UnorderedSetOfStakerX7P278VS | NodeStatus | AlwaysFalse | UnorderedSetOfIpAddressWpGgzO6M | PubkeySig | UnorderedSetOfOperationId5TxbV4NZ | PagedVecStaker | UnorderedSetOfBlockParentxrssVm84 | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
-export type ExecuteReadOnlyBytecode = (ReadOnlyBytecodeExecution: UnorderedSetOfReadOnlyBytecodeExecutionK4Ht8Zdn) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
-export type ExecuteReadOnlyCall = (ReadOnlyCall: UnorderedSetOfReadOnlyCallm6DMxyzd) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
-export type GetAddresses = (address: UnorderedSetOfAddressjJsnATCO) => Promise<UnorderedSetOfAddressInfoCm3Tm6FQ>;
-export type GetAddressesBytecode = (addressFilter: UnorderedSetOfAddressFilteraFrapw7X) => Promise<UnorderedSetOfStringUJarsTOsGY6FcFnU>;
-export type GetBlocks = (blockId: UnorderedSetOfBlockIdZXK9XY8A) => Promise<UnorderedSetOfBlockInfowrpyYBUS>;
+export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionZbvNyXvDUnorderedSetOfReadOnlyCallOGx8T3IxUnorderedSetOfAddressjJsnATCOAddressListUnorderedSetOfBlockIdZXK9XY8ASlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueeS9LyMHxUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionZbvNyXvD | UnorderedSetOfReadOnlyCallOGx8T3Ix | UnorderedSetOfAddressjJsnATCO | AddressList | UnorderedSetOfBlockIdZXK9XY8A | Slot | UnorderedSetOfDatastoreEntryInputLrTgdYH8 | UnorderedSetOfSlotwrpyYBUS | UnorderedSetOfEndorsementIdqnHAk5M0 | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | UnorderedSetOfOperationId5TxbV4NZ | Pagination | UnorderedSetOfPrivateKeyG69QLiLP | IpAddressList | UnorderedSetOfStringDoaGddGADvj0XlFa | Bytes | UnorderedSetOfIpAddressiIc9WbOi | UnorderedSetOfOperationInputx51DfMZX | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfowrpyYBUS | BytecodeList | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueeS9LyMHx | UnorderedSetOfDatastoreEntryOutputgBhWTzxI | UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7 | UnorderedSetOfEndorsementInfowrpyYBUS | OutputEvents | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfowrpyYBUS | UnorderedSetOfStakerdplIH7J8 | NodeStatus | AlwaysFalse | PubkeySig | PagedVecStaker | UnorderedSetOfBlockParentwrpyYBUS | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
+export type ExecuteReadOnlyBytecode = (ReadOnlyBytecodeExecution: UnorderedSetOfReadOnlyBytecodeExecutionZbvNyXvD) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
+export type ExecuteReadOnlyCall = (ReadOnlyCall: UnorderedSetOfReadOnlyCallOGx8T3Ix) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
+export type GetAddresses = (address: UnorderedSetOfAddressjJsnATCO) => Promise<UnorderedSetOfAddressInfowrpyYBUS>;
+export type GetAddressesBytecode = (addressFilter: AddressList) => Promise<BytecodeList>;
+export type GetBlocks = (blockIds: UnorderedSetOfBlockIdZXK9XY8A) => Promise<UnorderedSetOfBlockInfowrpyYBUS>;
 export type GetBlockcliqueBlockBySlot = (slot: Slot) => Promise<Block>;
 export type GetCliques = () => Promise<UnorderedSetOfCliqueeS9LyMHx>;
-export type GetDatastoreEntries = (DatastoreEntryInputs: UnorderedSetOfDatastoreEntryInputBdlngHsZ) => Promise<UnorderedSetOfDatastoreEntryOutputhcgFMMvn>;
-export type GetSlotsTransfers = (slots: UnorderedSetOfSlotn0BdrHhh) => Promise<UnorderedSetOfUnorderedSetOfTransferQEyQHpyLoFgVJgXU>;
-export type GetEndorsements = (endorsementId: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<UnorderedSetOfEndorsementInfowrpyYBUS>;
-export type GetFilteredScOutputEvent = (EventFilter: EventFilter) => Promise<UnorderedSetOfSCOutputEventHwhiOmzE>;
+export type GetDatastoreEntries = (DatastoreEntryInputs: UnorderedSetOfDatastoreEntryInputLrTgdYH8) => Promise<UnorderedSetOfDatastoreEntryOutputgBhWTzxI>;
+export type GetSlotsTransfers = (slots: UnorderedSetOfSlotwrpyYBUS) => Promise<UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7>;
+export type GetEndorsements = (endorsementId: UnorderedSetOfEndorsementIdqnHAk5M0) => Promise<UnorderedSetOfEndorsementInfowrpyYBUS>;
+export type GetFilteredScOutputEvent = (EventFilter: EventFilter) => Promise<OutputEvents>;
 export type GetGraphInterval = (TimeInterval: ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq) => Promise<UnorderedSetOfGraphIntervalwrpyYBUS>;
-export type GetOperations = (operationId: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<UnorderedSetOfOperationInfoMdPofISE>;
-export type GetStakers = (PageRequest: Pagination) => Promise<UnorderedSetOfStakerX7P278VS>;
+export type GetOperations = (operationId: UnorderedSetOfOperationId5TxbV4NZ) => Promise<UnorderedSetOfOperationInfowrpyYBUS>;
+export type GetStakers = (PageRequest: Pagination) => Promise<UnorderedSetOfStakerdplIH7J8>;
 export type GetStatus = () => Promise<NodeStatus>;
 export type AddStakingSecretKeys = (SecretKeys: UnorderedSetOfPrivateKeyG69QLiLP) => Promise<AlwaysFalse>;
 export type GetStakingAddresses = () => Promise<UnorderedSetOfAddressjJsnATCO>;
-export type NodeAddToBootstrapBlacklist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
-export type NodeAddToBootstrapWhitelist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
-export type NodeAddToPeersWhitelist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
+export type NodeAddToBootstrapBlacklist = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type NodeAddToBootstrapWhitelist = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type NodeAddToPeersWhitelist = (ip: IpAddressList) => Promise<AlwaysFalse>;
 export type NodeBanById = (id: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<AlwaysFalse>;
-export type NodeBanByIp = (ip: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<AlwaysFalse>;
-export type NodeBootstrapBlacklist = () => Promise<UnorderedSetOfIpAddressWpGgzO6M>;
-export type NodeBootstrapWhitelist = () => Promise<UnorderedSetOfIpAddressWpGgzO6M>;
+export type NodeBanByIp = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type NodeBootstrapBlacklist = () => Promise<IpAddressList>;
+export type NodeBootstrapWhitelist = () => Promise<IpAddressList>;
 export type NodeBootstrapWhitelistAllowAll = () => Promise<AlwaysFalse>;
-export type NodePeersWhitelist = () => Promise<UnorderedSetOfIpAddressWpGgzO6M>;
-export type NodeRemoveFromBootstrapBlacklist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
-export type NodeRemoveFromBootstrapWhitelist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
-export type NodeRemoveFromPeersWhitelist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
-export type NodeRemoveFromWhitelist = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
+export type NodePeersWhitelist = () => Promise<IpAddressList>;
+export type NodeRemoveFromBootstrapBlacklist = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type NodeRemoveFromBootstrapWhitelist = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type NodeRemoveFromPeersWhitelist = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type NodeRemoveFromWhitelist = (ip: IpAddressList) => Promise<AlwaysFalse>;
 export type RemoveStakingAddresses = (addresses: UnorderedSetOfAddressjJsnATCO) => Promise<AlwaysFalse>;
-export type NodeSignMessage = (message: StringUJarsTOs) => Promise<PubkeySig>;
+export type NodeSignMessage = (message: Bytes) => Promise<PubkeySig>;
 export type StopNode = () => Promise<AlwaysFalse>;
-export type NodeUnbanById = (id: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
-export type NodeUnbanByIp = (ip: UnorderedSetOfStringBBdNk2Kup3WUWKiM) => Promise<AlwaysFalse>;
-export type NodeWhitelist = (ip: UnorderedSetOfStringOGpKXaCP4RgV7KAw) => Promise<AlwaysFalse>;
-export type SendOperations = (OperationInput: UnorderedSetOfOperationInput9XcIbRG1) => Promise<UnorderedSetOfOperationId5TxbV4NZ>;
+export type NodeUnbanById = (id: UnorderedSetOfIpAddressiIc9WbOi) => Promise<AlwaysFalse>;
+export type NodeUnbanByIp = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type NodeWhitelist = (ip: IpAddressList) => Promise<AlwaysFalse>;
+export type SendOperations = (OperationInput: UnorderedSetOfOperationInputx51DfMZX) => Promise<UnorderedSetOfOperationId5TxbV4NZ>;
 export type GetLargestStakers = (ApiRequest: ApiRequest) => Promise<PagedVecStaker>;
-export type GetNextBlockBestParents = () => Promise<UnorderedSetOfBlockParentxrssVm84>;
+export type GetNextBlockBestParents = () => Promise<UnorderedSetOfBlockParentwrpyYBUS>;
 export type GetVersion = () => Promise<Version>;
 export type SubscribeNewBlocks = () => Promise<BlockInfo>;
 export type SubscribeNewBlocksHeaders = () => Promise<WrappedHeader>;

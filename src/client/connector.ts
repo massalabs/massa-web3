@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import * as t from '../generated/client-types'
+import { rpcTypes as t } from 'src/generated'
 import { getHttpRpcClient, HttpRpcClient } from './http'
 import { ClientOptions } from './types'
 

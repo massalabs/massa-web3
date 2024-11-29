@@ -1,17 +1,7 @@
-import { EventExecutionContext } from '../generated/client-types'
-
-export type Slot = {
-  period: number
-  thread: number
-}
+import { rpcTypes as t } from '../generated'
 
 export type ClientOptions = {
   retry: { retries: number; delay: number }
-}
-
-export type SCEvent = {
-  data: string
-  context: EventExecutionContext
 }
 
 export type SendOperationInput = {
@@ -21,8 +11,8 @@ export type SendOperationInput = {
 }
 
 export type EventFilter = {
-  start?: Slot
-  end?: Slot
+  start?: t.Slot
+  end?: t.Slot
   smartContractAddress?: string
   callerAddress?: string
   operationId?: string
@@ -35,7 +25,7 @@ export type ReadOnlyCallResult = {
   info: {
     gasCost: number
     error?: string
-    events: SCEvent[]
+    events: t.OutputEvents
     stateChanges: {
       ledgerChanges: Record<string, unknown>
       asyncPoolChanges: Record<string, unknown>[]

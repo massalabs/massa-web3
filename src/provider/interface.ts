@@ -1,4 +1,4 @@
-import { Address, EventFilter, Network, SCEvent, SmartContract } from '..'
+import { Address, EventFilter, Network, SmartContract } from '..'
 import { Mas } from '../basicElements/mas'
 import { Operation, OperationOptions, OperationStatus } from '../operation'
 import {
@@ -11,6 +11,7 @@ import {
   ExecuteScParams,
   SignOptions,
 } from './'
+import { rpcTypes as t } from '../generated'
 
 /**
  * Defines the expected structure for a provider.
@@ -44,7 +45,7 @@ export type Provider = {
   executeSC(params: ExecuteScParams): Promise<Operation>
   deploySC(params: DeploySCParams): Promise<SmartContract>
   getOperationStatus(opId: string): Promise<OperationStatus>
-  getEvents(filter: EventFilter): Promise<SCEvent[]>
+  getEvents(filter: EventFilter): Promise<t.OutputEvents>
   getNodeStatus(): Promise<NodeStatusInfo>
 
   /** Storage */

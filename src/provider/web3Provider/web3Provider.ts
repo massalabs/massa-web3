@@ -17,9 +17,9 @@ import {
   Network,
   NetworkName,
   PublicApiUrl,
-  SCEvent,
   SmartContract,
 } from '../..'
+import { rpcTypes as t } from '../../generated'
 import { Mas } from '../../basicElements/mas'
 import {
   Operation,
@@ -223,7 +223,7 @@ export class Web3Provider extends SCProvider implements Provider {
     return this.client.getOperationStatus(opId)
   }
 
-  public async getEvents(filter: EventFilter): Promise<SCEvent[]> {
+  public async getEvents(filter: EventFilter): Promise<t.OutputEvents> {
     return this.client.getEvents(filter)
   }
 

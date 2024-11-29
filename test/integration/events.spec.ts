@@ -1,5 +1,6 @@
-import { EventFilter, EventPoller, SCEvent } from '../../src'
+import { EventFilter, EventPoller } from '../../src'
 import { MRC20 } from '../../src/contracts-wrappers'
+import { OutputEvents } from '../../src/generated/client-types'
 import { provider } from './setup'
 import waitForExpect from 'wait-for-expect'
 
@@ -21,7 +22,7 @@ describe('SC Event tests', () => {
     )
     await operation.waitSpeculativeExecution()
 
-    let events: SCEvent[] = []
+    let events: OutputEvents = []
 
     const filter = {
       smartContractAddress: USDC,
@@ -50,7 +51,7 @@ describe('SC Event tests', () => {
     )
     await operation.waitSpeculativeExecution()
 
-    let events: SCEvent[] = []
+    let events: OutputEvents = []
 
     const filter: EventFilter = {
       operationId: operation.id,
@@ -77,7 +78,7 @@ describe('SC Event tests', () => {
     )
     await operation.waitSpeculativeExecution()
 
-    let events: SCEvent[] = []
+    let events: OutputEvents = []
 
     const filter: EventFilter = {
       operationId: operation.id,

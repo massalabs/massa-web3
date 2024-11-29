@@ -36,7 +36,7 @@ export class OperationManager {
    * @returns A byte array representing the serialized operation.
    */
   static serialize(operation: OperationDetails): Uint8Array {
-    const components = [
+    const components: Uint8Array[] = [
       unsigned.encode(operation.fee),
       varint.encode(operation.expirePeriod),
       varint.encode(operation.type),
@@ -60,7 +60,7 @@ export class OperationManager {
         components.push(unsigned.encode(operation.coins))
         components.push(Address.fromString(operation.address).toBytes())
         components.push(varint.encode(operation.func.length))
-        components.push(Buffer.from(operation.func))
+        components.push(new TextEncoder().encode(operation.func))
         components.push(varint.encode(operation.parameter.length))
         components.push(operation.parameter)
         break
@@ -81,19 +81,17 @@ export class OperationManager {
 
         // length prefixed key-value pairs encoding
         for (const [key, value] of operation.datastore) {
-          const keyBytes = Buffer.from(key)
-          const keyLen = unsigned.encode(U64.fromNumber(keyBytes.length))
-          const valueBytes = Buffer.from(value)
-          const valueLen = unsigned.encode(U64.fromNumber(valueBytes.length))
-          components.push(keyLen, keyBytes, valueLen, valueBytes)
+          const keyLen = unsigned.encode(U64.fromNumber(key.length))
+          const valueLen = unsigned.encode(U64.fromNumber(value.length))
+          components.push(keyLen, key, valueLen, value)
         }
         break
       default:
         throw new Error('Operation type not supported')
     }
 
-    return Uint8Array.from(
-      components.flatMap((component) => Array.from(component))
+    return new Uint8Array(
+      components.reduce((acc, curr) => [...acc, ...curr], [])
     )
   }
 
