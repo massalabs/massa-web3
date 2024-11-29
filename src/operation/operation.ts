@@ -1,5 +1,5 @@
 import { Args, ArrayTypes } from '../basicElements'
-import { SCEvent } from '../client'
+import { rpcTypes as t } from '../generated'
 import { Provider } from '../provider'
 import { rawEventDecode } from '../utils'
 import { OperationStatus } from './types'
@@ -91,7 +91,7 @@ export class Operation {
    *
    * @returns The events of the operation.
    */
-  async getFinalEvents(): Promise<SCEvent[]> {
+  async getFinalEvents(): Promise<t.OutputEvents> {
     if ((await this.waitFinalExecution()) === OperationStatus.NotFound) {
       return Promise.reject(new Error('Operation not found'))
     }
@@ -104,7 +104,7 @@ export class Operation {
    *
    * @returns The speculative events of the operation.
    */
-  async getSpeculativeEvents(): Promise<SCEvent[]> {
+  async getSpeculativeEvents(): Promise<t.OutputEvents> {
     if ((await this.waitSpeculativeExecution()) === OperationStatus.NotFound) {
       return Promise.reject(new Error('Operation not found'))
     }

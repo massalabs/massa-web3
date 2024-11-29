@@ -1,6 +1,7 @@
 import { Provider } from '../provider'
-import { EventFilter, NB_THREADS, SCEvent, Slot } from '../client'
+import { EventFilter, NB_THREADS } from '../client'
 import EventEmitter from 'eventemitter3'
+import { rpcTypes as t } from '../generated'
 
 /** Smart Contracts Event Poller */
 export const ON_MASSA_EVENT_DATA = 'ON_MASSA_EVENT'
@@ -9,7 +10,7 @@ export const ON_MASSA_EVENT_ERROR = 'ON_MASSA_ERROR'
 export const DEFAULT_POLL_INTERVAL_MS = 1000
 
 // get the next slot
-function nextSlot(prevSlot: Slot): Slot {
+function nextSlot(prevSlot: t.Slot): t.Slot {
   const slot = prevSlot
   if (slot.thread < NB_THREADS - 1) {
     slot.thread++
@@ -25,7 +26,7 @@ function nextSlot(prevSlot: Slot): Slot {
  */
 export class EventPoller extends EventEmitter {
   private intervalId: NodeJS.Timeout
-  private lastSlot: Slot
+  private lastSlot: t.Slot
 
   /**
    * Constructor of the EventPoller object.
@@ -91,7 +92,7 @@ export class EventPoller extends EventEmitter {
   public static start(
     provider: Provider,
     eventsFilter: EventFilter,
-    onData?: (data: SCEvent[]) => void,
+    onData?: (data: t.OutputEvents) => void,
     onError?: (err: Error) => void,
     pollIntervalMs = DEFAULT_POLL_INTERVAL_MS
   ): { stopPolling: () => void } {

@@ -1,7 +1,7 @@
 import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64_t } from '../basicElements/serializers/number/u64'
-import { SCEvent, Slot } from '../client'
+import { rpcTypes as t } from '../generated'
 
 export type SignOptions = {
   description?: string
@@ -51,7 +51,7 @@ export type ReadSCData = {
   value: Uint8Array
   info: {
     error?: string
-    events: SCEvent[]
+    events: t.OutputEvents
     gasCost: number
   }
 }
@@ -71,13 +71,13 @@ export type NodeStatusInfo = {
   currentTime: number
   currentCycleTime: number
   nextCycleTime: number
-  lastSlot: Slot
-  nextSlot: Slot
+  lastSlot: t.Slot
+  nextSlot: t.Slot
   networkStats: NetworkStats
   nodeId: string
   nodeIp?: null | string
-  poolStats: PoolStats
-  version: Version
+  poolStats: number[]
+  version: string
   executionStats: ExecutionStats
   chainId: number
   minimalFees?: string
@@ -96,8 +96,6 @@ export type Config = {
   threadCount: number
 }
 
-export type ConnectedNodes = Record<string, unknown>
-
 export type ConsensusStats = {
   cliqueCount: number
   endTimespan: number
@@ -114,15 +112,11 @@ export type NetworkStats = {
   outConnectionCount: number
 }
 
-export type PoolStats = number[]
-
-export type Version = string
-
 export type ExecutionStats = {
   timeWindowStart: number
   timeWindowEnd: number
   finalBlockCount: number
   finalExecutedOperationsCount: number
-  activeCursor: Slot
-  finalCursor: Slot
+  activeCursor: t.Slot
+  finalCursor: t.Slot
 }

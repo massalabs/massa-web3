@@ -1,5 +1,7 @@
 import { NodeStatus } from '../generated/client-types'
 import { NodeStatusInfo } from '../provider'
+import { rpcTypes as t } from '../generated'
+import { ReadOnlyCallResult } from './types'
 
 export function formatNodeStatusObject(status: NodeStatus): NodeStatusInfo {
   return {
@@ -51,5 +53,27 @@ export function formatNodeStatusObject(status: NodeStatus): NodeStatusInfo {
     },
     chainId: status.chain_id,
     minimalFees: status.minimal_fees,
+  }
+}
+
+export function formatReadOnlyCallResponse(
+  res: t.ExecuteReadOnlyResponse
+): ReadOnlyCallResult {
+  return {
+    value: res.result.Ok ? new Uint8Array(res.result.Ok) : new Uint8Array(),
+    info: {
+      gasCost: res.gas_cost,
+      error: res.result.Error,
+      events: res.output_events,
+      stateChanges: {
+        ledgerChanges: res.state_changes.ledger_changes,
+        asyncPoolChanges: res.state_changes.async_pool_changes,
+        posChanges: res.state_changes.pos_changes,
+        executedOpsChanges: res.state_changes.executed_ops_changes,
+        executedDenunciationsChanges:
+          res.state_changes.executed_denunciations_changes,
+        executionTrailHashChange: res.state_changes.execution_trail_hash_change,
+      },
+    },
   }
 }

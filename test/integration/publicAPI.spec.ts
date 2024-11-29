@@ -10,6 +10,7 @@ import { EventFilter, PublicAPI } from '../../src/client'
 import { MAX_GAS_CALL } from '../../src/smartContracts'
 import { bytesToStr, strToBytes } from '../../src/basicElements'
 import { provider } from './setup'
+import { DEPLOYER_BYTECODE } from '../../src'
 
 const {
   NodeStatus,
@@ -201,19 +202,19 @@ describe('client tests', () => {
 
   test('executeReadOnlyBytecode', async () => {
     const response = await client.executeReadOnlyBytecode({
-      max_gas: 100000,
-      bytecode: [65, 66],
+      bytecode: Array.from(DEPLOYER_BYTECODE),
       address: TEST_USER,
+      max_gas: Number(MAX_GAS_CALL),
     })
     ExecuteReadOnlyResponse.strictCheck(response)
   })
 
   test('executeMultipleReadOnlyBytecode', async () => {
     const req = {
-      max_gas: 100000,
-      bytecode: [65, 66],
+      bytecode: Array.from(DEPLOYER_BYTECODE),
       address: TEST_USER,
-    } as ReadOnlyBytecodeExecution
+      max_gas: Number(MAX_GAS_CALL),
+    }
     const responses = await client.executeMultipleReadOnlyBytecode([req, req])
     expect(responses).toHaveLength(2)
   })
@@ -255,17 +256,14 @@ describe('client tests', () => {
 
   test('executeMultipleReadOnlyCall', async () => {
     let arg = {
-      max_gas: 1000000,
-      target_address: TEST_USER,
-      target_function: 'hello',
-      parameter: [],
-      caller_address: null,
-      coins: null,
-      fee: null,
-    } as ReadOnlyCall
+      target: TEST_CONTRACT,
+      func: 'hello',
+      parameter: new Uint8Array(),
+      caller: TEST_USER,
+    }
     const responses = await client.executeMultipleReadOnlyCall([arg, arg])
     expect(responses).toHaveLength(2)
-    ExecuteReadOnlyResponse.strictCheck(responses[0])
-    ExecuteReadOnlyResponse.strictCheck(responses[1])
+    expect(bytesToStr(responses[0].value)).toBe(`Hello, ${NAME_VAL}!`)
+    expect(bytesToStr(responses[1].value)).toBe(`Hello, ${NAME_VAL}!`)
   })
 })

@@ -7,12 +7,13 @@ import {
   ReadOnlyCallResult,
   ClientOptions,
   DatastoreEntry,
+  formatReadOnlyCallResponse,
 } from '.'
-import * as t from '../generated/client-types'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
 import isEqual from 'lodash.isequal'
 import { Connector } from './connector'
+import { rpcTypes as t } from 'src/generated/'
 
 export class PublicAPI {
   connector: Connector
@@ -59,31 +60,23 @@ export class PublicAPI {
       throw new Error('No result returned from execute_read_only_call')
     }
 
-    return {
-      // @ts-expect-error - wrong type returned by the API interface
-      value: new Uint8Array(res.result.Ok),
-      info: {
-        gasCost: res.gas_cost,
-        error: res.result.Error,
-        events: res.output_events,
-        stateChanges: {
-          ledgerChanges: res.state_changes.ledger_changes,
-          asyncPoolChanges: res.state_changes.async_pool_changes,
-          posChanges: res.state_changes.pos_changes,
-          executedOpsChanges: res.state_changes.executed_ops_changes,
-          executedDenunciationsChanges:
-            res.state_changes.executed_denunciations_changes,
-          executionTrailHashChange:
-            res.state_changes.execution_trail_hash_change,
-        },
-      },
-    }
+    return formatReadOnlyCallResponse(res)
   }
 
   async executeMultipleReadOnlyCall(
-    readOnlyCalls: t.ReadOnlyCall[]
-  ): Promise<t.ExecuteReadOnlyResponse[]> {
-    return this.connector.execute_read_only_call(readOnlyCalls)
+    readOnlyCalls: ReadOnlyParams[]
+  ): Promise<ReadOnlyCallResult[]> {
+    const params = readOnlyCalls.map((call) => ({
+      max_gas: Number(call.maxGas ?? MAX_GAS_CALL),
+      target_address: call.target,
+      target_function: call.func,
+      parameter: Array.from(call.parameter),
+      caller_address: call.caller,
+      coins: call.coins ? Mas.toString(call.coins) : null,
+      fee: call.fee ? Mas.toString(call.fee) : null,
+    }))
+    const res = await this.connector.execute_read_only_call(params)
+    return res.map((r) => formatReadOnlyCallResponse(r))
   }
 
   async getAddressInfo(address: string): Promise<t.AddressInfo> {
@@ -100,23 +93,26 @@ export class PublicAPI {
     return this.connector.get_addresses(addresses)
   }
 
-  async getAddressesBytecode(addressFilter: t.AddressFilter): Promise<string> {
+  async getAddressesBytecode(
+    addressFilter: t.AddressFilter
+  ): Promise<Uint8Array> {
     return this.connector
       .get_addresses_bytecode([addressFilter])
-      .then((r) => r[0])
+      .then((r) => Uint8Array.from(r[0]))
   }
 
   async executeMultipleGetAddressesBytecode(
     addressFilters: t.AddressFilter[]
-  ): Promise<string[]> {
-    return this.connector.get_addresses_bytecode(addressFilters)
+  ): Promise<Uint8Array[]> {
+    const bytecodes =
+      await this.connector.get_addresses_bytecode(addressFilters)
+    return bytecodes.map((bytecode) => Uint8Array.from(bytecode))
   }
 
   async getBlock(blockId: t.BlockId): Promise<t.BlockInfo> {
     return this.connector.get_blocks([blockId]).then((r) => r[0])
   }
 
-  // todo should return an array of blockInfo, right?
   async getMultipleBlocks(blockIds: t.BlockId[]): Promise<t.BlockInfo[]> {
     return this.connector.get_blocks(blockIds)
   }
@@ -174,11 +170,13 @@ export class PublicAPI {
     return this.getDatastoreEntries([{ key, address }], final).then((r) => r[0])
   }
 
-  async getSlotTransfers(slot: t.Slot): Promise<t.Transfer[]> {
+  async getSlotTransfers(slot: t.Slot): Promise<t.TransferReceipt[]> {
     return this.connector.get_slots_transfers([slot]).then((r) => r[0])
   }
 
-  async getMultipleSlotTransfers(slots: t.Slot[]): Promise<t.Transfer[][]> {
+  async getMultipleSlotTransfers(
+    slots: t.Slot[]
+  ): Promise<t.TransferReceipt[][]> {
     return this.connector.get_slots_transfers(slots)
   }
 
