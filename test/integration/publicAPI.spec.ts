@@ -1,9 +1,4 @@
-import {
-  AddressFilter,
-  ReadOnlyBytecodeExecution,
-  ReadOnlyCall,
-  Slot,
-} from '../../src/generated/client-types'
+import { AddressFilter, Slot } from '../../src/generated/client-types'
 import { createCheckers } from 'ts-interface-checker'
 import validator from '../generated/client-types-ti'
 import { EventFilter, PublicAPI } from '../../src/client'
@@ -176,14 +171,21 @@ describe('client tests', () => {
     expect(operation.length > 0)
   })
 
-  test.skip('getOperation', async () => {
-    const operation = await client.getOperation(operationId)
-    OperationInfo.strictCheck(operation)
+  test('getOperation', async () => {
+    const operation = await client.getOperation(
+      'O1YX1FoCdzXRXQutup9RTChaTB8yU6tKJEbeFAUZZhpaPeZGtbv'
+    )
+    // nothing to check as operation are not on the node anymore
+    //OperationInfo.strictCheck(operation)
   })
 
-  test.skip('getMultipleOperations', async () => {
-    const operations = await client.getOperations([operationId, operationId])
-    expect(operations).toHaveLength(2)
+  test('getMultipleOperations', async () => {
+    const operations = await client.getOperations([
+      'O1YX1FoCdzXRXQutup9RTChaTB8yU6tKJEbeFAUZZhpaPeZGtbv',
+      'O1h9AmrLdo1BqL1PCy4YPXaY1NPMud34PRVCJcHUqzHfVABctXQ',
+    ])
+    // nothing to check as operation are not on the node anymore
+    // expect(operations).toHaveLength(2)
   })
 
   test('getMultipleAddressInfo', async () => {

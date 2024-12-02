@@ -22,7 +22,8 @@ describe('MNS tests', () => {
   })
 
   test('alloc, update target and free', async () => {
-    const domain = 'trloloooooooooooooooololololzss'
+    const domain = 'trloloooooooooooooooololololzs' + Date.now()
+
     let operation = await mns.alloc(domain, provider.address, {
       coins: 1049000000n,
     })
