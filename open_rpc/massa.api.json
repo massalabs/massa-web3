@@ -171,10 +171,7 @@
                     "name": "blockIds",
                     "description": "Need to provide at least one valid block id",
                     "schema": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BlockId"
-                        }
+                        "$ref": "#/components/schemas/BlockIdList"
                     },
                     "summary": "string",
                     "required": true
@@ -1382,14 +1379,6 @@
                     }
                 ]
             },
-            "SCCallParams": {
-                "title": "SC call params",
-                "description": "Serialized SC call params",
-                "type": "array",
-                "items": {
-                    "type": "integer"
-                }
-            },
             "Bytes": {
                 "title": "Bytes",
                 "description": "Byte array",
@@ -1449,19 +1438,15 @@
                         "$ref": "#/components/schemas/Address"
                     },
                     "thread": {
-                        "description": "The thread the address belongs to",
                         "$ref": "#/components/schemas/Thread"
                     },
                     "final_balance": {
-                        "description": "The final balance",
                         "$ref": "#/components/schemas/Amount"
                     },
                     "final_roll_count": {
-                        "description": "The final roll count",
                         "$ref": "#/components/schemas/RollAmount"
                     },
                     "final_datastore_keys": {
-                        "description": "The final datastore keys",
                         "title": "Datastore Keys",
                         "type": "array",
                         "items": {
@@ -1476,7 +1461,6 @@
                         "$ref": "#/components/schemas/RollAmount"
                     },
                     "candidate_datastore_keys": {
-                        "description": "The candidate datastore keys",
                         "title": "Datastore Keys",
                         "type": "array",
                         "items": {
@@ -1484,7 +1468,7 @@
                         }
                     },
                     "deferred_credits": {
-                        "description": "The deferred credits",
+                        "title": "Deferred credits",
                         "type": "array",
                         "items": {
                             "type": "object",
@@ -1523,10 +1507,7 @@
                     },
                     "created_blocks": {
                         "description": "BlockIds of created blocks",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BlockId"
-                        },
+                        "$ref": "#/components/schemas/BlockIdList",
                         "minItems": 0
                     },
                     "created_operations": {
@@ -1615,6 +1596,14 @@
                 "description": "Block identifier",
                 "type": "string"
             },
+            "BlockIdList": {
+                "title": "BlockIdList",
+                "description": "Block ids",
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/BlockId"
+                }
+            },
             "BlockInfo": {
                 "title": "BlockInfo",
                 "required": [
@@ -1642,7 +1631,6 @@
                 "type": "object",
                 "properties": {
                     "is_final": {
-                        "description": "true if final",
                         "$ref": "#/components/schemas/IsFinal"
                     },
                     "is_candidate": {
@@ -1702,7 +1690,8 @@
                         "type": "string"
                     },
                     "param": {
-                        "$ref": "#/components/schemas/SCCallParams"
+                        "description": "Serialized SC call params",
+                        "$ref": "#/components/schemas/Bytes"
                     },
                     "max_gas": {
                         "$ref": "#/components/schemas/GasAmount"
@@ -1725,10 +1714,7 @@
                 "properties": {
                     "block_ids": {
                         "description": "The block ids of the blocks in that clique",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BlockId"
-                        }
+                        "$ref": "#/components/schemas/BlockIdList"
                     },
                     "fitness": {
                         "description": "Depends on descendants and endorsement count",
@@ -1765,7 +1751,7 @@
                         "type": "number"
                     },
                     "end_timestamp": {
-                        "description": "(Only in tesnets)\nTime in milliseconds when the blockclique started.",
+                        "description": "(Only in testnets)\nTime in milliseconds when the blockclique started.",
                         "oneOf": [
                             {
                                 "type": "null"
@@ -1857,7 +1843,7 @@
                 },
                 "additionalProperties": false
             },
-            "DataStore": {
+            "DataStoreEntry": {
                 "title": "Datastore entry",
                 "description": "A tuple which contains (entry, bytes)",
                 "type": "array",
@@ -2113,11 +2099,7 @@
                         "type": "boolean"
                     },
                     "in_blocks": {
-                        "description": "Block Id",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BlockId"
-                        }
+                        "$ref": "#/components/schemas/BlockIdList"
                     },
                     "is_final": {
                         "$ref": "#/components/schemas/IsFinal"
@@ -2180,7 +2162,7 @@
                         "$ref": "#/components/schemas/GasAmount"
                     },
                     "datastore": {
-                        "$ref": "#/components/schemas/DataStore",
+                        "$ref": "#/components/schemas/DataStoreEntry",
                         "description": "A tuple which contains (key, value)"
                     }
                 },
@@ -2292,7 +2274,15 @@
                         "description": "When was it generated"
                     },
                     "block": {
-                        "$ref": "#/components/schemas/BlockId"
+                        "title": "Block Id option",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/BlockId"
+                            }
+                        ]
                     },
                     "read_only": {
                         "title": "Is Readonly",
@@ -2313,8 +2303,16 @@
                         "type": "number"
                     },
                     "origin_operation_id": {
-                        "$ref": "#/components/schemas/OperationId",
-                        "description": "Origin operation id"
+                        "title": "OperationId",
+                        "description": "Origin operation id",
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/OperationId"
+                            }
+                        ]
                     },
                     "is_final": {
                         "description": "Whether the event is final",
@@ -2438,10 +2436,7 @@
                     },
                     "parents": {
                         "description": "As many block Ids as there are threads",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BlockId"
-                        }
+                        "$ref": "#/components/schemas/BlockIdList"
                     },
                     "slot": {
                         "$ref": "#/components/schemas/Slot"
@@ -2477,10 +2472,7 @@
                         "type": "string"
                     },
                     "parents": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BlockId"
-                        }
+                        "$ref": "#/components/schemas/BlockIdList"
                     },
                     "slot": {
                         "$ref": "#/components/schemas/Slot"
@@ -2516,30 +2508,6 @@
                             "$ref": "#/components/schemas/Denunciation"
                         },
                         "minItems": 0
-                    }
-                },
-                "additionalProperties": false
-            },
-            "LedgerInfo": {
-                "title": "SceLedgerInfo",
-                "required": [
-                    "balance",
-                    "datastore"
-                ],
-                "type": "object",
-                "properties": {
-                    "balance": {
-                        "$ref": "#/components/schemas/Amount"
-                    },
-                    "module": {
-                        "description": "Stored bytecode",
-                        "$ref": "#/components/schemas/Bytes"
-                    },
-                    "datastore": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/DataStore"
-                        }
                     }
                 },
                 "additionalProperties": false
@@ -2784,10 +2752,7 @@
                     },
                     "in_blocks": {
                         "description": "Block ids\nThe operation appears in `in_blocks`\nIf it appears in multiple blocks, these blocks are in different cliques",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BlockId"
-                        }
+                        "$ref": "#/components/schemas/BlockIdList"
                     },
                     "in_pool": {
                         "description": "True if operation is still in pool",
@@ -2859,7 +2824,7 @@
                         "$ref": "#/components/schemas/Transaction",
                         "description": "transfer coins from sender to recipient"
                     },
-                    "ExecutSC": {
+                    "ExecuteSC": {
                         "$ref": "#/components/schemas/ExecuteSC",
                         "description": "Execute a smart contract."
                     },
@@ -2995,17 +2960,14 @@
                         "description": "caller's address"
                     },
                     "operation_datastore": {
-                        "description": "Operation datastore TO FIX",
+                        "description": "Operation datastore TO FIX (https://github.com/massalabs/massa/issues/4775)",
                         "title": "Operation datastore",
                         "oneOf": [
                             {
                                 "type": "null"
                             },
                             {
-                                "type": "array",
-                                "items": {
-                                    "type": "integer"
-                                }
+                                "$ref": "#/components/schemas/Bytes"
                             }
                         ]
                     },
@@ -3043,7 +3005,8 @@
                         "type": "string"
                     },
                     "parameter": {
-                        "$ref": "#/components/schemas/SCCallParams"
+                        "description": "Serialized SC call params",
+                        "$ref": "#/components/schemas/Bytes"
                     },
                     "caller_address": {
                         "description": "Caller's address, optional",
@@ -3284,7 +3247,23 @@
                     },
                     "execution_trail_hash_change": {
                         "description": "execution trail hash change",
-                        "type": "string"
+                        "title": "Execution trail hash change",
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "Set": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "Set"
+                                ]
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
                     }
                 },
                 "additionalProperties": false

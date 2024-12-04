@@ -46,8 +46,7 @@ export class SCProvider {
     const readOnlyParams = {
       ...params,
       caller,
-      parameter:
-        args instanceof Uint8Array ? args : Uint8Array.from(args.serialize()),
+      parameter: args instanceof Uint8Array ? args : args.serialize(),
     }
     return this.client.executeReadOnlyCall(readOnlyParams)
   }
@@ -76,8 +75,7 @@ export class SCProvider {
     await this.checkAccountBalance(coins)
 
     const args = params.parameter ?? new Uint8Array()
-    const parameter =
-      args instanceof Uint8Array ? args : Uint8Array.from(args.serialize())
+    const parameter = args instanceof Uint8Array ? args : args.serialize()
 
     const fee = params.fee ?? (await this.client.getMinimalFee())
 
@@ -156,7 +154,6 @@ export class SCProvider {
    * @param params.maxCoins - Maximum number of coins to use, auto-estimated if absent.
    * @param params.maxGas - Maximum execution gas, auto-estimated if absent.
    * @param params.periodToLive - Duration in blocks before the transaction expires, defaults to 10.
-   * @param params.waitFinalExecution - Whether to wait for the transaction to be finalized, defaults to true.
    *
    *
    * @returns The deployed smart contract.
@@ -170,8 +167,7 @@ export class SCProvider {
     await this.checkAccountBalance(totalCost)
 
     const args = params.parameter ?? new Uint8Array()
-    const parameter =
-      args instanceof Uint8Array ? args : Uint8Array.from(args.serialize())
+    const parameter = args instanceof Uint8Array ? args : args.serialize()
 
     const datastore = populateDatastore([
       {
