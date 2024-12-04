@@ -32,7 +32,7 @@ export type ReadOnlyCallResult = {
       posChanges: Record<string, unknown>
       executedOpsChanges: Record<string, unknown>
       executedDenunciationsChanges: Record<string, unknown>
-      executionTrailHashChange: string
+      executionTrailHashChange: t.ExecutionTrailHashChange
     }
   }
 }
