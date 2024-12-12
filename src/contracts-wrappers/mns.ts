@@ -26,6 +26,15 @@ export const MNS_CONTRACTS = {
  *
  */
 
+// Constants are taken from the smart contract
+// https://github.com/massalabs/massa-name-service/blob/main/smart-contract/assembly/contracts/main.ts
+// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
+const DOMAIN_SEPARATOR_KEY = [0x42]
+const TOKEN_ID_KEY_PREFIX = [0x1]
+// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
+const DOMAIN_KEY_PREFIX = [0x3]
+const OWNED_TOKENS_KEY = strToBytes('ownedTokens')
+
 export class MNS extends SmartContract {
   static mainnet(provider: Provider): MNS {
     checkNetwork(provider, true)
@@ -72,13 +81,9 @@ export class MNS extends SmartContract {
   }
 
   private async getTokenId(name: string): Promise<bigint> {
-    // Constants are taken from the smart contract
-    // https://github.com/massalabs/massa-name-service/blob/476189525c00d189f8914627abf82b8fdf144c6e/smart-contract/assembly/contracts/main.ts#L64
-    // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-magic-numbers
-    const [DOMAIN_SEPARATOR_KEY, TOKEN_ID_KEY_PREFIX] = [0x42, 0x01]
     const key = Uint8Array.from([
-      DOMAIN_SEPARATOR_KEY,
-      TOKEN_ID_KEY_PREFIX,
+      ...DOMAIN_SEPARATOR_KEY,
+      ...TOKEN_ID_KEY_PREFIX,
       ...strToBytes(name),
     ])
     const data = await this.provider.readStorage(this.address, [key], true)
@@ -103,5 +108,32 @@ export class MNS extends SmartContract {
       new Args().addString(name).addString(newTarget),
       options
     )
+  }
+
+  async getOwnedDomains(address: string, final = false): Promise<string[]> {
+    const filter = Uint8Array.from([
+      ...OWNED_TOKENS_KEY,
+      ...strToBytes(address),
+    ])
+    const ownedkeys = await this.provider.getStorageKeys(
+      this.address,
+      filter,
+      final
+    )
+
+    const domainKeys = ownedkeys.map((k) => {
+      const tokenIdBytes = k.slice(filter.length)
+      return Uint8Array.from([
+        ...DOMAIN_SEPARATOR_KEY,
+        ...DOMAIN_KEY_PREFIX,
+        ...tokenIdBytes,
+      ])
+    })
+    const domainsBytes = await this.provider.readStorage(
+      this.address,
+      domainKeys,
+      final
+    )
+    return domainsBytes.map((d) => bytesToStr(d))
   }
 }
