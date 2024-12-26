@@ -13,10 +13,35 @@ import {
 } from './'
 import { rpcTypes as t } from '../generated'
 
+type AddressBalance = {
+  address: string
+  balance: bigint
+}
+
+export type PublicProviderT = {
+  balanceOf(addresses: string[], final: boolean): Promise<AddressBalance[]>
+  networkInfos(): Promise<Network>
+  readSC(params: ReadSCParams): Promise<ReadSCData>
+  getOperationStatus(opId: string): Promise<OperationStatus>
+  getEvents(filter: EventFilter): Promise<t.OutputEvents>
+  getNodeStatus(): Promise<NodeStatusInfo>
+  /** Storage */
+  getStorageKeys(
+    address: string,
+    filter: Uint8Array | string,
+    final?: boolean
+  ): Promise<Uint8Array[]>
+  readStorage(
+    address: string,
+    keys: Uint8Array[] | string[],
+    final?: boolean
+  ): Promise<Uint8Array[]>
+}
+
 /**
  * Defines the expected structure for a provider.
  */
-export type Provider = {
+export type Provider = PublicProviderT & {
   /** Retrieves the account's address. */
   get address(): string
 
@@ -28,7 +53,6 @@ export type Provider = {
 
   /** Initiates a balance retrieval request for the account. */
   balance(final: boolean): Promise<bigint>
-  networkInfos(): Promise<Network>
   sign(
     data: Uint8Array | string,
     signOptions?: SignOptions
@@ -41,22 +65,6 @@ export type Provider = {
     opts?: OperationOptions
   ): Promise<Operation>
   callSC(params: CallSCParams): Promise<Operation>
-  readSC(params: ReadSCParams): Promise<ReadSCData>
   executeSC(params: ExecuteScParams): Promise<Operation>
   deploySC(params: DeploySCParams): Promise<SmartContract>
-  getOperationStatus(opId: string): Promise<OperationStatus>
-  getEvents(filter: EventFilter): Promise<t.OutputEvents>
-  getNodeStatus(): Promise<NodeStatusInfo>
-
-  /** Storage */
-  getStorageKeys(
-    address: string,
-    filter: Uint8Array | string,
-    final?: boolean
-  ): Promise<Uint8Array[]>
-  readStorage(
-    address: string,
-    keys: Uint8Array[] | string[],
-    final?: boolean
-  ): Promise<Uint8Array[]>
 }
