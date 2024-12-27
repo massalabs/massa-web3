@@ -5,6 +5,8 @@ import {
   ExecuteScParams,
   GAS_ESTIMATION_TOLERANCE,
   Provider,
+  ReadSCData,
+  ReadSCParams,
   SignedData,
 } from '..'
 import {
@@ -363,5 +365,21 @@ export class Web3Provider extends PublicProvider implements Provider {
       maxGas: params.maxGas,
       datastore,
     })
+  }
+
+  /**
+   * Reads smart contract function.
+   * @param params - readSCParams.
+   * @returns A promise that resolves to a ReadSCData.
+   */
+  async readSC(params: ReadSCParams): Promise<ReadSCData> {
+    const args = params.parameter ?? new Uint8Array()
+    const caller = params.caller ?? this.account.address.toString()
+    const readOnlyParams = {
+      ...params,
+      caller,
+      parameter: args instanceof Uint8Array ? args : args.serialize(),
+    }
+    return this.client.executeReadOnlyCall(readOnlyParams)
   }
 }

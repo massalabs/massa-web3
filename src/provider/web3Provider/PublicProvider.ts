@@ -1,6 +1,7 @@
 // a Web3Provider is the combination of a clientAPI and an private key account
 import { NodeStatusInfo, ReadSCData, ReadSCParams } from '..'
 import {
+  Account,
   CHAIN_ID,
   DatastoreEntry,
   EventFilter,
@@ -76,11 +77,13 @@ export class PublicProvider {
    * Reads smart contract function.
    * @param params - readSCParams.
    * @returns A promise that resolves to a ReadSCData.
+   *
+   * @remarks Be a aware that if you don't provide a caller address, it will generate a random one.
    */
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const args = params.parameter ?? new Uint8Array()
-    // TODO - check if this is correct
-    const caller = params.caller ?? ''
+    const caller =
+      params.caller ?? (await Account.generate()).address.toString()
     const readOnlyParams = {
       ...params,
       caller,
