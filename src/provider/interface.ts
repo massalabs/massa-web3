@@ -1,47 +1,19 @@
-import { Address, EventFilter, Network, SmartContract } from '..'
+import { Address, SmartContract } from '..'
 import { Mas } from '../basicElements/mas'
-import { Operation, OperationOptions, OperationStatus } from '../operation'
+import { Operation, OperationOptions } from '../operation'
 import {
   CallSCParams,
   DeploySCParams,
-  ReadSCData,
-  ReadSCParams,
   SignedData,
-  NodeStatusInfo,
   ExecuteScParams,
   SignOptions,
+  PublicProvider,
 } from './'
-import { rpcTypes as t } from '../generated'
-
-type AddressBalance = {
-  address: string
-  balance: bigint
-}
-
-export type PublicProviderT = {
-  balanceOf(addresses: string[], final: boolean): Promise<AddressBalance[]>
-  networkInfos(): Promise<Network>
-  readSC(params: ReadSCParams): Promise<ReadSCData>
-  getOperationStatus(opId: string): Promise<OperationStatus>
-  getEvents(filter: EventFilter): Promise<t.OutputEvents>
-  getNodeStatus(): Promise<NodeStatusInfo>
-  /** Storage */
-  getStorageKeys(
-    address: string,
-    filter: Uint8Array | string,
-    final?: boolean
-  ): Promise<Uint8Array[]>
-  readStorage(
-    address: string,
-    keys: Uint8Array[] | string[],
-    final?: boolean
-  ): Promise<Uint8Array[]>
-}
 
 /**
  * Defines the expected structure for a provider.
  */
-export type Provider = PublicProviderT & {
+export type Provider = PublicProvider & {
   /** Retrieves the account's address. */
   get address(): string
 

@@ -1,5 +1,5 @@
 // a Web3Provider is the combination of a clientAPI and an private key account
-import { NodeStatusInfo, PublicProviderT, ReadSCData, ReadSCParams } from '..'
+import { NodeStatusInfo, ReadSCData, ReadSCParams } from '..'
 import {
   CHAIN_ID,
   DatastoreEntry,
@@ -14,7 +14,7 @@ import { rpcTypes as t } from '../../generated'
 import { OperationStatus } from '../../operation'
 import { formatNodeStatusObject } from '../../client/formatObjects'
 
-export class PublicProvider implements PublicProviderT {
+export class PublicProvider {
   constructor(public client: PublicAPI) {}
 
   static fromRPCUrl(url: string): PublicProvider {

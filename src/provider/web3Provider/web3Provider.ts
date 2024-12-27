@@ -46,26 +46,33 @@ export class Web3Provider extends PublicProvider implements Provider {
     super(client)
   }
 
-  static fromRPCUrl(url: string, account?: Account): Web3Provider {
-    const client = new PublicAPI(url)
+  static fromRPCUrl(url: string, account: Account): Web3Provider
+  static fromRPCUrl(url: string): PublicProvider
+  static fromRPCUrl(
+    url: string,
+    account?: Account
+  ): Web3Provider | PublicProvider {
+    const client = new PublicAPI(url) // Assuming PublicAPI can be instantiated with a URL
     if (account) {
       return new Web3Provider(client, account)
     }
-    return new PublicProvider(client) as Web3Provider
+    return new PublicProvider(client)
   }
 
-  static mainnet(account?: Account): Web3Provider {
-    if (account) {
-      return Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet, account)
-    }
-    return Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet)
+  static mainnet(account: Account): Web3Provider
+  static mainnet(): PublicProvider
+  static mainnet(account?: Account): Web3Provider | PublicProvider {
+    return account
+      ? Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet, account)
+      : Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet)
   }
 
-  static buildnet(account?: Account): Web3Provider {
-    if (account) {
-      return Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet, account)
-    }
-    return Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet)
+  static buildnet(account: Account): Web3Provider
+  static buildnet(): PublicProvider
+  static buildnet(account?: Account): Web3Provider | PublicProvider {
+    return account
+      ? Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet, account)
+      : Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet)
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention

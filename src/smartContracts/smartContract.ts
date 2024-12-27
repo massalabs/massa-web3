@@ -1,9 +1,10 @@
-import { Args } from '..'
+import { Args, hasMethod } from '..'
 import { Operation } from '../operation'
 import {
   CallSCParams,
   DeploySCParams,
   Provider,
+  PublicProvider,
   ReadSCData,
   ReadSCParams,
 } from '../provider'
@@ -14,7 +15,7 @@ import { CallSCOptions, DeploySCOptions, ReadSCOptions } from './'
  */
 export class SmartContract {
   constructor(
-    public provider: Provider,
+    public provider: Provider | PublicProvider,
     public address: string
   ) {}
 
@@ -37,7 +38,11 @@ export class SmartContract {
       ...options,
     }
 
-    return this.provider.callSC(callParams)
+    if (hasMethod<Provider>(this.provider, 'callSC')) {
+      return this.provider.callSC(callParams)
+    }
+
+    throw new Error('Public Provider does not support callSC method')
   }
 
   /**
