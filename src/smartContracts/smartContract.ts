@@ -42,7 +42,7 @@ export class SmartContract {
       return this.provider.callSC(callParams)
     }
 
-    throw new Error('Public Provider does not support callSC method')
+    throw new Error('Public Provider only supports read operations')
   }
 
   /**
