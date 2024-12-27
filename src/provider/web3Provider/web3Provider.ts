@@ -3,49 +3,78 @@ import {
   CallSCParams,
   DeploySCParams,
   ExecuteScParams,
-  NodeStatusInfo,
+  GAS_ESTIMATION_TOLERANCE,
   Provider,
+  ReadSCData,
+  ReadSCParams,
   SignedData,
 } from '..'
-import { SCProvider } from './smartContracts'
 import {
   Account,
   Address,
-  CHAIN_ID,
-  EventFilter,
-  JsonRPCClient,
-  Network,
-  NetworkName,
+  MAX_GAS_CALL,
+  MIN_GAS_CALL,
+  minBigInt,
+  populateDatastore,
+  PublicAPI,
   PublicApiUrl,
   SmartContract,
+  StorageCost,
 } from '../..'
-import { rpcTypes as t } from '../../generated'
+import { DEPLOYER_BYTECODE } from '../../generated'
 import { Mas } from '../../basicElements/mas'
 import {
   Operation,
-  OperationStatus,
   OperationType,
   OperationOptions,
   RollOperation,
   TransferOperation,
+  CallOperation,
 } from '../../operation'
 import {
   getAbsoluteExpirePeriod,
   OperationManager,
 } from '../../operation/operationManager'
-import { formatNodeStatusObject } from '../../client/formatObjects'
+import { execute } from '../../basicElements/bytecode'
+import { U64_t } from '../../basicElements/serializers/number/u64'
+import { ErrorMaxGas, ErrorInsufficientBalance } from '../../errors'
+import { PublicProvider } from './PublicProvider'
 
-export class Web3Provider extends SCProvider implements Provider {
-  static fromRPCUrl(url: string, account: Account): Web3Provider {
-    return new Web3Provider(new JsonRPCClient(url), account)
+export class Web3Provider extends PublicProvider implements Provider {
+  constructor(
+    public client: PublicAPI,
+    public account: Account
+  ) {
+    super(client)
   }
 
-  static mainnet(account: Account): Web3Provider {
-    return Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet, account)
+  static fromRPCUrl(url: string, account: Account): Web3Provider
+  static fromRPCUrl(url: string): PublicProvider
+  static fromRPCUrl(
+    url: string,
+    account?: Account
+  ): Web3Provider | PublicProvider {
+    const client = new PublicAPI(url) // Assuming PublicAPI can be instantiated with a URL
+    if (account) {
+      return new Web3Provider(client, account)
+    }
+    return new PublicProvider(client)
   }
 
-  static buildnet(account: Account): Web3Provider {
-    return Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet, account)
+  static mainnet(account: Account): Web3Provider
+  static mainnet(): PublicProvider
+  static mainnet(account?: Account): Web3Provider | PublicProvider {
+    return account
+      ? Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet, account)
+      : Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet)
+  }
+
+  static buildnet(account: Account): Web3Provider
+  static buildnet(): PublicProvider
+  static buildnet(account?: Account): Web3Provider | PublicProvider {
+    return account
+      ? Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet, account)
+      : Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet)
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -65,23 +94,6 @@ export class Web3Provider extends SCProvider implements Provider {
 
   async balance(final = true): Promise<bigint> {
     return this.client.getBalance(this.address.toString(), final)
-  }
-
-  async networkInfos(): Promise<Network> {
-    const chainId = await this.client.getChainId()
-    let name = 'Unknown'
-    if (chainId === CHAIN_ID.Mainnet) {
-      name = NetworkName.Mainnet
-    } else if (chainId === CHAIN_ID.Buildnet) {
-      name = NetworkName.Buildnet
-    }
-
-    return {
-      name,
-      chainId,
-      url: this.client.url,
-      minimalFee: await this.client.getMinimalFee(),
-    }
   }
 
   private async rollOperation(
@@ -219,16 +231,155 @@ export class Web3Provider extends SCProvider implements Provider {
     return new SmartContract(this, deployedAddress)
   }
 
-  public async getOperationStatus(opId: string): Promise<OperationStatus> {
-    return this.client.getOperationStatus(opId)
+  /**
+   * Executes Binary Smart Contract Code Onchain.
+   * @see {@link https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload} for more information on how to setup datastore.
+   */
+  async executeSc(params: ExecuteScParams): Promise<string> {
+    return execute(this.client, this.account.privateKey, params.byteCode, {
+      fee: params.fee,
+      periodToLive: params.periodToLive,
+      maxCoins: params.maxCoins,
+      maxGas: params.maxGas,
+      datastore: params.datastore,
+    })
   }
 
-  public async getEvents(filter: EventFilter): Promise<t.OutputEvents> {
-    return this.client.getEvents(filter)
+  /**
+   * Executes a smart contract call operation
+   * @param params - callSCParams.
+   * @returns A promise that resolves to an Operation object representing the transaction.
+   */
+  protected async call(params: CallSCParams): Promise<string> {
+    const coins = params.coins ?? 0n
+    await this.checkAccountBalance(coins)
+
+    const args = params.parameter ?? new Uint8Array()
+    const parameter = args instanceof Uint8Array ? args : args.serialize()
+
+    const fee = params.fee ?? (await this.client.getMinimalFee())
+
+    let maxGas = params.maxGas
+    if (!maxGas) {
+      maxGas = await this.getGasEstimation(params)
+    } else {
+      if (maxGas > MAX_GAS_CALL) {
+        throw new ErrorMaxGas({ isHigher: true, amount: MAX_GAS_CALL })
+      } else if (maxGas < MIN_GAS_CALL) {
+        throw new ErrorMaxGas({ isHigher: false, amount: MIN_GAS_CALL })
+      }
+    }
+
+    const details: CallOperation = {
+      fee,
+      expirePeriod: await getAbsoluteExpirePeriod(
+        this.client,
+        params.periodToLive
+      ),
+      type: OperationType.CallSmartContractFunction,
+      coins,
+      maxGas,
+      address: params.target,
+      func: params.func,
+      parameter,
+    }
+
+    const manager = new OperationManager(this.account.privateKey, this.client)
+    return manager.send(details)
   }
 
-  public async getNodeStatus(): Promise<NodeStatusInfo> {
-    const status = await this.client.status()
-    return formatNodeStatusObject(status)
+  /**
+   * Returns the gas estimation for a given function.
+   *
+   * @remarks To avoid running out of gas, the gas estimation is increased by 20%.
+   *
+   * @param params - callSCParams.
+   * @throws If the read operation returns an error.
+   * @returns The gas estimation for the function.
+   */
+  protected async getGasEstimation(params: CallSCParams): Promise<U64_t> {
+    const result = await this.readSC(params)
+
+    if (result.info.error) {
+      throw new Error(result.info.error)
+    }
+
+    const gasCost = BigInt(result.info.gasCost)
+    return minBigInt(
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      gasCost + (gasCost * GAS_ESTIMATION_TOLERANCE) / 100n,
+      MAX_GAS_CALL
+    )
+  }
+
+  protected async checkAccountBalance(coins: Mas): Promise<void> {
+    if (coins > 0n) {
+      const balance = await this.client.getBalance(
+        this.account.address.toString()
+      )
+      if (balance < coins) {
+        throw new ErrorInsufficientBalance({
+          userBalance: balance,
+          neededBalance: coins,
+        })
+      }
+    }
+  }
+
+  /**
+   * Deploys a smart contract on the blockchain.
+   *
+   * @param params - Optional deployment details with defaults as follows:
+   * @param params.fee - Execution fee, auto-estimated if absent.
+   * @param params.maxCoins - Maximum number of coins to use, auto-estimated if absent.
+   * @param params.maxGas - Maximum execution gas, auto-estimated if absent.
+   * @param params.periodToLive - Duration in blocks before the transaction expires, defaults to 10.
+   *
+   * @returns The deployed smart contract.
+   *
+   * @throws If the account has insufficient balance to deploy the smart contract.
+   */
+  protected async deploy(params: DeploySCParams): Promise<string> {
+    const coins = params.coins ?? 0n
+    const totalCost = StorageCost.smartContract(params.byteCode.length) + coins
+
+    await this.checkAccountBalance(totalCost)
+
+    const args = params.parameter ?? new Uint8Array()
+    const parameter = args instanceof Uint8Array ? args : args.serialize()
+
+    const datastore = populateDatastore([
+      {
+        data: params.byteCode,
+        args: parameter,
+        coins,
+      },
+    ])
+
+    const fee = params.fee ?? (await this.client.getMinimalFee())
+
+    return execute(this.client, this.account.privateKey, DEPLOYER_BYTECODE, {
+      fee,
+      periodToLive: params.periodToLive,
+      maxCoins: params?.maxCoins ?? totalCost,
+      maxGas: params.maxGas,
+      datastore,
+    })
+  }
+
+  /**
+   * Reads smart contract function.
+   * @param params - readSCParams.
+   * @returns A promise that resolves to a ReadSCData.
+   */
+  async readSC(params: ReadSCParams): Promise<ReadSCData> {
+    const args = params.parameter ?? new Uint8Array()
+    const caller = params.caller ?? this.account.address.toString()
+    const readOnlyParams = {
+      ...params,
+      caller,
+      parameter: args instanceof Uint8Array ? args : args.serialize(),
+    }
+    return this.client.executeReadOnlyCall(readOnlyParams)
   }
 }
