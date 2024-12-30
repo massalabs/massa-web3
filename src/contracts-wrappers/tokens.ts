@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Provider } from '../provider'
+import { Provider, PublicProvider } from '../provider'
 import { CHAIN_ID, Network } from '../utils'
 import { MRC20 } from './token'
 
@@ -22,7 +22,10 @@ export const BUILDNET_TOKENS = {
   WMAS: 'AS12FW5Rs5YN2zdpEnqwj4iHUUPt9R4Eqjq2qtpJFNKW3mn33RuLU',
 }
 
-export function checkNetwork(provider: Provider, isMainnet: boolean): void {
+export function checkNetwork(
+  provider: PublicProvider,
+  isMainnet: boolean
+): void {
   provider.networkInfos().then((network: Network) => {
     if (isMainnet && network.chainId !== CHAIN_ID.Mainnet) {
       console.warn('This contract is only available on mainnet')
@@ -35,49 +38,49 @@ export function checkNetwork(provider: Provider, isMainnet: boolean): void {
 ///////////////// MAINNET TOKENS //////////////////////
 
 export class USDCe extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, true)
     super(provider, MAINNET_TOKENS.USDCe)
   }
 }
 
 export class USDTb extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, true)
     super(provider, MAINNET_TOKENS.USDTb)
   }
 }
 
 export class DAIe extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, true)
     super(provider, MAINNET_TOKENS.DAIe)
   }
 }
 
 export class WETHe extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, true)
     super(provider, MAINNET_TOKENS.WETHe)
   }
 }
 
 export class WETHb extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, true)
     super(provider, MAINNET_TOKENS.WETHb)
   }
 }
 
 export class PUR extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, true)
     super(provider, MAINNET_TOKENS.PUR)
   }
 }
 
 export class WMAS extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, true)
     super(provider, MAINNET_TOKENS.WMAS)
   }
@@ -86,42 +89,42 @@ export class WMAS extends MRC20 {
 ///////////////// BUILDNET TOKENS //////////////////////
 
 export class DAIs extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.DAIs)
   }
 }
 
 export class WETHs extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.WETHs)
   }
 }
 
 export class USDCs extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.USDCs)
   }
 }
 
 export class USDTbt extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.USDTbt)
   }
 }
 
 export class WETHbt extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.WETHbt)
   }
 }
 
 export class WMASBuildnet extends MRC20 {
-  constructor(public provider: Provider) {
+  constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.WMAS)
   }
