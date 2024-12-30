@@ -1,6 +1,6 @@
 import { Account } from '../../src'
 import { MRC20 } from '../../src/contracts-wrappers'
-import { provider } from './setup'
+import { provider, publicProvider } from './setup'
 
 describe('Generic token wrapper tests', () => {
   let usdcContract: MRC20
@@ -115,5 +115,66 @@ describe('Generic token wrapper tests', () => {
     expect(recipientBalance[0].address).toBe(recipientAddresses[0])
     expect(recipientBalance[1].balance).toBe(amounts[1])
     expect(recipientBalance[1].address).toBe(recipientAddresses[1])
+  })
+})
+
+describe('Generic token wrapper tests using PublicProvider', () => {
+  let usdcContract: MRC20
+  const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
+
+  beforeAll(async () => {
+    usdcContract = new MRC20(publicProvider, USDC)
+  })
+
+  test('version', async () => {
+    const version = await usdcContract.version()
+    expect(version).toBe('0.0.1')
+  })
+
+  test('name', async () => {
+    const name = await usdcContract.name()
+    expect(name).toBe('Sepolia USDC')
+  })
+
+  test('symbol', async () => {
+    const symbol = await usdcContract.symbol()
+    expect(symbol).toBe('USDC.s')
+  })
+
+  test('decimals', async () => {
+    const decimals = await usdcContract.decimals()
+    expect(decimals).toBe(6)
+  })
+
+  test('totalSupply', async () => {
+    const totalSupply = await usdcContract.totalSupply()
+    expect(totalSupply).toBeGreaterThan(0n)
+  })
+
+  test('transfer', async () => {
+    const amount = 1_000n
+
+    expect(
+      usdcContract.transfer(
+        'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
+        amount
+      )
+    ).rejects.toThrow()
+  })
+
+  test('allowance', async () => {
+    const previousAllowance = await usdcContract.allowance(
+      provider.address,
+      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
+    )
+
+    const amount = 123_000_000n
+
+    expect(
+      usdcContract.increaseAllowance(
+        'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
+        amount
+      )
+    ).rejects.toThrow()
   })
 })

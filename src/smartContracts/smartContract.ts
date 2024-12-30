@@ -4,6 +4,7 @@ import {
   CallSCParams,
   DeploySCParams,
   Provider,
+  PublicProvider,
   ReadSCData,
   ReadSCParams,
 } from '../provider'
@@ -14,7 +15,7 @@ import { CallSCOptions, DeploySCOptions, ReadSCOptions } from './'
  */
 export class SmartContract {
   constructor(
-    public provider: Provider,
+    public provider: PublicProvider | Provider,
     public address: string
   ) {}
 
@@ -37,7 +38,11 @@ export class SmartContract {
       ...options,
     }
 
-    return this.provider.callSC(callParams)
+    if ('callSC' in this.provider) {
+      return (this.provider as Provider).callSC(callParams)
+    }
+
+    return Promise.reject(new Error('Provider does not support callSC'))
   }
 
   /**
