@@ -38,7 +38,7 @@ import {
 import { execute } from '../../basicElements/bytecode'
 import { U64_t } from '../../basicElements/serializers/number/u64'
 import { ErrorMaxGas, ErrorInsufficientBalance } from '../../errors'
-import { PublicProvider } from './PublicProvider'
+import { PublicProvider } from './publicProvider'
 
 export class Web3Provider extends PublicProvider implements Provider {
   constructor(
