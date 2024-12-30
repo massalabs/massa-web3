@@ -7,7 +7,7 @@ import {
   MIN_GAS_CALL,
   SmartContract,
 } from '../../src/smartContracts'
-import { provider } from './setup'
+import { provider, publicProvider } from './setup'
 import { Address, Args, bytesToStr, Mas } from '../../src/basicElements'
 
 import { execute } from '../../src/basicElements/bytecode'
@@ -27,7 +27,7 @@ describe('Smart Contract', () => {
       }
 
       const opId = await execute(
-        provider.client,
+        publicProvider.client,
         provider.account.privateKey,
         byteCode,
         opts
@@ -55,6 +55,7 @@ describe('Smart Contract', () => {
 
   describe('SmartContract - Call ', () => {
     let contractTest: SmartContract
+    let contractPublicProviderTest: SmartContract
 
     beforeAll(async () => {
       const byteCode = fs.readFileSync(contractPath)
@@ -73,6 +74,11 @@ describe('Smart Contract', () => {
         deployOptions
       )
 
+      contractPublicProviderTest = new SmartContract(
+        publicProvider,
+        contractTest.address
+      )
+
       expect(Address.fromString(contractTest.address).isEOA).toBeFalsy()
     })
 
@@ -81,6 +87,12 @@ describe('Smart Contract', () => {
       const events = await op.getSpeculativeEvents()
       const firstEvent = events[0].data
       expect(firstEvent).toBe("I'm an event!")
+    })
+
+    test('call fail with public provider', async () => {
+      expect(contractPublicProviderTest.call('event')).rejects.toThrow(
+        'Provider does not support callSC'
+      )
     })
 
     test('call that set a value in the datastore', async () => {
