@@ -54,7 +54,7 @@ export class Web3Provider extends PublicProvider implements Provider {
     url: string,
     account?: Account
   ): Web3Provider | PublicProvider {
-    const client = new PublicAPI(url) // Assuming PublicAPI can be instantiated with a URL
+    const client = new PublicAPI(url)
     if (account) {
       return new Web3Provider(client, account)
     }

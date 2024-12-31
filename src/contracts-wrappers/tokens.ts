@@ -23,7 +23,7 @@ export const BUILDNET_TOKENS = {
 }
 
 export function checkNetwork(
-  provider: PublicProvider,
+  provider: PublicProvider | Provider,
   isMainnet: boolean
 ): void {
   provider.networkInfos().then((network: Network) => {

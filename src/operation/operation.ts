@@ -1,6 +1,6 @@
 import { Args, ArrayTypes } from '../basicElements'
 import { rpcTypes as t } from '../generated'
-import { PublicProvider } from '../provider'
+import { Provider, PublicProvider } from '../provider'
 import { rawEventDecode } from '../utils'
 import { OperationStatus } from './types'
 
@@ -12,7 +12,7 @@ const DEFAULT_WAIT_PERIOD_MS = 500
  */
 export class Operation {
   constructor(
-    public provider: PublicProvider,
+    public provider: Provider | PublicProvider,
     public id: string
   ) {}
 

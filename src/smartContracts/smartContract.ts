@@ -1,3 +1,4 @@
+import { isProvider } from '../provider/helpers'
 import { Args } from '..'
 import { Operation } from '../operation'
 import {
@@ -38,11 +39,11 @@ export class SmartContract {
       ...options,
     }
 
-    if ('callSC' in this.provider) {
+    if (isProvider(this.provider)) {
       return (this.provider as Provider).callSC(callParams)
     }
 
-    return Promise.reject(new Error('Provider does not support callSC'))
+    throw new Error('Provider does not support callSC')
   }
 
   /**
