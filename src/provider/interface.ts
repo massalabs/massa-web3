@@ -13,7 +13,7 @@ import {
   ReadSCParams,
 } from './'
 
-export type PublicProviderT = {
+export type PublicProvider = {
   balanceOf(
     addresses: string[],
     final?: boolean
@@ -38,7 +38,7 @@ export type PublicProviderT = {
 /**
  * Defines the expected structure for a provider.
  */
-export type Provider = PublicProviderT & {
+export type Provider = PublicProvider & {
   /** Retrieves the account's address. */
   get address(): string
 

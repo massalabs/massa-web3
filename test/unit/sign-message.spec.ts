@@ -1,4 +1,4 @@
-import { Account, Web3Provider, Signature } from '../../src'
+import { Account, JsonRpcProvider, Signature } from '../../src'
 
 describe('signMessage', () => {
   test('should correctly process Buffer data', async () => {
@@ -9,7 +9,7 @@ describe('signMessage', () => {
     const secretKey = 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd'
 
     const account = await Account.fromPrivateKey(secretKey)
-    const provider = Web3Provider.buildnet(account)
+    const provider = JsonRpcProvider.buildnet(account)
     const signedMessage = await provider.sign(data)
 
     expect(signedMessage.signature).toEqual(expected)
@@ -30,7 +30,7 @@ describe('signMessage', () => {
     const secretKey = 'S12XuWmm5jULpJGXBnkeBsuiNmsGi2F4rMiTvriCzENxBR4Ev7vd'
 
     const account = await Account.fromPrivateKey(secretKey)
-    const provider = Web3Provider.buildnet(account)
+    const provider = JsonRpcProvider.buildnet(account)
     const signedMessage = await provider.sign(data)
 
     expect(signedMessage.signature).toEqual(expected)

@@ -1,4 +1,3 @@
-// a Web3Provider is the combination of a clientAPI and an private key account
 import {
   CallSCParams,
   DeploySCParams,
@@ -38,9 +37,9 @@ import {
 import { execute } from '../../basicElements/bytecode'
 import { U64_t } from '../../basicElements/serializers/number/u64'
 import { ErrorMaxGas, ErrorInsufficientBalance } from '../../errors'
-import { PublicProvider } from './publicProvider'
+import { JsonRpcPublicProvider } from './jsonRpcPublicProvider'
 
-export class Web3Provider extends PublicProvider implements Provider {
+export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
   constructor(
     public client: PublicAPI,
     public account: Account
@@ -48,37 +47,37 @@ export class Web3Provider extends PublicProvider implements Provider {
     super(client)
   }
 
-  static fromRPCUrl(url: string, account: Account): Web3Provider
-  static fromRPCUrl(url: string): PublicProvider
+  static fromRPCUrl(url: string, account: Account): JsonRpcProvider
+  static fromRPCUrl(url: string): JsonRpcPublicProvider
   static fromRPCUrl(
     url: string,
     account?: Account
-  ): Web3Provider | PublicProvider {
+  ): JsonRpcProvider | JsonRpcPublicProvider {
     const client = new PublicAPI(url)
     if (account) {
-      return new Web3Provider(client, account)
+      return new JsonRpcProvider(client, account)
     }
-    return new PublicProvider(client)
+    return new JsonRpcPublicProvider(client)
   }
 
-  static mainnet(account: Account): Web3Provider
-  static mainnet(): PublicProvider
-  static mainnet(account?: Account): Web3Provider | PublicProvider {
+  static mainnet(account: Account): JsonRpcProvider
+  static mainnet(): JsonRpcPublicProvider
+  static mainnet(account?: Account): JsonRpcProvider | JsonRpcPublicProvider {
     return account
-      ? Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet, account)
-      : Web3Provider.fromRPCUrl(PublicApiUrl.Mainnet)
+      ? JsonRpcProvider.fromRPCUrl(PublicApiUrl.Mainnet, account)
+      : JsonRpcProvider.fromRPCUrl(PublicApiUrl.Mainnet)
   }
 
-  static buildnet(account: Account): Web3Provider
-  static buildnet(): PublicProvider
-  static buildnet(account?: Account): Web3Provider | PublicProvider {
+  static buildnet(account: Account): JsonRpcProvider
+  static buildnet(): JsonRpcPublicProvider
+  static buildnet(account?: Account): JsonRpcProvider | JsonRpcPublicProvider {
     return account
-      ? Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet, account)
-      : Web3Provider.fromRPCUrl(PublicApiUrl.Buildnet)
+      ? JsonRpcProvider.fromRPCUrl(PublicApiUrl.Buildnet, account)
+      : JsonRpcProvider.fromRPCUrl(PublicApiUrl.Buildnet)
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  private readonly _providerName: string = 'Massa web3 provider'
+  private readonly _providerName: string = 'Massa Json Rpc provider'
 
   get accountName(): string {
     return this.account.address.toString()
