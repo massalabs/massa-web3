@@ -382,3 +382,6 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
     return this.client.executeReadOnlyCall(readOnlyParams)
   }
 }
+
+// This line ensure retro compatibility with the previous version of massa-web3
+export { JsonRpcProvider as Web3Provider }
