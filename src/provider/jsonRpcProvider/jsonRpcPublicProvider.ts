@@ -4,6 +4,7 @@ import {
   CHAIN_ID,
   DatastoreEntry,
   EventFilter,
+  Mas,
   Network,
   NetworkName,
   PublicAPI,
@@ -33,12 +34,15 @@ export class JsonRpcPublicProvider implements PublicProvider {
     addresses: string[],
     final = true
   ): Promise<{ address: string; balance: bigint }[]> {
-    const balances = await Promise.all(
-      addresses.map(async (address) => ({
-        address,
-        balance: await this.client.getBalance(address, final),
-      }))
-    )
+    const addressesInfo = await this.client.getMultipleAddressInfo(addresses)
+
+    const balances = addressesInfo.map((addressInfo) => ({
+      address: addressInfo.address,
+      balance: final
+        ? Mas.fromString(addressInfo.final_balance)
+        : Mas.fromString(addressInfo.candidate_balance),
+    }))
+
     return balances
   }
 
