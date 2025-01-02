@@ -1,4 +1,4 @@
-import { Provider } from '../provider'
+import { PublicProvider } from '../provider'
 import { EventFilter, NB_THREADS } from '../client'
 import EventEmitter from 'eventemitter3'
 import { rpcTypes as t } from '../generated'
@@ -36,7 +36,7 @@ export class EventPoller extends EventEmitter {
    * @param pollIntervalMs - The interval in milliseconds to poll for events.
    */
   public constructor(
-    private readonly provider: Provider,
+    private readonly provider: PublicProvider,
     private readonly eventsFilter: EventFilter,
     private readonly pollIntervalMs: number
   ) {
@@ -90,7 +90,7 @@ export class EventPoller extends EventEmitter {
    */
   // eslint-disable-next-line max-params
   public static start(
-    provider: Provider,
+    provider: PublicProvider,
     eventsFilter: EventFilter,
     onData?: (data: t.OutputEvents) => void,
     onError?: (err: Error) => void,

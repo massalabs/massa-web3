@@ -133,7 +133,7 @@ export class Args {
    * @param offset - The optional offset to start deserializing from.
    */
   constructor(
-    public serialized = new Uint8Array(),
+    public serialized: Uint8Array = new Uint8Array(),
     public offset = DEFAULT_OFFSET
   ) {}
 

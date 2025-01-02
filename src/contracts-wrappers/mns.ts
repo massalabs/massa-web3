@@ -1,6 +1,6 @@
 import { Args, bytesToStr, strToBytes, U256 } from '../basicElements'
 import { Operation } from '../operation'
-import { Provider } from '../provider'
+import { Provider, PublicProvider } from '../provider'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 import { checkNetwork } from './tokens'
 
@@ -36,12 +36,12 @@ const DOMAIN_KEY_PREFIX = [0x3]
 const OWNED_TOKENS_KEY = strToBytes('ownedTokens')
 
 export class MNS extends SmartContract {
-  static mainnet(provider: Provider): MNS {
+  static mainnet(provider: Provider | PublicProvider): MNS {
     checkNetwork(provider, true)
     return new MNS(provider, MNS_CONTRACTS.mainnet)
   }
 
-  static buildnet(provider: Provider): MNS {
+  static buildnet(provider: Provider | PublicProvider): MNS {
     checkNetwork(provider, false)
     return new MNS(provider, MNS_CONTRACTS.buildnet)
   }

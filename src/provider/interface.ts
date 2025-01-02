@@ -1,22 +1,44 @@
 import { Address, EventFilter, Network, SmartContract } from '..'
 import { Mas } from '../basicElements/mas'
 import { Operation, OperationOptions, OperationStatus } from '../operation'
+import { rpcTypes as t } from '../generated'
 import {
   CallSCParams,
   DeploySCParams,
-  ReadSCData,
-  ReadSCParams,
   SignedData,
-  NodeStatusInfo,
   ExecuteScParams,
   SignOptions,
+  NodeStatusInfo,
+  ReadSCData,
+  ReadSCParams,
 } from './'
-import { rpcTypes as t } from '../generated'
+
+export type PublicProvider = {
+  balanceOf(
+    addresses: string[],
+    final?: boolean
+  ): Promise<{ address: string; balance: bigint }[]>
+  networkInfos(): Promise<Network>
+  getOperationStatus(opId: string): Promise<OperationStatus>
+  getEvents(filter: EventFilter): Promise<t.OutputEvents>
+  getNodeStatus(): Promise<NodeStatusInfo>
+  readSC(params: ReadSCParams): Promise<ReadSCData>
+  getStorageKeys(
+    address: string,
+    filter?: Uint8Array | string,
+    final?: boolean
+  ): Promise<Uint8Array[]>
+  readStorage(
+    address: string,
+    keys: Uint8Array[] | string[],
+    final?: boolean
+  ): Promise<Uint8Array[]>
+}
 
 /**
  * Defines the expected structure for a provider.
  */
-export type Provider = {
+export type Provider = PublicProvider & {
   /** Retrieves the account's address. */
   get address(): string
 
@@ -28,7 +50,6 @@ export type Provider = {
 
   /** Initiates a balance retrieval request for the account. */
   balance(final: boolean): Promise<bigint>
-  networkInfos(): Promise<Network>
   sign(
     data: Uint8Array | string,
     signOptions?: SignOptions
@@ -41,22 +62,6 @@ export type Provider = {
     opts?: OperationOptions
   ): Promise<Operation>
   callSC(params: CallSCParams): Promise<Operation>
-  readSC(params: ReadSCParams): Promise<ReadSCData>
   executeSC(params: ExecuteScParams): Promise<Operation>
   deploySC(params: DeploySCParams): Promise<SmartContract>
-  getOperationStatus(opId: string): Promise<OperationStatus>
-  getEvents(filter: EventFilter): Promise<t.OutputEvents>
-  getNodeStatus(): Promise<NodeStatusInfo>
-
-  /** Storage */
-  getStorageKeys(
-    address: string,
-    filter: Uint8Array | string,
-    final?: boolean
-  ): Promise<Uint8Array[]>
-  readStorage(
-    address: string,
-    keys: Uint8Array[] | string[],
-    final?: boolean
-  ): Promise<Uint8Array[]>
 }
