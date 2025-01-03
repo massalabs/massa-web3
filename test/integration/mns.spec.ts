@@ -25,7 +25,7 @@ describe('MNS tests', () => {
     const domain = 'trloloooooooooooooooololololzs' + Date.now()
 
     let operation = await mns.alloc(domain, provider.address, {
-      coins: 1049000000n,
+      coins: 2064100000n,
     })
     await operation.waitFinalExecution()
 
