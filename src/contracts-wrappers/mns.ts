@@ -33,6 +33,8 @@ const DOMAIN_SEPARATOR_KEY = [0x42]
 const TOKEN_ID_KEY_PREFIX = [0x1]
 // eslint-disable-next-line  @typescript-eslint/no-magic-numbers
 const DOMAIN_KEY_PREFIX = [0x3]
+// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
+const ADDRESS_KEY_PREFIX_V2 = [0x6]
 const OWNED_TOKENS_KEY = strToBytes('ownedTokens')
 
 export class MNS extends SmartContract {
@@ -46,7 +48,7 @@ export class MNS extends SmartContract {
     return new MNS(provider, MNS_CONTRACTS.buildnet)
   }
 
-  // Resolve domain name (without "".massa") to address
+  // Resolve domain name (without ".massa") to address
   async resolve(name: string, options?: ReadSCOptions): Promise<string> {
     const res = await this.read(
       'dnsResolve',
@@ -56,6 +58,7 @@ export class MNS extends SmartContract {
     return bytesToStr(res.value)
   }
 
+  // deprecated. Use getDomainsFromTarget instead
   async fromAddress(
     address: string,
     options?: ReadSCOptions
@@ -66,6 +69,18 @@ export class MNS extends SmartContract {
       options
     )
     return bytesToStr(res.value).split(',')
+  }
+
+  async getDomainsFromTarget(target: string, final = false): Promise<string[]> {
+    const targetBytes = strToBytes(target)
+    const filter = Uint8Array.from([
+      ...DOMAIN_SEPARATOR_KEY,
+      ...ADDRESS_KEY_PREFIX_V2,
+      targetBytes.length,
+      ...targetBytes,
+    ])
+    const keys = await this.provider.getStorageKeys(this.address, filter, final)
+    return keys.map((key) => bytesToStr(key.slice(filter.length)))
   }
 
   async alloc(
