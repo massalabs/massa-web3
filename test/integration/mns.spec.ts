@@ -85,4 +85,15 @@ describe('MNS tests using PublicProvider', () => {
 
     await expect(mns.free(domain)).rejects.toThrow()
   }, 300000)
+
+  test('get dns allocation cost', async () => {
+    const domain = 'trloloooooooooooooooololololzs'
+    const res = await mns.dnsAllocCost(domain)
+    expect(res).toBeGreaterThan(0n)
+  })
+
+  test('get dns allocation cost fail if invalid domain', async () => {
+    const domain = 'trloloooooooooooooooololoPolzs////'
+    await expect(mns.dnsAllocCost(domain)).rejects.toThrow(/.*Invalid domain.*/)
+  })
 })

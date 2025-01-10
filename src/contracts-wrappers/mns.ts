@@ -1,4 +1,4 @@
-import { Args, bytesToStr, strToBytes, U256 } from '../basicElements'
+import { Args, bytesToStr, strToBytes, U256, U64 } from '../basicElements'
 import { Operation } from '../operation'
 import { Provider, PublicProvider } from '../provider'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
@@ -135,5 +135,17 @@ export class MNS extends SmartContract {
       final
     )
     return domainsBytes.map((d) => bytesToStr(d))
+  }
+
+  async dnsAllocCost(domain: string, options?: ReadSCOptions): Promise<bigint> {
+    const res = await this.read(
+      'dnsAllocCost',
+      new Args().addString(domain),
+      options
+    )
+
+    if (res.info.error) throw new Error(res.info.error)
+
+    return U64.fromBytes(res.value)
   }
 }
