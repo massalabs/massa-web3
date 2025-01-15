@@ -1,4 +1,4 @@
-import { MNS } from '../../src'
+import { Account, MNS } from '../../src'
 import { provider, publicProvider } from './setup'
 
 describe('MNS tests', () => {
@@ -50,6 +50,71 @@ describe('MNS tests', () => {
     res = await mns.resolve(domain)
     expect(res).toBe('')
   }, 300000)
+
+  test('transfer domain', async () => {
+    const domain = 'trloloooooooooooooooololololzs' + Date.now()
+    const account2 = await Account.generate()
+    let operation = await mns.alloc(domain, provider.address, {
+      coins: 2064100000n,
+    })
+
+    await operation.waitFinalExecution()
+
+    // check resolution
+    let res = await mns.resolve(domain)
+    expect(res).toBe(provider.address)
+    // check balance
+    let balance = await mns.balanceOf(provider.address)
+    expect(balance).toBeGreaterThan(0n)
+
+    // transfer domain
+    operation = await mns.transferFrom(
+      domain,
+      provider.address,
+      account2.address.toString()
+    )
+    await operation.waitFinalExecution()
+
+    const domains = await mns.getOwnedDomains(account2.address.toString())
+    expect(domains).toContain(domain)
+    const balance2 = await mns.balanceOf(account2.address.toString())
+    expect(balance2).toBeGreaterThan(0n)
+  })
+
+  test('getTargets', async () => {
+    // Alloc some domains
+    const domain1 = 'trloloooooooooooooooololololzs1'
+    const domain2 = 'trloloooooooooooooooololololzs2'
+    const domain3 = 'trloloooooooooooooooololololzs3'
+
+    const op1 = await mns.alloc(domain1, provider.address, {
+      coins: 2064100000n,
+    })
+    const op2 = await mns.alloc(domain2, provider.address, {
+      coins: 2064100000n,
+    })
+    const op3 = await mns.alloc(domain3, provider.address, {
+      coins: 2064100000n,
+    })
+
+    await Promise.all([
+      op1.waitFinalExecution(),
+      op2.waitFinalExecution(),
+      op3.waitFinalExecution(),
+    ])
+
+    const targets = await mns.getTargets([domain1, domain2, domain3])
+    expect(targets).toEqual([
+      provider.address,
+      provider.address,
+      provider.address,
+    ])
+
+    // Free the domains
+    mns.free(domain1)
+    mns.free(domain2)
+    mns.free(domain3)
+  })
 })
 
 describe('MNS tests using PublicProvider', () => {

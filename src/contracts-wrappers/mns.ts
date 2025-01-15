@@ -32,6 +32,8 @@ export const MNS_CONTRACTS = {
 const DOMAIN_SEPARATOR_KEY = [0x42]
 const TOKEN_ID_KEY_PREFIX = [0x1]
 // eslint-disable-next-line  @typescript-eslint/no-magic-numbers
+const TARGET_KEY_PREFIX = [0x02]
+// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
 const DOMAIN_KEY_PREFIX = [0x3]
 // eslint-disable-next-line  @typescript-eslint/no-magic-numbers
 const ADDRESS_KEY_PREFIX_V2 = [0x6]
@@ -95,7 +97,7 @@ export class MNS extends SmartContract {
     )
   }
 
-  private async getTokenId(name: string): Promise<bigint> {
+  async getTokenId(name: string): Promise<bigint> {
     const key = Uint8Array.from([
       ...DOMAIN_SEPARATOR_KEY,
       ...TOKEN_ID_KEY_PREFIX,
@@ -130,13 +132,13 @@ export class MNS extends SmartContract {
       ...OWNED_TOKENS_KEY,
       ...strToBytes(address),
     ])
-    const ownedkeys = await this.provider.getStorageKeys(
+    const ownedKeys = await this.provider.getStorageKeys(
       this.address,
       filter,
       final
     )
 
-    const domainKeys = ownedkeys.map((k) => {
+    const domainKeys = ownedKeys.map((k) => {
       const tokenIdBytes = k.slice(filter.length)
       return Uint8Array.from([
         ...DOMAIN_SEPARATOR_KEY,
@@ -152,6 +154,24 @@ export class MNS extends SmartContract {
     return domainsBytes.map((d) => bytesToStr(d))
   }
 
+  async getTargets(domains: string[], final = false): Promise<string[]> {
+    const targetDataStoreEntries = domains.map((name) =>
+      Uint8Array.from([
+        ...DOMAIN_SEPARATOR_KEY,
+        ...TARGET_KEY_PREFIX,
+        ...strToBytes(name),
+      ])
+    )
+
+    const targetsBytes = await this.provider.readStorage(
+      this.address,
+      targetDataStoreEntries,
+      final
+    )
+
+    return targetsBytes.map(bytesToStr)
+  }
+
   async dnsAllocCost(domain: string, options?: ReadSCOptions): Promise<bigint> {
     const res = await this.read(
       'dnsAllocCost',
@@ -162,5 +182,29 @@ export class MNS extends SmartContract {
     if (res.info.error) throw new Error(res.info.error)
 
     return U64.fromBytes(res.value)
+  }
+
+  async transferFrom(
+    domain: string,
+    currentOwner: string,
+    newOwner: string,
+    options?: CallSCOptions
+  ): Promise<Operation> {
+    const tokenId = await this.getTokenId(domain)
+    const args = new Args()
+      .addString(currentOwner)
+      .addString(newOwner)
+      .addU256(tokenId)
+
+    return await this.call('transferFrom', args, options)
+  }
+
+  async balanceOf(owner: string, options?: ReadSCOptions): Promise<bigint> {
+    const res = await this.read(
+      'balanceOf',
+      new Args().addString(owner),
+      options
+    )
+    return U256.fromBytes(res.value)
   }
 }
