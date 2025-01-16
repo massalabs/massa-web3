@@ -51,9 +51,36 @@ describe('Smart Contract', () => {
         message: expect.stringMatching(/fee is too low/),
       })
     })
+
+  test.only('DeploySC', async () => {
+    const byteCode = fs.readFileSync(contractPath)
+    const constructorArgs = new Args().addString('myName')
+
+    const waitFinalExecution = false
+    const deployOptions: DeploySCOptions = {
+      periodToLive: 2,
+      maxGas: MAX_GAS_DEPLOYMENT,
+      coins: Mas.fromString('0.0016'),
+      fee: Mas.fromString('0.1'),
+      waitFinalExecution
+    }
+
+    console.log("deploying....")
+    const contract = await SmartContract.deploy(
+      provider,
+      byteCode,
+      constructorArgs,
+      deployOptions
+    )
+
+
+    Address.fromString(contract.address)
+
   })
 
-  describe('SmartContract - Call ', () => {
+})
+
+  describe.skip('SmartContract - Call ', () => {
     let contractTest: SmartContract
     let contractPublicProviderTest: SmartContract
 

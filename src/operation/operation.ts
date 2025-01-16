@@ -128,6 +128,8 @@ export class Operation {
       throw new Error(parsedData.massa_execution_error)
     }
 
+    console.log('events', events)
+
     const contracts = new Args(
       rawEventDecode(lastEvent.data)
     ).nextArray<string>(ArrayTypes.STRING)
