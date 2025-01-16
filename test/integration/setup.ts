@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { Account } from '../../src/account'
 import { Mas } from '../../src/basicElements'
 import { JsonRpcPublicProvider, JsonRpcProvider } from '../../src/provider'
+import { PublicApiUrl } from '../../src'
 
 export let account: Account
 export let provider: JsonRpcProvider
@@ -12,7 +13,8 @@ jest.setTimeout(120_000)
 
 beforeAll(async () => {
   account = await Account.fromEnv()
-  provider = JsonRpcProvider.buildnet(account)
+  const NODE_URL = PublicApiUrl.Buildnet
+  provider = JsonRpcProvider.fromRPCUrl(NODE_URL, account)
   publicProvider = JsonRpcProvider.buildnet()
   mainnetProvider = JsonRpcProvider.mainnet(account)
 

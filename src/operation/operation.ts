@@ -129,6 +129,9 @@ export class Operation {
     }
 
     console.log('events', events)
+    if(events.length !== 3) {
+      throw new Error('THIS IS OUR BUG')
+    }
 
     const contracts = new Args(
       rawEventDecode(lastEvent.data)

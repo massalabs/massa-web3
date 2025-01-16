@@ -53,10 +53,17 @@ describe('Smart Contract', () => {
     })
 
   test.only('DeploySC', async () => {
+
+    const randoContract = new SmartContract(provider, "AS1284W76dVesuvPHJ97YxKWv4vGHtErfA6hhHUsh4TXCbpG5jyif")
+
+   await randoContract.call('event')
+
+
+
     const byteCode = fs.readFileSync(contractPath)
     const constructorArgs = new Args().addString('myName')
 
-    const waitFinalExecution = false
+    const waitFinalExecution = true
     const deployOptions: DeploySCOptions = {
       periodToLive: 2,
       maxGas: MAX_GAS_DEPLOYMENT,
