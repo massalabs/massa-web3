@@ -270,4 +270,44 @@ describe('client tests', () => {
     expect(bytesToStr(responses[0].value)).toBe(`Hello, ${NAME_VAL}!`)
     expect(bytesToStr(responses[1].value)).toBe(`Hello, ${NAME_VAL}!`)
   })
+
+  test('deferredCallQuote', async () => {
+    const quotes = await client.deferredCallQuote([
+      {
+        target_slot: { period: 0, thread: 0 },
+        max_gas_request: 3_000_000,
+        params_size: 1000,
+      },
+      {
+        target_slot: { period: lastSlot.period + 2, thread: 10 },
+        max_gas_request: 3_000_000,
+        params_size: 1000,
+      },
+    ])
+    expect(quotes).toHaveLength(2)
+    expect(quotes[0].available).toBeFalsy()
+    expect(quotes[1].available).toBeTruthy()
+  })
+
+  test('deferredCallInfo', async () => {
+    await expect(
+      client.deferredCallsInfo([
+        'D12YfhHYFEWtVMYUtCVDQTEFQaMX27Aivqmth8AH8SfbJidX3Y8KF97DR1bTbZmew7B',
+      ])
+    ).rejects.toThrow(
+      'Internal server error: Not found: Deferred call id D12YfhHYFEWtVMYUtCVDQTEFQaMX27Aivqmth8AH8SfbJidX3Y8KF97DR1bTbZmew7B'
+    )
+  })
+
+  test('deferredCallBySlot', async () => {
+    const deferredCalls = await client.deferredCallsBySlot([
+      { period: lastSlot.period + 2, thread: 10 },
+    ])
+    expect(deferredCalls).toHaveLength(1)
+    expect(deferredCalls[0].call_ids).toHaveLength(0)
+    expect(deferredCalls[0].slot).toEqual({
+      period: lastSlot.period + 2,
+      thread: 10,
+    })
+  })
 })
