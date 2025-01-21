@@ -152,6 +152,29 @@ export class Connector {
   }
 
   /**
+   * Returns if slot is available and the price to book the requested gas
+   */
+  public get_deferred_call_quote: t.GetDeferredCallQuote = (params) => {
+    return this.client.request('get_deferred_call_quote', params)
+  }
+
+  /**
+   * Returns information about deferred calls.
+   */
+  public get_deferred_call_info: t.GetDeferredCallInfo = (params) => {
+    return this.client.request('get_deferred_call_info', params)
+  }
+
+  /**
+   * Returns ids of deferred calls for provided slots.
+   */
+  public get_deferred_call_ids_by_slot: t.GetDeferredCallIdsBySlot = (
+    params
+  ) => {
+    return this.client.request('get_deferred_call_ids_by_slot', params)
+  }
+
+  /**
    * Add to bootstrap blacklist given IP addresses
    */
 

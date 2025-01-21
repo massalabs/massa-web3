@@ -314,4 +314,22 @@ export class PublicAPI {
   ): Promise<t.OperationId[]> {
     return this.connector.send_operations(data)
   }
+
+  async deferredCallQuote(
+    quoteRequests: t.DeferredCallsQuoteRequest[]
+  ): Promise<t.DeferredCallsQuoteResponse[]> {
+    return this.connector.get_deferred_call_quote(quoteRequests)
+  }
+
+  async deferredCallsInfo(
+    deferredCallsIds: string[]
+  ): Promise<t.DeferredCallResponse[]> {
+    return this.connector.get_deferred_call_info(deferredCallsIds)
+  }
+
+  async deferredCallsBySlot(
+    slots: t.Slot[]
+  ): Promise<t.DeferredCallsSlotResponse[]> {
+    return this.connector.get_deferred_call_ids_by_slot(slots)
+  }
 }

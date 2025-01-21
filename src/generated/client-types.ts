@@ -139,6 +139,13 @@ export type OperationId = string;
  */
 export type Error = boolean;
 export type NumberHo1ClIqD = number;
+export interface DeferredCallsQuoteRequest {
+  target_slot: Slot;
+  max_gas_request: NumberHo1ClIqD;
+  params_size: NumberHo1ClIqD;
+  [k: string]: any;
+}
+export type StringDoaGddGA = string;
 /**
  *
  * `PrivateKey` is used for signature and decryption
@@ -151,7 +158,6 @@ export type PrivateKey = string;
  *
  */
 export type IpAddress = string;
-export type StringDoaGddGA = string;
 /**
  *
  * the content creator public key
@@ -270,6 +276,12 @@ export interface ObjectYWuwfL0B { [key: string]: any; }
 export interface ObjectTK16EAH4 { [key: string]: any; }
 /**
  *
+ * deferred call changes
+ *
+ */
+export interface Object8GtTSzoU { [key: string]: any; }
+/**
+ *
  * executed denunciation changes
  *
  */
@@ -289,6 +301,7 @@ export interface StateChanges {
   async_pool_changes: UnorderedSetOfObjectHAgrRKSz46QV1Tyv;
   pos_changes: ObjectYWuwfL0B;
   executed_ops_changes: ObjectTK16EAH4;
+  deferred_call_changes: Object8GtTSzoU;
   executed_denunciations_changes: Object413CQ8L2;
   execution_trail_hash_change: ExecutionTrailHashChange;
 }
@@ -959,6 +972,37 @@ export interface ExecutionStats {
  *
  */
 export type NumberBte4OVdF = number;
+export interface DeferredCallsQuoteResponse {
+  target_slot: Slot;
+  max_gas_request: NumberHo1ClIqD;
+  available: BooleanVyG3AETh;
+  price: NumberHo1ClIqD;
+  [k: string]: any;
+}
+export type UnorderedSetOfNumberHo1ClIqDAokMKuEf = NumberHo1ClIqD[];
+export interface DeferredCall {
+  sender_address: Address;
+  target_slot: Slot;
+  target_address: Address;
+  target_function: StringDoaGddGA;
+  parameters: UnorderedSetOfNumberHo1ClIqDAokMKuEf;
+  coins: NumberHo1ClIqD;
+  max_gas: NumberHo1ClIqD;
+  fee: NumberHo1ClIqD;
+  cancelled: BooleanVyG3AETh;
+  [k: string]: any;
+}
+export interface DeferredCallResponse {
+  call_id: StringDoaGddGA;
+  call: DeferredCall;
+  [k: string]: any;
+}
+export type UnorderedSetOfStringDoaGddGADvj0XlFa = StringDoaGddGA[];
+export interface DeferredCallsSlotResponse {
+  slot?: Slot;
+  call_ids?: UnorderedSetOfStringDoaGddGADvj0XlFa;
+  [k: string]: any;
+}
 type AlwaysFalse = any;
 export type UnorderedSetOfStakerdplIH7J8 = Staker[];
 export interface ObjectOfPeriodBlockIdWrpyYBUS {
@@ -1018,6 +1062,7 @@ export interface ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq {
   end?: NumberHo1ClIqD;
 }
 export type UnorderedSetOfOperationId5TxbV4NZ = OperationId[];
+export type UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS = DeferredCallsQuoteRequest[];
 export type UnorderedSetOfPrivateKeyG69QLiLP = PrivateKey[];
 /**
  *
@@ -1025,7 +1070,6 @@ export type UnorderedSetOfPrivateKeyG69QLiLP = PrivateKey[];
  *
  */
 export type IpAddressList = IpAddress[];
-export type UnorderedSetOfStringDoaGddGADvj0XlFa = StringDoaGddGA[];
 export type UnorderedSetOfIpAddressiIc9WbOi = IpAddress[];
 export type UnorderedSetOfOperationInputx51DfMZX = OperationInput[];
 /**
@@ -1070,6 +1114,9 @@ export interface NodeStatus {
   chain_id: NumberBte4OVdF;
   minimal_fees?: Amount;
 }
+export type UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS = DeferredCallsQuoteResponse[];
+export type UnorderedSetOfDeferredCallResponsewrpyYBUS = DeferredCallResponse[];
+export type UnorderedSetOfDeferredCallsSlotResponsewrpyYBUS = DeferredCallsSlotResponse[];
 /**
  *
  * Public key and a signature it has produced used for serialization/deserialization purpose
@@ -1098,7 +1145,7 @@ export interface FilledBlockInfo {
  * Generated! Represents an alias to any of the provided schemas
  *
  */
-export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCOAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A | UnorderedSetOfReadOnlyCallfpPkkjmf | UnorderedSetOfAddressjJsnATCO | AddressList | BlockIdList | Slot | UnorderedSetOfDatastoreEntryInputLrTgdYH8 | UnorderedSetOfSlotwrpyYBUS | UnorderedSetOfEndorsementIdqnHAk5M0 | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | UnorderedSetOfOperationId5TxbV4NZ | Pagination | UnorderedSetOfPrivateKeyG69QLiLP | IpAddressList | UnorderedSetOfStringDoaGddGADvj0XlFa | Bytes | UnorderedSetOfIpAddressiIc9WbOi | UnorderedSetOfOperationInputx51DfMZX | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfowrpyYBUS | BytecodeList | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueMz9JAAOV | UnorderedSetOfDatastoreEntryOutputgBhWTzxI | UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7 | UnorderedSetOfEndorsementInfowrpyYBUS | OutputEvents | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfowrpyYBUS | UnorderedSetOfStakerdplIH7J8 | NodeStatus | AlwaysFalse | PubkeySig | PagedVecStaker | UnorderedSetOfBlockParentwrpyYBUS | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
+export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCOAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotwrpyYBUSUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfDeferredCallsSlotResponsewrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A | UnorderedSetOfReadOnlyCallfpPkkjmf | UnorderedSetOfAddressjJsnATCO | AddressList | BlockIdList | Slot | UnorderedSetOfDatastoreEntryInputLrTgdYH8 | UnorderedSetOfSlotwrpyYBUS | UnorderedSetOfEndorsementIdqnHAk5M0 | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | UnorderedSetOfOperationId5TxbV4NZ | Pagination | UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS | UnorderedSetOfStringDoaGddGADvj0XlFa | UnorderedSetOfPrivateKeyG69QLiLP | IpAddressList | Bytes | UnorderedSetOfIpAddressiIc9WbOi | UnorderedSetOfOperationInputx51DfMZX | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfowrpyYBUS | BytecodeList | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueMz9JAAOV | UnorderedSetOfDatastoreEntryOutputgBhWTzxI | UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7 | UnorderedSetOfEndorsementInfowrpyYBUS | OutputEvents | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfowrpyYBUS | UnorderedSetOfStakerdplIH7J8 | NodeStatus | UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS | UnorderedSetOfDeferredCallResponsewrpyYBUS | UnorderedSetOfDeferredCallsSlotResponsewrpyYBUS | AlwaysFalse | PubkeySig | PagedVecStaker | UnorderedSetOfBlockParentwrpyYBUS | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
 export type ExecuteReadOnlyBytecode = (ReadOnlyBytecodeExecution: UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
 export type ExecuteReadOnlyCall = (ReadOnlyCall: UnorderedSetOfReadOnlyCallfpPkkjmf) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
 export type GetAddresses = (address: UnorderedSetOfAddressjJsnATCO) => Promise<UnorderedSetOfAddressInfowrpyYBUS>;
@@ -1114,6 +1161,9 @@ export type GetGraphInterval = (TimeInterval: ObjectOfNumberHo1ClIqDNumberHo1ClI
 export type GetOperations = (operationId: UnorderedSetOfOperationId5TxbV4NZ) => Promise<UnorderedSetOfOperationInfowrpyYBUS>;
 export type GetStakers = (PageRequest: Pagination) => Promise<UnorderedSetOfStakerdplIH7J8>;
 export type GetStatus = () => Promise<NodeStatus>;
+export type GetDeferredCallQuote = (req: UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS) => Promise<UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS>;
+export type GetDeferredCallInfo = (arg: UnorderedSetOfStringDoaGddGADvj0XlFa) => Promise<UnorderedSetOfDeferredCallResponsewrpyYBUS>;
+export type GetDeferredCallIdsBySlot = (slots: UnorderedSetOfSlotwrpyYBUS) => Promise<UnorderedSetOfDeferredCallsSlotResponsewrpyYBUS>;
 export type AddStakingSecretKeys = (SecretKeys: UnorderedSetOfPrivateKeyG69QLiLP) => Promise<AlwaysFalse>;
 export type GetStakingAddresses = () => Promise<UnorderedSetOfAddressjJsnATCO>;
 export type NodeAddToBootstrapBlacklist = (ip: IpAddressList) => Promise<AlwaysFalse>;
