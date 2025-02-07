@@ -146,7 +146,7 @@ export class PublicAPI {
   async getDatastoreEntries(
     inputs: DatastoreEntry[],
     final = true
-  ): Promise<Uint8Array[]> {
+  ): Promise<(Uint8Array | null)[]> {
     const entriesQuery = inputs.map((entry) => {
       const byteKey: Uint8Array =
         typeof entry.key === 'string' ? strToBytes(entry.key) : entry.key
@@ -158,7 +158,7 @@ export class PublicAPI {
     const res = await this.connector.get_datastore_entries(entriesQuery)
     return res.map((r: t.DatastoreEntryOutput) => {
       const val = final ? r.final_value : r.candidate_value
-      return Uint8Array.from(val ?? [])
+      return val ? Uint8Array.from(val) : null
     })
   }
 
@@ -166,7 +166,7 @@ export class PublicAPI {
     key: string | Uint8Array,
     address: string,
     final = true
-  ): Promise<Uint8Array> {
+  ): Promise<Uint8Array | null> {
     return this.getDatastoreEntries([{ key, address }], final).then((r) => r[0])
   }
 

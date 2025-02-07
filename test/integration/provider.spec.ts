@@ -1,5 +1,8 @@
 import { CHAIN_ID, NetworkName } from '../../src'
 import { provider } from './setup'
+import { strToBytes, U256 } from '../../src/basicElements/serializers'
+
+const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
 
 describe('Provider tests', () => {
   test('networkInfos', async () => {
@@ -31,5 +34,38 @@ describe('Provider tests', () => {
     expect(status.executionStats).toBeDefined()
     expect(status.chainId).toBeDefined()
     expect(status.minimalFees).toBeDefined()
+  })
+})
+
+describe('Provider readStorage test', () => {
+  test('readStorage', async () => {
+    const dataentries = await provider.readStorage(USDC, [
+      'NAME',
+      'SYMBOL',
+      'TOTAL_SUPPLY',
+    ])
+    expect(dataentries).toHaveLength(3)
+    expect(dataentries[0]).toEqual(strToBytes('Sepolia USDC'))
+    expect(dataentries[1]).toEqual(strToBytes('USDC.s'))
+    expect(U256.fromBytes(dataentries[2] as Uint8Array)).toBeGreaterThan(0n)
+  })
+
+  test('readStorage with empty keys list', async () => {
+    const dataentries = await provider.readStorage(USDC, [])
+    expect(dataentries).toHaveLength(0)
+  })
+
+  test('readStorage with existing and non-existing keys', async () => {
+    const dataentries = await provider.readStorage(USDC, [
+      'bad_key',
+      'NAME',
+      'bad_key2',
+      'SYMBOL',
+    ])
+    expect(dataentries).toHaveLength(4)
+    expect(dataentries[0]).toBeNull()
+    expect(dataentries[1]).toEqual(strToBytes('Sepolia USDC'))
+    expect(dataentries[2]).toBeNull()
+    expect(dataentries[3]).toEqual(strToBytes('USDC.s'))
   })
 })

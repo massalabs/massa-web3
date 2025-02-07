@@ -29,7 +29,7 @@
         "test:browser": "jest --config=jest.browser.config.js",
         "test:cov": "jest --detectOpenHandles --coverage --forceExit",
         "test:cov:watch": "jest --detectOpenHandles --coverage --watch",
-        "test:integration": "jest --forceExit --runInBand ./test/integration",
+        "test:integration": "jest --detectOpenHandles --forceExit --runInBand ./test/integration",
         "test:all": "npm run test && npm run test:integration",
         "test:watch:all": "jest --watchAll",
         "check-types": "tsc --noEmit",

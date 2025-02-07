@@ -1,6 +1,7 @@
 import { Args, bytesToStr, U256, U8 } from '../basicElements'
 import { Operation } from '../operation'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
+import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
 
 /**
  * @class MRC20
@@ -44,6 +45,9 @@ export class MRC20 extends SmartContract {
       return this._name
     }
     const res = await this.provider.readStorage(this.address, ['NAME'], true)
+    if (!res[0]) {
+      throw new ErrorDataEntryNotFound({ key: 'NAME', address: this.address })
+    }
     return (this._name = bytesToStr(res[0]))
   }
 
@@ -52,6 +56,9 @@ export class MRC20 extends SmartContract {
       return this._symbol
     }
     const res = await this.provider.readStorage(this.address, ['SYMBOL'], true)
+    if (!res[0]) {
+      throw new ErrorDataEntryNotFound({ key: 'SYMBOL', address: this.address })
+    }
     return (this._symbol = bytesToStr(res[0]))
   }
 
@@ -64,6 +71,12 @@ export class MRC20 extends SmartContract {
       ['DECIMALS'],
       true
     )
+    if (!res[0]) {
+      throw new ErrorDataEntryNotFound({
+        key: 'DECIMALS',
+        address: this.address,
+      })
+    }
     return (this._decimals = Number(U8.fromBytes(res[0])))
   }
 
@@ -73,6 +86,12 @@ export class MRC20 extends SmartContract {
       ['TOTAL_SUPPLY'],
       final
     )
+    if (!res[0]) {
+      throw new ErrorDataEntryNotFound({
+        key: 'TOTAL_SUPPLY',
+        address: this.address,
+      })
+    }
     return U256.fromBytes(res[0])
   }
 
@@ -102,7 +121,7 @@ export class MRC20 extends SmartContract {
 
     return res.map((v, i) => ({
       address: addresses[i],
-      balance: v.length ? U256.fromBytes(v) : 0n,
+      balance: v ? U256.fromBytes(v) : 0n,
     }))
   }
 

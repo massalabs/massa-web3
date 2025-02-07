@@ -3,6 +3,7 @@ import { Operation } from '../operation'
 import { Provider, PublicProvider } from '../provider'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 import { checkNetwork } from './tokens'
+import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
 
 export const MNS_CONTRACTS = {
   mainnet: 'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT',
@@ -104,8 +105,12 @@ export class MNS extends SmartContract {
       ...strToBytes(name),
     ])
     const data = await this.provider.readStorage(this.address, [key], true)
-    if (!data.length) {
-      throw new Error(`Domain ${name} not found`)
+    if (data[0] == null) {
+      throw new ErrorDataEntryNotFound({
+        key: bytesToStr(key),
+        address: this.address,
+        details: `mns Domain ${name} not found`,
+      })
     }
     return U256.fromBytes(data[0])
   }
@@ -151,7 +156,16 @@ export class MNS extends SmartContract {
       domainKeys,
       final
     )
-    return domainsBytes.map((d) => bytesToStr(d))
+    return domainsBytes.map((d, i) => {
+      if (!d) {
+        throw new ErrorDataEntryNotFound({
+          key: bytesToStr(ownedKeys[i]),
+          address: this.address,
+          details: `Domain with tokenId ${U256.fromBytes(ownedKeys[i].slice(filter.length))} not found`,
+        })
+      }
+      return bytesToStr(d as Uint8Array)
+    })
   }
 
   async getTargets(domains: string[], final = false): Promise<string[]> {
