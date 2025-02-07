@@ -2,7 +2,7 @@ import { ErrorBase } from './base'
 import { ErrorCodes } from './utils/codes'
 
 type ErrorDataEntryNotFoundParameters = {
-  key: string
+  key: Uint8Array | string
   address: string
   details?: string
 }

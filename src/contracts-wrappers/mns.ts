@@ -107,7 +107,7 @@ export class MNS extends SmartContract {
     const data = await this.provider.readStorage(this.address, [key], true)
     if (data[0] == null) {
       throw new ErrorDataEntryNotFound({
-        key: bytesToStr(key),
+        key: key,
         address: this.address,
         details: `mns Domain ${name} not found`,
       })
@@ -159,7 +159,7 @@ export class MNS extends SmartContract {
     return domainsBytes.map((d, i) => {
       if (!d) {
         throw new ErrorDataEntryNotFound({
-          key: bytesToStr(ownedKeys[i]),
+          key: ownedKeys[i],
           address: this.address,
           details: `Domain with tokenId ${U256.fromBytes(ownedKeys[i].slice(filter.length))} not found`,
         })
