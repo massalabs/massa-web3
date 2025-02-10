@@ -32,7 +32,7 @@ export type PublicProvider = {
     address: string,
     keys: Uint8Array[] | string[],
     final?: boolean
-  ): Promise<Uint8Array[]>
+  ): Promise<(Uint8Array | null)[]>
 }
 
 /**

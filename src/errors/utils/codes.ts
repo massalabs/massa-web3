@@ -3,4 +3,5 @@ export enum ErrorCodes {
   MaxGasLimit,
   InsufficientBalance,
   MinimalFee,
+  DataEntryNotFound,
 }

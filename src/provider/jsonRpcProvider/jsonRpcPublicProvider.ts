@@ -109,7 +109,7 @@ export class JsonRpcPublicProvider implements PublicProvider {
     address: string,
     keys: Uint8Array[] | string[],
     final = true
-  ): Promise<Uint8Array[]> {
+  ): Promise<(Uint8Array | null)[]> {
     const entries: DatastoreEntry[] = keys.map((key) => ({ address, key }))
     return this.client.getDatastoreEntries(entries, final)
   }

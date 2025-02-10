@@ -119,12 +119,13 @@ describe('client tests', () => {
 
   test('getDatastoreEntry', async () => {
     const entry = await client.getDatastoreEntry(NAME_KEY, TEST_CONTRACT)
-    expect(bytesToStr(entry)).toBe(NAME_VAL)
+    expect(entry).not.toBeNull()
+    expect(bytesToStr(entry as Uint8Array)).toBe(NAME_VAL)
   })
 
   test('getDatastoreEntry speculative', async () => {
     const entry = await client.getDatastoreEntry(NAME_KEY, TEST_CONTRACT, false)
-    expect(bytesToStr(entry)).toBe(NAME_VAL)
+    expect(bytesToStr(entry as Uint8Array)).toBe(NAME_VAL)
   })
 
   test('getDatastoreEntries', async () => {
@@ -133,10 +134,41 @@ describe('client tests', () => {
         address: TEST_CONTRACT,
         key: strToBytes(NAME_KEY),
       },
+    ]) // retrieve final by default
+
+    expect(entries).toHaveLength(1)
+    expect(entries[0]).not.toBeNull()
+    expect(bytesToStr(entries[0] as Uint8Array)).toBe(NAME_VAL)
+  })
+
+  test('getDatastoreEntries with bad keys', async () => {
+    const entries = await client.getDatastoreEntries([
+      {
+        address: TEST_CONTRACT,
+        key: strToBytes('bad_key'),
+      },
     ])
 
     expect(entries).toHaveLength(1)
-    expect(bytesToStr(entries[0])).toBe(NAME_VAL)
+    expect(entries[0]).toBeNull()
+  })
+
+  test('getDatastoreEntries 2 keys: one good one bad', async () => {
+    const entries = await client.getDatastoreEntries([
+      {
+        address: TEST_CONTRACT,
+        key: strToBytes('bad_key'),
+      },
+      {
+        address: TEST_CONTRACT,
+        key: strToBytes(NAME_KEY),
+      },
+    ])
+
+    expect(entries).toHaveLength(2)
+    expect(entries[0]).toBeNull()
+    expect(entries[1]).not.toBeNull()
+    expect(bytesToStr(entries[1] as Uint8Array)).toBe(NAME_VAL)
   })
 
   test.skip('sendOperations', async () => {
