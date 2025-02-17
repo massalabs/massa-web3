@@ -1,10 +1,18 @@
-import { NodeStatusInfo, PublicProvider, ReadSCData, ReadSCParams } from '..'
+import {
+  GAS_ESTIMATION_TOLERANCE,
+  NodeStatusInfo,
+  PublicProvider,
+  ReadSCData,
+  ReadSCParams,
+} from '..'
 import {
   Account,
   CHAIN_ID,
   DatastoreEntry,
   EventFilter,
   Mas,
+  MAX_GAS_CALL,
+  minBigInt,
   Network,
   NetworkName,
   PublicAPI,
@@ -14,6 +22,7 @@ import {
 import { rpcTypes as t } from '../../generated'
 import { OperationStatus } from '../../operation'
 import { formatNodeStatusObject } from '../../client/formatObjects'
+import { U64_t } from '../../basicElements/serializers/number/u64'
 
 export class JsonRpcPublicProvider implements PublicProvider {
   constructor(public client: PublicAPI) {}
@@ -112,5 +121,33 @@ export class JsonRpcPublicProvider implements PublicProvider {
   ): Promise<(Uint8Array | null)[]> {
     const entries: DatastoreEntry[] = keys.map((key) => ({ address, key }))
     return this.client.getDatastoreEntries(entries, final)
+  }
+
+  /**
+   * Returns the gas estimation for a given function.
+   *
+   * @remarks To avoid running out of gas, the gas estimation is increased by 20%.
+   *
+   * @param params - ReadSCParams. caller must be provided
+   * @throws If the read operation returns an error.
+   * @returns The gas estimation for the operation execution.
+   */
+  public async getGasEstimation(params: ReadSCParams): Promise<U64_t> {
+    if (!params.caller) {
+      throw new Error('Caller must be provided for gas estimation')
+    }
+
+    const result = await this.readSC(params)
+
+    if (result.info.error) {
+      throw new Error(result.info.error)
+    }
+
+    const gasCost = BigInt(result.info.gasCost)
+    return minBigInt(
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      gasCost + (gasCost * GAS_ESTIMATION_TOLERANCE) / 100n,
+      MAX_GAS_CALL
+    )
   }
 }

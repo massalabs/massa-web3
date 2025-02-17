@@ -2,7 +2,6 @@ import {
   CallSCParams,
   DeploySCParams,
   ExecuteScParams,
-  GAS_ESTIMATION_TOLERANCE,
   Provider,
   ReadSCData,
   ReadSCParams,
@@ -13,7 +12,6 @@ import {
   Address,
   MAX_GAS_CALL,
   MIN_GAS_CALL,
-  minBigInt,
   populateDatastore,
   PublicAPI,
   PublicApiUrl,
@@ -35,7 +33,6 @@ import {
   OperationManager,
 } from '../../operation/operationManager'
 import { execute } from '../../basicElements/bytecode'
-import { U64_t } from '../../basicElements/serializers/number/u64'
 import { ErrorMaxGas, ErrorInsufficientBalance } from '../../errors'
 import { JsonRpcPublicProvider } from './jsonRpcPublicProvider'
 
@@ -285,30 +282,6 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
 
     const manager = new OperationManager(this.account.privateKey, this.client)
     return manager.send(details)
-  }
-
-  /**
-   * Returns the gas estimation for a given function.
-   *
-   * @remarks To avoid running out of gas, the gas estimation is increased by 20%.
-   *
-   * @param params - callSCParams.
-   * @throws If the read operation returns an error.
-   * @returns The gas estimation for the function.
-   */
-  protected async getGasEstimation(params: CallSCParams): Promise<U64_t> {
-    const result = await this.readSC(params)
-
-    if (result.info.error) {
-      throw new Error(result.info.error)
-    }
-
-    const gasCost = BigInt(result.info.gasCost)
-    return minBigInt(
-      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-      gasCost + (gasCost * GAS_ESTIMATION_TOLERANCE) / 100n,
-      MAX_GAS_CALL
-    )
   }
 
   protected async checkAccountBalance(coins: Mas): Promise<void> {
