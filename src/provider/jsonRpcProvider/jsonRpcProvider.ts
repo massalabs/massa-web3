@@ -35,6 +35,7 @@ import {
 import { execute } from '../../basicElements/bytecode'
 import { ErrorMaxGas, ErrorInsufficientBalance } from '../../errors'
 import { JsonRpcPublicProvider } from './jsonRpcPublicProvider'
+import { U64_t } from '../../basicElements/serializers/number/u64'
 
 export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
   constructor(
@@ -353,6 +354,11 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
       parameter: args instanceof Uint8Array ? args : args.serialize(),
     }
     return this.client.executeReadOnlyCall(readOnlyParams)
+  }
+
+  public async getGasEstimation(params: ReadSCParams): Promise<U64_t> {
+    const caller = params.caller ?? this.account.address.toString()
+    return super.getGasEstimation({ ...params, caller })
   }
 }
 
