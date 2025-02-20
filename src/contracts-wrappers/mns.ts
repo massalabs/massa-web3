@@ -14,10 +14,10 @@ export const MNS_CONTRACTS = {
  * @class MNS
  * @extends SmartContract
  *
- * The MNS class provides methods to interact with the Massa Name Service (MNS) smart contract.
+ * The MNS class provides methods to interact with the Massa Name System (MNS) smart contract.
  * It allows resolving domain names, reverse resolving addresses, allocating domains, freeing domains,
  * and updating domain targets.
- * MNS contract is available here: https://github.com/massalabs/massa-name-service/blob/main/smart-contract/assembly/contracts/main.ts
+ * MNS contract is available here: https://github.com/massalabs/massa-name-system/blob/main/smart-contract/assembly/contracts/main.ts
  *
  * @example
  * ```typescript
