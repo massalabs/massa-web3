@@ -21,6 +21,8 @@ import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/publ
 import {
   ExecutionQueryExecutionStatus,
   ExecutionQueryRequestItem,
+  GetDatastoreEntriesRequest,
+  GetDatastoreEntryFilter,
   ScExecutionEventsFilter,
 } from '../../generated/grpc/apis/massa/api/v1/public'
 import { ScExecutionEventStatus } from '../../generated/grpc/massa/model/v1/execution'
@@ -118,9 +120,9 @@ export class GrpcProvider implements Provider {
 
     return {
       name: networkName,
-      chainId: CHAIN_ID.Buildnet,
+      chainId: chainId ? chainId : 0n,
       url: this.url,
-      minimalFee: 0n,
+      minimalFee: status.response?.status?.minimalFees?.mantissa ?? 0n,
     }
   }
   async getOperationStatus(opId: string): Promise<OperationStatus> {
@@ -354,8 +356,7 @@ export class GrpcProvider implements Provider {
 
       throw new Error(
         `Unexpected response type: ${addressInfo.oneofKind}, ` +
-          `expected 'result' with 'vecBytes' but got '${addressInfo.oneofKind}' ` +
-          `with '${addressInfo.oneofKind === 'result' ? addressInfo.result.responseItem.oneofKind : 'N/A'}'`
+          `expected 'result' with 'vecBytes' but got '${addressInfo.oneofKind === 'result' ? addressInfo.result.responseItem.oneofKind : 'N/A'}'`
       )
     } catch (error) {
       if (error instanceof Error) {
@@ -365,12 +366,33 @@ export class GrpcProvider implements Provider {
     }
   }
 
-  readStorage(
+  async readStorage(
     address: string,
     keys: Uint8Array[] | string[],
     final?: boolean
   ): Promise<(Uint8Array | null)[]> {
-    throw new Error('Method not implemented.')
+    const filters: GetDatastoreEntryFilter[] = keys.map((item) => {
+      const key: Uint8Array = typeof item === 'string' ? strToBytes(item) : item
+      const ret: GetDatastoreEntryFilter = {
+        filter: {
+          oneofKind: 'addressKey',
+          addressKey: {
+            address: address,
+            key: key,
+          },
+        },
+      }
+      return ret
+    })
+
+    const request: GetDatastoreEntriesRequest = {
+      filters: filters,
+    }
+
+    const response = await this.publicClient.getDatastoreEntries(request)
+    return response.response.datastoreEntries.map((item) =>
+      final === undefined || final ? item.finalValue : item.candidateValue
+    )
   }
   get address(): string {
     return this.account.address.toString()
@@ -381,21 +403,90 @@ export class GrpcProvider implements Provider {
   get providerName(): string {
     return this._providerName
   }
-  balance(final: boolean): Promise<bigint> {
-    throw new Error('Method not implemented.')
+  async balance(final = true): Promise<bigint> {
+    try {
+      const queries: ExecutionQueryRequestItem[] = [
+        {
+          requestItem: final
+            ? {
+                oneofKind: 'addressBalanceFinal',
+                addressBalanceFinal: {
+                  address: this.account.address.toString(),
+                },
+              }
+            : {
+                oneofKind: 'addressBalanceCandidate',
+                addressBalanceCandidate: {
+                  address: this.account.address.toString(),
+                },
+              },
+        },
+      ]
+
+      const response = await this.publicClient.queryState({ queries })
+
+      if (!response?.response?.responses?.[0]) {
+        throw new Error('No response received for balance query')
+      }
+
+      const result = response.response.responses[0].response
+
+      if (result.oneofKind === 'error') {
+        throw new Error(
+          `Query state error: ${result.error?.message || 'Unknown error'}`
+        )
+      }
+
+      if (
+        result.oneofKind === 'result' &&
+        result.result.responseItem.oneofKind === 'amount'
+      ) {
+        return result.result.responseItem.amount.mantissa
+      }
+
+      throw new Error(
+        `Unexpected response type: ${result.oneofKind}, ` +
+          `expected 'result' with 'amount' but got '${result.oneofKind === 'result' ? result.result.responseItem.oneofKind : 'N/A'}'`
+      )
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to get balance: ${error.message}`)
+      }
+      throw new Error('Failed to get balance: Unknown error')
+    }
   }
+
+  /**
+   * @obsolete This method cannot be implemented in the GRPC provider.
+   * Use another provider or alternative method for signing data.
+   */
   sign(
     data: Uint8Array | string,
     signOptions?: SignOptions
   ): Promise<SignedData> {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * @obsolete This method cannot be implemented in the GRPC provider.
+   * Use another provider or alternative method for buying rolls.
+   */
   buyRolls(amount: Mas, opts?: OperationOptions): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * @obsolete This method cannot be implemented in the GRPC provider.
+   * Use another provider or alternative method for selling rolls.
+   */
   sellRolls(amount: Mas, opts?: OperationOptions): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * @obsolete This method cannot be implemented in the GRPC provider.
+   * Use another provider or alternative method for transferring assets.
+   */
   transfer(
     to: Address | string,
     amount: Mas,
@@ -403,12 +494,27 @@ export class GrpcProvider implements Provider {
   ): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * @obsolete This method cannot be implemented in the GRPC provider.
+   * Use another provider or alternative method for calling smart contracts.
+   */
   callSC(params: CallSCParams): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * @obsolete This method cannot be implemented in the GRPC provider.
+   * Use another provider or alternative method for executing smart contracts.
+   */
   executeSC(params: ExecuteScParams): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * @obsolete This method cannot be implemented in the GRPC provider.
+   * Use another provider or alternative method for deploying smart contracts.
+   */
   deploySC(params: DeploySCParams): Promise<SmartContract> {
     throw new Error('Method not implemented.')
   }
