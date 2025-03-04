@@ -32,6 +32,7 @@ BRANCH="improve_datastore_keys_query"
 
 
 protoc --ts_out=src/generated/grpc \
+        --ts_opt=optimize_code_size \
         --proto_path="$DESTINATION"/proto \
         --proto_path="$DESTINATION"/proto/commons \
         --proto_path="$DESTINATION"/proto/third_party \
@@ -40,6 +41,7 @@ protoc --ts_out=src/generated/grpc \
 proto_dir="tmp/proto/commons"
 
 protoc $(find "${proto_dir}" -name '*.proto') \
+        --ts_opt=optimize_code_size \
         --proto_path="${proto_dir}" \
         --proto_path=tmp/proto/commons \
         --proto_path=tmp/proto/third_party \
