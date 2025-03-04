@@ -12,6 +12,7 @@ import {
   ReadSCData,
   ReadSCParams,
 } from './'
+import { PublicStatus } from '../generated/grpc/massa/model/v1/node'
 
 export type PublicProvider = {
   balanceOf(
@@ -21,7 +22,7 @@ export type PublicProvider = {
   networkInfos(): Promise<Network>
   getOperationStatus(opId: string): Promise<OperationStatus>
   getEvents(filter: EventFilter): Promise<t.OutputEvents>
-  getNodeStatus(): Promise<NodeStatusInfo>
+  getNodeStatus(): Promise<NodeStatusInfo | PublicStatus>
   readSC(params: ReadSCParams): Promise<ReadSCData>
   getStorageKeys(
     address: string,

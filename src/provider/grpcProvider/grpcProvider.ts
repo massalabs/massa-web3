@@ -1,14 +1,13 @@
 import { Address } from '../../basicElements'
 import { EventFilter } from '../../client'
-import { OutputEvents } from '../../generated/client-types'
+import { EventExecutionContext, OutputEvents, SCOutputEvent } from '../../generated/client-types'
 import { OperationStatus, OperationOptions, Operation } from '../../operation'
 import { SmartContract } from '../../smartContracts'
-import { Network } from '../../utils'
+import { CHAIN_ID, Network, NetworkName } from '../../utils'
 import {
     CallSCParams,
     DeploySCParams,
     ExecuteScParams,
-    NodeStatusInfo,
     Provider,
     ReadSCData,
     ReadSCParams,
@@ -18,12 +17,14 @@ import {
 import { Account } from '../../account'
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
 import { fromNanoMas, Mas } from '../../basicElements/mas'
-import { PublicServiceClient } from 'src/generated/grpc/apis/massa/api/v1/public.client'
-import { ExecutionQueryRequestItem } from 'src/generated/grpc/apis/massa/api/v1/public'
+import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/public.client'
+import { ExecutionQueryExecutionStatus, ExecutionQueryRequestItem, ScExecutionEventsFilter } from '../../generated/grpc/apis/massa/api/v1/public'
+import { ScExecutionEventStatus } from '../../generated/grpc/massa/model/v1/execution'
+import { PublicStatus } from '../../generated/grpc/massa/model/v1/node'
 
 export class GrpcProvider implements Provider {
     private readonly publicClient: PublicServiceClient
-
+    private readonly url: string
     constructor(
         url: string,
         public account: Account
@@ -31,7 +32,8 @@ export class GrpcProvider implements Provider {
         const transport = new GrpcWebFetchTransport({
             baseUrl: url,
         })
-        this.publicClient = new PublicServiceClient(transport)
+        this.publicClient = new PublicServiceClient(transport);
+        this.url = url;
     }
 
     async balanceOf(
@@ -57,67 +59,183 @@ export class GrpcProvider implements Provider {
 
         const response = await this.publicClient.queryState({ queries: queries })
 
-        const balances = response.response.responses.map((item, index) => {
-            const responseItem = item.response
+        const balances = response.response.responses
+            .map((item, index) => {
+                const responseItem = item.response
 
-            if (!responseItem) {
-                throw new Error('Empty response received')
-            }
+                if (!responseItem) {
+                    console.warn(`Empty response received for address ${addresses[index]}`)
+                    return null
+                }
 
-            if (responseItem.oneofKind === 'error') {
-                throw new Error(
-                    `Error for address ${addresses[index]}: ${responseItem.error?.message}`
+                if (responseItem.oneofKind === 'error') {
+                    console.warn(`Error for address ${addresses[index]}: ${responseItem.error?.message}`)
+                    return null
+                }
+
+                if (
+                    responseItem.oneofKind !== 'result' ||
+                    responseItem.result?.responseItem?.oneofKind !== 'amount'
+                ) {
+                    console.warn(`Unexpected response format for address ${addresses[index]}`)
+                    return null
+                }
+
+                const balance = fromNanoMas(
+                    responseItem.result.responseItem.amount.mantissa
                 )
-            }
-
-            if (
-                responseItem.oneofKind !== 'result' ||
-                responseItem.result?.responseItem?.oneofKind !== 'amount'
-            ) {
-                throw new Error(
-                    `Unexpected response format for address ${addresses[index]}`
-                )
-            }
-
-            const balance = fromNanoMas(
-                responseItem.result.responseItem.amount.mantissa
-            )
-            return { address: addresses[index], balance }
-        })
+                return { address: addresses[index], balance }
+            })
+            .filter((item): item is { address: string; balance: bigint } => item !== null)
 
         return balances
     }
     async networkInfos(): Promise<Network> {
         let status = await this.publicClient.getStatus({});
-
-        status.response?.status?.chainId;
-
-        // let name = 'Unknown'
-        // if (chainId === CHAIN_ID.Mainnet) {
-        //     name = NetworkName.Mainnet
-        // } else if (chainId === CHAIN_ID.Buildnet) {
-        //     name = NetworkName.Buildnet
-        // }
+        const chainId = status.response?.status?.chainId;
+        let networkName;
+        if (chainId === CHAIN_ID.Mainnet) {
+            networkName = NetworkName.Mainnet;
+        } else if (chainId === CHAIN_ID.Buildnet) {
+            networkName = NetworkName.Buildnet;
+        }
 
         return {
-            name: "toto",
-            chainId: 2n,
-            url: "this.client.url",
+            name: networkName,
+            chainId: CHAIN_ID.Buildnet,
+            url: this.url,
             minimalFee: 0n,
+        }
+    }
+    async getOperationStatus(opId: string): Promise<OperationStatus> {
+
+        const queries: ExecutionQueryRequestItem[] = [
+            {
+                requestItem: {
+                    oneofKind: 'opExecutionStatusCandidate',
+                    opExecutionStatusCandidate: { operationId: opId }
+                }
+            }
+        ];
+
+        const response = await this.publicClient.queryState({ queries: queries });
+
+        if (response.response.responses.length === 0) {
+            throw new Error('Operation not found')
+        }
+
+        const operation = response.response.responses[0].response;
+        if (operation.oneofKind === 'error') {
+            throw new Error('error in queryState');
+        }
+
+        if (operation.oneofKind === 'result') {
+            if (operation.result.responseItem.oneofKind === 'executionStatus') {
+                switch (operation.result.responseItem.executionStatus) {
+                    case ExecutionQueryExecutionStatus.ALREADY_EXECUTED_WITH_FAILURE:
+                        return OperationStatus.Error;
+                    case ExecutionQueryExecutionStatus.ALREADY_EXECUTED_WITH_SUCCESS:
+                        return OperationStatus.Success;
+                    case ExecutionQueryExecutionStatus.EXECUTABLE_OR_EXPIRED:
+                        return OperationStatus.NotFound;
+                    case ExecutionQueryExecutionStatus.UNSPECIFIED:
+                        return OperationStatus.NotFound;
+                }
+            }
         }
 
 
+        return OperationStatus.NotFound;
     }
-    getOperationStatus(opId: string): Promise<OperationStatus> {
-        // const response = await this.publicClient.searchOperations({operationIds: [opId]});
-        throw new Error('Method not implemented.')
+
+    /// only events with context are returned
+    async getEvents(filter: EventFilter): Promise<OutputEvents> {
+        const filters: ScExecutionEventsFilter[] = [];
+
+        if (filter.start !== undefined && filter.end !== undefined) {
+            filters.push({
+                filter: {
+                    oneofKind: "slotRange",
+                    slotRange: {
+                        startSlot: {
+                            period: BigInt(filter.start.period),
+                            thread: filter.start.thread
+                        },
+                        endSlot: {
+                            period: BigInt(filter.end.period),
+                            thread: filter.end.thread
+                        }
+                    }
+                }
+            });
+        } else if (filter.callerAddress !== undefined) {
+            filters.push({
+                filter: {
+                    oneofKind: "callerAddress",
+                    callerAddress: filter.callerAddress
+                }
+            });
+        } else if (filter.smartContractAddress !== undefined) {
+            filters.push({
+                filter: {
+                    oneofKind: "emitterAddress",
+                    emitterAddress: filter.smartContractAddress
+                }
+            });
+        } else if (filter.operationId !== undefined) {
+            filters.push({
+                filter: {
+                    oneofKind: "originalOperationId",
+                    originalOperationId: filter.operationId
+                }
+            });
+        } else if (filter.isError !== undefined) {
+            filters.push({
+                filter: {
+                    oneofKind: "isFailure",
+                    isFailure: filter.isError
+                }
+            });
+        } else if (filter.status !== undefined) {
+            filters.push({
+                filter: {
+                    oneofKind: "status",
+                    status: filter.status
+                }
+            });
+        }
+
+        const response = await this.publicClient.getScExecutionEvents({ filters: filters });
+        const outputEvents: OutputEvents = response.response.events.filter((event) => event.context !== null).map((event) => {
+            const context = {
+                slot: {
+                    period: Number(event.context?.originSlot?.period ?? 0),
+                    thread: Number(event.context?.originSlot?.thread ?? 0)
+                },
+                read_only: event.context?.status === ScExecutionEventStatus.READ_ONLY ? true : false,
+                call_stack: event.context?.callStack ?? [],
+                index_in_slot: Number(event.context?.indexInSlot ?? 0),
+                is_final: event.context?.status === ScExecutionEventStatus.FINAL ? true : false,
+            };
+            const outputEvent: SCOutputEvent = {
+                data: event.data.toString(),
+                context,
+            };
+            return outputEvent;
+        });
+        return outputEvents;
     }
-    getEvents(filter: EventFilter): Promise<OutputEvents> {
-        throw new Error('Method not implemented.')
+
+    async getNodeStatus(): Promise<PublicStatus> {
+        const response = await this.publicClient.getStatus({});
+        const status = response.response?.status;
+        if (!status) {
+            throw new Error('Empty response received')
+        }
+        return status;
     }
-    getNodeStatus(): Promise<NodeStatusInfo> {
-        throw new Error('Method not implemented.')
-    }
+
+
     readSC(params: ReadSCParams): Promise<ReadSCData> {
         throw new Error('Method not implemented.')
     }
