@@ -17,9 +17,9 @@ import {
 } from '..'
 import { Account } from '../../account'
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
-import { PublicServiceClient } from '../../generated/grpc/massa/api/v1/public.client'
-import { ExecutionQueryRequestItem } from '../../generated/grpc/massa/api/v1/public'
 import { fromNanoMas, Mas } from '../../basicElements/mas'
+import { PublicServiceClient } from 'src/generated/grpc/apis/massa/api/v1/public.client'
+import { ExecutionQueryRequestItem } from 'src/generated/grpc/apis/massa/api/v1/public'
 
 export class GrpcProvider implements Provider {
     private readonly publicClient: PublicServiceClient
@@ -87,10 +87,29 @@ export class GrpcProvider implements Provider {
 
         return balances
     }
-    networkInfos(): Promise<Network> {
-        throw new Error('Method not implemented.')
+    async networkInfos(): Promise<Network> {
+        let status = await this.publicClient.getStatus({});
+
+        status.response?.status?.chainId;
+
+        // let name = 'Unknown'
+        // if (chainId === CHAIN_ID.Mainnet) {
+        //     name = NetworkName.Mainnet
+        // } else if (chainId === CHAIN_ID.Buildnet) {
+        //     name = NetworkName.Buildnet
+        // }
+
+        return {
+            name: "toto",
+            chainId: 2n,
+            url: "this.client.url",
+            minimalFee: 0n,
+        }
+
+
     }
     getOperationStatus(opId: string): Promise<OperationStatus> {
+        // const response = await this.publicClient.searchOperations({operationIds: [opId]});
         throw new Error('Method not implemented.')
     }
     getEvents(filter: EventFilter): Promise<OutputEvents> {
