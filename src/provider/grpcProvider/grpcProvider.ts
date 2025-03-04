@@ -1,22 +1,15 @@
-import { Address, strToBytes } from '../../basicElements'
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import { Mas, strToBytes } from '../../basicElements'
 import { EventFilter } from '../../client'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
-import { OperationStatus, OperationOptions, Operation } from '../../operation'
+import { OperationStatus, Operation } from '../../operation'
 import { SmartContract } from '../../smartContracts'
 import { CHAIN_ID, Network, NetworkName } from '../../utils'
-import {
-  CallSCParams,
-  DeploySCParams,
-  ExecuteScParams,
-  Provider,
-  ReadSCData,
-  ReadSCParams,
-  SignedData,
-  SignOptions,
-} from '..'
+import { Provider, ReadSCParams, SignedData } from '..'
 import { Account } from '../../account'
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
-import { fromNanoMas, Mas } from '../../basicElements/mas'
+import { fromNanoMas } from '../../basicElements/mas'
 import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/public.client'
 import {
   ExecutionQueryExecutionStatus,
@@ -25,13 +18,17 @@ import {
   GetDatastoreEntryFilter,
   ScExecutionEventsFilter,
 } from '../../generated/grpc/apis/massa/api/v1/public'
-import { ScExecutionEventStatus } from '../../generated/grpc/massa/model/v1/execution'
+import {
+  ReadOnlyExecutionOutput,
+  ScExecutionEventStatus,
+} from '../../generated/grpc/massa/model/v1/execution'
 import { PublicStatus } from '../../generated/grpc/massa/model/v1/node'
 
 export class GrpcProvider implements Provider {
   private readonly publicClient: PublicServiceClient
   private readonly url: string
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private readonly _providerName: string = 'Massa GRPC provider'
 
   constructor(
@@ -261,10 +258,37 @@ export class GrpcProvider implements Provider {
     return status
   }
 
-  readSC(params: ReadSCParams): Promise<ReadSCData> {
-    throw new Error('Method not implemented.')
+  async readSC(params: ReadSCParams): Promise<ReadOnlyExecutionOutput> {
+    const args = params.parameter ?? new Uint8Array()
+    const caller = params.caller ?? this.account.address.toString()
+    const maxGas = params.maxGas ?? 0n
+    const fee = params.fee ?? fromNanoMas(0n)
+
+    const response = await this.publicClient.executeReadOnlyCall({
+      call: {
+        maxGas: maxGas,
+        ...(params.fee && { fee: { mantissa: fee, scale: Mas.NB_DECIMALS } }),
+        callerAddress: { value: caller },
+        callStack: [],
+        target: {
+          oneofKind: 'functionCall',
+          functionCall: {
+            targetAddress: params.target,
+            targetFunction: params.func,
+            parameter: args instanceof Uint8Array ? args : args.serialize(),
+          },
+        },
+      },
+    })
+
+    if (!response.response.output) {
+      throw new Error('No output received')
+    }
+
+    return response.response.output
   }
 
+  /* eslint-disable-next-line max-params */
   async getStorageKeys(
     address: string,
     filter?: Uint8Array | string,
@@ -460,10 +484,8 @@ export class GrpcProvider implements Provider {
    * @obsolete This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for signing data.
    */
-  sign(
-    data: Uint8Array | string,
-    signOptions?: SignOptions
-  ): Promise<SignedData> {
+  /* eslint-disable-next-line class-methods-use-this */
+  sign(): Promise<SignedData> {
     throw new Error('Method not implemented.')
   }
 
@@ -471,7 +493,8 @@ export class GrpcProvider implements Provider {
    * @obsolete This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for buying rolls.
    */
-  buyRolls(amount: Mas, opts?: OperationOptions): Promise<Operation> {
+  /* eslint-disable-next-line class-methods-use-this */
+  buyRolls(): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
 
@@ -479,7 +502,8 @@ export class GrpcProvider implements Provider {
    * @obsolete This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for selling rolls.
    */
-  sellRolls(amount: Mas, opts?: OperationOptions): Promise<Operation> {
+  /* eslint-disable-next-line class-methods-use-this */
+  sellRolls(): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
 
@@ -487,11 +511,8 @@ export class GrpcProvider implements Provider {
    * @obsolete This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for transferring assets.
    */
-  transfer(
-    to: Address | string,
-    amount: Mas,
-    opts?: OperationOptions
-  ): Promise<Operation> {
+  /* eslint-disable-next-line class-methods-use-this */
+  transfer(): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
 
@@ -499,7 +520,8 @@ export class GrpcProvider implements Provider {
    * @obsolete This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for calling smart contracts.
    */
-  callSC(params: CallSCParams): Promise<Operation> {
+  /* eslint-disable-next-line class-methods-use-this */
+  callSC(): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
 
@@ -507,7 +529,8 @@ export class GrpcProvider implements Provider {
    * @obsolete This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for executing smart contracts.
    */
-  executeSC(params: ExecuteScParams): Promise<Operation> {
+  /* eslint-disable-next-line class-methods-use-this */
+  executeSC(): Promise<Operation> {
     throw new Error('Method not implemented.')
   }
 
@@ -515,7 +538,8 @@ export class GrpcProvider implements Provider {
    * @obsolete This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for deploying smart contracts.
    */
-  deploySC(params: DeploySCParams): Promise<SmartContract> {
+  /* eslint-disable-next-line class-methods-use-this */
+  deploySC(): Promise<SmartContract> {
     throw new Error('Method not implemented.')
   }
 }
