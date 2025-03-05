@@ -2,7 +2,12 @@
 
 import { Mas, strToBytes } from '../../basicElements'
 import { EventFilter } from '../../client'
-import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
+import {
+  BlockParent,
+  OutputEvents,
+  SCOutputEvent,
+  Slot as tSlot,
+} from '../../generated/client-types'
 import { OperationStatus, Operation } from '../../operation'
 import { SmartContract } from '../../smartContracts'
 import { CHAIN_ID, Network, NetworkName } from '../../utils'
@@ -12,18 +17,45 @@ import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
 import { fromNanoMas } from '../../basicElements/mas'
 import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/public.client'
 import {
+  ABICallStack,
   ExecutionQueryExecutionStatus,
   ExecutionQueryRequestItem,
   GetDatastoreEntriesRequest,
   GetDatastoreEntryFilter,
+  QueryStateResponse,
   ScExecutionEventsFilter,
+  SearchBlocksFilter,
+  SearchEndorsementsFilter,
+  SearchOperationsFilter,
+  SelectorDrawsFilter,
+  SlotABICallStacks,
+  StakersFilter,
+  TransferInfos,
 } from '../../generated/grpc/apis/massa/api/v1/public'
 import {
   ReadOnlyExecutionOutput,
   ScExecutionEventStatus,
 } from '../../generated/grpc/massa/model/v1/execution'
 import { PublicStatus } from '../../generated/grpc/massa/model/v1/node'
+import {
+  BlockInfo,
+  BlockWrapper,
+} from '../../generated/grpc/massa/model/v1/block'
+import {
+  EndorsementInfo,
+  EndorsementWrapper,
+} from '../../generated/grpc/massa/model/v1/endorsement'
+import {
+  OperationInfo,
+  OperationWrapper,
+} from '../../generated/grpc/massa/model/v1/operation'
+import { SlotDraw } from '../../generated/grpc/massa/model/v1/draw'
+import { Slot, SlotRange } from '../../generated/grpc/massa/model/v1/slot'
+import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker'
 
+/**
+ * GrpcProvider implements the Provider interface using gRPC for Massa blockchain interactions
+ */
 export class GrpcProvider implements Provider {
   private readonly publicClient: PublicServiceClient
   private readonly url: string
@@ -31,6 +63,11 @@ export class GrpcProvider implements Provider {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private readonly _providerName: string = 'Massa GRPC provider'
 
+  /**
+   * Creates a new GrpcProvider instance
+   * @param url - The gRPC endpoint URL
+   * @param account - The account associated with this provider
+   */
   constructor(
     url: string,
     public account: Account
@@ -42,6 +79,300 @@ export class GrpcProvider implements Provider {
     this.url = url
   }
 
+  /**
+   * Retrieves a list of stakers with optional filtering by rolls
+   */
+  async getStakers(
+    minRolls?: bigint,
+    maxRolls?: bigint,
+    limit?: bigint
+  ): Promise<StakerEntry[]> {
+    const queries: StakersFilter[] = []
+
+    if (minRolls) {
+      queries.push({
+        filter: {
+          oneofKind: 'minRolls',
+          minRolls: minRolls,
+        },
+      })
+    }
+
+    if (maxRolls) {
+      queries.push({
+        filter: {
+          oneofKind: 'maxRolls',
+          maxRolls: maxRolls,
+        },
+      })
+    }
+
+    if (limit) {
+      queries.push({
+        filter: {
+          oneofKind: 'limit',
+          limit: limit,
+        },
+      })
+    }
+
+    const response = await this.publicClient.getStakers({ filters: queries })
+    return response.response.stakers
+  }
+
+  /**
+   * Executes a state query on the blockchain
+   */
+  async queryState(
+    queries: ExecutionQueryRequestItem[]
+  ): Promise<QueryStateResponse> {
+    return await this.publicClient.queryState({ queries }).response
+  }
+
+  /**
+   * Searches for blocks based on various criteria
+   */
+  async searchBlocks(
+    blockIds?: string[],
+    addresses?: string[],
+    slotRange?: SlotRange
+  ): Promise<BlockInfo[]> {
+    const queries: SearchBlocksFilter[] = []
+    if (blockIds) {
+      queries.push({
+        filter: {
+          oneofKind: 'blockIds',
+          blockIds: {
+            blockIds: blockIds,
+          },
+        },
+      })
+    }
+
+    if (addresses) {
+      queries.push({
+        filter: {
+          oneofKind: 'addresses',
+          addresses: {
+            addresses: addresses,
+          },
+        },
+      })
+    }
+
+    if (slotRange) {
+      queries.push({
+        filter: {
+          oneofKind: 'slotRange',
+          slotRange: slotRange,
+        },
+      })
+    }
+    return (await this.publicClient.searchBlocks({ filters: queries }).response)
+      .blockInfos
+  }
+
+  /**
+   * Searches for operations based on IDs or addresses
+   */
+  async searchOperations(
+    operationIds?: string[],
+    addresses?: string[]
+  ): Promise<OperationInfo[]> {
+    const queries: SearchOperationsFilter[] = []
+    if (operationIds) {
+      queries.push({
+        filter: {
+          oneofKind: 'operationIds',
+          operationIds: {
+            operationIds: operationIds,
+          },
+        },
+      })
+    }
+    if (addresses) {
+      queries.push({
+        filter: {
+          oneofKind: 'addresses',
+          addresses: {
+            addresses: addresses,
+          },
+        },
+      })
+    }
+    return (
+      await this.publicClient.searchOperations({ filters: queries }).response
+    ).operationInfos
+  }
+
+  /**
+   * Retrieves ABI call stacks for specified operations
+   */
+  async getOperationABICallStacks(
+    operationIds: string[]
+  ): Promise<ABICallStack[]> {
+    return (
+      await this.publicClient.getOperationABICallStacks({ operationIds })
+        .response
+    ).callStacks
+  }
+
+  /**
+   * Retrieves ABI call stacks for specified slots
+   */
+  async getSlotABICallStacks(slots: tSlot[]): Promise<SlotABICallStacks[]> {
+    const grpcSlots: Slot[] = slots.map((slot) => ({
+      period: BigInt(slot.period),
+      thread: slot.thread,
+    }))
+    return (
+      await this.publicClient.getSlotABICallStacks({ slots: grpcSlots })
+        .response
+    ).slotCallStacks
+  }
+
+  /**
+   * Retrieves transfer information for specified slots
+   */
+  async getSlotTransfers(slots: tSlot[]): Promise<TransferInfos[]> {
+    const grpcSlots: Slot[] = slots.map((slot) => ({
+      period: BigInt(slot.period),
+      thread: slot.thread,
+    }))
+    return (
+      await this.publicClient.getSlotTransfers({ slots: grpcSlots }).response
+    ).transferEachSlot
+  }
+
+  /**
+   * Searches for endorsements based on various criteria
+   */
+  async searchEndorsements(
+    endorsementIds?: string[],
+    addresses?: string[],
+    blockIds?: string[]
+  ): Promise<EndorsementInfo[]> {
+    const queries: SearchEndorsementsFilter[] = []
+    if (endorsementIds) {
+      queries.push({
+        filter: {
+          oneofKind: 'endorsementIds',
+          endorsementIds: {
+            endorsementIds: endorsementIds,
+          },
+        },
+      })
+    }
+    if (addresses) {
+      queries.push({
+        filter: {
+          oneofKind: 'addresses',
+          addresses: {
+            addresses: addresses,
+          },
+        },
+      })
+    }
+    if (blockIds) {
+      queries.push({
+        filter: {
+          oneofKind: 'blockIds',
+          blockIds: {
+            blockIds: blockIds,
+          },
+        },
+      })
+    }
+    return (
+      await this.publicClient.searchEndorsements({ filters: queries }).response
+    ).endorsementInfos
+  }
+
+  /**
+   * Retrieves the current transaction throughput of the network
+   */
+  async getTransactionsThroughput(): Promise<number> {
+    return (await this.publicClient.getTransactionsThroughput({}).response)
+      .throughput
+  }
+
+  /**
+   * Retrieves selector draws for specified addresses and slot range
+   */
+  async getSelectorDraws(
+    addresses?: string[],
+    slotRange?: SlotRange
+  ): Promise<SlotDraw[]> {
+    const queries: SelectorDrawsFilter[] = []
+    if (addresses) {
+      queries.push({
+        filter: {
+          oneofKind: 'addresses',
+          addresses: {
+            addresses: addresses,
+          },
+        },
+      })
+    }
+
+    if (slotRange) {
+      queries.push({
+        filter: {
+          oneofKind: 'slotRange',
+          slotRange: slotRange,
+        },
+      })
+    }
+
+    const response = await this.publicClient.getSelectorDraws({
+      filters: queries,
+    })
+    return response.response.draws
+  }
+
+  /**
+   * Retrieves detailed information about specified operations
+   */
+  async getOperations(operationIds: string[]): Promise<OperationWrapper[]> {
+    const response = await this.publicClient.getOperations({
+      operationIds: operationIds,
+    })
+    return response.response.wrappedOperations
+  }
+
+  /**
+   * Retrieves the best parent blocks for the next block
+   */
+  async getNextBlockBestParent(): Promise<BlockParent[]> {
+    const response = await this.publicClient.getNextBlockBestParents({})
+    return response.response.blockParents
+  }
+
+  /**
+   * Retrieves detailed information about specified endorsements
+   */
+  async getEndorsements(
+    endorsementIds: string[]
+  ): Promise<EndorsementWrapper[]> {
+    const response = await this.publicClient.getEndorsements({
+      endorsementIds: endorsementIds,
+    })
+    return response.response.wrappedEndorsements
+  }
+
+  /**
+   * Retrieves detailed information about specified blocks
+   */
+  async getBlocks(blockIds: string[]): Promise<BlockWrapper[]> {
+    const response = await this.publicClient.getBlocks({
+      blockIds: blockIds,
+    })
+    return response.response.wrappedBlocks
+  }
+
+  /**
+   * Retrieves balances for multiple addresses
+   */
   async balanceOf(
     addresses: string[],
     final?: boolean
@@ -105,6 +436,9 @@ export class GrpcProvider implements Provider {
     return balances
   }
 
+  /**
+   * Retrieves information about the current network
+   */
   async networkInfos(): Promise<Network> {
     const status = await this.publicClient.getStatus({})
     const chainId = status.response?.status?.chainId
@@ -122,6 +456,9 @@ export class GrpcProvider implements Provider {
       minimalFee: status.response?.status?.minimalFees?.mantissa ?? 0n,
     }
   }
+  /**
+   * Retrieves the status of a specific operation
+   */
   async getOperationStatus(opId: string): Promise<OperationStatus> {
     const queries: ExecutionQueryRequestItem[] = [
       {
@@ -161,7 +498,9 @@ export class GrpcProvider implements Provider {
     return OperationStatus.NotFound
   }
 
-  /// only events with context are returned
+  /**
+   * Retrieves events based on specified filters
+   */
   async getEvents(filter: EventFilter): Promise<OutputEvents> {
     const filters: ScExecutionEventsFilter[] = []
 
@@ -249,6 +588,9 @@ export class GrpcProvider implements Provider {
     return outputEvents
   }
 
+  /**
+   * Retrieves the current status of the node
+   */
   async getNodeStatus(): Promise<PublicStatus> {
     const response = await this.publicClient.getStatus({})
     const status = response.response?.status
@@ -258,6 +600,9 @@ export class GrpcProvider implements Provider {
     return status
   }
 
+  /**
+   * Executes a read-only smart contract call
+   */
   async readSC(params: ReadSCParams): Promise<ReadOnlyExecutionOutput> {
     const args = params.parameter ?? new Uint8Array()
     const caller = params.caller ?? this.account.address.toString()
@@ -288,7 +633,10 @@ export class GrpcProvider implements Provider {
     return response.response.output
   }
 
-  /* eslint-disable-next-line max-params */
+  /**
+   * Retrieves storage keys for a smart contract with optional filtering and pagination
+   */
+  // eslint-disable-next-line max-params
   async getStorageKeys(
     address: string,
     filter?: Uint8Array | string,
@@ -390,6 +738,9 @@ export class GrpcProvider implements Provider {
     }
   }
 
+  /**
+   * Reads storage values for specified keys in a smart contract
+   */
   async readStorage(
     address: string,
     keys: Uint8Array[] | string[],
@@ -418,15 +769,27 @@ export class GrpcProvider implements Provider {
       final === undefined || final ? item.finalValue : item.candidateValue
     )
   }
+  /**
+   * Gets the address of the associated account
+   */
   get address(): string {
     return this.account.address.toString()
   }
+  /**
+   * Gets the name of the associated account
+   */
   get accountName(): string {
     return this.account.address.toString()
   }
+  /**
+   * Gets the name of the provider
+   */
   get providerName(): string {
     return this._providerName
   }
+  /**
+   * Retrieves the balance of the associated account
+   */
   async balance(final = true): Promise<bigint> {
     try {
       const queries: ExecutionQueryRequestItem[] = [
@@ -481,7 +844,7 @@ export class GrpcProvider implements Provider {
   }
 
   /**
-   * @obsolete This method cannot be implemented in the GRPC provider.
+   * @deprecated This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for signing data.
    */
   /* eslint-disable-next-line class-methods-use-this */
@@ -490,7 +853,7 @@ export class GrpcProvider implements Provider {
   }
 
   /**
-   * @obsolete This method cannot be implemented in the GRPC provider.
+   * @deprecated This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for buying rolls.
    */
   /* eslint-disable-next-line class-methods-use-this */
@@ -499,7 +862,7 @@ export class GrpcProvider implements Provider {
   }
 
   /**
-   * @obsolete This method cannot be implemented in the GRPC provider.
+   * @deprecated This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for selling rolls.
    */
   /* eslint-disable-next-line class-methods-use-this */
@@ -508,7 +871,7 @@ export class GrpcProvider implements Provider {
   }
 
   /**
-   * @obsolete This method cannot be implemented in the GRPC provider.
+   * @deprecated This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for transferring assets.
    */
   /* eslint-disable-next-line class-methods-use-this */
@@ -517,7 +880,7 @@ export class GrpcProvider implements Provider {
   }
 
   /**
-   * @obsolete This method cannot be implemented in the GRPC provider.
+   * @deprecated This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for calling smart contracts.
    */
   /* eslint-disable-next-line class-methods-use-this */
@@ -526,7 +889,7 @@ export class GrpcProvider implements Provider {
   }
 
   /**
-   * @obsolete This method cannot be implemented in the GRPC provider.
+   * @deprecated This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for executing smart contracts.
    */
   /* eslint-disable-next-line class-methods-use-this */
@@ -535,7 +898,7 @@ export class GrpcProvider implements Provider {
   }
 
   /**
-   * @obsolete This method cannot be implemented in the GRPC provider.
+   * @deprecated This method cannot be implemented in the GRPC provider.
    * Use another provider or alternative method for deploying smart contracts.
    */
   /* eslint-disable-next-line class-methods-use-this */
