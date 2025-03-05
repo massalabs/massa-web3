@@ -58,4 +58,6 @@ protoc $(find "${proto_dir}" -name '*.proto') \
         --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
         --ts_out=src/generated/grpc
 
+echo "Proto build completed successfully."
+
 rm -rf tmp/proto
