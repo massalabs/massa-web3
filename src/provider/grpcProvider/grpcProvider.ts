@@ -11,6 +11,7 @@ import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/publ
 import { ExecutionQueryRequestItem } from '../../generated/grpc/apis/massa/api/v1/public'
 import { ReadOnlyExecutionOutput } from '../../generated/grpc/massa/model/v1/execution'
 import { GrpcPublicProvider } from './grpcPublicProvider'
+import { GrpcApiUrl } from '../../utils/networks'
 
 /**
  * GrpcProvider implements the Provider interface using gRPC for Massa blockchain interactions
@@ -30,6 +31,14 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
     private account: Account
   ) {
     super(client, url)
+  }
+
+  static buildnet(account: Account): GrpcProvider
+  static buildnet(): GrpcPublicProvider
+  static buildnet(account?: Account): GrpcProvider | GrpcPublicProvider {
+    return account
+      ? GrpcProvider.fromGrpcUrl(GrpcApiUrl.Buildnet, account)
+      : GrpcProvider.fromGrpcUrl(GrpcApiUrl.Buildnet)
   }
 
   static fromGrpcUrl(url: string, account: Account): GrpcProvider

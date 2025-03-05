@@ -1,10 +1,25 @@
 import { CHAIN_ID, NetworkName } from '../../src'
-import { provider } from './setup'
+import { provider, grpcProvider } from './setup'
 import { strToBytes, U256 } from '../../src/basicElements/serializers'
 
 const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
 
-describe('Provider tests', () => {
+describe('Provider GRPC tests', () => {
+  test('getNodeStatus', async () => {
+    const status = await grpcProvider.getNodeStatus()
+    expect(status.config).toBeDefined()
+    expect(status.currentCycle).toBeDefined()
+    expect(status.currentTime).toBeDefined()
+    expect(status.currentCycleTime).toBeDefined()
+    expect(status.nextCycleTime).toBeDefined()
+    expect(status.nodeId).toBeDefined()
+    expect(status.version).toBeDefined()
+    expect(status.chainId).toBeDefined()
+    expect(status.minimalFees).toBeDefined()
+  })
+})
+
+describe('Provider JsonRPC tests', () => {
   test('networkInfos', async () => {
     const infos = await provider.networkInfos()
     expect(infos).toEqual({
