@@ -2,49 +2,60 @@
 
 echo "Running proto_build script..."
 
-# rm -rf tmp/proto
-
 #Variables
 REPO_URL="https://github.com/massalabs/massa-proto" 
 TARGET_DIR="proto"  
 DESTINATION="tmp" 
 BRANCH="main"  
 
-# mkdir -p "$DESTINATION"
-# cd "$DESTINATION" || exit 1 
+rm -rf tmp/proto
 
-# git init
-# git remote add origin "$REPO_URL"
-# git config core.sparseCheckout true
+mkdir -p "$DESTINATION"
+cd "$DESTINATION" || exit 1 
 
-# echo "$TARGET_DIR/" > .git/info/sparse-checkout  
+git init
+git remote add origin "$REPO_URL"
+git config core.sparseCheckout true
 
-# git pull origin "$BRANCH"
+echo "$TARGET_DIR/" > .git/info/sparse-checkout  
 
-# rm -rf .git
+git pull origin "$BRANCH"
 
-# echo "Target dir : '$TARGET_DIR' downloaded in '$DESTINATION/$TARGET_DIR'."
+rm -rf .git
 
-# if [ ! -d "$TARGET_DIR" ] || [ ! -f "$TARGET_DIR/apis/massa/api/v1/public.proto" ]; then
-#   echo "Error: Required files are missing in 'tmp/$TARGET_DIR'."
-#   exit 1
-# fi
+echo "Target dir : '$TARGET_DIR' downloaded in '$DESTINATION/$TARGET_DIR'."
 
+# Wait for files to be present
+max_attempts=10
+attempt=1
+while [ ! -d "$TARGET_DIR" ] || [ ! -f "$TARGET_DIR/apis/massa/api/v1/public.proto" ]; do
+    if [ $attempt -ge $max_attempts ]; then
+        echo "Error: Required files are still missing in 'tmp/$TARGET_DIR' after $max_attempts attempts."
+        exit 1
+    fi
+    echo "Waiting for files to be available... Attempt $attempt/$max_attempts"
+    sleep 1
+    attempt=$((attempt + 1))
+done
+
+echo "Files are now available, proceeding with protoc commands..."
+
+cd .. || exit 1
 
 protoc --ts_out=src/generated/grpc \
         --ts_opt=optimize_code_size \
-        --proto_path="$DESTINATION"/proto \
-        --proto_path="$DESTINATION"/proto/commons \
-        --proto_path="$DESTINATION"/proto/third_party \
-         "$DESTINATION"/proto/apis/massa/api/v1/public.proto
+        --proto_path="$DESTINATION/$TARGET_DIR" \
+        --proto_path="$DESTINATION/$TARGET_DIR/commons" \
+        --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
+         "$DESTINATION/$TARGET_DIR/apis/massa/api/v1/public.proto"
 
-proto_dir="tmp/proto/commons"
+proto_dir="$DESTINATION/$TARGET_DIR/commons"
 
 protoc $(find "${proto_dir}" -name '*.proto') \
         --ts_opt=optimize_code_size \
         --proto_path="${proto_dir}" \
-        --proto_path=tmp/proto/commons \
-        --proto_path=tmp/proto/third_party \
+        --proto_path="$DESTINATION/$TARGET_DIR/commons" \
+        --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
         --ts_out=src/generated/grpc
 
-# rm -rf tmp/proto
+rm -rf tmp/proto
