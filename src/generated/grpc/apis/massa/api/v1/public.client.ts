@@ -7,6 +7,8 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { PublicService } from "./public";
+import type { TransactionsThroughputServerResponse } from "./public";
+import type { TransactionsThroughputServerRequest } from "./public";
 import type { TransactionsThroughputResponse } from "./public";
 import type { TransactionsThroughputRequest } from "./public";
 import type { SendOperationsResponse } from "./public";
@@ -19,14 +21,25 @@ import type { NewSlotTransfersResponse } from "./public";
 import type { NewSlotTransfersRequest } from "./public";
 import type { NewSlotABICallStacksResponse } from "./public";
 import type { NewSlotABICallStacksRequest } from "./public";
+import type { NewSlotExecutionOutputsServerResponse } from "./public";
+import type { NewSlotExecutionOutputsServerRequest } from "./public";
 import type { NewSlotExecutionOutputsResponse } from "./public";
 import type { NewSlotExecutionOutputsRequest } from "./public";
+import type { NewOperationsServerResponse } from "./public";
+import type { NewOperationsServerRequest } from "./public";
 import type { NewOperationsResponse } from "./public";
 import type { NewOperationsRequest } from "./public";
+import type { NewFilledBlocksServerResponse } from "./public";
+import type { NewFilledBlocksServerRequest } from "./public";
 import type { NewFilledBlocksResponse } from "./public";
 import type { NewFilledBlocksRequest } from "./public";
+import type { NewEndorsementsServerResponse } from "./public";
+import type { NewEndorsementsServerRequest } from "./public";
 import type { NewEndorsementsResponse } from "./public";
 import type { NewEndorsementsRequest } from "./public";
+import type { NewBlocksServerResponse } from "./public";
+import type { NewBlocksServerRequest } from "./public";
+import type { ServerStreamingCall } from "@protobuf-ts/runtime-rpc";
 import type { NewBlocksResponse } from "./public";
 import type { NewBlocksRequest } from "./public";
 import type { DuplexStreamingCall } from "@protobuf-ts/runtime-rpc";
@@ -197,11 +210,23 @@ export interface IPublicServiceClient {
      */
     newBlocks(options?: RpcOptions): DuplexStreamingCall<NewBlocksRequest, NewBlocksResponse>;
     /**
+     * unidirecitonnal
+     *
+     * @generated from protobuf rpc: NewBlocksServer(massa.api.v1.NewBlocksServerRequest) returns (stream massa.api.v1.NewBlocksServerResponse);
+     */
+    newBlocksServer(input: NewBlocksServerRequest, options?: RpcOptions): ServerStreamingCall<NewBlocksServerRequest, NewBlocksServerResponse>;
+    /**
      * New received and produced endorsements
      *
      * @generated from protobuf rpc: NewEndorsements(stream massa.api.v1.NewEndorsementsRequest) returns (stream massa.api.v1.NewEndorsementsResponse);
      */
     newEndorsements(options?: RpcOptions): DuplexStreamingCall<NewEndorsementsRequest, NewEndorsementsResponse>;
+    /**
+     * New received and produced endorsements
+     *
+     * @generated from protobuf rpc: NewEndorsementsServer(massa.api.v1.NewEndorsementsServerRequest) returns (stream massa.api.v1.NewEndorsementsServerResponse);
+     */
+    newEndorsementsServer(input: NewEndorsementsServerRequest, options?: RpcOptions): ServerStreamingCall<NewEndorsementsServerRequest, NewEndorsementsServerResponse>;
     /**
      * New received and produced blocks with operations
      *
@@ -209,17 +234,35 @@ export interface IPublicServiceClient {
      */
     newFilledBlocks(options?: RpcOptions): DuplexStreamingCall<NewFilledBlocksRequest, NewFilledBlocksResponse>;
     /**
+     * New received and produced blocks with operations unidirectional
+     *
+     * @generated from protobuf rpc: NewFilledBlocksServer(massa.api.v1.NewFilledBlocksServerRequest) returns (stream massa.api.v1.NewFilledBlocksServerResponse);
+     */
+    newFilledBlocksServer(input: NewFilledBlocksServerRequest, options?: RpcOptions): ServerStreamingCall<NewFilledBlocksServerRequest, NewFilledBlocksServerResponse>;
+    /**
      * New received and produced operations
      *
      * @generated from protobuf rpc: NewOperations(stream massa.api.v1.NewOperationsRequest) returns (stream massa.api.v1.NewOperationsResponse);
      */
     newOperations(options?: RpcOptions): DuplexStreamingCall<NewOperationsRequest, NewOperationsResponse>;
     /**
+     * unidirectional stream NewOperations
+     *
+     * @generated from protobuf rpc: NewOperationsServer(massa.api.v1.NewOperationsServerRequest) returns (stream massa.api.v1.NewOperationsServerResponse);
+     */
+    newOperationsServer(input: NewOperationsServerRequest, options?: RpcOptions): ServerStreamingCall<NewOperationsServerRequest, NewOperationsServerResponse>;
+    /**
      * New received and slot execution events
      *
      * @generated from protobuf rpc: NewSlotExecutionOutputs(stream massa.api.v1.NewSlotExecutionOutputsRequest) returns (stream massa.api.v1.NewSlotExecutionOutputsResponse);
      */
     newSlotExecutionOutputs(options?: RpcOptions): DuplexStreamingCall<NewSlotExecutionOutputsRequest, NewSlotExecutionOutputsResponse>;
+    /**
+     * unidirectional stream NewSlotExecutionOutputs
+     *
+     * @generated from protobuf rpc: NewSlotExecutionOutputsServer(massa.api.v1.NewSlotExecutionOutputsServerRequest) returns (stream massa.api.v1.NewSlotExecutionOutputsServerResponse);
+     */
+    newSlotExecutionOutputsServer(input: NewSlotExecutionOutputsServerRequest, options?: RpcOptions): ServerStreamingCall<NewSlotExecutionOutputsServerRequest, NewSlotExecutionOutputsServerResponse>;
     /**
      * Call stack for each slot executed
      *
@@ -256,6 +299,12 @@ export interface IPublicServiceClient {
      * @generated from protobuf rpc: TransactionsThroughput(stream massa.api.v1.TransactionsThroughputRequest) returns (stream massa.api.v1.TransactionsThroughputResponse);
      */
     transactionsThroughput(options?: RpcOptions): DuplexStreamingCall<TransactionsThroughputRequest, TransactionsThroughputResponse>;
+    /**
+     * Transactions throughput unidirectional
+     *
+     * @generated from protobuf rpc: TransactionsThroughputServer(massa.api.v1.TransactionsThroughputServerRequest) returns (stream massa.api.v1.TransactionsThroughputServerResponse);
+     */
+    transactionsThroughputServer(input: TransactionsThroughputServerRequest, options?: RpcOptions): ServerStreamingCall<TransactionsThroughputServerRequest, TransactionsThroughputServerResponse>;
 }
 /**
  * Massa public gRPC service
@@ -447,13 +496,31 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
         return stackIntercept<NewBlocksRequest, NewBlocksResponse>("duplex", this._transport, method, opt);
     }
     /**
+     * unidirecitonnal
+     *
+     * @generated from protobuf rpc: NewBlocksServer(massa.api.v1.NewBlocksServerRequest) returns (stream massa.api.v1.NewBlocksServerResponse);
+     */
+    newBlocksServer(input: NewBlocksServerRequest, options?: RpcOptions): ServerStreamingCall<NewBlocksServerRequest, NewBlocksServerResponse> {
+        const method = this.methods[19], opt = this._transport.mergeOptions(options);
+        return stackIntercept<NewBlocksServerRequest, NewBlocksServerResponse>("serverStreaming", this._transport, method, opt, input);
+    }
+    /**
      * New received and produced endorsements
      *
      * @generated from protobuf rpc: NewEndorsements(stream massa.api.v1.NewEndorsementsRequest) returns (stream massa.api.v1.NewEndorsementsResponse);
      */
     newEndorsements(options?: RpcOptions): DuplexStreamingCall<NewEndorsementsRequest, NewEndorsementsResponse> {
-        const method = this.methods[19], opt = this._transport.mergeOptions(options);
+        const method = this.methods[20], opt = this._transport.mergeOptions(options);
         return stackIntercept<NewEndorsementsRequest, NewEndorsementsResponse>("duplex", this._transport, method, opt);
+    }
+    /**
+     * New received and produced endorsements
+     *
+     * @generated from protobuf rpc: NewEndorsementsServer(massa.api.v1.NewEndorsementsServerRequest) returns (stream massa.api.v1.NewEndorsementsServerResponse);
+     */
+    newEndorsementsServer(input: NewEndorsementsServerRequest, options?: RpcOptions): ServerStreamingCall<NewEndorsementsServerRequest, NewEndorsementsServerResponse> {
+        const method = this.methods[21], opt = this._transport.mergeOptions(options);
+        return stackIntercept<NewEndorsementsServerRequest, NewEndorsementsServerResponse>("serverStreaming", this._transport, method, opt, input);
     }
     /**
      * New received and produced blocks with operations
@@ -461,8 +528,17 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: NewFilledBlocks(stream massa.api.v1.NewFilledBlocksRequest) returns (stream massa.api.v1.NewFilledBlocksResponse);
      */
     newFilledBlocks(options?: RpcOptions): DuplexStreamingCall<NewFilledBlocksRequest, NewFilledBlocksResponse> {
-        const method = this.methods[20], opt = this._transport.mergeOptions(options);
+        const method = this.methods[22], opt = this._transport.mergeOptions(options);
         return stackIntercept<NewFilledBlocksRequest, NewFilledBlocksResponse>("duplex", this._transport, method, opt);
+    }
+    /**
+     * New received and produced blocks with operations unidirectional
+     *
+     * @generated from protobuf rpc: NewFilledBlocksServer(massa.api.v1.NewFilledBlocksServerRequest) returns (stream massa.api.v1.NewFilledBlocksServerResponse);
+     */
+    newFilledBlocksServer(input: NewFilledBlocksServerRequest, options?: RpcOptions): ServerStreamingCall<NewFilledBlocksServerRequest, NewFilledBlocksServerResponse> {
+        const method = this.methods[23], opt = this._transport.mergeOptions(options);
+        return stackIntercept<NewFilledBlocksServerRequest, NewFilledBlocksServerResponse>("serverStreaming", this._transport, method, opt, input);
     }
     /**
      * New received and produced operations
@@ -470,8 +546,17 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: NewOperations(stream massa.api.v1.NewOperationsRequest) returns (stream massa.api.v1.NewOperationsResponse);
      */
     newOperations(options?: RpcOptions): DuplexStreamingCall<NewOperationsRequest, NewOperationsResponse> {
-        const method = this.methods[21], opt = this._transport.mergeOptions(options);
+        const method = this.methods[24], opt = this._transport.mergeOptions(options);
         return stackIntercept<NewOperationsRequest, NewOperationsResponse>("duplex", this._transport, method, opt);
+    }
+    /**
+     * unidirectional stream NewOperations
+     *
+     * @generated from protobuf rpc: NewOperationsServer(massa.api.v1.NewOperationsServerRequest) returns (stream massa.api.v1.NewOperationsServerResponse);
+     */
+    newOperationsServer(input: NewOperationsServerRequest, options?: RpcOptions): ServerStreamingCall<NewOperationsServerRequest, NewOperationsServerResponse> {
+        const method = this.methods[25], opt = this._transport.mergeOptions(options);
+        return stackIntercept<NewOperationsServerRequest, NewOperationsServerResponse>("serverStreaming", this._transport, method, opt, input);
     }
     /**
      * New received and slot execution events
@@ -479,8 +564,17 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: NewSlotExecutionOutputs(stream massa.api.v1.NewSlotExecutionOutputsRequest) returns (stream massa.api.v1.NewSlotExecutionOutputsResponse);
      */
     newSlotExecutionOutputs(options?: RpcOptions): DuplexStreamingCall<NewSlotExecutionOutputsRequest, NewSlotExecutionOutputsResponse> {
-        const method = this.methods[22], opt = this._transport.mergeOptions(options);
+        const method = this.methods[26], opt = this._transport.mergeOptions(options);
         return stackIntercept<NewSlotExecutionOutputsRequest, NewSlotExecutionOutputsResponse>("duplex", this._transport, method, opt);
+    }
+    /**
+     * unidirectional stream NewSlotExecutionOutputs
+     *
+     * @generated from protobuf rpc: NewSlotExecutionOutputsServer(massa.api.v1.NewSlotExecutionOutputsServerRequest) returns (stream massa.api.v1.NewSlotExecutionOutputsServerResponse);
+     */
+    newSlotExecutionOutputsServer(input: NewSlotExecutionOutputsServerRequest, options?: RpcOptions): ServerStreamingCall<NewSlotExecutionOutputsServerRequest, NewSlotExecutionOutputsServerResponse> {
+        const method = this.methods[27], opt = this._transport.mergeOptions(options);
+        return stackIntercept<NewSlotExecutionOutputsServerRequest, NewSlotExecutionOutputsServerResponse>("serverStreaming", this._transport, method, opt, input);
     }
     /**
      * Call stack for each slot executed
@@ -488,7 +582,7 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: NewSlotABICallStacks(stream massa.api.v1.NewSlotABICallStacksRequest) returns (stream massa.api.v1.NewSlotABICallStacksResponse);
      */
     newSlotABICallStacks(options?: RpcOptions): DuplexStreamingCall<NewSlotABICallStacksRequest, NewSlotABICallStacksResponse> {
-        const method = this.methods[23], opt = this._transport.mergeOptions(options);
+        const method = this.methods[28], opt = this._transport.mergeOptions(options);
         return stackIntercept<NewSlotABICallStacksRequest, NewSlotABICallStacksResponse>("duplex", this._transport, method, opt);
     }
     /**
@@ -497,7 +591,7 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: NewSlotTransfers(stream massa.api.v1.NewSlotTransfersRequest) returns (stream massa.api.v1.NewSlotTransfersResponse);
      */
     newSlotTransfers(options?: RpcOptions): DuplexStreamingCall<NewSlotTransfersRequest, NewSlotTransfersResponse> {
-        const method = this.methods[24], opt = this._transport.mergeOptions(options);
+        const method = this.methods[29], opt = this._transport.mergeOptions(options);
         return stackIntercept<NewSlotTransfersRequest, NewSlotTransfersResponse>("duplex", this._transport, method, opt);
     }
     /**
@@ -506,7 +600,7 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: SendBlocks(stream massa.api.v1.SendBlocksRequest) returns (stream massa.api.v1.SendBlocksResponse);
      */
     sendBlocks(options?: RpcOptions): DuplexStreamingCall<SendBlocksRequest, SendBlocksResponse> {
-        const method = this.methods[25], opt = this._transport.mergeOptions(options);
+        const method = this.methods[30], opt = this._transport.mergeOptions(options);
         return stackIntercept<SendBlocksRequest, SendBlocksResponse>("duplex", this._transport, method, opt);
     }
     /**
@@ -515,7 +609,7 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: SendEndorsements(stream massa.api.v1.SendEndorsementsRequest) returns (stream massa.api.v1.SendEndorsementsResponse);
      */
     sendEndorsements(options?: RpcOptions): DuplexStreamingCall<SendEndorsementsRequest, SendEndorsementsResponse> {
-        const method = this.methods[26], opt = this._transport.mergeOptions(options);
+        const method = this.methods[31], opt = this._transport.mergeOptions(options);
         return stackIntercept<SendEndorsementsRequest, SendEndorsementsResponse>("duplex", this._transport, method, opt);
     }
     /**
@@ -524,7 +618,7 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: SendOperations(stream massa.api.v1.SendOperationsRequest) returns (stream massa.api.v1.SendOperationsResponse);
      */
     sendOperations(options?: RpcOptions): DuplexStreamingCall<SendOperationsRequest, SendOperationsResponse> {
-        const method = this.methods[27], opt = this._transport.mergeOptions(options);
+        const method = this.methods[32], opt = this._transport.mergeOptions(options);
         return stackIntercept<SendOperationsRequest, SendOperationsResponse>("duplex", this._transport, method, opt);
     }
     /**
@@ -533,7 +627,16 @@ export class PublicServiceClient implements IPublicServiceClient, ServiceInfo {
      * @generated from protobuf rpc: TransactionsThroughput(stream massa.api.v1.TransactionsThroughputRequest) returns (stream massa.api.v1.TransactionsThroughputResponse);
      */
     transactionsThroughput(options?: RpcOptions): DuplexStreamingCall<TransactionsThroughputRequest, TransactionsThroughputResponse> {
-        const method = this.methods[28], opt = this._transport.mergeOptions(options);
+        const method = this.methods[33], opt = this._transport.mergeOptions(options);
         return stackIntercept<TransactionsThroughputRequest, TransactionsThroughputResponse>("duplex", this._transport, method, opt);
+    }
+    /**
+     * Transactions throughput unidirectional
+     *
+     * @generated from protobuf rpc: TransactionsThroughputServer(massa.api.v1.TransactionsThroughputServerRequest) returns (stream massa.api.v1.TransactionsThroughputServerResponse);
+     */
+    transactionsThroughputServer(input: TransactionsThroughputServerRequest, options?: RpcOptions): ServerStreamingCall<TransactionsThroughputServerRequest, TransactionsThroughputServerResponse> {
+        const method = this.methods[34], opt = this._transport.mergeOptions(options);
+        return stackIntercept<TransactionsThroughputServerRequest, TransactionsThroughputServerResponse>("serverStreaming", this._transport, method, opt, input);
     }
 }
