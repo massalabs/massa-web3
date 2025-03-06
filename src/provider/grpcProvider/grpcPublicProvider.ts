@@ -5,55 +5,69 @@ import { Account } from '../../account'
 import { EventFilter } from '../../client'
 import { Network, NetworkName } from '../../utils'
 import { CHAIN_ID } from '../../utils'
-import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
-import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/public.client'
 import { Mas, strToBytes } from '../../basicElements'
-import { ReadOnlyExecutionOutput } from '../../generated/grpc/massa/model/v1/execution'
 import { ReadSCParams } from '..'
 import { OperationStatus } from '../../operation'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
+import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/PublicServiceClientPb'
+import { Slot as tSlot } from '../../generated/client-types'
+import { FilterBuilder } from './filterBuilder'
+
+// Import from model
+
+// Import from api
 import {
     ABICallStack,
+    AddressBalanceCandidate,
+    AddressBalanceFinal,
+    AddressDatastoreKeysCandidate,
+    AddressDatastoreKeysFinal,
+    ExecuteReadOnlyCallRequest,
     ExecutionQueryExecutionStatus,
     ExecutionQueryRequestItem,
+    GetBlocksRequest,
     GetDatastoreEntriesRequest,
     GetDatastoreEntryFilter,
+    GetEndorsementsRequest,
+    GetNextBlockBestParentsRequest,
+    GetOperationABICallStacksRequest,
+    GetOperationsRequest,
+    GetScExecutionEventsRequest,
+    GetSelectorDrawsRequest,
+    GetSlotABICallStacksRequest,
+    GetSlotTransfersRequest,
+    GetStakersRequest,
+    GetStatusRequest,
+    GetTransactionsThroughputRequest,
     NewSlotExecutionOutputsServerRequest,
     NewSlotExecutionOutputsServerResponse,
+    OpExecutionStatusCandidate,
+    QueryStateRequest,
     QueryStateResponse,
     ScExecutionEventsFilter,
     SearchBlocksFilter,
+    SearchBlocksRequest,
     SearchEndorsementsFilter,
+    SearchEndorsementsRequest,
     SearchOperationsFilter,
+    SearchOperationsRequest,
     SelectorDrawsFilter,
     SlotABICallStacks,
     StakersFilter,
     TransferInfos,
-} from '../../generated/grpc/apis/massa/api/v1/public'
-import { ScExecutionEventStatus } from '../../generated/grpc/massa/model/v1/execution'
-import { PublicStatus } from '../../generated/grpc/massa/model/v1/node'
-import { Slot, SlotRange } from '../../generated/grpc/massa/model/v1/slot'
-import {
-    BlockInfo,
-    BlockParent,
-    BlockWrapper,
-} from '../../generated/grpc/massa/model/v1/block'
-import {
-    OperationInfo,
-    OperationWrapper,
-} from '../../generated/grpc/massa/model/v1/operation'
-import {
-    EndorsementInfo,
-    EndorsementWrapper,
-} from '../../generated/grpc/massa/model/v1/endorsement'
-import { SlotDraw } from '../../generated/grpc/massa/model/v1/draw'
-import { Slot as tSlot } from '../../generated/client-types'
-import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker'
-import { FilterBuilder } from './filterBuilder'
-import { RpcOutputStreamController, ServerStreamingCall } from '@protobuf-ts/runtime-rpc'
+} from '../../generated/grpc/apis/massa/api/v1/public_pb'
+import { OperationIds, OperationInfo, OperationWrapper } from '../../generated/grpc/massa/model/v1/operation_pb'
+import { Slot, SlotRange } from '../../generated/grpc/massa/model/v1/slot_pb'
+import { EndorsementIds, EndorsementInfo, EndorsementWrapper } from '../../generated/grpc/massa/model/v1/endorsement_pb'
+import { Addresses } from '../../generated/grpc/massa/model/v1/address_pb'
+import { BlockIds, BlockInfo, BlockParent, BlockWrapper } from '../../generated/grpc/massa/model/v1/block_pb'
+import { AddressKeyEntry } from 'src/generated/grpc/massa/model/v1/datastore_pb'
+import { SlotDraw } from 'src/generated/grpc/massa/model/v1/draw_pb'
+import { FunctionCall, ReadOnlyExecutionCall, ReadOnlyExecutionOutput, ScExecutionEventStatus } from 'src/generated/grpc/massa/model/v1/execution_pb'
+import { StakerEntry } from 'src/generated/grpc/massa/model/v1/staker_pb'
+import { PublicStatus } from 'src/generated/grpc/massa/model/v1/node_pb'
+import { NativeAmount } from 'src/generated/grpc/massa/model/v1/amount_pb'
 
-export type NewSlotExecutionOutputsStream =
-    RpcOutputStreamController<NewSlotExecutionOutputsServerResponse>
 
 export class GrpcPublicProvider implements PublicProvider {
     constructor(
@@ -62,10 +76,10 @@ export class GrpcPublicProvider implements PublicProvider {
     ) { }
 
     static fromGrpcUrl(url: string): PublicProvider {
-        const transport = new GrpcWebFetchTransport({
-            baseUrl: url,
-        })
-        return new GrpcPublicProvider(new PublicServiceClient(transport), url)
+        // const transport = new GrpcWebFetchTransport({
+        //     baseUrl: url,
+        // })
+        return new GrpcPublicProvider(new PublicServiceClient(url), url)
     }
 
     /**
@@ -90,7 +104,7 @@ export class GrpcPublicProvider implements PublicProvider {
      */
     newSlotExecutionOutputsStream(
         filters: SlotExecutionOutputFilter
-    ): ServerStreamingCall<NewSlotExecutionOutputsServerRequest, NewSlotExecutionOutputsServerResponse> {
+    ) {
         const builder = new FilterBuilder()
 
         // Status filter
@@ -128,9 +142,9 @@ export class GrpcPublicProvider implements PublicProvider {
             builder.addLedgerChangesFilter(filters.ledgerChangesFilter)
         }
 
-        const request: NewSlotExecutionOutputsServerRequest = {
-            filters: builder.build(),
-        }
+        let f = builder.build();
+        const request = new NewSlotExecutionOutputsServerRequest();
+        request.setFiltersList(f);
 
         // const controller = new RpcOutputStreamController<NewSlotExecutionOutputsServerResponse>()
         return this.client.newSlotExecutionOutputsServer(request);
@@ -186,30 +200,28 @@ export class GrpcPublicProvider implements PublicProvider {
     async queryState(
         queries: ExecutionQueryRequestItem[]
     ): Promise<QueryStateResponse> {
-        return await this.client.queryState({ queries }).response
+        return await this.client.queryState(new QueryStateRequest().setQueriesList(queries))
     }
 
     async balanceOf(
         addresses: string[],
         final = true
     ): Promise<{ address: string; balance: bigint }[]> {
-        const queries: ExecutionQueryRequestItem[] = addresses.map((address) => ({
-            requestItem: final
-                ? {
-                    oneofKind: 'addressBalanceFinal' as const,
-                    addressBalanceFinal: { address },
-                }
-                : {
-                    oneofKind: 'addressBalanceCandidate' as const,
-                    addressBalanceCandidate: { address },
-                },
-        }))
+        const queries: ExecutionQueryRequestItem[] = addresses.map((address) => {
+            let ret = new ExecutionQueryRequestItem();
+            if (final) {
+                ret.setAddressBalanceFinal(new AddressBalanceFinal().setAddress(address));
+            } else {
+                ret.setAddressBalanceCandidate(new AddressBalanceCandidate().setAddress(address));
+            }
+            return ret;
+        })
 
-        const response = await this.client.queryState({ queries })
+        const response = await this.client.queryState(new QueryStateRequest().setQueriesList(queries))
 
-        const balances = response.response.responses
+        const balances = response.getResponsesList()
             .map((item, index) => {
-                const responseItem = item.response
+                const responseItem = item
 
                 if (!responseItem) {
                     console.warn(
@@ -218,16 +230,16 @@ export class GrpcPublicProvider implements PublicProvider {
                     return null
                 }
 
-                if (responseItem.oneofKind === 'error') {
+                if (responseItem.hasError()) {
                     console.warn(
-                        `Error for address ${addresses[index]}: ${responseItem.error?.message}`
+                        `Error for address ${addresses[index]}: ${responseItem.getError()?.getMessage()}`
                     )
                     return null
                 }
 
                 if (
-                    responseItem.oneofKind !== 'result' ||
-                    responseItem.result?.responseItem?.oneofKind !== 'amount'
+                    !responseItem.hasResult() ||
+                    !responseItem.getResult()?.hasAmount()
                 ) {
                     console.warn(
                         `Unexpected response format for address ${addresses[index]}`
@@ -237,7 +249,7 @@ export class GrpcPublicProvider implements PublicProvider {
 
                 return {
                     address: addresses[index],
-                    balance: responseItem.result.responseItem.amount.mantissa,
+                    balance: BigInt(responseItem.getResult()?.getAmount()?.getMantissa() ?? 0),
                 }
             })
             .filter(
@@ -256,27 +268,16 @@ export class GrpcPublicProvider implements PublicProvider {
     ): Promise<OperationInfo[]> {
         const queries: SearchOperationsFilter[] = []
         if (operationIds) {
-            queries.push({
-                filter: {
-                    oneofKind: 'operationIds',
-                    operationIds: {
-                        operationIds: operationIds,
-                    },
-                },
-            })
+            let o = new SearchOperationsFilter();
+            o.setOperationIds(new OperationIds().setOperationIdsList(operationIds));
+            queries.push(o);
         }
         if (addresses) {
-            queries.push({
-                filter: {
-                    oneofKind: 'addresses',
-                    addresses: {
-                        addresses: addresses,
-                    },
-                },
-            })
+            let a = new SearchOperationsFilter();
+            a.setAddresses(new Addresses().setAddressesList(addresses));
+            queries.push(a);
         }
-        return (await this.client.searchOperations({ filters: queries }).response)
-            .operationInfos
+        return (await this.client.searchOperations(new SearchOperationsRequest().setFiltersList(queries))).getOperationInfosList()
     }
 
     /**
@@ -285,34 +286,24 @@ export class GrpcPublicProvider implements PublicProvider {
     async getOperationABICallStacks(
         operationIds: string[]
     ): Promise<ABICallStack[]> {
-        return (
-            await this.client.getOperationABICallStacks({ operationIds }).response
-        ).callStacks
+        return (await this.client.getOperationABICallStacks(new GetOperationABICallStacksRequest().setOperationIdsList(operationIds))).getCallStacksList()
+
     }
 
     /**
      * Retrieves ABI call stacks for specified slots
      */
     async getSlotABICallStacks(slots: tSlot[]): Promise<SlotABICallStacks[]> {
-        const grpcSlots: Slot[] = slots.map((slot) => ({
-            period: BigInt(slot.period),
-            thread: slot.thread,
-        }))
-        return (
-            await this.client.getSlotABICallStacks({ slots: grpcSlots }).response
-        ).slotCallStacks
+        const grpcSlots: Slot[] = slots.map((slot) => (new Slot().setPeriod(slot.period).setThread(slot.thread)))
+        return (await this.client.getSlotABICallStacks(new GetSlotABICallStacksRequest().setSlotsList(grpcSlots))).getSlotCallStacksList()
     }
 
     /**
      * Retrieves transfer information for specified slots
      */
     async getSlotTransfers(slots: tSlot[]): Promise<TransferInfos[]> {
-        const grpcSlots: Slot[] = slots.map((slot) => ({
-            period: BigInt(slot.period),
-            thread: slot.thread,
-        }))
-        return (await this.client.getSlotTransfers({ slots: grpcSlots }).response)
-            .transferEachSlot
+        const grpcSlots: Slot[] = slots.map((slot) => (new Slot().setPeriod(slot.period).setThread(slot.thread)))
+        return (await this.client.getSlotTransfers(new GetSlotTransfersRequest().setSlotsList(grpcSlots))).getTransferEachSlotList()
     }
 
     /**
@@ -325,37 +316,21 @@ export class GrpcPublicProvider implements PublicProvider {
     ): Promise<EndorsementInfo[]> {
         const queries: SearchEndorsementsFilter[] = []
         if (endorsementIds) {
-            queries.push({
-                filter: {
-                    oneofKind: 'endorsementIds',
-                    endorsementIds: {
-                        endorsementIds: endorsementIds,
-                    },
-                },
-            })
+            let e = new SearchEndorsementsFilter();
+            e.setEndorsementIds(new EndorsementIds().setEndorsementIdsList(endorsementIds));
+            queries.push(e);
         }
         if (addresses) {
-            queries.push({
-                filter: {
-                    oneofKind: 'addresses',
-                    addresses: {
-                        addresses: addresses,
-                    },
-                },
-            })
+            let a = new SearchEndorsementsFilter();
+            a.setAddresses(new Addresses().setAddressesList(addresses));
+            queries.push(a);
         }
         if (blockIds) {
-            queries.push({
-                filter: {
-                    oneofKind: 'blockIds',
-                    blockIds: {
-                        blockIds: blockIds,
-                    },
-                },
-            })
+            let b = new SearchEndorsementsFilter();
+            b.setBlockIds(new BlockIds().setBlockIdsList(blockIds));
+            queries.push(b);
         }
-        return (await this.client.searchEndorsements({ filters: queries }).response)
-            .endorsementInfos
+        return (await this.client.searchEndorsements(new SearchEndorsementsRequest().setFiltersList(queries))).getEndorsementInfosList()
     }
 
     /**
@@ -394,66 +369,75 @@ export class GrpcPublicProvider implements PublicProvider {
                 inclusiveEndKey !== undefined ? { value: inclusiveEndKey } : undefined
             const limitValue = limit ? { value: limit } : undefined
 
-            queries.push({
-                requestItem: final
-                    ? {
-                        oneofKind: 'addressDatastoreKeysFinal' as const,
-                        addressDatastoreKeysFinal: {
-                            address,
-                            prefix,
-                            ...(startKeyValue && { startKey: startKeyValue }),
-                            ...(inclusiveStartKeyValue && {
-                                inclusiveStartKey: inclusiveStartKeyValue,
-                            }),
-                            ...(endKeyValue && { endKey: endKeyValue }),
-                            ...(inclusiveEndKeyValue && {
-                                inclusiveEndKey: inclusiveEndKeyValue,
-                            }),
-                            ...(limitValue && { limit: limitValue }),
-                        },
-                    }
-                    : {
-                        oneofKind: 'addressDatastoreKeysCandidate' as const,
-                        addressDatastoreKeysCandidate: {
-                            address,
-                            prefix,
-                            ...(startKeyValue && { startKey: startKeyValue }),
-                            ...(inclusiveStartKeyValue && {
-                                inclusiveStartKey: inclusiveStartKeyValue,
-                            }),
-                            ...(endKeyValue && { endKey: endKeyValue }),
-                            ...(inclusiveEndKeyValue && {
-                                inclusiveEndKey: inclusiveEndKeyValue,
-                            }),
-                            ...(limitValue && { limit: limitValue }),
-                        },
-                    },
-            })
+            let ret = new ExecutionQueryRequestItem();
+            if (final) {
+                ret.setAddressDatastoreKeysFinal(new AddressDatastoreKeysFinal().setAddress(address).setPrefix(prefix).setStartKey(startKeyValue).setInclusiveStartKey(inclusiveStartKeyValue).setEndKey(endKeyValue).setInclusiveEndKey(inclusiveEndKeyValue).setLimit(limitValue));
+            } else {
+                ret.setAddressDatastoreKeysCandidate(new AddressDatastoreKeysCandidate().setAddress(address).setPrefix(prefix).setStartKey(startKeyValue).setInclusiveStartKey(inclusiveStartKeyValue).setEndKey(endKeyValue).setInclusiveEndKey(inclusiveEndKeyValue).setLimit(limitValue));
+            }
 
-            const response = await this.client.queryState({ queries })
+            queries.push(ret);
 
-            if (!response?.response?.responses?.[0]) {
+            // queries.push({
+            //     requestItem: final
+            //         ? {
+            //             oneofKind: 'addressDatastoreKeysFinal' as const,
+            //             addressDatastoreKeysFinal: {
+            //                 address,
+            //                 prefix,
+            //                 ...(startKeyValue && { startKey: startKeyValue }),
+            //                 ...(inclusiveStartKeyValue && {
+            //                     inclusiveStartKey: inclusiveStartKeyValue,
+            //                 }),
+            //                 ...(endKeyValue && { endKey: endKeyValue }),
+            //                 ...(inclusiveEndKeyValue && {
+            //                     inclusiveEndKey: inclusiveEndKeyValue,
+            //                 }),
+            //                 ...(limitValue && { limit: limitValue }),
+            //             },
+            //         }
+            //         : {
+            //             oneofKind: 'addressDatastoreKeysCandidate' as const,
+            //             addressDatastoreKeysCandidate: {
+            //                 address,
+            //                 prefix,
+            //                 ...(startKeyValue && { startKey: startKeyValue }),
+            //                 ...(inclusiveStartKeyValue && {
+            //                     inclusiveStartKey: inclusiveStartKeyValue,
+            //                 }),
+            //                 ...(endKeyValue && { endKey: endKeyValue }),
+            //                 ...(inclusiveEndKeyValue && {
+            //                     inclusiveEndKey: inclusiveEndKeyValue,
+            //                 }),
+            //                 ...(limitValue && { limit: limitValue }),
+            //             },
+            //         },
+            // })
+
+            const response = await this.client.queryState(new QueryStateRequest().setQueriesList(queries))
+
+            if (response?.getResponsesList().length === 0) {
                 throw new Error(`No response received for address ${address}`)
             }
 
-            const addressInfo = response.response.responses[0].response
+            const addressInfo = response.getResponsesList()[0]
 
-            if (addressInfo.oneofKind === 'error') {
+            if (addressInfo.hasError()) {
                 throw new Error(
-                    `Query state error: ${addressInfo.error?.message || 'Unknown error'}`
+                    `Query state error: ${addressInfo.getError()?.getMessage() || 'Unknown error'}`
                 )
             }
 
             if (
-                addressInfo.oneofKind === 'result' &&
-                addressInfo.result.responseItem.oneofKind === 'vecBytes'
+                addressInfo.hasResult() &&
+                addressInfo.getResult()?.hasVecBytes()
             ) {
-                return addressInfo.result.responseItem.vecBytes.items
+                return addressInfo.getResult()?.getVecBytes()?.getItemsList().map((item) => typeof item === 'string' ? strToBytes(item) : item) ?? []
             }
 
             throw new Error(
-                `Unexpected response type: ${addressInfo.oneofKind}, ` +
-                `expected 'result' with 'vecBytes' but got '${addressInfo.oneofKind === 'result' ? addressInfo.result.responseItem.oneofKind : 'N/A'}'`
+                `Unexpected response type: ${addressInfo.getResponseCase()}, ` +
+                `expected 'result' with 'vecBytes' but got '${addressInfo.hasResult() ? addressInfo.getResult() : 'N/A'}'`
             )
         } catch (error) {
             if (error instanceof Error) {
@@ -473,33 +457,36 @@ export class GrpcPublicProvider implements PublicProvider {
     ): Promise<(Uint8Array | null)[]> {
         const filters: GetDatastoreEntryFilter[] = keys.map((item) => {
             const key: Uint8Array = typeof item === 'string' ? strToBytes(item) : item
-            const ret: GetDatastoreEntryFilter = {
-                filter: {
-                    oneofKind: 'addressKey',
-                    addressKey: {
-                        address: address,
-                        key: key,
-                    },
-                },
-            }
+            const ret = new GetDatastoreEntryFilter()
+            ret.setAddressKey(new AddressKeyEntry().setAddress(address).setKey(key))
             return ret
         })
 
-        const request: GetDatastoreEntriesRequest = {
-            filters: filters,
-        }
+        const response = await this.client.getDatastoreEntries(new GetDatastoreEntriesRequest().setFiltersList(filters))
 
-        const response = await this.client.getDatastoreEntries(request)
-        return response.response.datastoreEntries.map((item) =>
-            final === undefined || final ? item.finalValue : item.candidateValue
-        )
+        const datastoreEntries = response.getDatastoreEntriesList()
+
+        return datastoreEntries.map((item) => {
+            let value;
+            if (final === undefined || final) {
+                value = item.getFinalValue();
+            } else {
+                value = item.getCandidateValue();
+            }
+            if (typeof value === 'string') {
+                return strToBytes(value)
+            }
+            return value
+        })
     }
 
     /**
      * Retrieves the current transaction throughput of the network
      */
     async getTransactionsThroughput(): Promise<number> {
-        return (await this.client.getTransactionsThroughput({}).response).throughput
+        const request = new GetTransactionsThroughputRequest();
+        const response = await this.client.getTransactionsThroughput(request);
+        return response.getThroughput();
     }
 
     /**
@@ -511,47 +498,35 @@ export class GrpcPublicProvider implements PublicProvider {
     ): Promise<SlotDraw[]> {
         const queries: SelectorDrawsFilter[] = []
         if (addresses) {
-            queries.push({
-                filter: {
-                    oneofKind: 'addresses',
-                    addresses: {
-                        addresses: addresses,
-                    },
-                },
-            })
+            let a = new SelectorDrawsFilter();
+            a.setAddresses(new Addresses().setAddressesList(addresses));
+            queries.push(a);
         }
 
         if (slotRange) {
-            queries.push({
-                filter: {
-                    oneofKind: 'slotRange',
-                    slotRange: slotRange,
-                },
-            })
+            let s = new SelectorDrawsFilter();
+            s.setSlotRange(slotRange);
+            queries.push(s);
         }
 
-        const response = await this.client.getSelectorDraws({
-            filters: queries,
-        })
-        return response.response.draws
+        const response = await this.client.getSelectorDraws(new GetSelectorDrawsRequest().setFiltersList(queries))
+        return response.getDrawsList()
     }
 
     /**
      * Retrieves detailed information about specified operations
      */
     async getOperations(operationIds: string[]): Promise<OperationWrapper[]> {
-        const response = await this.client.getOperations({
-            operationIds: operationIds,
-        })
-        return response.response.wrappedOperations
+        const response = await this.client.getOperations(new GetOperationsRequest().setOperationIdsList(operationIds))
+        return response.getWrappedOperationsList()
     }
 
     /**
      * Retrieves the best parent blocks for the next block
      */
     async getNextBlockBestParent(): Promise<BlockParent[]> {
-        const response = await this.client.getNextBlockBestParents({})
-        return response.response.blockParents
+        const response = await this.client.getNextBlockBestParents(new GetNextBlockBestParentsRequest())
+        return response.getBlockParentsList()
     }
 
     /**
@@ -560,20 +535,16 @@ export class GrpcPublicProvider implements PublicProvider {
     async getEndorsements(
         endorsementIds: string[]
     ): Promise<EndorsementWrapper[]> {
-        const response = await this.client.getEndorsements({
-            endorsementIds: endorsementIds,
-        })
-        return response.response.wrappedEndorsements
+        const response = await this.client.getEndorsements(new GetEndorsementsRequest().setEndorsementIdsList(endorsementIds))
+        return response.getWrappedEndorsementsList()
     }
 
     /**
      * Retrieves detailed information about specified blocks
      */
     async getBlocks(blockIds: string[]): Promise<BlockWrapper[]> {
-        const response = await this.client.getBlocks({
-            blockIds: blockIds,
-        })
-        return response.response.wrappedBlocks
+        const response = await this.client.getBlocks(new GetBlocksRequest().setBlockIdsList(blockIds))
+        return response.getWrappedBlocksList()
     }
 
     /**
@@ -586,37 +557,23 @@ export class GrpcPublicProvider implements PublicProvider {
     ): Promise<BlockInfo[]> {
         const queries: SearchBlocksFilter[] = []
         if (blockIds) {
-            queries.push({
-                filter: {
-                    oneofKind: 'blockIds',
-                    blockIds: {
-                        blockIds: blockIds,
-                    },
-                },
-            })
+            let b = new SearchBlocksFilter();
+            b.setBlockIds(new BlockIds().setBlockIdsList(blockIds));
+            queries.push(b);
         }
 
         if (addresses) {
-            queries.push({
-                filter: {
-                    oneofKind: 'addresses',
-                    addresses: {
-                        addresses: addresses,
-                    },
-                },
-            })
+            let a = new SearchBlocksFilter();
+            a.setAddresses(new Addresses().setAddressesList(addresses));
+            queries.push(a);
         }
 
         if (slotRange) {
-            queries.push({
-                filter: {
-                    oneofKind: 'slotRange',
-                    slotRange: slotRange,
-                },
-            })
+            let s = new SearchBlocksFilter();
+            s.setSlotRange(slotRange);
+            queries.push(s);
         }
-        return (await this.client.searchBlocks({ filters: queries }).response)
-            .blockInfos
+        return (await this.client.searchBlocks(new SearchBlocksRequest().setFiltersList(queries))).getBlockInfosList()
     }
 
     /**
@@ -626,82 +583,53 @@ export class GrpcPublicProvider implements PublicProvider {
         const filters: ScExecutionEventsFilter[] = []
 
         if (filter.start !== undefined && filter.end !== undefined) {
-            filters.push({
-                filter: {
-                    oneofKind: 'slotRange',
-                    slotRange: {
-                        startSlot: {
-                            period: BigInt(filter.start.period),
-                            thread: filter.start.thread,
-                        },
-                        endSlot: {
-                            period: BigInt(filter.end.period),
-                            thread: filter.end.thread,
-                        },
-                    },
-                },
-            })
+            let ret = new ScExecutionEventsFilter();
+            ret.setSlotRange(new SlotRange().setStartSlot(new Slot().setPeriod(filter.start.period).setThread(filter.start.thread)).setEndSlot(new Slot().setPeriod(Number(filter.end.period)).setThread(filter.end.thread)));
+            filters.push(ret);
         } else if (filter.callerAddress !== undefined) {
-            filters.push({
-                filter: {
-                    oneofKind: 'callerAddress',
-                    callerAddress: filter.callerAddress,
-                },
-            })
+            let ret = new ScExecutionEventsFilter();
+            ret.setCallerAddress(filter.callerAddress);
+            filters.push(ret);
         } else if (filter.smartContractAddress !== undefined) {
-            filters.push({
-                filter: {
-                    oneofKind: 'emitterAddress',
-                    emitterAddress: filter.smartContractAddress,
-                },
-            })
+            let ret = new ScExecutionEventsFilter();
+            ret.setEmitterAddress(filter.smartContractAddress);
+            filters.push(ret);
         } else if (filter.operationId !== undefined) {
-            filters.push({
-                filter: {
-                    oneofKind: 'originalOperationId',
-                    originalOperationId: filter.operationId,
-                },
-            })
+            let ret = new ScExecutionEventsFilter();
+            ret.setOriginalOperationId(filter.operationId);
+            filters.push(ret);
         } else if (filter.isError !== undefined) {
-            filters.push({
-                filter: {
-                    oneofKind: 'isFailure',
-                    isFailure: filter.isError,
-                },
-            })
+            let ret = new ScExecutionEventsFilter();
+            ret.setIsFailure(filter.isError);
+            filters.push(ret);
         } else if (filter.status !== undefined) {
-            filters.push({
-                filter: {
-                    oneofKind: 'status',
-                    status: filter.status,
-                },
-            })
+            let ret = new ScExecutionEventsFilter();
+            ret.setStatus(filter.status);
+            filters.push(ret);
         }
 
-        const response = await this.client.getScExecutionEvents({
-            filters: filters,
-        })
-        const outputEvents: OutputEvents = response.response.events
-            .filter((event) => event.context !== null)
+        const response = await this.client.getScExecutionEvents(new GetScExecutionEventsRequest().setFiltersList(filters))
+        const outputEvents: OutputEvents = response.getEventsList()
+            .filter((event) => event.getContext() !== null)
             .map((event) => {
                 const context = {
                     slot: {
-                        period: Number(event.context?.originSlot?.period ?? 0),
-                        thread: Number(event.context?.originSlot?.thread ?? 0),
+                        period: Number(event.getContext()?.getOriginSlot()?.getPeriod() ?? 0),
+                        thread: Number(event.getContext()?.getOriginSlot()?.getThread() ?? 0),
                     },
                     read_only:
-                        event.context?.status === ScExecutionEventStatus.READ_ONLY
+                        event.getContext()?.getStatus() === ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_READ_ONLY
                             ? true
                             : false,
-                    call_stack: event.context?.callStack ?? [],
-                    index_in_slot: Number(event.context?.indexInSlot ?? 0),
+                    call_stack: event.getContext()?.getCallStackList() ?? [],
+                    index_in_slot: Number(event.getContext()?.getIndexInSlot() ?? 0),
                     is_final:
-                        event.context?.status === ScExecutionEventStatus.FINAL
+                        event.getContext()?.getStatus() === ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_FINAL
                             ? true
                             : false,
                 }
                 const outputEvent: SCOutputEvent = {
-                    data: event.data.toString(),
+                    data: event.getData().toString(),
                     context,
                 }
                 return outputEvent
@@ -710,56 +638,53 @@ export class GrpcPublicProvider implements PublicProvider {
     }
 
     async networkInfos(): Promise<Network> {
-        const status = await this.client.getStatus({})
-        const chainId = status.response?.status?.chainId
+        const status = await this.client.getStatus(new GetStatusRequest())
+        const chainId = BigInt(status.getStatus()?.getChainId() ?? 0)
         let networkName
         if (chainId === CHAIN_ID.Mainnet) {
             networkName = NetworkName.Mainnet
         } else if (chainId === CHAIN_ID.Buildnet) {
             networkName = NetworkName.Buildnet
+        } else {
+            throw new Error(`Unknown chain id: ${chainId}`)
         }
 
         return {
             name: networkName,
-            chainId: chainId ? chainId : 0n,
+            chainId,
             url: this.url,
-            minimalFee: status.response?.status?.minimalFees?.mantissa ?? 0n,
+            minimalFee: BigInt(status.getStatus()?.getMinimalFees()?.getMantissa() ?? 0),
         }
     }
 
     async getOperationStatus(opId: string): Promise<OperationStatus> {
         const queries: ExecutionQueryRequestItem[] = [
-            {
-                requestItem: {
-                    oneofKind: 'opExecutionStatusCandidate' as const,
-                    opExecutionStatusCandidate: { operationId: opId },
-                },
-            },
+            new ExecutionQueryRequestItem().setOpExecutionStatusCandidate(new OpExecutionStatusCandidate().setOperationId(opId))
         ]
 
-        const response = await this.client.queryState({ queries })
 
-        if (response.response.responses.length === 0) {
+        const response = await this.client.queryState(new QueryStateRequest().setQueriesList(queries));
+        const list = response.getResponsesList();
+
+        if (list.length === 0) {
             throw new Error('Operation not found')
         }
 
-        const operation = response.response.responses[0].response
-        if (operation.oneofKind === 'error') {
+        const operation = list[0];
+        if (operation.hasError()) {
             throw new Error('error in queryState')
         }
 
-        if (operation.oneofKind === 'result') {
-            if (operation.result.responseItem.oneofKind === 'executionStatus') {
-                switch (operation.result.responseItem.executionStatus) {
-                    case ExecutionQueryExecutionStatus.ALREADY_EXECUTED_WITH_FAILURE:
-                        return OperationStatus.Error
-                    case ExecutionQueryExecutionStatus.ALREADY_EXECUTED_WITH_SUCCESS:
-                        return OperationStatus.Success
-                    case ExecutionQueryExecutionStatus.EXECUTABLE_OR_EXPIRED:
-                        return OperationStatus.NotFound
-                    case ExecutionQueryExecutionStatus.UNSPECIFIED:
-                        return OperationStatus.NotFound
-                }
+        if (operation.hasResult()) {
+            switch (operation.getResult()?.getExecutionStatus()) {
+                case ExecutionQueryExecutionStatus.EXECUTION_QUERY_EXECUTION_STATUS_ALREADY_EXECUTED_WITH_FAILURE:
+                    return OperationStatus.Error
+                case ExecutionQueryExecutionStatus.EXECUTION_QUERY_EXECUTION_STATUS_ALREADY_EXECUTED_WITH_SUCCESS:
+                    return OperationStatus.Success
+                case ExecutionQueryExecutionStatus.EXECUTION_QUERY_EXECUTION_STATUS_EXECUTABLE_OR_EXPIRED:
+                    return OperationStatus.NotFound
+                case ExecutionQueryExecutionStatus.EXECUTION_QUERY_EXECUTION_STATUS_UNSPECIFIED:
+                    return OperationStatus.NotFound
             }
         }
 
@@ -770,46 +695,37 @@ export class GrpcPublicProvider implements PublicProvider {
      * Retrieves a list of stakers with optional filtering by rolls
      */
     async getStakers(
-        minRolls?: bigint,
-        maxRolls?: bigint,
-        limit?: bigint
+        minRolls?: number,
+        maxRolls?: number,
+        limit?: number
     ): Promise<StakerEntry[]> {
         const queries: StakersFilter[] = []
 
         if (minRolls) {
-            queries.push({
-                filter: {
-                    oneofKind: 'minRolls',
-                    minRolls: minRolls,
-                },
-            })
+            const ret = new StakersFilter();
+            ret.setMinRolls(minRolls);
+            queries.push(ret);
         }
 
         if (maxRolls) {
-            queries.push({
-                filter: {
-                    oneofKind: 'maxRolls',
-                    maxRolls: maxRolls,
-                },
-            })
+            const ret = new StakersFilter();
+            ret.setMaxRolls(maxRolls);
+            queries.push(ret);
         }
 
         if (limit) {
-            queries.push({
-                filter: {
-                    oneofKind: 'limit',
-                    limit: limit,
-                },
-            })
+            const ret = new StakersFilter();
+            ret.setLimit(limit);
+            queries.push(ret);
         }
 
-        const response = await this.client.getStakers({ filters: queries })
-        return response.response.stakers
+        const response = await this.client.getStakers(new GetStakersRequest().setFiltersList(queries))
+        return response.getStakersList()
     }
 
     async getNodeStatus(): Promise<PublicStatus> {
-        const response = await this.client.getStatus({})
-        const status = response.response?.status
+        const response = await this.client.getStatus(new GetStatusRequest())
+        const status = response.getStatus()
         if (!status) {
             throw new Error('Empty response received')
         }
@@ -822,29 +738,26 @@ export class GrpcPublicProvider implements PublicProvider {
             params.caller ?? (await Account.generate()).address.toString()
         const maxGas = params.maxGas ?? 0n
 
-        const response = await this.client.executeReadOnlyCall({
-            call: {
-                maxGas: maxGas,
-                ...(params.fee && {
-                    fee: { mantissa: params.fee, scale: Mas.NB_DECIMALS },
-                }),
-                callerAddress: { value: caller },
-                callStack: [],
-                target: {
-                    oneofKind: 'functionCall' as const,
-                    functionCall: {
-                        targetAddress: params.target,
-                        targetFunction: params.func,
-                        parameter: args instanceof Uint8Array ? args : args.serialize(),
-                    },
-                },
-            },
-        })
 
-        if (!response.response.output) {
+        const request = new ExecuteReadOnlyCallRequest();
+        const call = new ReadOnlyExecutionCall();
+        call.setMaxGas(Number(maxGas));
+        call.setCallerAddress(caller);
+        call.setCallStackList([]);
+        call.setFunctionCall(new FunctionCall().setTargetAddress(params.target).setTargetFunction(params.func).setParameter(args instanceof Uint8Array ? args : args.serialize()));
+
+        // fee 
+        if (params.fee) {
+            call.setFee(new NativeAmount().setMantissa(Number(params.fee)).setScale(Mas.NB_DECIMALS));
+        }
+        request.setCall(call);
+        const response = await this.client.executeReadOnlyCall(request);
+
+        const output = response.getOutput();
+        if (!output) {
             throw new Error('No output received')
         }
 
-        return response.response.output
+        return output
     }
 }

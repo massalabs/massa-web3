@@ -5,13 +5,11 @@ import { Operation } from '../../operation'
 import { SmartContract } from '../../smartContracts'
 import { Provider, ReadSCParams, SignedData } from '..'
 import { Account } from '../../account'
-import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
 import { fromNanoMas } from '../../basicElements/mas'
-import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/public.client'
-import { ExecutionQueryRequestItem } from '../../generated/grpc/apis/massa/api/v1/public'
-import { ReadOnlyExecutionOutput } from '../../generated/grpc/massa/model/v1/execution'
 import { GrpcPublicProvider } from './grpcPublicProvider'
 import { GrpcApiUrl } from '../../utils/networks'
+import { PublicServiceClient } from 'src/generated/grpc/apis/massa/api/v1/PublicServiceClientPb'
+import { ReadOnlyExecutionOutput } from 'src/generated/grpc/massa/model/v1/execution_pb'
 
 /**
  * GrpcProvider implements the Provider interface using gRPC for Massa blockchain interactions
@@ -50,19 +48,14 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
     if (account) {
       return new GrpcProvider(
         new PublicServiceClient(
-          new GrpcWebFetchTransport({
-            baseUrl: url,
-          })
+          url,
         ),
         url,
         account
       )
     }
     return new GrpcPublicProvider(
-      new PublicServiceClient(
-        new GrpcWebFetchTransport({
-          baseUrl: url,
-        })
+      new PublicServiceClient(url
       ),
       url
     )
@@ -129,17 +122,17 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
         {
           requestItem: final
             ? {
-                oneofKind: 'addressBalanceFinal' as const,
-                addressBalanceFinal: {
-                  address: this.account.address.toString(),
-                },
-              }
-            : {
-                oneofKind: 'addressBalanceCandidate' as const,
-                addressBalanceCandidate: {
-                  address: this.account.address.toString(),
-                },
+              oneofKind: 'addressBalanceFinal' as const,
+              addressBalanceFinal: {
+                address: this.account.address.toString(),
               },
+            }
+            : {
+              oneofKind: 'addressBalanceCandidate' as const,
+              addressBalanceCandidate: {
+                address: this.account.address.toString(),
+              },
+            },
         },
       ]
 
@@ -166,7 +159,7 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
 
       throw new Error(
         `Unexpected response type: ${result.oneofKind}, ` +
-          `expected 'result' with 'amount' but got '${result.oneofKind === 'result' ? result.result.responseItem.oneofKind : 'N/A'}'`
+        `expected 'result' with 'amount' but got '${result.oneofKind === 'result' ? result.result.responseItem.oneofKind : 'N/A'}'`
       )
     } catch (error) {
       if (error instanceof Error) {

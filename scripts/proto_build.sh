@@ -42,22 +42,31 @@ echo "Files are now available, proceeding with protoc commands..."
 
 cd .. || exit 1
 
-protoc --ts_out=src/generated/grpc \
-        --ts_opt=optimize_code_size \
-        --proto_path="$DESTINATION/$TARGET_DIR" \
-        --proto_path="$DESTINATION/$TARGET_DIR/commons" \
-        --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
-         "$DESTINATION/$TARGET_DIR/apis/massa/api/v1/public.proto"
+# protoc --ts_out=src/generated/grpc \
+#         --ts_opt=optimize_code_size \
+#         --proto_path="$DESTINATION/$TARGET_DIR" \
+#         --proto_path="$DESTINATION/$TARGET_DIR/commons" \
+#         --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
+#          "$DESTINATION/$TARGET_DIR/apis/massa/api/v1/public.proto"
 
 proto_dir="$DESTINATION/$TARGET_DIR/commons"
 
 protoc $(find "${proto_dir}" -name '*.proto') \
-        --ts_opt=optimize_code_size \
+        --js_out=import_style=commonjs:src/generated/grpc \
         --proto_path="${proto_dir}" \
         --proto_path="$DESTINATION/$TARGET_DIR/commons" \
         --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
-        --ts_out=src/generated/grpc
+        --grpc-web_out=import_style=typescript,mode=grpcwebtext:src/generated/grpc
+
+
+# protoc -I="$DESTINATION/$TARGET_DIR" "$DESTINATION/$TARGET_DIR/apis/massa/api/v1/public.proto" \
+#   --js_out=import_style=commonjs:src/generated/grpc \
+#     --proto_path="$DESTINATION/$TARGET_DIR" \
+#   --proto_path="$DESTINATION/$TARGET_DIR/commons" \
+#   --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
+#   --grpc-web_out=import_style=typescript,mode=grpcwebtext:src/generated/grpc
+  
 
 echo "Proto build completed successfully."
 
-rm -rf tmp/proto
+# rm -rf tmp/proto
