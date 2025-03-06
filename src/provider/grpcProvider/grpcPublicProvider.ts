@@ -18,7 +18,6 @@ import {
   ExecutionQueryRequestItem,
   GetDatastoreEntriesRequest,
   GetDatastoreEntryFilter,
-  NewSlotExecutionOutputsFilter,
   NewSlotExecutionOutputsServerRequest,
   NewSlotExecutionOutputsServerResponse,
   QueryStateResponse,
@@ -50,6 +49,11 @@ import {
 import { SlotDraw } from '../../generated/grpc/massa/model/v1/draw'
 import { Slot as tSlot } from '../../generated/client-types'
 import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker'
+import { FilterBuilder } from './filterBuilder'
+import { RpcOutputStreamController } from '@protobuf-ts/runtime-rpc'
+
+export type NewSlotExecutionOutputsStream =
+  RpcOutputStreamController<NewSlotExecutionOutputsServerResponse>
 
 export class GrpcPublicProvider implements PublicProvider {
   constructor(
@@ -64,247 +68,86 @@ export class GrpcPublicProvider implements PublicProvider {
     return new GrpcPublicProvider(new PublicServiceClient(transport), url)
   }
 
+  /**
+   * Creates a stream of slot execution outputs based on the provided filters.
+   * The stream can be consumed using a for-await loop.
+   *
+   * Example usage:
+   * ```typescript
+   * const { stream, close } = await provider.newSlotExecutionOutputsStream(filters);
+   * try {
+   *   for await (const response of stream) {
+   *     // Process each response
+   *     if (shouldStop) {
+   *       close(); // Explicitly close the stream when needed
+   *       break;
+   *     }
+   *   }
+   * } finally {
+   *   close(); // Ensure the stream is closed
+   * }
+   * ```
+   */
   newSlotExecutionOutputsStream(
     filters: SlotExecutionOutputFilter
-  ): AsyncIterable<NewSlotExecutionOutputsServerResponse> {
-    const filtersRequest: NewSlotExecutionOutputsFilter[] = []
+  ): NewSlotExecutionOutputsStream {
+    const builder = new FilterBuilder()
 
     // Status filter
     if (filters.status) {
-      filtersRequest.push({
-        filter: {
-          oneofKind: 'status',
-          status: filters.status,
-        },
-      })
+      builder.addStatus(filters.status)
     }
 
     // Slot range filter
     if (filters.slotRange) {
-      filtersRequest.push({
-        filter: {
-          oneofKind: 'slotRange',
-          slotRange: filters.slotRange,
-        },
-      })
+      builder.addSlotRange(filters.slotRange)
     }
 
     // Async pool changes filters
     if (filters.asyncPoolChangesFilter) {
-      if (filters.asyncPoolChangesFilter.empty) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'asyncPoolChangesFilter',
-            asyncPoolChangesFilter: { filter: { oneofKind: 'none', none: {} } },
-          },
-        })
-      }
-
-      if (filters.asyncPoolChangesFilter.type) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'asyncPoolChangesFilter',
-            asyncPoolChangesFilter: {
-              filter: {
-                oneofKind: 'type',
-                type: filters.asyncPoolChangesFilter.type,
-              },
-            },
-          },
-        })
-      }
-      if (filters.asyncPoolChangesFilter.handler) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'asyncPoolChangesFilter',
-            asyncPoolChangesFilter: {
-              filter: {
-                oneofKind: 'handler',
-                handler: filters.asyncPoolChangesFilter.handler,
-              },
-            },
-          },
-        })
-      }
-      if (filters.asyncPoolChangesFilter.destinationAddress) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'asyncPoolChangesFilter',
-            asyncPoolChangesFilter: {
-              filter: {
-                oneofKind: 'destinationAddress',
-                destinationAddress:
-                  filters.asyncPoolChangesFilter.destinationAddress,
-              },
-            },
-          },
-        })
-      }
-      if (filters.asyncPoolChangesFilter.emitterAddress) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'asyncPoolChangesFilter',
-            asyncPoolChangesFilter: {
-              filter: {
-                oneofKind: 'emitterAddress',
-                emitterAddress: filters.asyncPoolChangesFilter.emitterAddress,
-              },
-            },
-          },
-        })
-      }
-      if (filters.asyncPoolChangesFilter.canBeExecuted !== undefined) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'asyncPoolChangesFilter',
-            asyncPoolChangesFilter: {
-              filter: {
-                oneofKind: 'canBeExecuted',
-                canBeExecuted: filters.asyncPoolChangesFilter.canBeExecuted,
-              },
-            },
-          },
-        })
-      }
+      builder.addAsyncPoolChangesFilter(filters.asyncPoolChangesFilter)
     }
 
     // Empty executed denounciation filter
     if (filters.emptyExecutedDenounciationFilter) {
-      filtersRequest.push({
-        filter: {
-          oneofKind: 'executedDenounciationFilter',
-          executedDenounciationFilter: {
-            filter: {
-              oneofKind: 'none',
-              none: {},
-            },
-          },
-        },
-      })
+      builder.addEmptyExecutedDenounciationFilter()
     }
 
     // Event filters
     if (filters.eventFilter) {
-      if (filters.eventFilter.empty) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'eventFilter',
-            eventFilter: { filter: { oneofKind: 'none', none: {} } },
-          },
-        })
-      }
-      if (filters.eventFilter.callerAddress) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'eventFilter',
-            eventFilter: {
-              filter: {
-                oneofKind: 'callerAddress',
-                callerAddress: filters.eventFilter.callerAddress,
-              },
-            },
-          },
-        })
-      }
-      if (filters.eventFilter.emitterAddress) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'eventFilter',
-            eventFilter: {
-              filter: {
-                oneofKind: 'emitterAddress',
-                emitterAddress: filters.eventFilter.emitterAddress,
-              },
-            },
-          },
-        })
-      }
-      if (filters.eventFilter.originalOperationId) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'eventFilter',
-            eventFilter: {
-              filter: {
-                oneofKind: 'originalOperationId',
-                originalOperationId: filters.eventFilter.originalOperationId,
-              },
-            },
-          },
-        })
-      }
-      if (filters.eventFilter.isFailure !== undefined) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'eventFilter',
-            eventFilter: {
-              filter: {
-                oneofKind: 'isFailure',
-                isFailure: filters.eventFilter.isFailure,
-              },
-            },
-          },
-        })
-      }
+      builder.addEventFilter(filters.eventFilter)
     }
 
     // Executed ops changes filters
     if (filters.executedOpsChangesFilter) {
-      if (filters.executedOpsChangesFilter.empty) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'executedOpsChangesFilter',
-            executedOpsChangesFilter: {
-              filter: { oneofKind: 'none', none: {} },
-            },
-          },
-        })
-      }
-      if (filters.executedOpsChangesFilter.operationId) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'executedOpsChangesFilter',
-            executedOpsChangesFilter: {
-              filter: {
-                oneofKind: 'operationId',
-                operationId: filters.executedOpsChangesFilter.operationId,
-              },
-            },
-          },
-        })
-      }
+      builder.addExecutedOpsChangesFilter(filters.executedOpsChangesFilter)
     }
 
     // Ledger changes filters
     if (filters.ledgerChangesFilter) {
-      if (filters.ledgerChangesFilter.empty) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'ledgerChangesFilter',
-            ledgerChangesFilter: { filter: { oneofKind: 'none', none: {} } },
-          },
-        })
-      }
-
-      if (filters.ledgerChangesFilter.address) {
-        filtersRequest.push({
-          filter: {
-            oneofKind: 'ledgerChangesFilter',
-            ledgerChangesFilter: {
-              filter: {
-                oneofKind: 'address',
-                address: filters.ledgerChangesFilter.address,
-              },
-            },
-          },
-        })
-      }
+      builder.addLedgerChangesFilter(filters.ledgerChangesFilter)
     }
 
     const request: NewSlotExecutionOutputsServerRequest = {
-      filters: filtersRequest,
+      filters: builder.build(),
     }
 
-    return this.client.newSlotExecutionOutputsServer(request).responses
+    const controller =
+      new RpcOutputStreamController<NewSlotExecutionOutputsServerResponse>()
+    const serverStream = this.client.newSlotExecutionOutputsServer(request)
+
+    // Handle the server stream
+    serverStream.responses.onNext((message, error, complete) => {
+      if (error) {
+        controller.notifyError(error)
+      } else if (complete) {
+        controller.notifyComplete()
+      } else if (message) {
+        controller.notifyMessage(message)
+      }
+    })
+
+    return controller
   }
 
   /**

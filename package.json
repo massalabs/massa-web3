@@ -61,7 +61,7 @@
     "dependencies": {
         "@noble/ed25519": "^1.7.3",
         "@noble/hashes": "^1.2.0",
-        "@protobuf-ts/grpcweb-transport": "^2.9.1",
+        "@protobuf-ts/grpcweb-transport": "2.9.4",
         "bs58check": "^4.0.0",
         "decimal.js": "^10.4.3",
         "dotenv": "^16.0.3",
