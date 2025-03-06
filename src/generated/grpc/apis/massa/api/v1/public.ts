@@ -27,6 +27,9 @@ import { Error } from "../../../../massa/model/v1/commons";
 import { NativeAmount } from "../../../../massa/model/v1/amount";
 import { Slot } from "../../../../massa/model/v1/slot";
 import { DenunciationIndex } from "../../../../massa/model/v1/denunciation";
+import { UInt32Value } from "../../../../google/protobuf/wrappers";
+import { BoolValue } from "../../../../google/protobuf/wrappers";
+import { BytesValue } from "../../../../google/protobuf/wrappers";
 import { StakerEntry } from "../../../../massa/model/v1/staker";
 import { SlotDraw } from "../../../../massa/model/v1/draw";
 import { Addresses } from "../../../../massa/model/v1/address";
@@ -765,6 +768,36 @@ export interface AddressDatastoreKeysCandidate {
      * @generated from protobuf field: bytes prefix = 2;
      */
     prefix: Uint8Array;
+    /**
+     * Key offset for the search
+     *
+     * @generated from protobuf field: google.protobuf.BytesValue start_key = 3;
+     */
+    startKey?: BytesValue;
+    /**
+     * included start_key
+     *
+     * @generated from protobuf field: google.protobuf.BoolValue inclusive_start_key = 4;
+     */
+    inclusiveStartKey?: BoolValue;
+    /**
+     * End key for the search
+     *
+     * @generated from protobuf field: google.protobuf.BytesValue end_key = 5;
+     */
+    endKey?: BytesValue;
+    /**
+     * included end_key
+     *
+     * @generated from protobuf field: google.protobuf.BoolValue inclusive_end_key = 6;
+     */
+    inclusiveEndKey?: BoolValue;
+    /**
+     * Limit for the number of keys
+     *
+     * @generated from protobuf field: google.protobuf.UInt32Value limit = 7;
+     */
+    limit?: UInt32Value;
 }
 /**
  * Request to get the datastore keys (final) of an address
@@ -784,6 +817,36 @@ export interface AddressDatastoreKeysFinal {
      * @generated from protobuf field: bytes prefix = 2;
      */
     prefix: Uint8Array;
+    /**
+     * Key offset for the search
+     *
+     * @generated from protobuf field: google.protobuf.BytesValue start_key = 3;
+     */
+    startKey?: BytesValue;
+    /**
+     * included start_key
+     *
+     * @generated from protobuf field: google.protobuf.BoolValue inclusive_start_key = 4;
+     */
+    inclusiveStartKey?: BoolValue;
+    /**
+     * End key for the search
+     *
+     * @generated from protobuf field: google.protobuf.BytesValue end_key = 5;
+     */
+    endKey?: BytesValue;
+    /**
+     * included end_key
+     *
+     * @generated from protobuf field: google.protobuf.BoolValue inclusive_end_key = 6;
+     */
+    inclusiveEndKey?: BoolValue;
+    /**
+     * Limit for the number of keys
+     *
+     * @generated from protobuf field: google.protobuf.UInt32Value limit = 7;
+     */
+    limit?: UInt32Value;
 }
 /**
  * Request to get a datastore value (candidate) for an address
@@ -1430,6 +1493,19 @@ export interface NewBlocksRequest {
     filters: NewBlocksFilter[];
 }
 /**
+ * NewBlocksServerRequest holds request for unidirectional NewBlocks
+ *
+ * @generated from protobuf message massa.api.v1.NewBlocksServerRequest
+ */
+export interface NewBlocksServerRequest {
+    /**
+     * Returns all the blocks that verify all the filters
+     *
+     * @generated from protobuf field: repeated massa.api.v1.NewBlocksFilter filters = 1;
+     */
+    filters: NewBlocksFilter[];
+}
+/**
  * NewBlocks Filter
  *
  * @generated from protobuf message massa.api.v1.NewBlocksFilter
@@ -1480,11 +1556,37 @@ export interface NewBlocksResponse {
     signedBlock?: SignedBlock;
 }
 /**
+ * NewBlocksServerResponse holds response from unidirectional NewBlocks
+ *
+ * @generated from protobuf message massa.api.v1.NewBlocksServerResponse
+ */
+export interface NewBlocksServerResponse {
+    /**
+     * Signed block
+     *
+     * @generated from protobuf field: massa.model.v1.SignedBlock signed_block = 1;
+     */
+    signedBlock?: SignedBlock;
+}
+/**
  * NewEndorsementsRequest holds request for NewEndorsements
  *
  * @generated from protobuf message massa.api.v1.NewEndorsementsRequest
  */
 export interface NewEndorsementsRequest {
+    /**
+     * Returns all the endorsements that verify all the filters
+     *
+     * @generated from protobuf field: repeated massa.api.v1.NewEndorsementsFilter filters = 1;
+     */
+    filters: NewEndorsementsFilter[];
+}
+/**
+ * NewEndorsementsServerRequest holds request for NewEndorsements
+ *
+ * @generated from protobuf message massa.api.v1.NewEndorsementsServerRequest
+ */
+export interface NewEndorsementsServerRequest {
     /**
      * Returns all the endorsements that verify all the filters
      *
@@ -1543,11 +1645,37 @@ export interface NewEndorsementsResponse {
     signedEndorsement?: SignedEndorsement;
 }
 /**
+ * NewEndorsementsServerResponse holds response from NewEndorsements
+ *
+ * @generated from protobuf message massa.api.v1.NewEndorsementsServerResponse
+ */
+export interface NewEndorsementsServerResponse {
+    /**
+     * Signed endorsement
+     *
+     * @generated from protobuf field: massa.model.v1.SignedEndorsement signed_endorsement = 1;
+     */
+    signedEndorsement?: SignedEndorsement;
+}
+/**
  * NewFilledBlocksRequest holds request for NewFilledBlocks
  *
  * @generated from protobuf message massa.api.v1.NewFilledBlocksRequest
  */
 export interface NewFilledBlocksRequest {
+    /**
+     * Returns all the blocks that verify one of the filters
+     *
+     * @generated from protobuf field: repeated massa.api.v1.NewBlocksFilter filters = 1;
+     */
+    filters: NewBlocksFilter[];
+}
+/**
+ * NewFilledBlocksServerRequest holds request for NewFilledBlocks
+ *
+ * @generated from protobuf message massa.api.v1.NewFilledBlocksServerRequest
+ */
+export interface NewFilledBlocksServerRequest {
     /**
      * Returns all the blocks that verify one of the filters
      *
@@ -1606,11 +1734,37 @@ export interface NewFilledBlocksResponse {
     filledBlock?: FilledBlock;
 }
 /**
+ * NewFilledBlocksServerResponse holds response from NewFilledBlocks
+ *
+ * @generated from protobuf message massa.api.v1.NewFilledBlocksServerResponse
+ */
+export interface NewFilledBlocksServerResponse {
+    /**
+     * Block with operations content found in the node.
+     *
+     * @generated from protobuf field: massa.model.v1.FilledBlock filled_block = 1;
+     */
+    filledBlock?: FilledBlock;
+}
+/**
  * NewOperationsRequest holds request for NewOperations
  *
  * @generated from protobuf message massa.api.v1.NewOperationsRequest
  */
 export interface NewOperationsRequest {
+    /**
+     * Returns all the operations that verify all the filters
+     *
+     * @generated from protobuf field: repeated massa.api.v1.NewOperationsFilter filters = 1;
+     */
+    filters: NewOperationsFilter[];
+}
+/**
+ * NewOperationsRequest holds request for NewOperations
+ *
+ * @generated from protobuf message massa.api.v1.NewOperationsServerRequest
+ */
+export interface NewOperationsServerRequest {
     /**
      * Returns all the operations that verify all the filters
      *
@@ -1669,11 +1823,37 @@ export interface NewOperationsResponse {
     signedOperation?: SignedOperation;
 }
 /**
+ * NewOperationsServerResponse holds response from NewOperations
+ *
+ * @generated from protobuf message massa.api.v1.NewOperationsServerResponse
+ */
+export interface NewOperationsServerResponse {
+    /**
+     * Signed operation
+     *
+     * @generated from protobuf field: massa.model.v1.SignedOperation signed_operation = 1;
+     */
+    signedOperation?: SignedOperation;
+}
+/**
  * NewSlotExecutionOutputsRequest holds request for NewSlotExecutionOutputs
  *
  * @generated from protobuf message massa.api.v1.NewSlotExecutionOutputsRequest
  */
 export interface NewSlotExecutionOutputsRequest {
+    /**
+     * Returns all the slot execution outputs that verify all the filters
+     *
+     * @generated from protobuf field: repeated massa.api.v1.NewSlotExecutionOutputsFilter filters = 1;
+     */
+    filters: NewSlotExecutionOutputsFilter[];
+}
+/**
+ * NewSlotExecutionOutputsServerRequest holds request for NewSlotExecutionOutputs
+ *
+ * @generated from protobuf message massa.api.v1.NewSlotExecutionOutputsServerRequest
+ */
+export interface NewSlotExecutionOutputsServerRequest {
     /**
      * Returns all the slot execution outputs that verify all the filters
      *
@@ -1989,6 +2169,19 @@ export interface NewSlotExecutionOutputsResponse {
     output?: SlotExecutionOutput;
 }
 /**
+ * NewSlotExecutionOutputsServerResponse holds response from NewSlotExecutionOutputs
+ *
+ * @generated from protobuf message massa.api.v1.NewSlotExecutionOutputsServerResponse
+ */
+export interface NewSlotExecutionOutputsServerResponse {
+    /**
+     * Slot execution output
+     *
+     * @generated from protobuf field: massa.model.v1.SlotExecutionOutput output = 1;
+     */
+    output?: SlotExecutionOutput;
+}
+/**
  * NewSlotABICallStacks request
  *
  * @generated from protobuf message massa.api.v1.NewSlotABICallStacksRequest
@@ -2198,11 +2391,37 @@ export interface TransactionsThroughputRequest {
     interval?: UInt64Value;
 }
 /**
+ * TransactionsThroughputServerRequest holds request for TransactionsThroughput
+ *
+ * @generated from protobuf message massa.api.v1.TransactionsThroughputServerRequest
+ */
+export interface TransactionsThroughputServerRequest {
+    /**
+     * Timer interval in seconds (Optional). Defaults to 10s
+     *
+     * @generated from protobuf field: google.protobuf.UInt64Value interval = 1;
+     */
+    interval?: UInt64Value;
+}
+/**
  * TransactionsThroughputResponse holds response from TransactionsThroughput
  *
  * @generated from protobuf message massa.api.v1.TransactionsThroughputResponse
  */
 export interface TransactionsThroughputResponse {
+    /**
+     * Transactions throughput per second
+     *
+     * @generated from protobuf field: uint32 throughput = 1;
+     */
+    throughput: number;
+}
+/**
+ * TransactionsThroughputServerResponse holds response from TransactionsThroughput
+ *
+ * @generated from protobuf message massa.api.v1.TransactionsThroughputServerResponse
+ */
+export interface TransactionsThroughputServerResponse {
     /**
      * Transactions throughput per second
      *
@@ -3181,7 +3400,12 @@ class AddressDatastoreKeysCandidate$Type extends MessageType<AddressDatastoreKey
     constructor() {
         super("massa.api.v1.AddressDatastoreKeysCandidate", [
             { no: 1, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "prefix", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 2, name: "prefix", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 3, name: "start_key", kind: "message", T: () => BytesValue },
+            { no: 4, name: "inclusive_start_key", kind: "message", T: () => BoolValue },
+            { no: 5, name: "end_key", kind: "message", T: () => BytesValue },
+            { no: 6, name: "inclusive_end_key", kind: "message", T: () => BoolValue },
+            { no: 7, name: "limit", kind: "message", T: () => UInt32Value }
         ]);
     }
 }
@@ -3194,7 +3418,12 @@ class AddressDatastoreKeysFinal$Type extends MessageType<AddressDatastoreKeysFin
     constructor() {
         super("massa.api.v1.AddressDatastoreKeysFinal", [
             { no: 1, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "prefix", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+            { no: 2, name: "prefix", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 3, name: "start_key", kind: "message", T: () => BytesValue },
+            { no: 4, name: "inclusive_start_key", kind: "message", T: () => BoolValue },
+            { no: 5, name: "end_key", kind: "message", T: () => BytesValue },
+            { no: 6, name: "inclusive_end_key", kind: "message", T: () => BoolValue },
+            { no: 7, name: "limit", kind: "message", T: () => UInt32Value }
         ]);
     }
 }
@@ -3615,6 +3844,18 @@ class NewBlocksRequest$Type extends MessageType<NewBlocksRequest> {
  */
 export const NewBlocksRequest = new NewBlocksRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class NewBlocksServerRequest$Type extends MessageType<NewBlocksServerRequest> {
+    constructor() {
+        super("massa.api.v1.NewBlocksServerRequest", [
+            { no: 1, name: "filters", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => NewBlocksFilter }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewBlocksServerRequest
+ */
+export const NewBlocksServerRequest = new NewBlocksServerRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class NewBlocksFilter$Type extends MessageType<NewBlocksFilter> {
     constructor() {
         super("massa.api.v1.NewBlocksFilter", [
@@ -3641,6 +3882,18 @@ class NewBlocksResponse$Type extends MessageType<NewBlocksResponse> {
  */
 export const NewBlocksResponse = new NewBlocksResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class NewBlocksServerResponse$Type extends MessageType<NewBlocksServerResponse> {
+    constructor() {
+        super("massa.api.v1.NewBlocksServerResponse", [
+            { no: 1, name: "signed_block", kind: "message", T: () => SignedBlock }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewBlocksServerResponse
+ */
+export const NewBlocksServerResponse = new NewBlocksServerResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class NewEndorsementsRequest$Type extends MessageType<NewEndorsementsRequest> {
     constructor() {
         super("massa.api.v1.NewEndorsementsRequest", [
@@ -3652,6 +3905,18 @@ class NewEndorsementsRequest$Type extends MessageType<NewEndorsementsRequest> {
  * @generated MessageType for protobuf message massa.api.v1.NewEndorsementsRequest
  */
 export const NewEndorsementsRequest = new NewEndorsementsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class NewEndorsementsServerRequest$Type extends MessageType<NewEndorsementsServerRequest> {
+    constructor() {
+        super("massa.api.v1.NewEndorsementsServerRequest", [
+            { no: 1, name: "filters", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => NewEndorsementsFilter }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewEndorsementsServerRequest
+ */
+export const NewEndorsementsServerRequest = new NewEndorsementsServerRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class NewEndorsementsFilter$Type extends MessageType<NewEndorsementsFilter> {
     constructor() {
@@ -3679,6 +3944,18 @@ class NewEndorsementsResponse$Type extends MessageType<NewEndorsementsResponse> 
  */
 export const NewEndorsementsResponse = new NewEndorsementsResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class NewEndorsementsServerResponse$Type extends MessageType<NewEndorsementsServerResponse> {
+    constructor() {
+        super("massa.api.v1.NewEndorsementsServerResponse", [
+            { no: 1, name: "signed_endorsement", kind: "message", T: () => SignedEndorsement }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewEndorsementsServerResponse
+ */
+export const NewEndorsementsServerResponse = new NewEndorsementsServerResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class NewFilledBlocksRequest$Type extends MessageType<NewFilledBlocksRequest> {
     constructor() {
         super("massa.api.v1.NewFilledBlocksRequest", [
@@ -3690,6 +3967,18 @@ class NewFilledBlocksRequest$Type extends MessageType<NewFilledBlocksRequest> {
  * @generated MessageType for protobuf message massa.api.v1.NewFilledBlocksRequest
  */
 export const NewFilledBlocksRequest = new NewFilledBlocksRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class NewFilledBlocksServerRequest$Type extends MessageType<NewFilledBlocksServerRequest> {
+    constructor() {
+        super("massa.api.v1.NewFilledBlocksServerRequest", [
+            { no: 1, name: "filters", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => NewBlocksFilter }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewFilledBlocksServerRequest
+ */
+export const NewFilledBlocksServerRequest = new NewFilledBlocksServerRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class NewFilledBlocksFilter$Type extends MessageType<NewFilledBlocksFilter> {
     constructor() {
@@ -3717,6 +4006,18 @@ class NewFilledBlocksResponse$Type extends MessageType<NewFilledBlocksResponse> 
  */
 export const NewFilledBlocksResponse = new NewFilledBlocksResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class NewFilledBlocksServerResponse$Type extends MessageType<NewFilledBlocksServerResponse> {
+    constructor() {
+        super("massa.api.v1.NewFilledBlocksServerResponse", [
+            { no: 1, name: "filled_block", kind: "message", T: () => FilledBlock }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewFilledBlocksServerResponse
+ */
+export const NewFilledBlocksServerResponse = new NewFilledBlocksServerResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class NewOperationsRequest$Type extends MessageType<NewOperationsRequest> {
     constructor() {
         super("massa.api.v1.NewOperationsRequest", [
@@ -3728,6 +4029,18 @@ class NewOperationsRequest$Type extends MessageType<NewOperationsRequest> {
  * @generated MessageType for protobuf message massa.api.v1.NewOperationsRequest
  */
 export const NewOperationsRequest = new NewOperationsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class NewOperationsServerRequest$Type extends MessageType<NewOperationsServerRequest> {
+    constructor() {
+        super("massa.api.v1.NewOperationsServerRequest", [
+            { no: 1, name: "filters", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => NewOperationsFilter }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewOperationsServerRequest
+ */
+export const NewOperationsServerRequest = new NewOperationsServerRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class NewOperationsFilter$Type extends MessageType<NewOperationsFilter> {
     constructor() {
@@ -3755,6 +4068,18 @@ class NewOperationsResponse$Type extends MessageType<NewOperationsResponse> {
  */
 export const NewOperationsResponse = new NewOperationsResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class NewOperationsServerResponse$Type extends MessageType<NewOperationsServerResponse> {
+    constructor() {
+        super("massa.api.v1.NewOperationsServerResponse", [
+            { no: 1, name: "signed_operation", kind: "message", T: () => SignedOperation }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewOperationsServerResponse
+ */
+export const NewOperationsServerResponse = new NewOperationsServerResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class NewSlotExecutionOutputsRequest$Type extends MessageType<NewSlotExecutionOutputsRequest> {
     constructor() {
         super("massa.api.v1.NewSlotExecutionOutputsRequest", [
@@ -3766,6 +4091,18 @@ class NewSlotExecutionOutputsRequest$Type extends MessageType<NewSlotExecutionOu
  * @generated MessageType for protobuf message massa.api.v1.NewSlotExecutionOutputsRequest
  */
 export const NewSlotExecutionOutputsRequest = new NewSlotExecutionOutputsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class NewSlotExecutionOutputsServerRequest$Type extends MessageType<NewSlotExecutionOutputsServerRequest> {
+    constructor() {
+        super("massa.api.v1.NewSlotExecutionOutputsServerRequest", [
+            { no: 1, name: "filters", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => NewSlotExecutionOutputsFilter }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewSlotExecutionOutputsServerRequest
+ */
+export const NewSlotExecutionOutputsServerRequest = new NewSlotExecutionOutputsServerRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class NewSlotExecutionOutputsFilter$Type extends MessageType<NewSlotExecutionOutputsFilter> {
     constructor() {
@@ -3880,6 +4217,18 @@ class NewSlotExecutionOutputsResponse$Type extends MessageType<NewSlotExecutionO
  * @generated MessageType for protobuf message massa.api.v1.NewSlotExecutionOutputsResponse
  */
 export const NewSlotExecutionOutputsResponse = new NewSlotExecutionOutputsResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class NewSlotExecutionOutputsServerResponse$Type extends MessageType<NewSlotExecutionOutputsServerResponse> {
+    constructor() {
+        super("massa.api.v1.NewSlotExecutionOutputsServerResponse", [
+            { no: 1, name: "output", kind: "message", T: () => SlotExecutionOutput }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.NewSlotExecutionOutputsServerResponse
+ */
+export const NewSlotExecutionOutputsServerResponse = new NewSlotExecutionOutputsServerResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class NewSlotABICallStacksRequest$Type extends MessageType<NewSlotABICallStacksRequest> {
     constructor() {
@@ -4019,6 +4368,18 @@ class TransactionsThroughputRequest$Type extends MessageType<TransactionsThrough
  */
 export const TransactionsThroughputRequest = new TransactionsThroughputRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class TransactionsThroughputServerRequest$Type extends MessageType<TransactionsThroughputServerRequest> {
+    constructor() {
+        super("massa.api.v1.TransactionsThroughputServerRequest", [
+            { no: 1, name: "interval", kind: "message", T: () => UInt64Value }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.TransactionsThroughputServerRequest
+ */
+export const TransactionsThroughputServerRequest = new TransactionsThroughputServerRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class TransactionsThroughputResponse$Type extends MessageType<TransactionsThroughputResponse> {
     constructor() {
         super("massa.api.v1.TransactionsThroughputResponse", [
@@ -4030,6 +4391,18 @@ class TransactionsThroughputResponse$Type extends MessageType<TransactionsThroug
  * @generated MessageType for protobuf message massa.api.v1.TransactionsThroughputResponse
  */
 export const TransactionsThroughputResponse = new TransactionsThroughputResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class TransactionsThroughputServerResponse$Type extends MessageType<TransactionsThroughputServerResponse> {
+    constructor() {
+        super("massa.api.v1.TransactionsThroughputServerResponse", [
+            { no: 1, name: "throughput", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message massa.api.v1.TransactionsThroughputServerResponse
+ */
+export const TransactionsThroughputServerResponse = new TransactionsThroughputServerResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SearchBlocksRequest$Type extends MessageType<SearchBlocksRequest> {
     constructor() {
@@ -4360,14 +4733,20 @@ export const PublicService = new ServiceType("massa.api.v1.PublicService", [
     { name: "GetSlotABICallStacks", options: { "google.api.http": { post: "/v1/get_slot_abi_call_stacks", body: "*" } }, I: GetSlotABICallStacksRequest, O: GetSlotABICallStacksResponse },
     { name: "GetSlotTransfers", options: { "google.api.http": { post: "/v1/get_slot_transfers", body: "*" } }, I: GetSlotTransfersRequest, O: GetSlotTransfersResponse },
     { name: "NewBlocks", serverStreaming: true, clientStreaming: true, options: {}, I: NewBlocksRequest, O: NewBlocksResponse },
+    { name: "NewBlocksServer", serverStreaming: true, options: {}, I: NewBlocksServerRequest, O: NewBlocksServerResponse },
     { name: "NewEndorsements", serverStreaming: true, clientStreaming: true, options: {}, I: NewEndorsementsRequest, O: NewEndorsementsResponse },
+    { name: "NewEndorsementsServer", serverStreaming: true, options: {}, I: NewEndorsementsServerRequest, O: NewEndorsementsServerResponse },
     { name: "NewFilledBlocks", serverStreaming: true, clientStreaming: true, options: {}, I: NewFilledBlocksRequest, O: NewFilledBlocksResponse },
+    { name: "NewFilledBlocksServer", serverStreaming: true, options: {}, I: NewFilledBlocksServerRequest, O: NewFilledBlocksServerResponse },
     { name: "NewOperations", serverStreaming: true, clientStreaming: true, options: {}, I: NewOperationsRequest, O: NewOperationsResponse },
+    { name: "NewOperationsServer", serverStreaming: true, options: {}, I: NewOperationsServerRequest, O: NewOperationsServerResponse },
     { name: "NewSlotExecutionOutputs", serverStreaming: true, clientStreaming: true, options: {}, I: NewSlotExecutionOutputsRequest, O: NewSlotExecutionOutputsResponse },
+    { name: "NewSlotExecutionOutputsServer", serverStreaming: true, options: {}, I: NewSlotExecutionOutputsServerRequest, O: NewSlotExecutionOutputsServerResponse },
     { name: "NewSlotABICallStacks", serverStreaming: true, clientStreaming: true, options: {}, I: NewSlotABICallStacksRequest, O: NewSlotABICallStacksResponse },
     { name: "NewSlotTransfers", serverStreaming: true, clientStreaming: true, options: {}, I: NewSlotTransfersRequest, O: NewSlotTransfersResponse },
     { name: "SendBlocks", serverStreaming: true, clientStreaming: true, options: {}, I: SendBlocksRequest, O: SendBlocksResponse },
     { name: "SendEndorsements", serverStreaming: true, clientStreaming: true, options: {}, I: SendEndorsementsRequest, O: SendEndorsementsResponse },
     { name: "SendOperations", serverStreaming: true, clientStreaming: true, options: {}, I: SendOperationsRequest, O: SendOperationsResponse },
-    { name: "TransactionsThroughput", serverStreaming: true, clientStreaming: true, options: {}, I: TransactionsThroughputRequest, O: TransactionsThroughputResponse }
+    { name: "TransactionsThroughput", serverStreaming: true, clientStreaming: true, options: {}, I: TransactionsThroughputRequest, O: TransactionsThroughputResponse },
+    { name: "TransactionsThroughputServer", serverStreaming: true, options: {}, I: TransactionsThroughputServerRequest, O: TransactionsThroughputServerResponse }
 ]);

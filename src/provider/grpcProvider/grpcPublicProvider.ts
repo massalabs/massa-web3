@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { PublicProvider } from '..'
+import { PublicProvider, SlotExecutionOutputFilter } from '..'
 import { Account } from '../../account'
 import { EventFilter } from '../../client'
 import { Network, NetworkName } from '../../utils'
@@ -18,6 +18,9 @@ import {
   ExecutionQueryRequestItem,
   GetDatastoreEntriesRequest,
   GetDatastoreEntryFilter,
+  NewSlotExecutionOutputsFilter,
+  NewSlotExecutionOutputsServerRequest,
+  NewSlotExecutionOutputsServerResponse,
   QueryStateResponse,
   ScExecutionEventsFilter,
   SearchBlocksFilter,
@@ -59,6 +62,249 @@ export class GrpcPublicProvider implements PublicProvider {
       baseUrl: url,
     })
     return new GrpcPublicProvider(new PublicServiceClient(transport), url)
+  }
+
+  newSlotExecutionOutputsStream(
+    filters: SlotExecutionOutputFilter
+  ): AsyncIterable<NewSlotExecutionOutputsServerResponse> {
+    const filtersRequest: NewSlotExecutionOutputsFilter[] = []
+
+    // Status filter
+    if (filters.status) {
+      filtersRequest.push({
+        filter: {
+          oneofKind: 'status',
+          status: filters.status,
+        },
+      })
+    }
+
+    // Slot range filter
+    if (filters.slotRange) {
+      filtersRequest.push({
+        filter: {
+          oneofKind: 'slotRange',
+          slotRange: filters.slotRange,
+        },
+      })
+    }
+
+    // Async pool changes filters
+    if (filters.asyncPoolChangesFilter) {
+      if (filters.asyncPoolChangesFilter.empty) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'asyncPoolChangesFilter',
+            asyncPoolChangesFilter: { filter: { oneofKind: 'none', none: {} } },
+          },
+        })
+      }
+
+      if (filters.asyncPoolChangesFilter.type) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'asyncPoolChangesFilter',
+            asyncPoolChangesFilter: {
+              filter: {
+                oneofKind: 'type',
+                type: filters.asyncPoolChangesFilter.type,
+              },
+            },
+          },
+        })
+      }
+      if (filters.asyncPoolChangesFilter.handler) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'asyncPoolChangesFilter',
+            asyncPoolChangesFilter: {
+              filter: {
+                oneofKind: 'handler',
+                handler: filters.asyncPoolChangesFilter.handler,
+              },
+            },
+          },
+        })
+      }
+      if (filters.asyncPoolChangesFilter.destinationAddress) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'asyncPoolChangesFilter',
+            asyncPoolChangesFilter: {
+              filter: {
+                oneofKind: 'destinationAddress',
+                destinationAddress:
+                  filters.asyncPoolChangesFilter.destinationAddress,
+              },
+            },
+          },
+        })
+      }
+      if (filters.asyncPoolChangesFilter.emitterAddress) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'asyncPoolChangesFilter',
+            asyncPoolChangesFilter: {
+              filter: {
+                oneofKind: 'emitterAddress',
+                emitterAddress: filters.asyncPoolChangesFilter.emitterAddress,
+              },
+            },
+          },
+        })
+      }
+      if (filters.asyncPoolChangesFilter.canBeExecuted !== undefined) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'asyncPoolChangesFilter',
+            asyncPoolChangesFilter: {
+              filter: {
+                oneofKind: 'canBeExecuted',
+                canBeExecuted: filters.asyncPoolChangesFilter.canBeExecuted,
+              },
+            },
+          },
+        })
+      }
+    }
+
+    // Empty executed denounciation filter
+    if (filters.emptyExecutedDenounciationFilter) {
+      filtersRequest.push({
+        filter: {
+          oneofKind: 'executedDenounciationFilter',
+          executedDenounciationFilter: {
+            filter: {
+              oneofKind: 'none',
+              none: {},
+            },
+          },
+        },
+      })
+    }
+
+    // Event filters
+    if (filters.eventFilter) {
+      if (filters.eventFilter.empty) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'eventFilter',
+            eventFilter: { filter: { oneofKind: 'none', none: {} } },
+          },
+        })
+      }
+      if (filters.eventFilter.callerAddress) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'eventFilter',
+            eventFilter: {
+              filter: {
+                oneofKind: 'callerAddress',
+                callerAddress: filters.eventFilter.callerAddress,
+              },
+            },
+          },
+        })
+      }
+      if (filters.eventFilter.emitterAddress) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'eventFilter',
+            eventFilter: {
+              filter: {
+                oneofKind: 'emitterAddress',
+                emitterAddress: filters.eventFilter.emitterAddress,
+              },
+            },
+          },
+        })
+      }
+      if (filters.eventFilter.originalOperationId) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'eventFilter',
+            eventFilter: {
+              filter: {
+                oneofKind: 'originalOperationId',
+                originalOperationId: filters.eventFilter.originalOperationId,
+              },
+            },
+          },
+        })
+      }
+      if (filters.eventFilter.isFailure !== undefined) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'eventFilter',
+            eventFilter: {
+              filter: {
+                oneofKind: 'isFailure',
+                isFailure: filters.eventFilter.isFailure,
+              },
+            },
+          },
+        })
+      }
+    }
+
+    // Executed ops changes filters
+    if (filters.executedOpsChangesFilter) {
+      if (filters.executedOpsChangesFilter.empty) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'executedOpsChangesFilter',
+            executedOpsChangesFilter: {
+              filter: { oneofKind: 'none', none: {} },
+            },
+          },
+        })
+      }
+      if (filters.executedOpsChangesFilter.operationId) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'executedOpsChangesFilter',
+            executedOpsChangesFilter: {
+              filter: {
+                oneofKind: 'operationId',
+                operationId: filters.executedOpsChangesFilter.operationId,
+              },
+            },
+          },
+        })
+      }
+    }
+
+    // Ledger changes filters
+    if (filters.ledgerChangesFilter) {
+      if (filters.ledgerChangesFilter.empty) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'ledgerChangesFilter',
+            ledgerChangesFilter: { filter: { oneofKind: 'none', none: {} } },
+          },
+        })
+      }
+
+      if (filters.ledgerChangesFilter.address) {
+        filtersRequest.push({
+          filter: {
+            oneofKind: 'ledgerChangesFilter',
+            ledgerChangesFilter: {
+              filter: {
+                oneofKind: 'address',
+                address: filters.ledgerChangesFilter.address,
+              },
+            },
+          },
+        })
+      }
+    }
+
+    const request: NewSlotExecutionOutputsServerRequest = {
+      filters: filtersRequest,
+    }
+
+    return this.client.newSlotExecutionOutputsServer(request).responses
   }
 
   /**

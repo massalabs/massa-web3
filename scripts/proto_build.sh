@@ -6,7 +6,7 @@ echo "Running proto_build script..."
 REPO_URL="https://github.com/massalabs/massa-proto" 
 TARGET_DIR="proto"  
 DESTINATION="tmp" 
-BRANCH="main"  
+BRANCH="improve_datastore_keys_query"  
 
 rm -rf tmp/proto
 
@@ -20,7 +20,7 @@ git config core.sparseCheckout true
 echo "$TARGET_DIR/" > .git/info/sparse-checkout  
 
 git pull origin "$BRANCH"
-
+        
 rm -rf .git
 
 echo "Target dir : '$TARGET_DIR' downloaded in '$DESTINATION/$TARGET_DIR'."
