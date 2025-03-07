@@ -1,4 +1,4 @@
-import { ScExecutionEventStatus } from '../generated/grpc/massa/model/v1/execution_pb';
+import { ScExecutionEventStatus } from '../generated/grpc/massa/model/v1/execution_pb'
 import { rpcTypes as t } from '../generated'
 
 export type ClientOptions = {

@@ -5,13 +5,22 @@ import { Operation } from '../../operation'
 import { SmartContract } from '../../smartContracts'
 import { Provider, ReadSCParams, SignedData } from '..'
 import { Account } from '../../account'
-import { fromNanoMas } from '../../basicElements/mas'
 import { GrpcPublicProvider } from './grpcPublicProvider'
 import { GrpcApiUrl } from '../../utils/networks'
-import { PublicServiceClient } from '../../generated/grpc/apis/massa/api/v1/PublicServiceClientPb'
-import { FunctionCall, ReadOnlyExecutionCall, ReadOnlyExecutionOutput } from '../../generated/grpc/massa/model/v1/execution_pb'
-import { AddressBalanceCandidate, AddressBalanceFinal, ExecuteReadOnlyCallRequest, ExecutionQueryRequestItem, QueryStateRequest } from '../../generated/grpc/apis/massa/api/v1/public_pb'
+import {
+  FunctionCall,
+  ReadOnlyExecutionCall,
+  ReadOnlyExecutionOutput,
+} from '../../generated/grpc/massa/model/v1/execution_pb'
+import {
+  AddressBalanceCandidate,
+  AddressBalanceFinal,
+  ExecuteReadOnlyCallRequest,
+  ExecutionQueryRequestItem,
+  QueryStateRequest,
+} from '../../generated/grpc/public_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
+import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
 
 /**
  * GrpcProvider implements the Provider interface using gRPC for Massa blockchain interactions
@@ -48,19 +57,9 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
     account?: Account
   ): GrpcProvider | GrpcPublicProvider {
     if (account) {
-      return new GrpcProvider(
-        new PublicServiceClient(
-          url,
-        ),
-        url,
-        account
-      )
+      return new GrpcProvider(new PublicServiceClient(url), url, account)
     }
-    return new GrpcPublicProvider(
-      new PublicServiceClient(url
-      ),
-      url
-    )
+    return new GrpcPublicProvider(new PublicServiceClient(url), url)
   }
 
   /**
@@ -91,22 +90,30 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
     const caller = account.address.toString()
     const maxGas = params.maxGas ?? 0n
 
+    const request = new ExecuteReadOnlyCallRequest()
+    const call = new ReadOnlyExecutionCall()
+    call.setMaxGas(Number(maxGas))
+    call.setCallerAddress(caller)
+    call.setCallStackList([])
+    call.setFunctionCall(
+      new FunctionCall()
+        .setTargetAddress(params.target)
+        .setTargetFunction(params.func)
+        .setParameter(args instanceof Uint8Array ? args : args.serialize())
+    )
 
-    const request = new ExecuteReadOnlyCallRequest();
-    const call = new ReadOnlyExecutionCall();
-    call.setMaxGas(Number(maxGas));
-    call.setCallerAddress(caller);
-    call.setCallStackList([]);
-    call.setFunctionCall(new FunctionCall().setTargetAddress(params.target).setTargetFunction(params.func).setParameter(args instanceof Uint8Array ? args : args.serialize()));
-
-    // fee 
+    // fee
     if (params.fee) {
-      call.setFee(new NativeAmount().setMantissa(Number(params.fee)).setScale(Mas.NB_DECIMALS));
+      call.setFee(
+        new NativeAmount()
+          .setMantissa(Number(params.fee))
+          .setScale(Mas.NB_DECIMALS)
+      )
     }
-    request.setCall(call);
-    const response = await this.client.executeReadOnlyCall(request);
+    request.setCall(call)
+    const response = await this.client.executeReadOnlyCall(request)
 
-    const output = response.getOutput();
+    const output = response.getOutput()
     if (!output) {
       throw new Error('No output received')
     }
@@ -119,41 +126,51 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
    */
   async balance(final = true): Promise<bigint> {
     try {
-      const queries = new ExecutionQueryRequestItem();
+      const queries = new ExecutionQueryRequestItem()
       if (final) {
-        queries.setAddressBalanceFinal(new AddressBalanceFinal().setAddress(this.account.address.toString()));
+        queries.setAddressBalanceFinal(
+          new AddressBalanceFinal().setAddress(this.account.address.toString())
+        )
       } else {
-        queries.setAddressBalanceCandidate(new AddressBalanceCandidate().setAddress(this.account.address.toString()));
+        queries.setAddressBalanceCandidate(
+          new AddressBalanceCandidate().setAddress(
+            this.account.address.toString()
+          )
+        )
       }
 
-      const response = await this.client.queryState(new QueryStateRequest().setQueriesList([queries]));
+      const response = await this.client.queryState(
+        new QueryStateRequest().setQueriesList([queries])
+      )
 
-      const list = response.getResponsesList();
-      const result = list[0];
+      const list = response.getResponsesList()
+      const result = list[0]
       if (!result) {
         throw new Error('No response received for balance query')
       }
 
       if (result.hasError()) {
-        throw new Error(`Query state error: ${result.getError()?.getMessage() || 'Unknown error'}`)
+        throw new Error(
+          `Query state error: ${result.getError()?.getMessage() || 'Unknown error'}`
+        )
       }
 
       if (!result.hasResult()) {
         throw new Error('No response item received for balance query')
       }
 
-      const responseItem = result.getResult();
+      const responseItem = result.getResult()
 
       if (!responseItem?.hasAmount()) {
         throw new Error('No response item received for balance query')
       }
 
-      const amount = responseItem.getAmount();
+      const amount = responseItem.getAmount()
       if (!amount) {
         throw new Error('No amount received for balance query')
       }
 
-      return BigInt(amount.getMantissa());
+      return BigInt(amount.getMantissa())
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to get balance: ${error.message}`)

@@ -1,4 +1,4 @@
-// source: apis/massa/api/v1/public.proto
+// source: public.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -21,35 +21,35 @@ var global =
     (function () { return this; }).call(null) ||
     Function('return this')();
 
-var google_api_annotations_pb = require('../../../../google/api/annotations_pb.js');
+var google_api_annotations_pb = require('./google/api/annotations_pb.js');
 goog.object.extend(proto, google_api_annotations_pb);
 var google_protobuf_wrappers_pb = require('google-protobuf/google/protobuf/wrappers_pb.js');
 goog.object.extend(proto, google_protobuf_wrappers_pb);
-var massa_model_v1_address_pb = require('../../../../massa/model/v1/address_pb.js');
+var massa_model_v1_address_pb = require('./massa/model/v1/address_pb.js');
 goog.object.extend(proto, massa_model_v1_address_pb);
-var massa_model_v1_amount_pb = require('../../../../massa/model/v1/amount_pb.js');
+var massa_model_v1_amount_pb = require('./massa/model/v1/amount_pb.js');
 goog.object.extend(proto, massa_model_v1_amount_pb);
-var massa_model_v1_block_pb = require('../../../../massa/model/v1/block_pb.js');
+var massa_model_v1_block_pb = require('./massa/model/v1/block_pb.js');
 goog.object.extend(proto, massa_model_v1_block_pb);
-var massa_model_v1_commons_pb = require('../../../../massa/model/v1/commons_pb.js');
+var massa_model_v1_commons_pb = require('./massa/model/v1/commons_pb.js');
 goog.object.extend(proto, massa_model_v1_commons_pb);
-var massa_model_v1_datastore_pb = require('../../../../massa/model/v1/datastore_pb.js');
+var massa_model_v1_datastore_pb = require('./massa/model/v1/datastore_pb.js');
 goog.object.extend(proto, massa_model_v1_datastore_pb);
-var massa_model_v1_denunciation_pb = require('../../../../massa/model/v1/denunciation_pb.js');
+var massa_model_v1_denunciation_pb = require('./massa/model/v1/denunciation_pb.js');
 goog.object.extend(proto, massa_model_v1_denunciation_pb);
-var massa_model_v1_draw_pb = require('../../../../massa/model/v1/draw_pb.js');
+var massa_model_v1_draw_pb = require('./massa/model/v1/draw_pb.js');
 goog.object.extend(proto, massa_model_v1_draw_pb);
-var massa_model_v1_endorsement_pb = require('../../../../massa/model/v1/endorsement_pb.js');
+var massa_model_v1_endorsement_pb = require('./massa/model/v1/endorsement_pb.js');
 goog.object.extend(proto, massa_model_v1_endorsement_pb);
-var massa_model_v1_execution_pb = require('../../../../massa/model/v1/execution_pb.js');
+var massa_model_v1_execution_pb = require('./massa/model/v1/execution_pb.js');
 goog.object.extend(proto, massa_model_v1_execution_pb);
-var massa_model_v1_node_pb = require('../../../../massa/model/v1/node_pb.js');
+var massa_model_v1_node_pb = require('./massa/model/v1/node_pb.js');
 goog.object.extend(proto, massa_model_v1_node_pb);
-var massa_model_v1_operation_pb = require('../../../../massa/model/v1/operation_pb.js');
+var massa_model_v1_operation_pb = require('./massa/model/v1/operation_pb.js');
 goog.object.extend(proto, massa_model_v1_operation_pb);
-var massa_model_v1_slot_pb = require('../../../../massa/model/v1/slot_pb.js');
+var massa_model_v1_slot_pb = require('./massa/model/v1/slot_pb.js');
 goog.object.extend(proto, massa_model_v1_slot_pb);
-var massa_model_v1_staker_pb = require('../../../../massa/model/v1/staker_pb.js');
+var massa_model_v1_staker_pb = require('./massa/model/v1/staker_pb.js');
 goog.object.extend(proto, massa_model_v1_staker_pb);
 goog.exportSymbol('proto.massa.api.v1.ABICallStack', null, global);
 goog.exportSymbol('proto.massa.api.v1.ABICallStackElement', null, global);

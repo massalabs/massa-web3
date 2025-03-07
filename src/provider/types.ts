@@ -1,4 +1,7 @@
-import { AsyncPoolChangeType, ExecutionOutputStatus } from 'src/generated/grpc/massa/model/v1/execution_pb'
+import {
+  AsyncPoolChangeType,
+  ExecutionOutputStatus,
+} from '../generated/grpc/massa/model/v1/execution_pb'
 import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64_t } from '../basicElements/serializers/number/u64'

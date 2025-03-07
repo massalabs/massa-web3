@@ -7,7 +7,7 @@ const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
 
 describe('Provider GRPC tests', () => {
   test('getNodeStatus', async () => {
-    const status = await grpcProvider.getNodeStatus() as PublicStatus;
+    const status = (await grpcProvider.getNodeStatus()) as PublicStatus
     expect(status.getConfig()).toBeDefined()
     expect(status.getCurrentCycle()).toBeDefined()
     expect(status.getCurrentTime()).toBeDefined()
