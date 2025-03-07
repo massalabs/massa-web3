@@ -40,7 +40,6 @@ import {
     GetStatusRequest,
     GetTransactionsThroughputRequest,
     NewSlotExecutionOutputsServerRequest,
-    NewSlotExecutionOutputsServerResponse,
     OpExecutionStatusCandidate,
     QueryStateRequest,
     QueryStateResponse,
@@ -61,12 +60,12 @@ import { Slot, SlotRange } from '../../generated/grpc/massa/model/v1/slot_pb'
 import { EndorsementIds, EndorsementInfo, EndorsementWrapper } from '../../generated/grpc/massa/model/v1/endorsement_pb'
 import { Addresses } from '../../generated/grpc/massa/model/v1/address_pb'
 import { BlockIds, BlockInfo, BlockParent, BlockWrapper } from '../../generated/grpc/massa/model/v1/block_pb'
-import { AddressKeyEntry } from 'src/generated/grpc/massa/model/v1/datastore_pb'
-import { SlotDraw } from 'src/generated/grpc/massa/model/v1/draw_pb'
-import { FunctionCall, ReadOnlyExecutionCall, ReadOnlyExecutionOutput, ScExecutionEventStatus } from 'src/generated/grpc/massa/model/v1/execution_pb'
-import { StakerEntry } from 'src/generated/grpc/massa/model/v1/staker_pb'
-import { PublicStatus } from 'src/generated/grpc/massa/model/v1/node_pb'
-import { NativeAmount } from 'src/generated/grpc/massa/model/v1/amount_pb'
+import { AddressKeyEntry } from '../../generated/grpc/massa/model/v1/datastore_pb'
+import { SlotDraw } from '../../generated/grpc/massa/model/v1/draw_pb'
+import { FunctionCall, ReadOnlyExecutionCall, ReadOnlyExecutionOutput, ScExecutionEventStatus } from '../../generated/grpc/massa/model/v1/execution_pb'
+import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
+import { PublicStatus } from '../../generated/grpc/massa/model/v1/node_pb'
+import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 
 
 export class GrpcPublicProvider implements PublicProvider {
@@ -82,26 +81,7 @@ export class GrpcPublicProvider implements PublicProvider {
         return new GrpcPublicProvider(new PublicServiceClient(url), url)
     }
 
-    /**
-     * Creates a stream of slot execution outputs based on the provided filters.
-     * The stream can be consumed using a for-await loop.
-     *
-     * Example usage:
-     * ```typescript
-     * const { stream, close } = await provider.newSlotExecutionOutputsStream(filters);
-     * try {
-     *   for await (const response of stream) {
-     *     // Process each response
-     *     if (shouldStop) {
-     *       close(); // Explicitly close the stream when needed
-     *       break;
-     *     }
-     *   }
-     * } finally {
-     *   close(); // Ensure the stream is closed
-     * }
-     * ```
-     */
+
     newSlotExecutionOutputsStream(
         filters: SlotExecutionOutputFilter
     ) {

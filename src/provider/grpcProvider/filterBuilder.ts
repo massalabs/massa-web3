@@ -1,28 +1,23 @@
-import { NewSlotExecutionOutputsFilter } from "src/generated/grpc/apis/massa/api/v1/public_pb"
-import { AsyncPoolChangeType, ExecutionOutputStatus } from "src/generated/grpc/massa/model/v1/execution_pb"
-import { SlotRange } from "src/generated/grpc/massa/model/v1/slot_pb"
+import { AsyncPoolChangesFilter, ExecutedDenounciationFilter, ExecutedOpsChangesFilter, ExecutionEventFilter, LedgerChangesFilter, NewSlotExecutionOutputsFilter } from "../../generated/grpc/apis/massa/api/v1/public_pb"
+import { Empty } from "../../generated/grpc/massa/model/v1/commons_pb";
+import { AsyncPoolChangeType, ExecutionOutputStatus } from "../../generated/grpc/massa/model/v1/execution_pb"
+import { SlotRange } from "../../generated/grpc/massa/model/v1/slot_pb"
 
 export class FilterBuilder {
     private filters: NewSlotExecutionOutputsFilter[] = []
 
     addStatus(status: ExecutionOutputStatus): FilterBuilder {
-        this.filters.push({
-            filter: {
-                oneofKind: 'status',
-                status,
-            },
-        })
-        return this
+        const filter = new NewSlotExecutionOutputsFilter();
+        filter.setStatus(status);
+        this.filters.push(filter);
+        return this;
     }
 
     addSlotRange(slotRange: SlotRange): FilterBuilder {
-        this.filters.push({
-            filter: {
-                oneofKind: 'slotRange',
-                slotRange,
-            },
-        })
-        return this
+        const filter = new NewSlotExecutionOutputsFilter();
+        filter.setSlotRange(slotRange);
+        this.filters.push(filter);
+        return this;
     }
 
     addAsyncPoolChangesFilter(filter: {
@@ -33,101 +28,56 @@ export class FilterBuilder {
         emitterAddress?: string
         canBeExecuted?: boolean
     }): FilterBuilder {
+
         if (filter.empty) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'asyncPoolChangesFilter',
-                    asyncPoolChangesFilter: { filter: { oneofKind: 'none', none: {} } },
-                },
-            })
+            const filter = new NewSlotExecutionOutputsFilter();
+            filter.setAsyncPoolChangesFilter(new AsyncPoolChangesFilter().setNone(new Empty()));
+            this.filters.push(filter);
+            // return if empty
+            return this;
         }
 
         if (filter.type) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'asyncPoolChangesFilter',
-                    asyncPoolChangesFilter: {
-                        filter: {
-                            oneofKind: 'type',
-                            type: filter.type,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setAsyncPoolChangesFilter(new AsyncPoolChangesFilter().setType(filter.type));
+            this.filters.push(filterOut);
         }
 
+
         if (filter.handler) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'asyncPoolChangesFilter',
-                    asyncPoolChangesFilter: {
-                        filter: {
-                            oneofKind: 'handler',
-                            handler: filter.handler,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setAsyncPoolChangesFilter(new AsyncPoolChangesFilter().setHandler(filter.handler));
+            this.filters.push(filterOut);
         }
 
         if (filter.destinationAddress) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'asyncPoolChangesFilter',
-                    asyncPoolChangesFilter: {
-                        filter: {
-                            oneofKind: 'destinationAddress',
-                            destinationAddress: filter.destinationAddress,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setAsyncPoolChangesFilter(new AsyncPoolChangesFilter().setDestinationAddress(filter.destinationAddress));
+            this.filters.push(filterOut);
         }
+
 
         if (filter.emitterAddress) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'asyncPoolChangesFilter',
-                    asyncPoolChangesFilter: {
-                        filter: {
-                            oneofKind: 'emitterAddress',
-                            emitterAddress: filter.emitterAddress,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setAsyncPoolChangesFilter(new AsyncPoolChangesFilter().setEmitterAddress(filter.emitterAddress));
+            this.filters.push(filterOut);
         }
 
+
         if (filter.canBeExecuted !== undefined) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'asyncPoolChangesFilter',
-                    asyncPoolChangesFilter: {
-                        filter: {
-                            oneofKind: 'canBeExecuted',
-                            canBeExecuted: filter.canBeExecuted,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setAsyncPoolChangesFilter(new AsyncPoolChangesFilter().setCanBeExecuted(filter.canBeExecuted));
+            this.filters.push(filterOut);
         }
 
         return this
     }
 
     addEmptyExecutedDenounciationFilter(): FilterBuilder {
-        this.filters.push({
-            filter: {
-                oneofKind: 'executedDenounciationFilter',
-                executedDenounciationFilter: {
-                    filter: {
-                        oneofKind: 'none',
-                        none: {},
-                    },
-                },
-            },
-        })
-        return this
+        const filter = new NewSlotExecutionOutputsFilter();
+        filter.setExecutedDenounciationFilter(new ExecutedDenounciationFilter().setNone(new Empty()));
+        this.filters.push(filter);
+        return this;
     }
 
     addEventFilter(filter: {
@@ -138,68 +88,36 @@ export class FilterBuilder {
         isFailure?: boolean
     }): FilterBuilder {
         if (filter.empty) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'eventFilter',
-                    eventFilter: { filter: { oneofKind: 'none', none: {} } },
-                },
-            })
+            const filter = new NewSlotExecutionOutputsFilter();
+            filter.setEventFilter(new ExecutionEventFilter().setNone(new Empty()));
+            this.filters.push(filter);
+            return this;
         }
 
         if (filter.callerAddress) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'eventFilter',
-                    eventFilter: {
-                        filter: {
-                            oneofKind: 'callerAddress',
-                            callerAddress: filter.callerAddress,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setEventFilter(new ExecutionEventFilter().setCallerAddress(filter.callerAddress));
+            this.filters.push(filterOut);
         }
 
+
         if (filter.emitterAddress) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'eventFilter',
-                    eventFilter: {
-                        filter: {
-                            oneofKind: 'emitterAddress',
-                            emitterAddress: filter.emitterAddress,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setEventFilter(new ExecutionEventFilter().setEmitterAddress(filter.emitterAddress));
+            this.filters.push(filterOut);
         }
 
         if (filter.originalOperationId) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'eventFilter',
-                    eventFilter: {
-                        filter: {
-                            oneofKind: 'originalOperationId',
-                            originalOperationId: filter.originalOperationId,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setEventFilter(new ExecutionEventFilter().setOriginalOperationId(filter.originalOperationId));
+            this.filters.push(filterOut);
         }
 
+
         if (filter.isFailure !== undefined) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'eventFilter',
-                    eventFilter: {
-                        filter: {
-                            oneofKind: 'isFailure',
-                            isFailure: filter.isFailure,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setEventFilter(new ExecutionEventFilter().setIsFailure(filter.isFailure));
+            this.filters.push(filterOut);
         }
 
         return this
@@ -210,26 +128,16 @@ export class FilterBuilder {
         operationId?: string
     }): FilterBuilder {
         if (filter.empty) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'executedOpsChangesFilter',
-                    executedOpsChangesFilter: { filter: { oneofKind: 'none', none: {} } },
-                },
-            })
+            const filter = new NewSlotExecutionOutputsFilter();
+            filter.setExecutedOpsChangesFilter(new ExecutedOpsChangesFilter().setNone(new Empty()));
+            this.filters.push(filter);
+            return this;
         }
 
         if (filter.operationId) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'executedOpsChangesFilter',
-                    executedOpsChangesFilter: {
-                        filter: {
-                            oneofKind: 'operationId',
-                            operationId: filter.operationId,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setExecutedOpsChangesFilter(new ExecutedOpsChangesFilter().setOperationId(filter.operationId));
+            this.filters.push(filterOut);
         }
 
         return this
@@ -240,26 +148,16 @@ export class FilterBuilder {
         address?: string
     }): FilterBuilder {
         if (filter.empty) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'ledgerChangesFilter',
-                    ledgerChangesFilter: { filter: { oneofKind: 'none', none: {} } },
-                },
-            })
+            const filter = new NewSlotExecutionOutputsFilter();
+            filter.setLedgerChangesFilter(new LedgerChangesFilter().setNone(new Empty()));
+            this.filters.push(filter);
+            return this;
         }
 
         if (filter.address) {
-            this.filters.push({
-                filter: {
-                    oneofKind: 'ledgerChangesFilter',
-                    ledgerChangesFilter: {
-                        filter: {
-                            oneofKind: 'address',
-                            address: filter.address,
-                        },
-                    },
-                },
-            })
+            const filterOut = new NewSlotExecutionOutputsFilter();
+            filterOut.setLedgerChangesFilter(new LedgerChangesFilter().setAddress(filter.address));
+            this.filters.push(filterOut);
         }
 
         return this

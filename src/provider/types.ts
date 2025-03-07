@@ -1,12 +1,9 @@
-import {
-  AsyncPoolChangeType,
-  ExecutionOutputStatus,
-} from 'src/generated/grpc/massa/model/v1/execution'
+import { AsyncPoolChangeType, ExecutionOutputStatus } from 'src/generated/grpc/massa/model/v1/execution_pb'
 import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64_t } from '../basicElements/serializers/number/u64'
 import { rpcTypes as t } from '../generated'
-import { SlotRange } from '../generated/grpc/massa/model/v1/slot'
+import { SlotRange } from '../generated/grpc/massa/model/v1/slot_pb'
 
 export type SignOptions = {
   description?: string

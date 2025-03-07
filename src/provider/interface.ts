@@ -12,8 +12,8 @@ import {
   ReadSCData,
   ReadSCParams,
 } from './'
-import { PublicStatus } from '../generated/grpc/massa/model/v1/node'
-import { ReadOnlyExecutionOutput } from 'src/generated/grpc/massa/model/v1/execution'
+import { PublicStatus } from '../generated/grpc/massa/model/v1/node_pb'
+import { ReadOnlyExecutionOutput } from '../generated/grpc/massa/model/v1/execution_pb'
 
 export type PublicProvider = {
   balanceOf(
