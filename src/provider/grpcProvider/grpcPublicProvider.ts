@@ -93,9 +93,6 @@ export class GrpcPublicProvider implements PublicProvider {
   ) {}
 
   static fromGrpcUrl(url: string): PublicProvider {
-    // const transport = new GrpcWebFetchTransport({
-    //     baseUrl: url,
-    // })
     return new GrpcPublicProvider(new PublicServiceClient(url), url)
   }
 
@@ -143,51 +140,7 @@ export class GrpcPublicProvider implements PublicProvider {
     const request = new NewSlotExecutionOutputsServerRequest()
     request.setFiltersList(f)
 
-    // const controller = new RpcOutputStreamController<NewSlotExecutionOutputsServerResponse>()
     return this.client.newSlotExecutionOutputsServer(request)
-
-    // // Handle the server stream
-    // let listener = serverStream.responses.onNext((message, error, complete) => {
-    //     if (error) {
-    //         if (controller.closed) {
-    //             return;
-    //         }
-    //         controller.notifyError(error)
-    //     }
-    //     if (complete) {
-    //         listener();
-    //         listenerComplete();
-    //         listenerError();
-    //     }
-    //     if (message) {
-    //         controller.notifyMessage(message)
-    //     }
-    // })
-
-    // // Handle server stream closure
-    // let listenerComplete = serverStream.responses.onComplete(() => {
-    //     if (controller.closed) {
-    //         return;
-    //     }
-    //     controller.notifyComplete()
-    // })
-
-    // // Handle server stream errors
-    // let listenerError = serverStream.responses.onError((error) => {
-    //     if (controller.closed) {
-    //         return;
-    //     }
-    //     controller.notifyError(error)
-    // })
-
-    // let c_l = controller.onComplete(() => {
-    //     listener();
-    //     listenerComplete();
-    //     listenerError();
-    //     c_l();
-    // });
-
-    // return controller
   }
 
   /**
