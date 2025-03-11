@@ -19,7 +19,7 @@
         "clean-dist": "rimraf dist/*",
         "build-esm": "tsc --project tsconfig.esm.json",
         "build-commonjs": "tsc --project tsconfig.commonjs.json",
-        "build-copy": "cp -r src/generated/grpc/ dist/esm/generated/grpc/",
+        "build-copy": "cp -r src/generated/grpc/ dist/esm/generated/grpc/ && cp -r src/generated/grpc/ dist/cmd/generated/grpc/",
         "build": "npm-run-all clean-dist build-*",
         "generate:types": "npx open-rpc-typings --output-ts src/generated --name-ts client-types -d 'https://raw.githubusercontent.com/massalabs/massa/refs/heads/mainnet_2_3/massa-node/base_config/openrpc.json'",
         "generate:test": "ts-interface-builder -o test/generated src/generated/client-types.ts",
