@@ -5,13 +5,10 @@ import { EventFilter } from '../../client'
 import { Network, NetworkName } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
-import { PublicProvider, ReadSCParams, SlotExecutionOutputFilter } from '..'
+import { PublicProvider, ReadSCParams } from '..'
 import { OperationStatus } from '../../operation'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
 import { Slot as tSlot } from '../../generated/client-types'
-import { FilterBuilder } from './filterBuilder'
-
-// Import from model
 
 // Import from api
 import {
@@ -37,8 +34,6 @@ import {
   GetStakersRequest,
   GetStatusRequest,
   GetTransactionsThroughputRequest,
-  NewSlotExecutionOutputsServerRequest,
-  NewSlotExecutionOutputsServerResponse,
   OpExecutionStatusCandidate,
   QueryStateRequest,
   QueryStateResponse,
@@ -83,7 +78,6 @@ import {
 import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
 import { PublicStatus } from '../../generated/grpc/massa/model/v1/node_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
-import { ClientReadableStream } from 'grpc-web'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
 
 export class GrpcPublicProvider implements PublicProvider {
@@ -94,53 +88,6 @@ export class GrpcPublicProvider implements PublicProvider {
 
   static fromGrpcUrl(url: string): PublicProvider {
     return new GrpcPublicProvider(new PublicServiceClient(url), url)
-  }
-
-  newSlotExecutionOutputsStream(
-    filters: SlotExecutionOutputFilter
-  ): ClientReadableStream<NewSlotExecutionOutputsServerResponse> {
-    const builder = new FilterBuilder()
-
-    // Status filter
-    if (filters.status) {
-      builder.addStatus(filters.status)
-    }
-
-    // Slot range filter
-    if (filters.slotRange) {
-      builder.addSlotRange(filters.slotRange)
-    }
-
-    // Async pool changes filters
-    if (filters.asyncPoolChangesFilter) {
-      builder.addAsyncPoolChangesFilter(filters.asyncPoolChangesFilter)
-    }
-
-    // Empty executed denounciation filter
-    if (filters.emptyExecutedDenounciationFilter) {
-      builder.addEmptyExecutedDenounciationFilter()
-    }
-
-    // Event filters
-    if (filters.eventFilter) {
-      builder.addEventFilter(filters.eventFilter)
-    }
-
-    // Executed ops changes filters
-    if (filters.executedOpsChangesFilter) {
-      builder.addExecutedOpsChangesFilter(filters.executedOpsChangesFilter)
-    }
-
-    // Ledger changes filters
-    if (filters.ledgerChangesFilter) {
-      builder.addLedgerChangesFilter(filters.ledgerChangesFilter)
-    }
-
-    const f = builder.build()
-    const request = new NewSlotExecutionOutputsServerRequest()
-    request.setFiltersList(f)
-
-    return this.client.newSlotExecutionOutputsServer(request)
   }
 
   /**
@@ -321,16 +268,10 @@ export class GrpcPublicProvider implements PublicProvider {
   /**
    * Retrieves storage keys for a smart contract with optional filtering and pagination
    */
-  // eslint-disable-next-line max-params
   async getStorageKeys(
     address: string,
     filter?: Uint8Array | string,
-    final?: boolean,
-    startKey?: Uint8Array,
-    inclusiveStartKey?: boolean,
-    endKey?: Uint8Array,
-    inclusiveEndKey?: boolean,
-    limit?: number
+    final?: boolean
   ): Promise<Uint8Array[]> {
     if (!address) {
       throw new Error('Address is required')
@@ -344,78 +285,20 @@ export class GrpcPublicProvider implements PublicProvider {
           : filter
         : new Uint8Array()
 
-      const startKeyValue = startKey ? { value: startKey } : undefined
-      const inclusiveStartKeyValue =
-        inclusiveStartKey !== undefined
-          ? { value: inclusiveStartKey }
-          : undefined
-      const endKeyValue = endKey ? { value: endKey } : undefined
-      const inclusiveEndKeyValue =
-        inclusiveEndKey !== undefined ? { value: inclusiveEndKey } : undefined
-      const limitValue = limit ? { value: limit } : undefined
-
       const ret = new ExecutionQueryRequestItem()
       if (final) {
         ret.setAddressDatastoreKeysFinal(
-          new AddressDatastoreKeysFinal()
-            .setAddress(address)
-            .setPrefix(prefix)
-            .setStartKey(startKeyValue)
-            .setInclusiveStartKey(inclusiveStartKeyValue)
-            .setEndKey(endKeyValue)
-            .setInclusiveEndKey(inclusiveEndKeyValue)
-            .setLimit(limitValue)
+          new AddressDatastoreKeysFinal().setAddress(address).setPrefix(prefix)
         )
       } else {
         ret.setAddressDatastoreKeysCandidate(
           new AddressDatastoreKeysCandidate()
             .setAddress(address)
             .setPrefix(prefix)
-            .setStartKey(startKeyValue)
-            .setInclusiveStartKey(inclusiveStartKeyValue)
-            .setEndKey(endKeyValue)
-            .setInclusiveEndKey(inclusiveEndKeyValue)
-            .setLimit(limitValue)
         )
       }
 
       queries.push(ret)
-
-      // queries.push({
-      //     requestItem: final
-      //         ? {
-      //             oneofKind: 'addressDatastoreKeysFinal' as const,
-      //             addressDatastoreKeysFinal: {
-      //                 address,
-      //                 prefix,
-      //                 ...(startKeyValue && { startKey: startKeyValue }),
-      //                 ...(inclusiveStartKeyValue && {
-      //                     inclusiveStartKey: inclusiveStartKeyValue,
-      //                 }),
-      //                 ...(endKeyValue && { endKey: endKeyValue }),
-      //                 ...(inclusiveEndKeyValue && {
-      //                     inclusiveEndKey: inclusiveEndKeyValue,
-      //                 }),
-      //                 ...(limitValue && { limit: limitValue }),
-      //             },
-      //         }
-      //         : {
-      //             oneofKind: 'addressDatastoreKeysCandidate' as const,
-      //             addressDatastoreKeysCandidate: {
-      //                 address,
-      //                 prefix,
-      //                 ...(startKeyValue && { startKey: startKeyValue }),
-      //                 ...(inclusiveStartKeyValue && {
-      //                     inclusiveStartKey: inclusiveStartKeyValue,
-      //                 }),
-      //                 ...(endKeyValue && { endKey: endKeyValue }),
-      //                 ...(inclusiveEndKeyValue && {
-      //                     inclusiveEndKey: inclusiveEndKeyValue,
-      //                 }),
-      //                 ...(limitValue && { limit: limitValue }),
-      //             },
-      //         },
-      // })
 
       const response = await this.client.queryState(
         new QueryStateRequest().setQueriesList(queries)
