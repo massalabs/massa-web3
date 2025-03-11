@@ -76,6 +76,7 @@
         "@babel/preset-env": "^7.22.15",
         "@open-rpc/typings": "^1.12.4",
         "@protobuf-ts/plugin": "^2.9.4",
+        "google-protobuf": "^3.21.4",
         "@types/jest": "^29.5.12",
         "@types/node": "^20.12.13",
         "@types/varint": "^6.0.3",
