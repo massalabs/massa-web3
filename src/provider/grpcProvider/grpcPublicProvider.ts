@@ -37,6 +37,9 @@ import {
   GetStakersRequest,
   GetStatusRequest,
   GetTransactionsThroughputRequest,
+  NewOperationsFilter,
+  NewOperationsServerRequest,
+  NewOperationsServerResponse,
   NewSlotExecutionOutputsServerRequest,
   NewSlotExecutionOutputsServerResponse,
   OpExecutionStatusCandidate,
@@ -58,6 +61,8 @@ import {
   OperationIds,
   OperationInfo,
   OperationWrapper,
+  OpType,
+  OpTypes,
 } from '../../generated/grpc/massa/model/v1/operation_pb'
 import { Slot, SlotRange } from '../../generated/grpc/massa/model/v1/slot_pb'
 import {
@@ -96,6 +101,11 @@ export class GrpcPublicProvider implements PublicProvider {
     return new GrpcPublicProvider(new PublicServiceClient(url), url)
   }
 
+  /**
+   * Streams new slot execution outputs
+   * @param filters - The filters to apply to the stream
+   * @returns A stream of new slot execution outputs
+   */
   newSlotExecutionOutputsStream(
     filters: SlotExecutionOutputFilter
   ): ClientReadableStream<NewSlotExecutionOutputsServerResponse> {
@@ -141,6 +151,43 @@ export class GrpcPublicProvider implements PublicProvider {
     request.setFiltersList(f)
 
     return this.client.newSlotExecutionOutputsServer(request)
+  }
+
+  /**
+   * Streams new operations
+   * @param addresses - Optional list of addresses to filter by
+   * @param operationIds - Optional list of operation IDs to filter by
+   * @param types - Optional list of operation types to filter by
+   * @returns A stream of new operations
+   */
+  newOperationsStream(
+    addresses?: string[],
+    operationIds?: string[],
+    types?: OpType[]
+  ): ClientReadableStream<NewOperationsServerResponse> {
+    const request = new NewOperationsServerRequest()
+
+    if (operationIds) {
+      const filter = new NewOperationsFilter()
+      filter.setOperationIds(
+        new OperationIds().setOperationIdsList(operationIds)
+      )
+      request.addFilters(filter)
+    }
+    if (addresses) {
+      const filter = new NewOperationsFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+    if (types) {
+      const filter = new NewOperationsFilter()
+      const opTypes = new OpTypes()
+      opTypes.setOpTypesList(types)
+      filter.setOperationTypes(opTypes)
+      request.addFilters(filter)
+    }
+
+    return this.client.newOperationsServer(request)
   }
 
   /**
