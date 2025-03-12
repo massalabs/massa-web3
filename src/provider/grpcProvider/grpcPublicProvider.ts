@@ -37,6 +37,15 @@ import {
   GetStakersRequest,
   GetStatusRequest,
   GetTransactionsThroughputRequest,
+  NewBlocksFilter,
+  NewBlocksServerRequest,
+  NewBlocksServerResponse,
+  NewEndorsementsFilter,
+  NewEndorsementsServerRequest,
+  NewEndorsementsServerResponse,
+  NewFilledBlocksFilter,
+  NewFilledBlocksServerRequest,
+  NewFilledBlocksServerResponse,
   NewOperationsFilter,
   NewOperationsServerRequest,
   NewOperationsServerResponse,
@@ -151,6 +160,113 @@ export class GrpcPublicProvider implements PublicProvider {
     request.setFiltersList(f)
 
     return this.client.newSlotExecutionOutputsServer(request)
+  }
+
+  /**
+   * Streams new filled blocks
+   * @param addresses - Optional list of addresses to filter by
+   * @param blockIds - Optional list of block IDs to filter by
+   * @param slotRange - Optional slot range to filter by
+   * @returns A stream of new filled blocks
+   */
+  newFilledBlocksStream(
+    addresses?: string[],
+    blockIds?: string[],
+    slotRange?: SlotRange
+  ): ClientReadableStream<NewFilledBlocksServerResponse> {
+    const request = new NewFilledBlocksServerRequest()
+
+    if (blockIds) {
+      const filter = new NewFilledBlocksFilter()
+      filter.setBlockIds(new BlockIds().setBlockIdsList(blockIds))
+      request.addFilters(filter)
+    }
+
+    if (addresses) {
+      const filter = new NewFilledBlocksFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+
+    if (slotRange) {
+      const filter = new NewFilledBlocksFilter()
+      filter.setSlotRange(slotRange)
+      request.addFilters(filter)
+    }
+
+    return this.client.newFilledBlocksServer(request)
+  }
+
+  /**
+   * Streams new endorsements
+   * @param addresses - Optional list of addresses to filter by
+   * @param endorsementIds - Optional list of endorsement IDs to filter by
+   * @param blockIds - Optional list of block IDs to filter by
+   * @returns A stream of new endorsements
+   */
+  newEndorsementsStream(
+    addresses?: string[],
+    endorsementIds?: string[],
+    blockIds?: string[]
+  ): ClientReadableStream<NewEndorsementsServerResponse> {
+    const request = new NewEndorsementsServerRequest()
+
+    if (endorsementIds) {
+      const filter = new NewEndorsementsFilter()
+      filter.setEndorsementIds(
+        new EndorsementIds().setEndorsementIdsList(endorsementIds)
+      )
+      request.addFilters(filter)
+    }
+
+    if (addresses) {
+      const filter = new NewEndorsementsFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+
+    if (blockIds) {
+      const filter = new NewEndorsementsFilter()
+      filter.setBlockIds(new BlockIds().setBlockIdsList(blockIds))
+      request.addFilters(filter)
+    }
+
+    return this.client.newEndorsementsServer(request)
+  }
+
+  /**
+   * Streams new blocks
+   * @param blockIds - Optional list of block IDs to filter by
+   * @param addresses - Optional list of addresses to filter by
+   * @param slotRange - Optional slot range to filter by
+   * @returns A stream of new blocks
+   */
+  newBlockStream(
+    addresses?: string[],
+    blockIds?: string[],
+    slotRange?: SlotRange
+  ): ClientReadableStream<NewBlocksServerResponse> {
+    const request = new NewBlocksServerRequest()
+
+    if (blockIds) {
+      const filter = new NewBlocksFilter()
+      filter.setBlockIds(new BlockIds().setBlockIdsList(blockIds))
+      request.addFilters(filter)
+    }
+
+    if (addresses) {
+      const filter = new NewBlocksFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+
+    if (slotRange) {
+      const filter = new NewBlocksFilter()
+      filter.setSlotRange(slotRange)
+      request.addFilters(filter)
+    }
+
+    return this.client.newBlocksServer(request)
   }
 
   /**
