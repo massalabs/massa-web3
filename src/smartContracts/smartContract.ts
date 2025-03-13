@@ -64,7 +64,7 @@ export class SmartContract {
       target: this.address,
       ...options,
     }
-    return this.provider.readSC(readParams)
+    return this.provider.readSC(readParams) as Promise<ReadSCData>
   }
 
   /**
