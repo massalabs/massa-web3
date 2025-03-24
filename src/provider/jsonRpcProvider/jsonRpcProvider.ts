@@ -314,7 +314,8 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
    */
   protected async deploy(params: DeploySCParams): Promise<string> {
     const coins = params.coins ?? 0n
-    const totalCost = StorageCost.smartContract(params.byteCode.length) + coins
+    const totalCost =
+      StorageCost.smartContractDeploy(params.byteCode.length) + coins
 
     await this.checkAccountBalance(totalCost)
 
