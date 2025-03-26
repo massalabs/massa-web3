@@ -3,14 +3,15 @@
 import { Mas } from '../../basicElements'
 import { Operation } from '../../operation'
 import { SmartContract } from '../../smartContracts'
-import { Provider, ReadSCParams, SignedData } from '..'
+import { Provider, ReadSCData, ReadSCParams, SignedData } from '..'
 import { Account } from '../../account'
 import { GrpcPublicProvider } from './grpcPublicProvider'
 import { GrpcApiUrl } from '../../utils/networks'
 import {
   FunctionCall,
   ReadOnlyExecutionCall,
-  ReadOnlyExecutionOutput,
+  ScExecutionEvent,
+  ScExecutionEventStatus,
 } from '../../generated/grpc/massa/model/v1/execution_pb'
 import {
   AddressBalanceCandidate,
@@ -21,6 +22,7 @@ import {
 } from '../../generated/grpc/public_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
+import { SCOutputEvent } from '../../generated/client-types'
 
 /**
  * GrpcProvider implements the Provider interface using gRPC for Massa blockchain interactions
@@ -84,7 +86,7 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
   /**
    * Executes a read-only smart contract call
    */
-  async readSC(params: ReadSCParams): Promise<ReadOnlyExecutionOutput> {
+  async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const args = params.parameter ?? new Uint8Array()
     const account = await Account.generate()
     const caller = account.address.toString()
@@ -118,7 +120,42 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
       throw new Error('No output received')
     }
 
-    return output
+    const result: ReadSCData = {
+      value: output.getCallResult_asU8(),
+      info: {
+        gasCost: output.getUsedGas(),
+        events:
+          output
+            .getOut()
+            ?.getEventsList()
+            .map((ev: ScExecutionEvent) => {
+              const event: SCOutputEvent = {
+                data: ev.getData_asB64(),
+                context: {
+                  slot: {
+                    period: Number(
+                      ev.getContext()?.getOriginSlot()?.getPeriod() ?? 0
+                    ),
+                    thread: Number(
+                      ev.getContext()?.getOriginSlot()?.getThread() ?? 0
+                    ),
+                  },
+                  read_only:
+                    ev.getContext()?.getStatus() ===
+                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_READ_ONLY,
+                  call_stack: ev.getContext()?.getCallStackList() ?? [],
+                  index_in_slot: Number(ev.getContext()?.getIndexInSlot() ?? 0),
+                  is_final:
+                    ev.getContext()?.getStatus() ===
+                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_FINAL,
+                },
+              }
+              return event
+            }) ?? [],
+      },
+    }
+
+    return result
   }
 
   /**

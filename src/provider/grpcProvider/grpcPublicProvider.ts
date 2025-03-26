@@ -5,7 +5,7 @@ import { EventFilter } from '../../client'
 import { Network, NetworkName } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
-import { PublicProvider, ReadSCParams } from '..'
+import { PublicProvider, ReadSCData, ReadSCParams } from '..'
 import { OperationStatus } from '../../operation'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
 import { Slot as tSlot } from '../../generated/client-types'
@@ -72,7 +72,7 @@ import { SlotDraw } from '../../generated/grpc/massa/model/v1/draw_pb'
 import {
   FunctionCall,
   ReadOnlyExecutionCall,
-  ReadOnlyExecutionOutput,
+  ScExecutionEvent,
   ScExecutionEventStatus,
 } from '../../generated/grpc/massa/model/v1/execution_pb'
 import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
@@ -669,7 +669,7 @@ export class GrpcPublicProvider implements PublicProvider {
     return status
   }
 
-  async readSC(params: ReadSCParams): Promise<ReadOnlyExecutionOutput> {
+  async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const args = params.parameter ?? new Uint8Array()
     const caller =
       params.caller ?? (await Account.generate()).address.toString()
@@ -703,6 +703,40 @@ export class GrpcPublicProvider implements PublicProvider {
       throw new Error('No output received')
     }
 
-    return output
+    const result: ReadSCData = {
+      value: output.getCallResult_asU8(),
+      info: {
+        gasCost: output.getUsedGas(),
+        events:
+          output
+            .getOut()
+            ?.getEventsList()
+            .map((ev: ScExecutionEvent) => {
+              const event: SCOutputEvent = {
+                data: ev.getData_asB64(),
+                context: {
+                  slot: {
+                    period: Number(
+                      ev.getContext()?.getOriginSlot()?.getPeriod() ?? 0
+                    ),
+                    thread: Number(
+                      ev.getContext()?.getOriginSlot()?.getThread() ?? 0
+                    ),
+                  },
+                  read_only:
+                    ev.getContext()?.getStatus() ===
+                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_READ_ONLY,
+                  call_stack: ev.getContext()?.getCallStackList() ?? [],
+                  index_in_slot: Number(ev.getContext()?.getIndexInSlot() ?? 0),
+                  is_final:
+                    ev.getContext()?.getStatus() ===
+                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_FINAL,
+                },
+              }
+              return event
+            }) ?? [],
+      },
+    }
+    return result
   }
 }
