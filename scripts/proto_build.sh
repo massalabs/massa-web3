@@ -8,7 +8,7 @@ TARGET_DIR="proto"
 DESTINATION="tmp" 
 BRANCH="main"  
 
-rm -rf tmp/proto
+rm -rf "$DESTINATION/$TARGET_DIR"
 
 mkdir -p "$DESTINATION"
 cd "$DESTINATION" || exit 1 
@@ -63,4 +63,4 @@ generate_proto "$DESTINATION/$TARGET_DIR/apis/massa/api/v1"
 
 echo "Proto build completed successfully."
 
-rm -rf tmp/proto
+rm -rf "$DESTINATION/$TARGET_DIR"
