@@ -93,10 +93,10 @@ export class GrpcPublicProvider implements PublicProvider {
   /**
    * Executes a state query on the blockchain
    */
-  async queryState(
+  queryState(
     queries: ExecutionQueryRequestItem[]
   ): Promise<QueryStateResponse> {
-    return await this.client.queryState(
+    return this.client.queryState(
       new QueryStateRequest().setQueriesList(queries)
     )
   }
