@@ -5,7 +5,7 @@ import { EventFilter } from '../../client'
 import { Network, NetworkName } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
-import { PublicProvider, ReadSCData, ReadSCParams } from '..'
+import { NodeStatusInfo, PublicProvider, ReadSCData, ReadSCParams } from '..'
 import { OperationStatus } from '../../operation'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
 import { Slot as tSlot } from '../../generated/client-types'
@@ -76,7 +76,6 @@ import {
   ScExecutionEventStatus,
 } from '../../generated/grpc/massa/model/v1/execution_pb'
 import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
-import { PublicStatus } from '../../generated/grpc/massa/model/v1/node_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
 
@@ -660,13 +659,38 @@ export class GrpcPublicProvider implements PublicProvider {
     return response.getStakersList()
   }
 
-  async getNodeStatus(): Promise<PublicStatus> {
+  async getNodeStatus(): Promise<NodeStatusInfo> {
     const response = await this.client.getStatus(new GetStatusRequest())
     const status = response.getStatus()
     if (!status) {
       throw new Error('Empty response received')
     }
-    return status
+
+    const nodeStatusInfo: NodeStatusInfo = {
+      config: {
+        blockReward: status.getConfig()?.getBlockReward()?.toString() ?? '',
+        deltaF0: status.getConfig()?.getDeltaF0() ?? 0,
+        genesisTimestamp:
+          status.getConfig()?.getGenesisTimestamp()?.getMilliseconds() ?? 0,
+        operationValidityPeriods:
+          status.getConfig()?.getOperationValidityPeriods() ?? 0,
+        periodsPerCycle: status.getConfig()?.getPeriodsPerCycle() ?? 0,
+        rollPrice: status.getConfig()?.getRollPrice()?.toString() ?? '',
+        t0: status.getConfig()?.getT0()?.getMilliseconds() ?? 0,
+        threadCount: status.getConfig()?.getThreadCount() ?? 0,
+      },
+      currentCycle: status.getCurrentCycle(),
+      currentTime: status.getCurrentTime()?.getMilliseconds() ?? 0,
+      currentCycleTime: status.getCurrentCycleTime()?.getMilliseconds() ?? 0,
+      nextCycleTime: status.getNextCycleTime()?.getMilliseconds() ?? 0,
+      nodeId: status.getNodeId(),
+      version: status.getVersion(),
+      chainId: status.getChainId(),
+      minimalFees: status.getMinimalFees()?.toString() ?? '',
+      currentMipVersion: status.getCurrentMipVersion(),
+    }
+
+    return nodeStatusInfo
   }
 
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
