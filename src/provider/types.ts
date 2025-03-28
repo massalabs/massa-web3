@@ -1,12 +1,7 @@
-import {
-  AsyncPoolChangeType,
-  ExecutionOutputStatus,
-} from '../generated/grpc/massa/model/v1/execution_pb'
 import { Args } from '../basicElements'
 import { Mas } from '../basicElements/mas'
 import { U64_t } from '../basicElements/serializers/number/u64'
 import { rpcTypes as t } from '../generated'
-import { SlotRange } from '../generated/grpc/massa/model/v1/slot_pb'
 
 export type SignOptions = {
   description?: string
@@ -125,41 +120,4 @@ export type ExecutionStats = {
   finalExecutedOperationsCount: number
   activeCursor: t.Slot
   finalCursor: t.Slot
-}
-
-export type SlotExecutionOutputFilter = {
-  status?: ExecutionOutputStatus
-  slotRange?: SlotRange
-  asyncPoolChangesFilter?: AsyncPoolChangesFilter
-  emptyExecutedDenounciationFilter?: boolean
-  eventFilter?: ExecutionEventFilter
-  executedOpsChangesFilter?: ExecutedOpsChangesFilter
-  ledgerChangesFilter?: LedgerChangesFilter
-}
-
-export type AsyncPoolChangesFilter = {
-  type?: AsyncPoolChangeType
-  handler?: string
-  destinationAddress?: string
-  emitterAddress?: string
-  canBeExecuted?: boolean
-  empty?: boolean
-}
-
-export type ExecutionEventFilter = {
-  callerAddress?: string
-  emitterAddress?: string
-  originalOperationId?: string
-  isFailure?: boolean
-  empty?: boolean
-}
-
-export type ExecutedOpsChangesFilter = {
-  empty?: boolean
-  operationId?: string
-}
-
-export type LedgerChangesFilter = {
-  empty?: boolean
-  address?: string
 }
