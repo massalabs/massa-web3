@@ -44,6 +44,14 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
     super(client, url)
   }
 
+  static mainnet(account: Account): GrpcProvider
+  static mainnet(): GrpcPublicProvider
+  static mainnet(account?: Account): GrpcProvider | GrpcPublicProvider {
+    return account
+      ? GrpcProvider.fromGrpcUrl(GrpcApiUrl.Mainnet, account)
+      : GrpcProvider.fromGrpcUrl(GrpcApiUrl.Mainnet)
+  }
+
   static buildnet(account: Account): GrpcProvider
   static buildnet(): GrpcPublicProvider
   static buildnet(account?: Account): GrpcProvider | GrpcPublicProvider {
