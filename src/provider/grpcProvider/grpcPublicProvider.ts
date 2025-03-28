@@ -522,11 +522,19 @@ export class GrpcPublicProvider implements PublicProvider {
       const ret = new ScExecutionEventsFilter()
       ret.setIsFailure(filter.isError)
       filters.push(ret)
-    } else if (filter.status !== undefined) {
-      const ret = new ScExecutionEventsFilter()
-      ret.setStatus(filter.status)
-      filters.push(ret)
     }
+
+    const ret = new ScExecutionEventsFilter()
+    if (filter.isFinal !== undefined) {
+      ret.setStatus(
+        filter.isFinal
+          ? ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_FINAL
+          : ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_CANDIDATE
+      )
+    } else {
+      ret.setStatus(ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_CANDIDATE)
+    }
+    filters.push(ret)
 
     const response = await this.client.getScExecutionEvents(
       new GetScExecutionEventsRequest().setFiltersList(filters)
