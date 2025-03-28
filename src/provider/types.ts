@@ -65,22 +65,23 @@ export type SignedData = {
 
 export type NodeStatusInfo = {
   config: Config
-  connectedNodes: Record<string, unknown>
-  consensusStats: ConsensusStats
+  connectedNodes?: Record<string, unknown>
+  consensusStats?: ConsensusStats
   currentCycle: number
   currentTime: number
   currentCycleTime: number
   nextCycleTime: number
-  lastSlot: t.Slot
-  nextSlot: t.Slot
-  networkStats: NetworkStats
+  lastSlot?: t.Slot
+  nextSlot?: t.Slot
+  networkStats?: NetworkStats
   nodeId: string
   nodeIp?: null | string
-  poolStats: number[]
+  poolStats?: number[]
   version: string
-  executionStats: ExecutionStats
+  executionStats?: ExecutionStats
   chainId: number
   minimalFees?: string
+  currentMipVersion?: number
 }
 
 export type Config = {
