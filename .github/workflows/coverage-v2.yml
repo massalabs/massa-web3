@@ -18,5 +18,5 @@ jobs:
                 custom-title: Coverage report for experimental massa-web3
                 prnumber: ${{ steps.findPr.outputs.number }}
                 working-directory: ./
-                test-script: npm test
+                test-script: npm run test:cov
                 annotations: none

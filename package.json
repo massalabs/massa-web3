@@ -27,7 +27,7 @@
         "test": "jest --detectOpenHandles --forceExit ./test/unit",
         "test:watch": "jest --watch ./test/unit",
         "test:browser": "jest --config=jest.browser.config.js",
-        "test:cov": "jest --detectOpenHandles --coverage --forceExit",
+        "test:cov": "jest --detectOpenHandles --coverage --coveragePathIgnorePatterns [\"/node_modules/\",\"<rootDir>/src/generated/\"] --forceExit ./test/unit",
         "test:cov:watch": "jest --detectOpenHandles --coverage --watch",
         "test:integration": "jest --detectOpenHandles --forceExit --runInBand ./test/integration",
         "test:all": "npm run test && npm run test:integration",
