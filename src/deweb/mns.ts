@@ -28,7 +28,7 @@ export async function resolveDeweb(uri: string): Promise<string> {
       return uri
     }
   } catch (error) {
-    console.log('MNS domain not natively supported by the current browser')
+    // ignore error
   }
 
   const mnsDomain = mns.replace('.massa', '')
@@ -39,9 +39,8 @@ export async function resolveDeweb(uri: string): Promise<string> {
     if (await isDewebInfoData(response)) {
       return `http://${mnsDomain}.localhost:8080${mnsPath}${mnsSearch}`
     }
-    console.log('No local deweb provider found')
   } catch (error) {
-    console.log('No local deweb provider found')
+    // ignore error
   }
 
   /* -- Check if the current domain is a Deweb provider -- */
@@ -71,9 +70,6 @@ export async function resolveDeweb(uri: string): Promise<string> {
     }
     return defaultUrl
   } catch (error) {
-    console.log(
-      'Current domain is not a deweb provider. Return the default redirect URL'
-    )
     return defaultUrl
   }
 }
