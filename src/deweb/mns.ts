@@ -1,4 +1,4 @@
-const DEWEB_REDIRECT_URL = 'https://deweb.massa.network/deweb_redirect'
+export const DEWEB_REDIRECT_URL = 'https://deweb.massa.network/deweb_redirect'
 
 export async function resolveDeweb(uri: string): Promise<string> {
   if (typeof window === 'undefined') {
