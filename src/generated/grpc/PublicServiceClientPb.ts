@@ -945,5 +945,27 @@ export class PublicServiceClient {
       this.methodDescriptorTransactionsThroughputServer);
   }
 
+  methodDescriptorNewTransfersInfoServer = new grpcWeb.MethodDescriptor(
+    '/massa.api.v1.PublicService/NewTransfersInfoServer',
+    grpcWeb.MethodType.SERVER_STREAMING,
+    public_pb.NewTransfersInfoServerRequest,
+    public_pb.NewTransfersInfoServerResponse,
+    (request: public_pb.NewTransfersInfoServerRequest) => {
+      return request.serializeBinary();
+    },
+    public_pb.NewTransfersInfoServerResponse.deserializeBinary
+  );
+
+  newTransfersInfoServer(
+    request: public_pb.NewTransfersInfoServerRequest,
+    metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.NewTransfersInfoServerResponse> {
+    return this.client_.serverStreaming(
+      this.hostname_ +
+        '/massa.api.v1.PublicService/NewTransfersInfoServer',
+      request,
+      metadata || {},
+      this.methodDescriptorNewTransfersInfoServer);
+  }
+
 }
 

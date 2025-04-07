@@ -5,13 +5,16 @@ import { EventFilter } from '../../client'
 import { Network, NetworkName } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
-import { PublicProvider, ReadSCParams, SlotExecutionOutputFilter } from '..'
+import {
+  NodeStatusInfo,
+  PublicProvider,
+  ReadSCData,
+  ReadSCParams,
+  SlotExecutionOutputFilter,
+} from '..'
 import { OperationStatus } from '../../operation'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
 import { Slot as tSlot } from '../../generated/client-types'
-import { FilterBuilder } from './filterBuilder'
-
-// Import from model
 
 // Import from api
 import {
@@ -91,14 +94,14 @@ import { SlotDraw } from '../../generated/grpc/massa/model/v1/draw_pb'
 import {
   FunctionCall,
   ReadOnlyExecutionCall,
-  ReadOnlyExecutionOutput,
+  ScExecutionEvent,
   ScExecutionEventStatus,
 } from '../../generated/grpc/massa/model/v1/execution_pb'
 import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
-import { PublicStatus } from '../../generated/grpc/massa/model/v1/node_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
-import { ClientReadableStream } from 'grpc-web'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
+import { ClientReadableStream } from 'grpc-web'
+import { FilterBuilder } from './filterBuilder'
 
 export class GrpcPublicProvider implements PublicProvider {
   constructor(
@@ -309,10 +312,10 @@ export class GrpcPublicProvider implements PublicProvider {
   /**
    * Executes a state query on the blockchain
    */
-  async queryState(
+  queryState(
     queries: ExecutionQueryRequestItem[]
   ): Promise<QueryStateResponse> {
-    return await this.client.queryState(
+    return this.client.queryState(
       new QueryStateRequest().setQueriesList(queries)
     )
   }
@@ -484,16 +487,10 @@ export class GrpcPublicProvider implements PublicProvider {
   /**
    * Retrieves storage keys for a smart contract with optional filtering and pagination
    */
-  // eslint-disable-next-line max-params
   async getStorageKeys(
     address: string,
     filter?: Uint8Array | string,
-    final?: boolean,
-    startKey?: Uint8Array,
-    inclusiveStartKey?: boolean,
-    endKey?: Uint8Array,
-    inclusiveEndKey?: boolean,
-    limit?: number
+    final?: boolean
   ): Promise<Uint8Array[]> {
     if (!address) {
       throw new Error('Address is required')
@@ -507,78 +504,20 @@ export class GrpcPublicProvider implements PublicProvider {
           : filter
         : new Uint8Array()
 
-      const startKeyValue = startKey ? { value: startKey } : undefined
-      const inclusiveStartKeyValue =
-        inclusiveStartKey !== undefined
-          ? { value: inclusiveStartKey }
-          : undefined
-      const endKeyValue = endKey ? { value: endKey } : undefined
-      const inclusiveEndKeyValue =
-        inclusiveEndKey !== undefined ? { value: inclusiveEndKey } : undefined
-      const limitValue = limit ? { value: limit } : undefined
-
       const ret = new ExecutionQueryRequestItem()
       if (final) {
         ret.setAddressDatastoreKeysFinal(
-          new AddressDatastoreKeysFinal()
-            .setAddress(address)
-            .setPrefix(prefix)
-            .setStartKey(startKeyValue)
-            .setInclusiveStartKey(inclusiveStartKeyValue)
-            .setEndKey(endKeyValue)
-            .setInclusiveEndKey(inclusiveEndKeyValue)
-            .setLimit(limitValue)
+          new AddressDatastoreKeysFinal().setAddress(address).setPrefix(prefix)
         )
       } else {
         ret.setAddressDatastoreKeysCandidate(
           new AddressDatastoreKeysCandidate()
             .setAddress(address)
             .setPrefix(prefix)
-            .setStartKey(startKeyValue)
-            .setInclusiveStartKey(inclusiveStartKeyValue)
-            .setEndKey(endKeyValue)
-            .setInclusiveEndKey(inclusiveEndKeyValue)
-            .setLimit(limitValue)
         )
       }
 
       queries.push(ret)
-
-      // queries.push({
-      //     requestItem: final
-      //         ? {
-      //             oneofKind: 'addressDatastoreKeysFinal' as const,
-      //             addressDatastoreKeysFinal: {
-      //                 address,
-      //                 prefix,
-      //                 ...(startKeyValue && { startKey: startKeyValue }),
-      //                 ...(inclusiveStartKeyValue && {
-      //                     inclusiveStartKey: inclusiveStartKeyValue,
-      //                 }),
-      //                 ...(endKeyValue && { endKey: endKeyValue }),
-      //                 ...(inclusiveEndKeyValue && {
-      //                     inclusiveEndKey: inclusiveEndKeyValue,
-      //                 }),
-      //                 ...(limitValue && { limit: limitValue }),
-      //             },
-      //         }
-      //         : {
-      //             oneofKind: 'addressDatastoreKeysCandidate' as const,
-      //             addressDatastoreKeysCandidate: {
-      //                 address,
-      //                 prefix,
-      //                 ...(startKeyValue && { startKey: startKeyValue }),
-      //                 ...(inclusiveStartKeyValue && {
-      //                     inclusiveStartKey: inclusiveStartKeyValue,
-      //                 }),
-      //                 ...(endKeyValue && { endKey: endKeyValue }),
-      //                 ...(inclusiveEndKeyValue && {
-      //                     inclusiveEndKey: inclusiveEndKeyValue,
-      //                 }),
-      //                 ...(limitValue && { limit: limitValue }),
-      //             },
-      //         },
-      // })
 
       const response = await this.client.queryState(
         new QueryStateRequest().setQueriesList(queries)
@@ -803,11 +742,19 @@ export class GrpcPublicProvider implements PublicProvider {
       const ret = new ScExecutionEventsFilter()
       ret.setIsFailure(filter.isError)
       filters.push(ret)
-    } else if (filter.status !== undefined) {
-      const ret = new ScExecutionEventsFilter()
-      ret.setStatus(filter.status)
-      filters.push(ret)
     }
+
+    const ret = new ScExecutionEventsFilter()
+    if (filter.isFinal !== undefined) {
+      ret.setStatus(
+        filter.isFinal
+          ? ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_FINAL
+          : ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_CANDIDATE
+      )
+    } else {
+      ret.setStatus(ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_CANDIDATE)
+    }
+    filters.push(ret)
 
     const response = await this.client.getScExecutionEvents(
       new GetScExecutionEventsRequest().setFiltersList(filters)
@@ -940,16 +887,41 @@ export class GrpcPublicProvider implements PublicProvider {
     return response.getStakersList()
   }
 
-  async getNodeStatus(): Promise<PublicStatus> {
+  async getNodeStatus(): Promise<NodeStatusInfo> {
     const response = await this.client.getStatus(new GetStatusRequest())
     const status = response.getStatus()
     if (!status) {
       throw new Error('Empty response received')
     }
-    return status
+
+    const nodeStatusInfo: NodeStatusInfo = {
+      config: {
+        blockReward: status.getConfig()?.getBlockReward()?.toString() ?? '',
+        deltaF0: status.getConfig()?.getDeltaF0() ?? 0,
+        genesisTimestamp:
+          status.getConfig()?.getGenesisTimestamp()?.getMilliseconds() ?? 0,
+        operationValidityPeriods:
+          status.getConfig()?.getOperationValidityPeriods() ?? 0,
+        periodsPerCycle: status.getConfig()?.getPeriodsPerCycle() ?? 0,
+        rollPrice: status.getConfig()?.getRollPrice()?.toString() ?? '',
+        t0: status.getConfig()?.getT0()?.getMilliseconds() ?? 0,
+        threadCount: status.getConfig()?.getThreadCount() ?? 0,
+      },
+      currentCycle: status.getCurrentCycle(),
+      currentTime: status.getCurrentTime()?.getMilliseconds() ?? 0,
+      currentCycleTime: status.getCurrentCycleTime()?.getMilliseconds() ?? 0,
+      nextCycleTime: status.getNextCycleTime()?.getMilliseconds() ?? 0,
+      nodeId: status.getNodeId(),
+      version: status.getVersion(),
+      chainId: status.getChainId(),
+      minimalFees: status.getMinimalFees()?.toString() ?? '',
+      currentMipVersion: status.getCurrentMipVersion(),
+    }
+
+    return nodeStatusInfo
   }
 
-  async readSC(params: ReadSCParams): Promise<ReadOnlyExecutionOutput> {
+  async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const args = params.parameter ?? new Uint8Array()
     const caller =
       params.caller ?? (await Account.generate()).address.toString()
@@ -983,6 +955,40 @@ export class GrpcPublicProvider implements PublicProvider {
       throw new Error('No output received')
     }
 
-    return output
+    const result: ReadSCData = {
+      value: output.getCallResult_asU8(),
+      info: {
+        gasCost: output.getUsedGas(),
+        events:
+          output
+            .getOut()
+            ?.getEventsList()
+            .map((ev: ScExecutionEvent) => {
+              const event: SCOutputEvent = {
+                data: ev.getData_asB64(),
+                context: {
+                  slot: {
+                    period: Number(
+                      ev.getContext()?.getOriginSlot()?.getPeriod() ?? 0
+                    ),
+                    thread: Number(
+                      ev.getContext()?.getOriginSlot()?.getThread() ?? 0
+                    ),
+                  },
+                  read_only:
+                    ev.getContext()?.getStatus() ===
+                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_READ_ONLY,
+                  call_stack: ev.getContext()?.getCallStackList() ?? [],
+                  index_in_slot: Number(ev.getContext()?.getIndexInSlot() ?? 0),
+                  is_final:
+                    ev.getContext()?.getStatus() ===
+                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_FINAL,
+                },
+              }
+              return event
+            }) ?? [],
+      },
+    }
+    return result
   }
 }

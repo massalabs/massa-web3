@@ -1,4 +1,3 @@
-import { ScExecutionEventStatus } from '../generated/grpc/massa/model/v1/execution_pb'
 import { rpcTypes as t } from '../generated'
 
 export type ClientOptions = {
@@ -19,7 +18,6 @@ export type EventFilter = {
   operationId?: string
   isFinal?: boolean
   isError?: boolean
-  status?: ScExecutionEventStatus
 }
 
 export type ReadOnlyCallResult = {

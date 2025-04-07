@@ -3,9 +3,7 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "outDir": "./dist/esm/",
-        "sourceMap": true,
-        "inlineSources": true
+        "outDir": "./dist/esm/"
     },
     "exclude": [
         "node_modules",

@@ -2290,6 +2290,62 @@ export namespace NewOperationsServerResponse {
   }
 }
 
+export class NewTransfersInfoServerRequest extends jspb.Message {
+  getAddress(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setAddress(value?: google_protobuf_wrappers_pb.StringValue): NewTransfersInfoServerRequest;
+  hasAddress(): boolean;
+  clearAddress(): NewTransfersInfoServerRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewTransfersInfoServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: NewTransfersInfoServerRequest): NewTransfersInfoServerRequest.AsObject;
+  static serializeBinaryToWriter(message: NewTransfersInfoServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewTransfersInfoServerRequest;
+  static deserializeBinaryFromReader(message: NewTransfersInfoServerRequest, reader: jspb.BinaryReader): NewTransfersInfoServerRequest;
+}
+
+export namespace NewTransfersInfoServerRequest {
+  export type AsObject = {
+    address?: google_protobuf_wrappers_pb.StringValue.AsObject,
+  }
+}
+
+export class NewTransfersInfoServerResponse extends jspb.Message {
+  getSlot(): massa_model_v1_slot_pb.Slot | undefined;
+  setSlot(value?: massa_model_v1_slot_pb.Slot): NewTransfersInfoServerResponse;
+  hasSlot(): boolean;
+  clearSlot(): NewTransfersInfoServerResponse;
+
+  getTimestamp(): number;
+  setTimestamp(value: number): NewTransfersInfoServerResponse;
+
+  getBlockId(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setBlockId(value?: google_protobuf_wrappers_pb.StringValue): NewTransfersInfoServerResponse;
+  hasBlockId(): boolean;
+  clearBlockId(): NewTransfersInfoServerResponse;
+
+  getTransfersInfoList(): Array<massa_model_v1_execution_pb.ExecTransferInfo>;
+  setTransfersInfoList(value: Array<massa_model_v1_execution_pb.ExecTransferInfo>): NewTransfersInfoServerResponse;
+  clearTransfersInfoList(): NewTransfersInfoServerResponse;
+  addTransfersInfo(value?: massa_model_v1_execution_pb.ExecTransferInfo, index?: number): massa_model_v1_execution_pb.ExecTransferInfo;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewTransfersInfoServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewTransfersInfoServerResponse): NewTransfersInfoServerResponse.AsObject;
+  static serializeBinaryToWriter(message: NewTransfersInfoServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewTransfersInfoServerResponse;
+  static deserializeBinaryFromReader(message: NewTransfersInfoServerResponse, reader: jspb.BinaryReader): NewTransfersInfoServerResponse;
+}
+
+export namespace NewTransfersInfoServerResponse {
+  export type AsObject = {
+    slot?: massa_model_v1_slot_pb.Slot.AsObject,
+    timestamp: number,
+    blockId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    transfersInfoList: Array<massa_model_v1_execution_pb.ExecTransferInfo.AsObject>,
+  }
+}
+
 export class NewSlotExecutionOutputsRequest extends jspb.Message {
   getFiltersList(): Array<NewSlotExecutionOutputsFilter>;
   setFiltersList(value: Array<NewSlotExecutionOutputsFilter>): NewSlotExecutionOutputsRequest;
