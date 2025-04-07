@@ -4,6 +4,7 @@ import { Provider, PublicProvider } from '../provider'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 import { checkNetwork } from './tokens'
 import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
+import { CHAIN_ID } from '../utils'
 
 export const MNS_CONTRACTS = {
   mainnet: 'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT',
@@ -41,14 +42,27 @@ const ADDRESS_KEY_PREFIX_V2 = [0x6]
 const OWNED_TOKENS_KEY = strToBytes('ownedTokens')
 
 export class MNS extends SmartContract {
+  constructor(provider: Provider | PublicProvider, chainId: bigint) {
+    const address =
+      chainId === CHAIN_ID.Mainnet
+        ? MNS_CONTRACTS.mainnet
+        : MNS_CONTRACTS.buildnet
+    super(provider, address)
+  }
+
+  static async init(provider: Provider | PublicProvider): Promise<MNS> {
+    const { chainId } = await provider.networkInfos()
+    return new MNS(provider, chainId)
+  }
+
   static mainnet(provider: Provider | PublicProvider): MNS {
     checkNetwork(provider, true)
-    return new MNS(provider, MNS_CONTRACTS.mainnet)
+    return new MNS(provider, CHAIN_ID.Mainnet)
   }
 
   static buildnet(provider: Provider | PublicProvider): MNS {
     checkNetwork(provider, false)
-    return new MNS(provider, MNS_CONTRACTS.buildnet)
+    return new MNS(provider, CHAIN_ID.Buildnet)
   }
 
   // Resolve domain name (without ".massa") to address
