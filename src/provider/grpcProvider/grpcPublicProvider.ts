@@ -5,7 +5,13 @@ import { EventFilter } from '../../client'
 import { Network, NetworkName } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
-import { NodeStatusInfo, PublicProvider, ReadSCData, ReadSCParams } from '..'
+import {
+  NodeStatusInfo,
+  PublicProvider,
+  ReadSCData,
+  ReadSCParams,
+  SlotExecutionOutputFilter,
+} from '..'
 import { OperationStatus } from '../../operation'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
 import { Slot as tSlot } from '../../generated/client-types'
@@ -34,6 +40,20 @@ import {
   GetStakersRequest,
   GetStatusRequest,
   GetTransactionsThroughputRequest,
+  NewBlocksFilter,
+  NewBlocksServerRequest,
+  NewBlocksServerResponse,
+  NewEndorsementsFilter,
+  NewEndorsementsServerRequest,
+  NewEndorsementsServerResponse,
+  NewFilledBlocksFilter,
+  NewFilledBlocksServerRequest,
+  NewFilledBlocksServerResponse,
+  NewOperationsFilter,
+  NewOperationsServerRequest,
+  NewOperationsServerResponse,
+  NewSlotExecutionOutputsServerRequest,
+  NewSlotExecutionOutputsServerResponse,
   OpExecutionStatusCandidate,
   QueryStateRequest,
   QueryStateResponse,
@@ -53,6 +73,8 @@ import {
   OperationIds,
   OperationInfo,
   OperationWrapper,
+  OpType,
+  OpTypes,
 } from '../../generated/grpc/massa/model/v1/operation_pb'
 import { Slot, SlotRange } from '../../generated/grpc/massa/model/v1/slot_pb'
 import {
@@ -78,6 +100,8 @@ import {
 import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
+import { ClientReadableStream } from 'grpc-web'
+import { FilterBuilder } from './filterBuilder'
 
 export class GrpcPublicProvider implements PublicProvider {
   constructor(
@@ -87,6 +111,202 @@ export class GrpcPublicProvider implements PublicProvider {
 
   static fromGrpcUrl(url: string): PublicProvider {
     return new GrpcPublicProvider(new PublicServiceClient(url), url)
+  }
+
+  /**
+   * Streams new slot execution outputs
+   * @param filters - The filters to apply to the stream
+   * @returns A stream of new slot execution outputs
+   */
+  newSlotExecutionOutputsStream(
+    filters: SlotExecutionOutputFilter
+  ): ClientReadableStream<NewSlotExecutionOutputsServerResponse> {
+    const builder = new FilterBuilder()
+
+    // Status filter
+    if (filters.status) {
+      builder.addStatus(filters.status)
+    }
+
+    // Slot range filter
+    if (filters.slotRange) {
+      builder.addSlotRange(filters.slotRange)
+    }
+
+    // Async pool changes filters
+    if (filters.asyncPoolChangesFilter) {
+      builder.addAsyncPoolChangesFilter(filters.asyncPoolChangesFilter)
+    }
+
+    // Empty executed denounciation filter
+    if (filters.emptyExecutedDenounciationFilter) {
+      builder.addEmptyExecutedDenounciationFilter()
+    }
+
+    // Event filters
+    if (filters.eventFilter) {
+      builder.addEventFilter(filters.eventFilter)
+    }
+
+    // Executed ops changes filters
+    if (filters.executedOpsChangesFilter) {
+      builder.addExecutedOpsChangesFilter(filters.executedOpsChangesFilter)
+    }
+
+    // Ledger changes filters
+    if (filters.ledgerChangesFilter) {
+      builder.addLedgerChangesFilter(filters.ledgerChangesFilter)
+    }
+
+    const f = builder.build()
+    const request = new NewSlotExecutionOutputsServerRequest()
+    request.setFiltersList(f)
+
+    return this.client.newSlotExecutionOutputsServer(request)
+  }
+
+  /**
+   * Streams new filled blocks
+   * @param addresses - Optional list of addresses to filter by
+   * @param blockIds - Optional list of block IDs to filter by
+   * @param slotRange - Optional slot range to filter by
+   * @returns A stream of new filled blocks
+   */
+  newFilledBlocksStream(
+    addresses?: string[],
+    blockIds?: string[],
+    slotRange?: SlotRange
+  ): ClientReadableStream<NewFilledBlocksServerResponse> {
+    const request = new NewFilledBlocksServerRequest()
+
+    if (blockIds) {
+      const filter = new NewFilledBlocksFilter()
+      filter.setBlockIds(new BlockIds().setBlockIdsList(blockIds))
+      request.addFilters(filter)
+    }
+
+    if (addresses) {
+      const filter = new NewFilledBlocksFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+
+    if (slotRange) {
+      const filter = new NewFilledBlocksFilter()
+      filter.setSlotRange(slotRange)
+      request.addFilters(filter)
+    }
+
+    return this.client.newFilledBlocksServer(request)
+  }
+
+  /**
+   * Streams new endorsements
+   * @param addresses - Optional list of addresses to filter by
+   * @param endorsementIds - Optional list of endorsement IDs to filter by
+   * @param blockIds - Optional list of block IDs to filter by
+   * @returns A stream of new endorsements
+   */
+  newEndorsementsStream(
+    addresses?: string[],
+    endorsementIds?: string[],
+    blockIds?: string[]
+  ): ClientReadableStream<NewEndorsementsServerResponse> {
+    const request = new NewEndorsementsServerRequest()
+
+    if (endorsementIds) {
+      const filter = new NewEndorsementsFilter()
+      filter.setEndorsementIds(
+        new EndorsementIds().setEndorsementIdsList(endorsementIds)
+      )
+      request.addFilters(filter)
+    }
+
+    if (addresses) {
+      const filter = new NewEndorsementsFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+
+    if (blockIds) {
+      const filter = new NewEndorsementsFilter()
+      filter.setBlockIds(new BlockIds().setBlockIdsList(blockIds))
+      request.addFilters(filter)
+    }
+
+    return this.client.newEndorsementsServer(request)
+  }
+
+  /**
+   * Streams new blocks
+   * @param blockIds - Optional list of block IDs to filter by
+   * @param addresses - Optional list of addresses to filter by
+   * @param slotRange - Optional slot range to filter by
+   * @returns A stream of new blocks
+   */
+  newBlockStream(
+    addresses?: string[],
+    blockIds?: string[],
+    slotRange?: SlotRange
+  ): ClientReadableStream<NewBlocksServerResponse> {
+    const request = new NewBlocksServerRequest()
+
+    if (blockIds) {
+      const filter = new NewBlocksFilter()
+      filter.setBlockIds(new BlockIds().setBlockIdsList(blockIds))
+      request.addFilters(filter)
+    }
+
+    if (addresses) {
+      const filter = new NewBlocksFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+
+    if (slotRange) {
+      const filter = new NewBlocksFilter()
+      filter.setSlotRange(slotRange)
+      request.addFilters(filter)
+    }
+
+    return this.client.newBlocksServer(request)
+  }
+
+  /**
+   * Streams new operations
+   * @param addresses - Optional list of addresses to filter by
+   * @param operationIds - Optional list of operation IDs to filter by
+   * @param types - Optional list of operation types to filter by
+   * @returns A stream of new operations
+   */
+  newOperationsStream(
+    addresses?: string[],
+    operationIds?: string[],
+    types?: OpType[]
+  ): ClientReadableStream<NewOperationsServerResponse> {
+    const request = new NewOperationsServerRequest()
+
+    if (operationIds) {
+      const filter = new NewOperationsFilter()
+      filter.setOperationIds(
+        new OperationIds().setOperationIdsList(operationIds)
+      )
+      request.addFilters(filter)
+    }
+    if (addresses) {
+      const filter = new NewOperationsFilter()
+      filter.setAddresses(new Addresses().setAddressesList(addresses))
+      request.addFilters(filter)
+    }
+    if (types) {
+      const filter = new NewOperationsFilter()
+      const opTypes = new OpTypes()
+      opTypes.setOpTypesList(types)
+      filter.setOperationTypes(opTypes)
+      request.addFilters(filter)
+    }
+
+    return this.client.newOperationsServer(request)
   }
 
   /**
