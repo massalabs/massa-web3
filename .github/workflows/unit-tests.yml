@@ -17,7 +17,9 @@ jobs:
           npm ci
           npm run build
       - run: npm run fmt:check
+
       - name: unit test
         run: npm test
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
+      - name: unit test browser
+        run: npm run test:browser
