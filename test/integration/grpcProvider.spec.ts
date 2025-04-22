@@ -1,8 +1,6 @@
-import { CHAIN_ID, GrpcProvider, NetworkName } from '../../src'
-import { provider, account, grpcProvider } from './setup'
-import { strToBytes, U256 } from '../../src/basicElements/serializers'
+import { CHAIN_ID } from '../../src'
+import { account, grpcProvider, publicProvider } from './setup'
 import { StakerEntry } from '../../src/generated/grpc/massa/model/v1/staker_pb'
-import { XMLHttpRequest } from 'xhr2'
 import {
   Slot as grpcSlot,
   SlotRange,
@@ -13,32 +11,26 @@ import {
   ExecutionQueryRequestItem,
 } from '../../src/generated/grpc/public_pb'
 
-// Set up XMLHttpRequest for Node.js environment
-global.XMLHttpRequest = XMLHttpRequest
-
-const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
-
 let blockId: string
 let currentPeriod: number
 
+let minimalFees: bigint
 describe('Provider GRPC tests', () => {
+  beforeAll(async () => {
+    const networkInfos = await publicProvider.networkInfos()
+    minimalFees = networkInfos.minimalFee
+  })
   test('getNodeStatus', async () => {
-    grpcProvider
-      .getNodeStatus()
-      .then((status) => {
-        expect(status.config).toBeDefined()
-        expect(status.currentCycle).toBeDefined()
-        expect(status.currentTime).toBeDefined()
-        expect(status.currentCycleTime).toBeDefined()
-        expect(status.nextCycleTime).toBeDefined()
-        expect(status.nodeId).toBeDefined()
-        expect(status.version).toBeDefined()
-        expect(status.chainId).toBeDefined()
-        expect(status.minimalFees).toBeDefined()
-      })
-      .catch((err) => {
-        console.error(err)
-      })
+    const status = await grpcProvider.getNodeStatus()
+    expect(status.config).toBeDefined()
+    expect(status.currentCycle).toBeDefined()
+    expect(status.currentTime).toBeDefined()
+    expect(status.currentCycleTime).toBeDefined()
+    expect(status.nextCycleTime).toBeDefined()
+    expect(status.nodeId).toBeDefined()
+    expect(status.version).toBeDefined()
+    expect(status.chainId).toBe(Number(CHAIN_ID.Buildnet))
+    expect(status.minimalFees).toBe(minimalFees)
   })
 
   test('getTransactionsThroughput', async () => {

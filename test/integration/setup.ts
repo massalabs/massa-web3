@@ -7,6 +7,9 @@ import {
   GrpcProvider,
 } from '../../src/provider'
 
+import { XMLHttpRequest } from 'xhr2'
+global.XMLHttpRequest = XMLHttpRequest
+
 export let account: Account
 export let provider: JsonRpcProvider
 export let publicProvider: JsonRpcPublicProvider
