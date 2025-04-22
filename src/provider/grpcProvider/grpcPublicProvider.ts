@@ -674,14 +674,16 @@ export class GrpcPublicProvider implements PublicProvider {
 
     const nodeStatusInfo: NodeStatusInfo = {
       config: {
-        blockReward: status.getConfig()?.getBlockReward()?.toString() ?? '',
+        blockReward:
+          status.getConfig()?.getBlockReward()?.getMantissa().toString() ?? '',
         deltaF0: status.getConfig()?.getDeltaF0() ?? 0,
         genesisTimestamp:
           status.getConfig()?.getGenesisTimestamp()?.getMilliseconds() ?? 0,
         operationValidityPeriods:
           status.getConfig()?.getOperationValidityPeriods() ?? 0,
         periodsPerCycle: status.getConfig()?.getPeriodsPerCycle() ?? 0,
-        rollPrice: status.getConfig()?.getRollPrice()?.toString() ?? '',
+        rollPrice:
+          status.getConfig()?.getRollPrice()?.getMantissa().toString() ?? '',
         t0: status.getConfig()?.getT0()?.getMilliseconds() ?? 0,
         threadCount: status.getConfig()?.getThreadCount() ?? 0,
       },
