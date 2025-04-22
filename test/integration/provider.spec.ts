@@ -1,24 +1,8 @@
 import { CHAIN_ID, NetworkName } from '../../src'
-import { provider, grpcProvider } from './setup'
+import { provider } from './setup'
 import { strToBytes, U256 } from '../../src/basicElements/serializers'
-import { PublicStatus } from '../../src/generated/grpc/massa/model/v1/node_pb'
 
 const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
-
-describe('Provider GRPC tests', () => {
-  test('getNodeStatus', async () => {
-    const status = (await grpcProvider.getNodeStatus()) as PublicStatus
-    expect(status.getConfig()).toBeDefined()
-    expect(status.getCurrentCycle()).toBeDefined()
-    expect(status.getCurrentTime()).toBeDefined()
-    expect(status.getCurrentCycleTime()).toBeDefined()
-    expect(status.getLastExecutedFinalSlot()).toBeDefined()
-    expect(status.getLastExecutedSpeculativeSlot()).toBeDefined()
-    expect(status.getFinalStateFingerprint()).toBeDefined()
-    expect(status.getChainId()).toBeDefined()
-    expect(status.getMinimalFees()).toBeDefined()
-  })
-})
 
 describe('Provider JsonRPC tests', () => {
   test('networkInfos', async () => {

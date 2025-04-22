@@ -387,8 +387,8 @@ export class GrpcPublicProvider implements PublicProvider {
    * Retrieves selector draws for specified addresses and slot range
    */
   async getSelectorDraws(
-    addresses?: string[],
-    slotRange?: SlotRange
+    slotRange: SlotRange,
+    addresses?: string[]
   ): Promise<SlotDraw[]> {
     const queries: SelectorDrawsFilter[] = []
     if (addresses) {
@@ -397,11 +397,9 @@ export class GrpcPublicProvider implements PublicProvider {
       queries.push(a)
     }
 
-    if (slotRange) {
-      const s = new SelectorDrawsFilter()
-      s.setSlotRange(slotRange)
-      queries.push(s)
-    }
+    const s = new SelectorDrawsFilter()
+    s.setSlotRange(slotRange)
+    queries.push(s)
 
     const response = await this.client.getSelectorDraws(
       new GetSelectorDrawsRequest().setFiltersList(queries)
