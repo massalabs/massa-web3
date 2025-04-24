@@ -45,18 +45,10 @@ describe('Provider GRPC tests', () => {
   })
 
   test('networkInfos', async () => {
-    grpcProvider
-      .networkInfos()
-      .then((info) => {
-        expect(info.name).toBeDefined()
-        expect(info.chainId).toBeDefined()
-        expect(info.url).toBeDefined()
-      })
-      .catch((err) => {
-        // possible error with sandboxed node
-        expect(err).toBeDefined()
-        expect(err.message).toContain('Unknown chain id')
-      })
+    const resp = await grpcProvider.networkInfos()
+    expect(resp.name).toBeDefined()
+    expect(resp.chainId).toBeDefined()
+    expect(resp.url).toBeDefined()
   })
 
   test('nextBlockBestParent', async () => {
