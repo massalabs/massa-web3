@@ -13,7 +13,7 @@ export async function resolveDeweb(uri: string): Promise<string> {
     throw new Error('Invalid URI')
   }
 
-  // Retrieve the uri informations
+  // Retrieve the url information
   const { hostname: mns, pathname: mnsPath, search: mnsSearch } = new URL(uri)
 
   // If the current domain is not a MNS domain, we throw an error
@@ -44,7 +44,7 @@ export async function resolveDeweb(uri: string): Promise<string> {
   }
 
   /* -- Check if the current domain is a Deweb provider -- */
-  // retrieve current url informations
+  // retrieve current url information
   const { host: currentHost, protocol: currentProtocol } = window.location
   const subdomains = currentHost.split('.')
 
