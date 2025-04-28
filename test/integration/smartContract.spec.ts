@@ -8,45 +8,47 @@ import {
   SmartContract,
 } from '../../src/smartContracts'
 import { provider, publicProvider } from './setup'
-import { Address, Args, bytesToStr, Mas } from '../../src/basicElements'
-
-import { execute } from '../../src/basicElements/bytecode'
-import { Operation } from '../../src/operation'
+import {
+  Address,
+  Args,
+  bytesToStr,
+  Mas,
+  strToBytes,
+} from '../../src/basicElements'
 
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
 const contractPath = path.join(__dirname, './contracts/scTest.wasm')
 
 describe('Smart Contract', () => {
-  describe('ByteCode', () => {
-    test('execute', async () => {
-      const byteCode = new Uint8Array([1, 2, 3, 4])
-      const opts = {
-        periodToLive: 2,
-        coins: 3n,
-        maxGas: 4n,
-      }
-
-      const opId = await execute(
-        publicProvider.client,
-        provider.account.privateKey,
-        byteCode,
-        opts
+  describe('ExecuteSC ByteCode', () => {
+    let byteCode: Uint8Array
+    beforeAll(async () => {
+      byteCode = fs.readFileSync(
+        path.join(__dirname, './contracts/executeHello.wasm')
       )
-      const operation = new Operation(provider, opId)
-      expect(await operation.getSpeculativeEvents()).toHaveLength(1)
+    })
+
+    test('execute', async () => {
+      const name = 'ElonMars'
+      const datastore = new Map<Uint8Array, Uint8Array>()
+      datastore.set(strToBytes('name_key'), strToBytes(name))
+      const operation = await provider.executeSC({
+        byteCode,
+        datastore,
+      })
+
+      const events = await operation.getSpeculativeEvents()
+
+      expect(events).toHaveLength(1)
+      expect(events[0].data).toBe(`Hello ${name}`)
     })
 
     test('not enough fee', async () => {
-      const byteCode = new Uint8Array([1, 2, 3, 4])
-      const opts = {
-        fee: Mas.fromString('0.000000001'),
-        periodToLive: 2,
-        coins: 3n,
-        maxGas: 4n,
-      }
-
       await expect(
-        execute(provider.client, provider.account.privateKey, byteCode, opts)
+        provider.executeSC({
+          byteCode,
+          fee: 1n,
+        })
       ).rejects.toMatchObject({
         message: expect.stringMatching(/fee is too low/),
       })

@@ -1,9 +1,8 @@
-import Decimal from 'decimal.js'
 import { U64_t, fromNumber } from './serializers/number/u64'
 
 export const NB_DECIMALS = 9
-export const SIZE_U256_BIT = 256
-const POWER_TEN = 10
+const SIZE_U64_BIT = 64
+const POWER_TEN = 10n
 
 export const ERROR_NOT_SAFE_INTEGER = 'value is not a safe integer.'
 export const ERROR_VALUE_TOO_LARGE = 'value is too large.'
@@ -25,7 +24,7 @@ export type Mas = U64_t
  * @throws An error if the value is not a safe integer.
  */
 export function fromMas(value: U64_t): Mas {
-  return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS))
+  return fromNumber(value * POWER_TEN ** BigInt(NB_DECIMALS))
 }
 
 /**
@@ -40,7 +39,7 @@ export function fromMas(value: U64_t): Mas {
  */
 export function fromMilliMas(value: U64_t): Mas {
   const milli = 3
-  return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS - milli))
+  return fromNumber(value * POWER_TEN ** BigInt(NB_DECIMALS - milli))
 }
 
 /**
@@ -55,7 +54,7 @@ export function fromMilliMas(value: U64_t): Mas {
  */
 export function fromMicroMas(value: U64_t): Mas {
   const micro = 6
-  return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS - micro))
+  return fromNumber(value * POWER_TEN ** BigInt(NB_DECIMALS - micro))
 }
 
 /**
@@ -70,7 +69,7 @@ export function fromMicroMas(value: U64_t): Mas {
  */
 export function fromNanoMas(value: U64_t): Mas {
   const nano = 9
-  return fromNumber(value * BigInt(POWER_TEN) ** BigInt(NB_DECIMALS - nano))
+  return fromNumber(value * POWER_TEN ** BigInt(NB_DECIMALS - nano))
 }
 
 /**
@@ -106,19 +105,36 @@ export function fromString(value: string): Mas {
  * @param decimalPlaces - The number of decimal places to include in the string.
  * @returns The value as a string.
  *
- * @throws An error if the value is too large to be represented by a U256.
+ * @throws An error if the value is too large to be represented by a U64.
  */
 export function toString(
   value: Mas,
   decimalPlaces: number | null = null
 ): string {
-  if (BigInt(value) >= 1n << BigInt(SIZE_U256_BIT)) {
+  if (BigInt(value) >= 1n << BigInt(SIZE_U64_BIT)) {
     throw new Error(ERROR_VALUE_TOO_LARGE)
   }
 
-  const scaledValue = new Decimal(value.toString()).div(`1e+${NB_DECIMALS}`)
+  let integerPart = value.toString().slice(0, -NB_DECIMALS)
+  let fractionalString = value
+    .toString()
+    .slice(-NB_DECIMALS)
+    .padStart(NB_DECIMALS, '0')
 
-  return decimalPlaces !== null
-    ? scaledValue.toFixed(decimalPlaces, Decimal.ROUND_HALF_UP)
-    : scaledValue.toString()
+  if (integerPart === '') {
+    integerPart = '0'
+  }
+
+  if (decimalPlaces !== null) {
+    fractionalString = fractionalString
+      .slice(0, decimalPlaces)
+      .padEnd(decimalPlaces, '0')
+  } else {
+    // Remove trailing zeros from the fractional part
+    fractionalString = fractionalString.replace(/(?:0)+$/, '')
+  }
+
+  return fractionalString === ''
+    ? integerPart
+    : `${integerPart}.${fractionalString}`
 }

@@ -10,7 +10,10 @@ import {
 import {
   Account,
   Address,
+  ExecuteSCReadOnlyParams,
+  ExecuteSCReadOnlyResult,
   MAX_GAS_CALL,
+  MAX_GAS_EXECUTE,
   MIN_GAS_CALL,
   populateDatastore,
   PublicAPI,
@@ -27,12 +30,12 @@ import {
   RollOperation,
   TransferOperation,
   CallOperation,
+  ExecuteOperation,
 } from '../../operation'
 import {
   getAbsoluteExpirePeriod,
   OperationManager,
 } from '../../operation/operationManager'
-import { execute } from '../../basicElements/bytecode'
 import { ErrorMaxGas, ErrorInsufficientBalance } from '../../errors'
 import { JsonRpcPublicProvider } from './jsonRpcPublicProvider'
 import { U64_t } from '../../basicElements/serializers/number/u64'
@@ -215,31 +218,42 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
    * on the setup and usage of the datastore during execution.
    */
   public async executeSC(params: ExecuteScParams): Promise<Operation> {
-    return new Operation(this, await this.executeSc(params))
+    let maxGas = params.maxGas
+    if (!maxGas) {
+      maxGas = await this.executeSCGasEstimation(params)
+    } else {
+      if (maxGas > MAX_GAS_EXECUTE) {
+        throw new ErrorMaxGas({ isHigher: true, amount: MAX_GAS_EXECUTE })
+      } else if (maxGas < MIN_GAS_CALL) {
+        throw new ErrorMaxGas({ isHigher: false, amount: MIN_GAS_CALL })
+      }
+    }
+
+    const operationParams: ExecuteOperation = {
+      fee: params.fee ?? (await this.client.getMinimalFee()),
+      expirePeriod: await getAbsoluteExpirePeriod(
+        this.client,
+        params.periodToLive
+      ),
+      type: OperationType.ExecuteSmartContractBytecode,
+      maxCoins: params.maxCoins ?? 0n,
+      maxGas,
+      contractDataBinary: params.byteCode,
+      datastore: params.datastore,
+    }
+
+    const manager = new OperationManager(this.account.privateKey, this.client)
+    const operationId = await manager.send(operationParams)
+    return new Operation(this, operationId)
   }
 
   public async deploySC(params: DeploySCParams): Promise<SmartContract> {
-    const operationId = await this.deploy(params)
+    const operation = await this.deploy(params)
 
-    const operation = new Operation(this, operationId)
     const deployedAddress = await operation.getDeployedAddress(
       params.waitFinalExecution
     )
     return new SmartContract(this, deployedAddress)
-  }
-
-  /**
-   * Executes Binary Smart Contract Code Onchain.
-   * @see {@link https://docs.massa.net/docs/learn/operation-format-execution#executesc-operation-payload} for more information on how to setup datastore.
-   */
-  async executeSc(params: ExecuteScParams): Promise<string> {
-    return execute(this.client, this.account.privateKey, params.byteCode, {
-      fee: params.fee,
-      periodToLive: params.periodToLive,
-      maxCoins: params.maxCoins,
-      maxGas: params.maxGas,
-      datastore: params.datastore,
-    })
   }
 
   /**
@@ -312,13 +326,14 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
    *
    * @throws If the account has insufficient balance to deploy the smart contract.
    */
-  protected async deploy(params: DeploySCParams): Promise<string> {
+  protected async deploy(params: DeploySCParams): Promise<Operation> {
     const coins = params.coins ?? 0n
     const totalCost =
       StorageCost.smartContractDeploy(params.byteCode.length) + coins
 
     await this.checkAccountBalance(totalCost)
 
+    const maxCoins = params.maxCoins ?? totalCost
     const args = params.parameter ?? new Uint8Array()
     const parameter = args instanceof Uint8Array ? args : args.serialize()
 
@@ -330,13 +345,10 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
       },
     ])
 
-    const fee = params.fee ?? (await this.client.getMinimalFee())
-
-    return execute(this.client, this.account.privateKey, DEPLOYER_BYTECODE, {
-      fee,
-      periodToLive: params.periodToLive,
-      maxCoins: params?.maxCoins ?? totalCost,
-      maxGas: params.maxGas,
+    return this.executeSC({
+      ...params,
+      byteCode: DEPLOYER_BYTECODE,
+      maxCoins,
       datastore,
     })
   }
@@ -347,19 +359,33 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
    * @returns A promise that resolves to a ReadSCData.
    */
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
-    const args = params.parameter ?? new Uint8Array()
     const caller = params.caller ?? this.account.address.toString()
-    const readOnlyParams = {
+    return super.readSC({
       ...params,
       caller,
-      parameter: args instanceof Uint8Array ? args : args.serialize(),
-    }
-    return this.client.executeReadOnlyCall(readOnlyParams)
+    })
   }
 
   public async getGasEstimation(params: ReadSCParams): Promise<U64_t> {
     const caller = params.caller ?? this.account.address.toString()
     return super.getGasEstimation({ ...params, caller })
+  }
+
+  public async executeSCReadOnly(
+    params: ExecuteSCReadOnlyParams
+  ): Promise<ExecuteSCReadOnlyResult> {
+    const caller = params.caller ?? this.account.address.toString()
+    return super.executeSCReadOnly({
+      ...params,
+      caller,
+    })
+  }
+
+  public async executeSCGasEstimation(
+    params: ExecuteSCReadOnlyParams
+  ): Promise<U64_t> {
+    const caller = params.caller ?? this.account.address.toString()
+    return super.executeSCGasEstimation({ ...params, caller })
   }
 }
 

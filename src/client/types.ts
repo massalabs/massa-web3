@@ -20,20 +20,39 @@ export type EventFilter = {
   isError?: boolean
 }
 
+export type ExecuteSCReadOnlyParams = {
+  maxGas?: bigint
+  byteCode: Uint8Array
+  caller?: string
+  datastore?: Map<Uint8Array, Uint8Array>
+  fee?: bigint
+}
+
+export type ExecuteSCReadOnlyResult = {
+  executedAt: t.Slot
+  value: Uint8Array
+  error?: string
+  events: t.OutputEvents
+  gasCost: number
+  stateChanges: StateChanges
+}
+
+export type StateChanges = {
+  ledgerChanges: Record<string, unknown>
+  asyncPoolChanges: Record<string, unknown>[]
+  posChanges: Record<string, unknown>
+  executedOpsChanges: Record<string, unknown>
+  executedDenunciationsChanges: Record<string, unknown>
+  executionTrailHashChange: t.ExecutionTrailHashChange
+}
+
 export type ReadOnlyCallResult = {
   value: Uint8Array
   info: {
     gasCost: number
     error?: string
     events: t.OutputEvents
-    stateChanges: {
-      ledgerChanges: Record<string, unknown>
-      asyncPoolChanges: Record<string, unknown>[]
-      posChanges: Record<string, unknown>
-      executedOpsChanges: Record<string, unknown>
-      executedDenunciationsChanges: Record<string, unknown>
-      executionTrailHashChange: t.ExecutionTrailHashChange
-    }
+    stateChanges: StateChanges
   }
 }
 

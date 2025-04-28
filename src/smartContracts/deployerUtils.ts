@@ -1,4 +1,4 @@
-import { Args, U64, U8 } from './basicElements'
+import { Args, U64, U8 } from '../basicElements'
 
 const CONTRACTS_NUMBER_KEY = new Uint8Array([0])
 
