@@ -10,8 +10,11 @@ import {
   CHAIN_ID,
   DatastoreEntry,
   EventFilter,
+  ExecuteSCReadOnlyParams,
+  ExecuteSCReadOnlyResult,
   Mas,
   MAX_GAS_CALL,
+  MAX_GAS_EXECUTE,
   minBigInt,
   Network,
   NetworkName,
@@ -143,11 +146,49 @@ export class JsonRpcPublicProvider implements PublicProvider {
       throw new Error(result.info.error)
     }
 
+    // TODO: add coins estimation by analysing the stateChanges
+
     const gasCost = BigInt(result.info.gasCost)
     return minBigInt(
       // eslint-disable-next-line @typescript-eslint/no-magic-numbers
       gasCost + (gasCost * GAS_ESTIMATION_TOLERANCE) / 100n,
       MAX_GAS_CALL
+    )
+  }
+
+  public async executeSCReadOnly(
+    params: ExecuteSCReadOnlyParams
+  ): Promise<ExecuteSCReadOnlyResult> {
+    const caller =
+      params.caller ?? (await Account.generate()).address.toString()
+    const result = await this.client.executeReadOnlyBytecode({
+      ...params,
+      caller,
+    })
+    if (result.error) {
+      throw new Error(result.error)
+    }
+    return result
+  }
+
+  public async executeSCGasEstimation(
+    params: ExecuteSCReadOnlyParams
+  ): Promise<U64_t> {
+    const result = await this.client.executeReadOnlyBytecode({
+      ...params,
+      maxGas: MAX_GAS_EXECUTE,
+    })
+    if (result.error) {
+      throw new Error(result.error)
+    }
+
+    // TODO: add coins estimation by analysing the stateChanges
+
+    const gasCost = BigInt(result.gasCost)
+    return minBigInt(
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      gasCost + (gasCost * GAS_ESTIMATION_TOLERANCE) / 100n,
+      MAX_GAS_EXECUTE
     )
   }
 }

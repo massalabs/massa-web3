@@ -1,4 +1,4 @@
-import { Mas } from '../../src/basicElements'
+import { Mas, U64 } from '../../src/basicElements'
 
 describe('amount conversion', () => {
   it('converts from integer', () => {
@@ -29,12 +29,16 @@ describe('amount conversion', () => {
   })
 
   it('converts to string', () => {
+    expect(Mas.toString(0n)).toStrictEqual('0')
+    expect(Mas.toString(1n)).toStrictEqual('0.000000001')
+    expect(Mas.toString(1_234_000_000_000n)).toStrictEqual('1234')
+    expect(Mas.toString(U64.MAX)).toStrictEqual('18446744073.709551615')
     expect(Mas.toString(1_000_000_000n)).toStrictEqual('1')
     expect(Mas.toString(1_100_000_000n)).toStrictEqual('1.1')
     expect(Mas.toString(1_234_567_890_000n)).toStrictEqual('1234.56789')
     expect(Mas.toString(100_000n)).toStrictEqual('0.0001')
-    expect(Mas.toString(1_234_567_890_000n, 2)).toStrictEqual('1234.57')
-    expect(Mas.toString(1_234_567_890_000n, 3)).toStrictEqual('1234.568')
+    expect(Mas.toString(1_234_567_890_000n, 2)).toStrictEqual('1234.56')
+    expect(Mas.toString(1_234_567_890_000n, 3)).toStrictEqual('1234.567')
     expect(Mas.toString(1_234_567_890_000n, 6)).toStrictEqual('1234.567890')
   })
 })

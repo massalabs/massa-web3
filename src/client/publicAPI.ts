@@ -8,6 +8,10 @@ import {
   ClientOptions,
   DatastoreEntry,
   formatReadOnlyCallResponse,
+  ExecuteSCReadOnlyParams,
+  ExecuteSCReadOnlyResult,
+  formatReadOnlyExecuteSCResponse,
+  formatReadOnlyExecuteSCParams,
 } from '.'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
@@ -28,17 +32,21 @@ export class PublicAPI {
   }
 
   async executeReadOnlyBytecode(
-    readOnlyBytecodeExecution: t.ReadOnlyBytecodeExecution
-  ): Promise<t.ExecuteReadOnlyResponse> {
+    params: ExecuteSCReadOnlyParams
+  ): Promise<ExecuteSCReadOnlyResult> {
     return this.connector
-      .execute_read_only_bytecode([readOnlyBytecodeExecution])
-      .then((r) => r[0])
+      .execute_read_only_bytecode([formatReadOnlyExecuteSCParams(params)])
+      .then((r) => formatReadOnlyExecuteSCResponse(r[0]))
   }
 
   async executeMultipleReadOnlyBytecode(
-    readOnlyBytecodeExecutions: t.ReadOnlyBytecodeExecution[]
-  ): Promise<t.ExecuteReadOnlyResponse[]> {
-    return this.connector.execute_read_only_bytecode(readOnlyBytecodeExecutions)
+    executeReadonlyParams: ExecuteSCReadOnlyParams[]
+  ): Promise<ExecuteSCReadOnlyResult[]> {
+    const params = executeReadonlyParams.map((param) =>
+      formatReadOnlyExecuteSCParams(param)
+    )
+    const res = await this.connector.execute_read_only_bytecode(params)
+    return res.map((r) => formatReadOnlyExecuteSCResponse(r))
   }
 
   async executeReadOnlyCall(
