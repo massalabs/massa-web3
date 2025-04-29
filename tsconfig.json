@@ -5,11 +5,10 @@
         "declaration": true,
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
-        "jsx": "preserve",
         "allowJs": true,
         "importHelpers": true,
         "alwaysStrict": true,
-        "sourceMap": true,
+        "sourceMap": false,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
@@ -28,8 +27,9 @@
         "baseUrl": ".",
     },
     "include": [
-        "./src/**/*.ts"
-  ],
+        "./src/**/*.ts",
+        "./src/**/*.js",
+    ],
     "exclude": [
         "node_modules",
         "dist",
