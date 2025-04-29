@@ -1,4 +1,4 @@
-import { CHAIN_ID } from '../../src'
+import { CHAIN_ID, GrpcApiUrl, NetworkName } from '../../src'
 import { account, grpcProvider, publicProvider } from './setup'
 import { StakerEntry } from '../../src/generated/grpc/massa/model/v1/staker_pb'
 import {
@@ -20,6 +20,7 @@ describe('Provider GRPC tests', () => {
     const networkInfos = await publicProvider.networkInfos()
     minimalFees = networkInfos.minimalFee
   })
+
   test('getNodeStatus', async () => {
     const status = await grpcProvider.getNodeStatus()
     expect(status.config).toBeDefined()
@@ -30,7 +31,7 @@ describe('Provider GRPC tests', () => {
     expect(status.nodeId).toBeDefined()
     expect(status.version).toBeDefined()
     expect(status.chainId).toBe(Number(CHAIN_ID.Buildnet))
-    expect(status.minimalFees).toBe(minimalFees)
+    expect(status.minimalFees).toBe('0.01')
   })
 
   test('getTransactionsThroughput', async () => {
@@ -46,9 +47,9 @@ describe('Provider GRPC tests', () => {
 
   test('networkInfos', async () => {
     const resp = await grpcProvider.networkInfos()
-    expect(resp.name).toBeDefined()
-    expect(resp.chainId).toBeDefined()
-    expect(resp.url).toBeDefined()
+    expect(resp.name).toBe(NetworkName.Buildnet)
+    expect(resp.chainId).toBe(CHAIN_ID.Buildnet)
+    expect(resp.url).toBe(GrpcApiUrl.Buildnet)
   })
 
   test('nextBlockBestParent', async () => {
