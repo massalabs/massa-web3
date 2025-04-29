@@ -1,4 +1,4 @@
-import { CHAIN_ID, GrpcApiUrl, NetworkName } from '../../src'
+import { CHAIN_ID, GrpcApiUrl, Mas, NetworkName } from '../../src'
 import { account, grpcProvider, publicProvider } from './setup'
 import { StakerEntry } from '../../src/generated/grpc/massa/model/v1/staker_pb'
 import {
@@ -31,7 +31,7 @@ describe('Provider GRPC tests', () => {
     expect(status.nodeId).toBeDefined()
     expect(status.version).toBeDefined()
     expect(status.chainId).toBe(Number(CHAIN_ID.Buildnet))
-    expect(status.minimalFees).toBe('0.01')
+    expect(status.minimalFees).toBe(Mas.toString(minimalFees))
   })
 
   test('getTransactionsThroughput', async () => {
