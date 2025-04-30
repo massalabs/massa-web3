@@ -14,12 +14,12 @@
 var jspb = require('google-protobuf');
 var goog = jspb;
 var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+  (typeof globalThis !== 'undefined' && globalThis) ||
+  (typeof window !== 'undefined' && window) ||
+  (typeof global !== 'undefined' && global) ||
+  (typeof self !== 'undefined' && self) ||
+  (function () { return this; }).call(null) ||
+  Function('return this')();
 
 var massa_model_v1_amount_pb = require('../../../massa/model/v1/amount_pb.js');
 goog.object.extend(proto, massa_model_v1_amount_pb);
@@ -44,7 +44,7 @@ goog.exportSymbol('proto.massa.model.v1.EndorsementDenunciation', null, global);
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.Denunciation = function(opt_data) {
+proto.massa.model.v1.Denunciation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, proto.massa.model.v1.Denunciation.oneofGroups_);
 };
 goog.inherits(proto.massa.model.v1.Denunciation, jspb.Message);
@@ -65,7 +65,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.BlockHeaderDenunciation = function(opt_data) {
+proto.massa.model.v1.BlockHeaderDenunciation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.BlockHeaderDenunciation, jspb.Message);
@@ -86,7 +86,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.EndorsementDenunciation = function(opt_data) {
+proto.massa.model.v1.EndorsementDenunciation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.EndorsementDenunciation, jspb.Message);
@@ -107,7 +107,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.DenunciationIndex = function(opt_data) {
+proto.massa.model.v1.DenunciationIndex = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, proto.massa.model.v1.DenunciationIndex.oneofGroups_);
 };
 goog.inherits(proto.massa.model.v1.DenunciationIndex, jspb.Message);
@@ -128,7 +128,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.DenunciationBlockHeader = function(opt_data) {
+proto.massa.model.v1.DenunciationBlockHeader = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.DenunciationBlockHeader, jspb.Message);
@@ -149,7 +149,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.DenunciationEndorsement = function(opt_data) {
+proto.massa.model.v1.DenunciationEndorsement = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.DenunciationEndorsement, jspb.Message);
@@ -170,7 +170,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.DenunciationAddress = function(opt_data) {
+proto.massa.model.v1.DenunciationAddress = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.DenunciationAddress, jspb.Message);
@@ -190,7 +190,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.massa.model.v1.Denunciation.oneofGroups_ = [[1,2,3]];
+proto.massa.model.v1.Denunciation.oneofGroups_ = [[1, 2, 3]];
 
 /**
  * @enum {number}
@@ -205,51 +205,51 @@ proto.massa.model.v1.Denunciation.EntryCase = {
 /**
  * @return {proto.massa.model.v1.Denunciation.EntryCase}
  */
-proto.massa.model.v1.Denunciation.prototype.getEntryCase = function() {
+proto.massa.model.v1.Denunciation.prototype.getEntryCase = function () {
   return /** @type {proto.massa.model.v1.Denunciation.EntryCase} */(jspb.Message.computeOneofCase(this, proto.massa.model.v1.Denunciation.oneofGroups_[0]));
 };
 
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.Denunciation.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.Denunciation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.Denunciation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.Denunciation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-blockHeader: (f = msg.getBlockHeader()) && proto.massa.model.v1.BlockHeaderDenunciation.toObject(includeInstance, f),
-endorsement: (f = msg.getEndorsement()) && proto.massa.model.v1.EndorsementDenunciation.toObject(includeInstance, f),
-address: (f = msg.getAddress()) && proto.massa.model.v1.DenunciationAddress.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.Denunciation.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.Denunciation.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.Denunciation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.Denunciation.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      blockHeader: (f = msg.getBlockHeader()) && proto.massa.model.v1.BlockHeaderDenunciation.toObject(includeInstance, f),
+      endorsement: (f = msg.getEndorsement()) && proto.massa.model.v1.EndorsementDenunciation.toObject(includeInstance, f),
+      address: (f = msg.getAddress()) && proto.massa.model.v1.DenunciationAddress.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -258,7 +258,7 @@ address: (f = msg.getAddress()) && proto.massa.model.v1.DenunciationAddress.toOb
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.Denunciation}
  */
-proto.massa.model.v1.Denunciation.deserializeBinary = function(bytes) {
+proto.massa.model.v1.Denunciation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.Denunciation;
   return proto.massa.model.v1.Denunciation.deserializeBinaryFromReader(msg, reader);
@@ -272,31 +272,31 @@ proto.massa.model.v1.Denunciation.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.Denunciation}
  */
-proto.massa.model.v1.Denunciation.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.Denunciation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new proto.massa.model.v1.BlockHeaderDenunciation;
-      reader.readMessage(value,proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinaryFromReader);
-      msg.setBlockHeader(value);
-      break;
-    case 2:
-      var value = new proto.massa.model.v1.EndorsementDenunciation;
-      reader.readMessage(value,proto.massa.model.v1.EndorsementDenunciation.deserializeBinaryFromReader);
-      msg.setEndorsement(value);
-      break;
-    case 3:
-      var value = new proto.massa.model.v1.DenunciationAddress;
-      reader.readMessage(value,proto.massa.model.v1.DenunciationAddress.deserializeBinaryFromReader);
-      msg.setAddress(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.massa.model.v1.BlockHeaderDenunciation;
+        reader.readMessage(value, proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinaryFromReader);
+        msg.setBlockHeader(value);
+        break;
+      case 2:
+        var value = new proto.massa.model.v1.EndorsementDenunciation;
+        reader.readMessage(value, proto.massa.model.v1.EndorsementDenunciation.deserializeBinaryFromReader);
+        msg.setEndorsement(value);
+        break;
+      case 3:
+        var value = new proto.massa.model.v1.DenunciationAddress;
+        reader.readMessage(value, proto.massa.model.v1.DenunciationAddress.deserializeBinaryFromReader);
+        msg.setAddress(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -307,7 +307,7 @@ proto.massa.model.v1.Denunciation.deserializeBinaryFromReader = function(msg, re
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.Denunciation.prototype.serializeBinary = function() {
+proto.massa.model.v1.Denunciation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.Denunciation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -321,7 +321,7 @@ proto.massa.model.v1.Denunciation.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.Denunciation.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.Denunciation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getBlockHeader();
   if (f != null) {
@@ -354,7 +354,7 @@ proto.massa.model.v1.Denunciation.serializeBinaryToWriter = function(message, wr
  * optional BlockHeaderDenunciation block_header = 1;
  * @return {?proto.massa.model.v1.BlockHeaderDenunciation}
  */
-proto.massa.model.v1.Denunciation.prototype.getBlockHeader = function() {
+proto.massa.model.v1.Denunciation.prototype.getBlockHeader = function () {
   return /** @type{?proto.massa.model.v1.BlockHeaderDenunciation} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.BlockHeaderDenunciation, 1));
 };
@@ -364,7 +364,7 @@ proto.massa.model.v1.Denunciation.prototype.getBlockHeader = function() {
  * @param {?proto.massa.model.v1.BlockHeaderDenunciation|undefined} value
  * @return {!proto.massa.model.v1.Denunciation} returns this
 */
-proto.massa.model.v1.Denunciation.prototype.setBlockHeader = function(value) {
+proto.massa.model.v1.Denunciation.prototype.setBlockHeader = function (value) {
   return jspb.Message.setOneofWrapperField(this, 1, proto.massa.model.v1.Denunciation.oneofGroups_[0], value);
 };
 
@@ -373,7 +373,7 @@ proto.massa.model.v1.Denunciation.prototype.setBlockHeader = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.Denunciation} returns this
  */
-proto.massa.model.v1.Denunciation.prototype.clearBlockHeader = function() {
+proto.massa.model.v1.Denunciation.prototype.clearBlockHeader = function () {
   return this.setBlockHeader(undefined);
 };
 
@@ -382,7 +382,7 @@ proto.massa.model.v1.Denunciation.prototype.clearBlockHeader = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.Denunciation.prototype.hasBlockHeader = function() {
+proto.massa.model.v1.Denunciation.prototype.hasBlockHeader = function () {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -391,7 +391,7 @@ proto.massa.model.v1.Denunciation.prototype.hasBlockHeader = function() {
  * optional EndorsementDenunciation endorsement = 2;
  * @return {?proto.massa.model.v1.EndorsementDenunciation}
  */
-proto.massa.model.v1.Denunciation.prototype.getEndorsement = function() {
+proto.massa.model.v1.Denunciation.prototype.getEndorsement = function () {
   return /** @type{?proto.massa.model.v1.EndorsementDenunciation} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.EndorsementDenunciation, 2));
 };
@@ -401,7 +401,7 @@ proto.massa.model.v1.Denunciation.prototype.getEndorsement = function() {
  * @param {?proto.massa.model.v1.EndorsementDenunciation|undefined} value
  * @return {!proto.massa.model.v1.Denunciation} returns this
 */
-proto.massa.model.v1.Denunciation.prototype.setEndorsement = function(value) {
+proto.massa.model.v1.Denunciation.prototype.setEndorsement = function (value) {
   return jspb.Message.setOneofWrapperField(this, 2, proto.massa.model.v1.Denunciation.oneofGroups_[0], value);
 };
 
@@ -410,7 +410,7 @@ proto.massa.model.v1.Denunciation.prototype.setEndorsement = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.Denunciation} returns this
  */
-proto.massa.model.v1.Denunciation.prototype.clearEndorsement = function() {
+proto.massa.model.v1.Denunciation.prototype.clearEndorsement = function () {
   return this.setEndorsement(undefined);
 };
 
@@ -419,7 +419,7 @@ proto.massa.model.v1.Denunciation.prototype.clearEndorsement = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.Denunciation.prototype.hasEndorsement = function() {
+proto.massa.model.v1.Denunciation.prototype.hasEndorsement = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -428,7 +428,7 @@ proto.massa.model.v1.Denunciation.prototype.hasEndorsement = function() {
  * optional DenunciationAddress address = 3;
  * @return {?proto.massa.model.v1.DenunciationAddress}
  */
-proto.massa.model.v1.Denunciation.prototype.getAddress = function() {
+proto.massa.model.v1.Denunciation.prototype.getAddress = function () {
   return /** @type{?proto.massa.model.v1.DenunciationAddress} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.DenunciationAddress, 3));
 };
@@ -438,7 +438,7 @@ proto.massa.model.v1.Denunciation.prototype.getAddress = function() {
  * @param {?proto.massa.model.v1.DenunciationAddress|undefined} value
  * @return {!proto.massa.model.v1.Denunciation} returns this
 */
-proto.massa.model.v1.Denunciation.prototype.setAddress = function(value) {
+proto.massa.model.v1.Denunciation.prototype.setAddress = function (value) {
   return jspb.Message.setOneofWrapperField(this, 3, proto.massa.model.v1.Denunciation.oneofGroups_[0], value);
 };
 
@@ -447,7 +447,7 @@ proto.massa.model.v1.Denunciation.prototype.setAddress = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.Denunciation} returns this
  */
-proto.massa.model.v1.Denunciation.prototype.clearAddress = function() {
+proto.massa.model.v1.Denunciation.prototype.clearAddress = function () {
   return this.setAddress(undefined);
 };
 
@@ -456,7 +456,7 @@ proto.massa.model.v1.Denunciation.prototype.clearAddress = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.Denunciation.prototype.hasAddress = function() {
+proto.massa.model.v1.Denunciation.prototype.hasAddress = function () {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -465,47 +465,47 @@ proto.massa.model.v1.Denunciation.prototype.hasAddress = function() {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.BlockHeaderDenunciation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.BlockHeaderDenunciation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.BlockHeaderDenunciation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-publicKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
-slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
-hash1: jspb.Message.getFieldWithDefault(msg, 3, ""),
-hash2: jspb.Message.getFieldWithDefault(msg, 4, ""),
-signature1: jspb.Message.getFieldWithDefault(msg, 5, ""),
-signature2: jspb.Message.getFieldWithDefault(msg, 6, "")
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.BlockHeaderDenunciation.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.BlockHeaderDenunciation.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.BlockHeaderDenunciation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.BlockHeaderDenunciation.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      publicKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
+      slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
+      hash1: jspb.Message.getFieldWithDefault(msg, 3, ""),
+      hash2: jspb.Message.getFieldWithDefault(msg, 4, ""),
+      signature1: jspb.Message.getFieldWithDefault(msg, 5, ""),
+      signature2: jspb.Message.getFieldWithDefault(msg, 6, "")
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -514,7 +514,7 @@ signature2: jspb.Message.getFieldWithDefault(msg, 6, "")
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinary = function(bytes) {
+proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.BlockHeaderDenunciation;
   return proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinaryFromReader(msg, reader);
@@ -528,41 +528,41 @@ proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinary = function(bytes)
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPublicKey(value);
-      break;
-    case 2:
-      var value = new massa_model_v1_slot_pb.Slot;
-      reader.readMessage(value,massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
-      msg.setSlot(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setHash1(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setHash2(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSignature1(value);
-      break;
-    case 6:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSignature2(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPublicKey(value);
+        break;
+      case 2:
+        var value = new massa_model_v1_slot_pb.Slot;
+        reader.readMessage(value, massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
+        msg.setSlot(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setHash1(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setHash2(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSignature1(value);
+        break;
+      case 6:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSignature2(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -573,7 +573,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.deserializeBinaryFromReader = funct
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.serializeBinary = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.BlockHeaderDenunciation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -587,7 +587,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.serializeBinary = functio
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.BlockHeaderDenunciation.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.BlockHeaderDenunciation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getPublicKey();
   if (f.length > 0) {
@@ -639,7 +639,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.serializeBinaryToWriter = function(
  * optional string public_key = 1;
  * @return {string}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.getPublicKey = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.getPublicKey = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -648,7 +648,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.getPublicKey = function()
  * @param {string} value
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation} returns this
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.setPublicKey = function(value) {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.setPublicKey = function (value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -657,7 +657,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.setPublicKey = function(v
  * optional Slot slot = 2;
  * @return {?proto.massa.model.v1.Slot}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSlot = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSlot = function () {
   return /** @type{?proto.massa.model.v1.Slot} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_slot_pb.Slot, 2));
 };
@@ -667,7 +667,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSlot = function() {
  * @param {?proto.massa.model.v1.Slot|undefined} value
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation} returns this
 */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSlot = function(value) {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSlot = function (value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
@@ -676,7 +676,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSlot = function(value)
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation} returns this
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.clearSlot = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.clearSlot = function () {
   return this.setSlot(undefined);
 };
 
@@ -685,7 +685,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.clearSlot = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.hasSlot = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.hasSlot = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -694,7 +694,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.hasSlot = function() {
  * optional string hash_1 = 3;
  * @return {string}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.getHash1 = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.getHash1 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -703,7 +703,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.getHash1 = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation} returns this
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.setHash1 = function(value) {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.setHash1 = function (value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -712,7 +712,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.setHash1 = function(value
  * optional string hash_2 = 4;
  * @return {string}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.getHash2 = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.getHash2 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -721,7 +721,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.getHash2 = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation} returns this
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.setHash2 = function(value) {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.setHash2 = function (value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -730,7 +730,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.setHash2 = function(value
  * optional string signature_1 = 5;
  * @return {string}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSignature1 = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSignature1 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
@@ -739,7 +739,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSignature1 = function(
  * @param {string} value
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation} returns this
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSignature1 = function(value) {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSignature1 = function (value) {
   return jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -748,7 +748,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSignature1 = function(
  * optional string signature_2 = 6;
  * @return {string}
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSignature2 = function() {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSignature2 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
@@ -757,7 +757,7 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.getSignature2 = function(
  * @param {string} value
  * @return {!proto.massa.model.v1.BlockHeaderDenunciation} returns this
  */
-proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSignature2 = function(value) {
+proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSignature2 = function (value) {
   return jspb.Message.setProto3StringField(this, 6, value);
 };
 
@@ -766,48 +766,48 @@ proto.massa.model.v1.BlockHeaderDenunciation.prototype.setSignature2 = function(
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.EndorsementDenunciation.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.EndorsementDenunciation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.EndorsementDenunciation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.EndorsementDenunciation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-publicKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
-slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
-index: jspb.Message.getFieldWithDefault(msg, 3, 0),
-hash1: jspb.Message.getFieldWithDefault(msg, 4, ""),
-hash2: jspb.Message.getFieldWithDefault(msg, 5, ""),
-signature1: jspb.Message.getFieldWithDefault(msg, 6, ""),
-signature2: jspb.Message.getFieldWithDefault(msg, 7, "")
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.EndorsementDenunciation.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.EndorsementDenunciation.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.EndorsementDenunciation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.EndorsementDenunciation.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      publicKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
+      slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
+      index: jspb.Message.getFieldWithDefault(msg, 3, 0),
+      hash1: jspb.Message.getFieldWithDefault(msg, 4, ""),
+      hash2: jspb.Message.getFieldWithDefault(msg, 5, ""),
+      signature1: jspb.Message.getFieldWithDefault(msg, 6, ""),
+      signature2: jspb.Message.getFieldWithDefault(msg, 7, "")
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -816,7 +816,7 @@ signature2: jspb.Message.getFieldWithDefault(msg, 7, "")
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.EndorsementDenunciation}
  */
-proto.massa.model.v1.EndorsementDenunciation.deserializeBinary = function(bytes) {
+proto.massa.model.v1.EndorsementDenunciation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.EndorsementDenunciation;
   return proto.massa.model.v1.EndorsementDenunciation.deserializeBinaryFromReader(msg, reader);
@@ -830,45 +830,45 @@ proto.massa.model.v1.EndorsementDenunciation.deserializeBinary = function(bytes)
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.EndorsementDenunciation}
  */
-proto.massa.model.v1.EndorsementDenunciation.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.EndorsementDenunciation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPublicKey(value);
-      break;
-    case 2:
-      var value = new massa_model_v1_slot_pb.Slot;
-      reader.readMessage(value,massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
-      msg.setSlot(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setIndex(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setHash1(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setHash2(value);
-      break;
-    case 6:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSignature1(value);
-      break;
-    case 7:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSignature2(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPublicKey(value);
+        break;
+      case 2:
+        var value = new massa_model_v1_slot_pb.Slot;
+        reader.readMessage(value, massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
+        msg.setSlot(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readUint32());
+        msg.setIndex(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setHash1(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setHash2(value);
+        break;
+      case 6:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSignature1(value);
+        break;
+      case 7:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSignature2(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -879,7 +879,7 @@ proto.massa.model.v1.EndorsementDenunciation.deserializeBinaryFromReader = funct
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.serializeBinary = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.EndorsementDenunciation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -893,7 +893,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.serializeBinary = functio
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.EndorsementDenunciation.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.EndorsementDenunciation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getPublicKey();
   if (f.length > 0) {
@@ -952,7 +952,7 @@ proto.massa.model.v1.EndorsementDenunciation.serializeBinaryToWriter = function(
  * optional string public_key = 1;
  * @return {string}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.getPublicKey = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.getPublicKey = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -961,7 +961,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.getPublicKey = function()
  * @param {string} value
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.setPublicKey = function(value) {
+proto.massa.model.v1.EndorsementDenunciation.prototype.setPublicKey = function (value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -970,7 +970,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.setPublicKey = function(v
  * optional Slot slot = 2;
  * @return {?proto.massa.model.v1.Slot}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.getSlot = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.getSlot = function () {
   return /** @type{?proto.massa.model.v1.Slot} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_slot_pb.Slot, 2));
 };
@@ -980,7 +980,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.getSlot = function() {
  * @param {?proto.massa.model.v1.Slot|undefined} value
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
 */
-proto.massa.model.v1.EndorsementDenunciation.prototype.setSlot = function(value) {
+proto.massa.model.v1.EndorsementDenunciation.prototype.setSlot = function (value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
@@ -989,7 +989,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.setSlot = function(value)
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.clearSlot = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.clearSlot = function () {
   return this.setSlot(undefined);
 };
 
@@ -998,7 +998,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.clearSlot = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.hasSlot = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.hasSlot = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -1007,7 +1007,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.hasSlot = function() {
  * optional uint32 index = 3;
  * @return {number}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.getIndex = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.getIndex = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -1016,7 +1016,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.getIndex = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.setIndex = function(value) {
+proto.massa.model.v1.EndorsementDenunciation.prototype.setIndex = function (value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -1025,7 +1025,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.setIndex = function(value
  * optional string hash_1 = 4;
  * @return {string}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.getHash1 = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.getHash1 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -1034,7 +1034,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.getHash1 = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.setHash1 = function(value) {
+proto.massa.model.v1.EndorsementDenunciation.prototype.setHash1 = function (value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -1043,7 +1043,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.setHash1 = function(value
  * optional string hash_2 = 5;
  * @return {string}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.getHash2 = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.getHash2 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
@@ -1052,7 +1052,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.getHash2 = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.setHash2 = function(value) {
+proto.massa.model.v1.EndorsementDenunciation.prototype.setHash2 = function (value) {
   return jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -1061,7 +1061,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.setHash2 = function(value
  * optional string signature_1 = 6;
  * @return {string}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.getSignature1 = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.getSignature1 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
@@ -1070,7 +1070,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.getSignature1 = function(
  * @param {string} value
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.setSignature1 = function(value) {
+proto.massa.model.v1.EndorsementDenunciation.prototype.setSignature1 = function (value) {
   return jspb.Message.setProto3StringField(this, 6, value);
 };
 
@@ -1079,7 +1079,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.setSignature1 = function(
  * optional string signature_2 = 7;
  * @return {string}
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.getSignature2 = function() {
+proto.massa.model.v1.EndorsementDenunciation.prototype.getSignature2 = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
@@ -1088,7 +1088,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.getSignature2 = function(
  * @param {string} value
  * @return {!proto.massa.model.v1.EndorsementDenunciation} returns this
  */
-proto.massa.model.v1.EndorsementDenunciation.prototype.setSignature2 = function(value) {
+proto.massa.model.v1.EndorsementDenunciation.prototype.setSignature2 = function (value) {
   return jspb.Message.setProto3StringField(this, 7, value);
 };
 
@@ -1102,7 +1102,7 @@ proto.massa.model.v1.EndorsementDenunciation.prototype.setSignature2 = function(
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.massa.model.v1.DenunciationIndex.oneofGroups_ = [[1,2]];
+proto.massa.model.v1.DenunciationIndex.oneofGroups_ = [[1, 2]];
 
 /**
  * @enum {number}
@@ -1116,50 +1116,50 @@ proto.massa.model.v1.DenunciationIndex.EntryCase = {
 /**
  * @return {proto.massa.model.v1.DenunciationIndex.EntryCase}
  */
-proto.massa.model.v1.DenunciationIndex.prototype.getEntryCase = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.getEntryCase = function () {
   return /** @type {proto.massa.model.v1.DenunciationIndex.EntryCase} */(jspb.Message.computeOneofCase(this, proto.massa.model.v1.DenunciationIndex.oneofGroups_[0]));
 };
 
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.DenunciationIndex.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.DenunciationIndex.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.DenunciationIndex} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.DenunciationIndex.toObject = function(includeInstance, msg) {
-  var f, obj = {
-blockHeader: (f = msg.getBlockHeader()) && proto.massa.model.v1.DenunciationBlockHeader.toObject(includeInstance, f),
-endorsement: (f = msg.getEndorsement()) && proto.massa.model.v1.DenunciationEndorsement.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.DenunciationIndex.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.DenunciationIndex.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.DenunciationIndex} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.DenunciationIndex.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      blockHeader: (f = msg.getBlockHeader()) && proto.massa.model.v1.DenunciationBlockHeader.toObject(includeInstance, f),
+      endorsement: (f = msg.getEndorsement()) && proto.massa.model.v1.DenunciationEndorsement.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1168,7 +1168,7 @@ endorsement: (f = msg.getEndorsement()) && proto.massa.model.v1.DenunciationEndo
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.DenunciationIndex}
  */
-proto.massa.model.v1.DenunciationIndex.deserializeBinary = function(bytes) {
+proto.massa.model.v1.DenunciationIndex.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.DenunciationIndex;
   return proto.massa.model.v1.DenunciationIndex.deserializeBinaryFromReader(msg, reader);
@@ -1182,26 +1182,26 @@ proto.massa.model.v1.DenunciationIndex.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.DenunciationIndex}
  */
-proto.massa.model.v1.DenunciationIndex.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.DenunciationIndex.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new proto.massa.model.v1.DenunciationBlockHeader;
-      reader.readMessage(value,proto.massa.model.v1.DenunciationBlockHeader.deserializeBinaryFromReader);
-      msg.setBlockHeader(value);
-      break;
-    case 2:
-      var value = new proto.massa.model.v1.DenunciationEndorsement;
-      reader.readMessage(value,proto.massa.model.v1.DenunciationEndorsement.deserializeBinaryFromReader);
-      msg.setEndorsement(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.massa.model.v1.DenunciationBlockHeader;
+        reader.readMessage(value, proto.massa.model.v1.DenunciationBlockHeader.deserializeBinaryFromReader);
+        msg.setBlockHeader(value);
+        break;
+      case 2:
+        var value = new proto.massa.model.v1.DenunciationEndorsement;
+        reader.readMessage(value, proto.massa.model.v1.DenunciationEndorsement.deserializeBinaryFromReader);
+        msg.setEndorsement(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1212,7 +1212,7 @@ proto.massa.model.v1.DenunciationIndex.deserializeBinaryFromReader = function(ms
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.DenunciationIndex.prototype.serializeBinary = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.DenunciationIndex.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1226,7 +1226,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.DenunciationIndex.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.DenunciationIndex.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getBlockHeader();
   if (f != null) {
@@ -1251,7 +1251,7 @@ proto.massa.model.v1.DenunciationIndex.serializeBinaryToWriter = function(messag
  * optional DenunciationBlockHeader block_header = 1;
  * @return {?proto.massa.model.v1.DenunciationBlockHeader}
  */
-proto.massa.model.v1.DenunciationIndex.prototype.getBlockHeader = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.getBlockHeader = function () {
   return /** @type{?proto.massa.model.v1.DenunciationBlockHeader} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.DenunciationBlockHeader, 1));
 };
@@ -1261,7 +1261,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.getBlockHeader = function() {
  * @param {?proto.massa.model.v1.DenunciationBlockHeader|undefined} value
  * @return {!proto.massa.model.v1.DenunciationIndex} returns this
 */
-proto.massa.model.v1.DenunciationIndex.prototype.setBlockHeader = function(value) {
+proto.massa.model.v1.DenunciationIndex.prototype.setBlockHeader = function (value) {
   return jspb.Message.setOneofWrapperField(this, 1, proto.massa.model.v1.DenunciationIndex.oneofGroups_[0], value);
 };
 
@@ -1270,7 +1270,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.setBlockHeader = function(value
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.DenunciationIndex} returns this
  */
-proto.massa.model.v1.DenunciationIndex.prototype.clearBlockHeader = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.clearBlockHeader = function () {
   return this.setBlockHeader(undefined);
 };
 
@@ -1279,7 +1279,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.clearBlockHeader = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.DenunciationIndex.prototype.hasBlockHeader = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.hasBlockHeader = function () {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -1288,7 +1288,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.hasBlockHeader = function() {
  * optional DenunciationEndorsement endorsement = 2;
  * @return {?proto.massa.model.v1.DenunciationEndorsement}
  */
-proto.massa.model.v1.DenunciationIndex.prototype.getEndorsement = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.getEndorsement = function () {
   return /** @type{?proto.massa.model.v1.DenunciationEndorsement} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.DenunciationEndorsement, 2));
 };
@@ -1298,7 +1298,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.getEndorsement = function() {
  * @param {?proto.massa.model.v1.DenunciationEndorsement|undefined} value
  * @return {!proto.massa.model.v1.DenunciationIndex} returns this
 */
-proto.massa.model.v1.DenunciationIndex.prototype.setEndorsement = function(value) {
+proto.massa.model.v1.DenunciationIndex.prototype.setEndorsement = function (value) {
   return jspb.Message.setOneofWrapperField(this, 2, proto.massa.model.v1.DenunciationIndex.oneofGroups_[0], value);
 };
 
@@ -1307,7 +1307,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.setEndorsement = function(value
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.DenunciationIndex} returns this
  */
-proto.massa.model.v1.DenunciationIndex.prototype.clearEndorsement = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.clearEndorsement = function () {
   return this.setEndorsement(undefined);
 };
 
@@ -1316,7 +1316,7 @@ proto.massa.model.v1.DenunciationIndex.prototype.clearEndorsement = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.DenunciationIndex.prototype.hasEndorsement = function() {
+proto.massa.model.v1.DenunciationIndex.prototype.hasEndorsement = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -1325,42 +1325,42 @@ proto.massa.model.v1.DenunciationIndex.prototype.hasEndorsement = function() {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.DenunciationBlockHeader.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.DenunciationBlockHeader.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.DenunciationBlockHeader} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.DenunciationBlockHeader.toObject = function(includeInstance, msg) {
-  var f, obj = {
-slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.DenunciationBlockHeader.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.DenunciationBlockHeader.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.DenunciationBlockHeader} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.DenunciationBlockHeader.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1369,7 +1369,7 @@ slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstanc
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.DenunciationBlockHeader}
  */
-proto.massa.model.v1.DenunciationBlockHeader.deserializeBinary = function(bytes) {
+proto.massa.model.v1.DenunciationBlockHeader.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.DenunciationBlockHeader;
   return proto.massa.model.v1.DenunciationBlockHeader.deserializeBinaryFromReader(msg, reader);
@@ -1383,21 +1383,21 @@ proto.massa.model.v1.DenunciationBlockHeader.deserializeBinary = function(bytes)
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.DenunciationBlockHeader}
  */
-proto.massa.model.v1.DenunciationBlockHeader.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.DenunciationBlockHeader.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new massa_model_v1_slot_pb.Slot;
-      reader.readMessage(value,massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
-      msg.setSlot(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new massa_model_v1_slot_pb.Slot;
+        reader.readMessage(value, massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
+        msg.setSlot(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1408,7 +1408,7 @@ proto.massa.model.v1.DenunciationBlockHeader.deserializeBinaryFromReader = funct
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.DenunciationBlockHeader.prototype.serializeBinary = function() {
+proto.massa.model.v1.DenunciationBlockHeader.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.DenunciationBlockHeader.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1422,7 +1422,7 @@ proto.massa.model.v1.DenunciationBlockHeader.prototype.serializeBinary = functio
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.DenunciationBlockHeader.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.DenunciationBlockHeader.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getSlot();
   if (f != null) {
@@ -1439,7 +1439,7 @@ proto.massa.model.v1.DenunciationBlockHeader.serializeBinaryToWriter = function(
  * optional Slot slot = 1;
  * @return {?proto.massa.model.v1.Slot}
  */
-proto.massa.model.v1.DenunciationBlockHeader.prototype.getSlot = function() {
+proto.massa.model.v1.DenunciationBlockHeader.prototype.getSlot = function () {
   return /** @type{?proto.massa.model.v1.Slot} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_slot_pb.Slot, 1));
 };
@@ -1449,7 +1449,7 @@ proto.massa.model.v1.DenunciationBlockHeader.prototype.getSlot = function() {
  * @param {?proto.massa.model.v1.Slot|undefined} value
  * @return {!proto.massa.model.v1.DenunciationBlockHeader} returns this
 */
-proto.massa.model.v1.DenunciationBlockHeader.prototype.setSlot = function(value) {
+proto.massa.model.v1.DenunciationBlockHeader.prototype.setSlot = function (value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
@@ -1458,7 +1458,7 @@ proto.massa.model.v1.DenunciationBlockHeader.prototype.setSlot = function(value)
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.DenunciationBlockHeader} returns this
  */
-proto.massa.model.v1.DenunciationBlockHeader.prototype.clearSlot = function() {
+proto.massa.model.v1.DenunciationBlockHeader.prototype.clearSlot = function () {
   return this.setSlot(undefined);
 };
 
@@ -1467,7 +1467,7 @@ proto.massa.model.v1.DenunciationBlockHeader.prototype.clearSlot = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.DenunciationBlockHeader.prototype.hasSlot = function() {
+proto.massa.model.v1.DenunciationBlockHeader.prototype.hasSlot = function () {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -1476,43 +1476,43 @@ proto.massa.model.v1.DenunciationBlockHeader.prototype.hasSlot = function() {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.DenunciationEndorsement.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.DenunciationEndorsement.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.DenunciationEndorsement} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.DenunciationEndorsement.toObject = function(includeInstance, msg) {
-  var f, obj = {
-slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
-index: jspb.Message.getFieldWithDefault(msg, 2, 0)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.DenunciationEndorsement.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.DenunciationEndorsement.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.DenunciationEndorsement} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.DenunciationEndorsement.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
+      index: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1521,7 +1521,7 @@ index: jspb.Message.getFieldWithDefault(msg, 2, 0)
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.DenunciationEndorsement}
  */
-proto.massa.model.v1.DenunciationEndorsement.deserializeBinary = function(bytes) {
+proto.massa.model.v1.DenunciationEndorsement.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.DenunciationEndorsement;
   return proto.massa.model.v1.DenunciationEndorsement.deserializeBinaryFromReader(msg, reader);
@@ -1535,25 +1535,25 @@ proto.massa.model.v1.DenunciationEndorsement.deserializeBinary = function(bytes)
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.DenunciationEndorsement}
  */
-proto.massa.model.v1.DenunciationEndorsement.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.DenunciationEndorsement.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new massa_model_v1_slot_pb.Slot;
-      reader.readMessage(value,massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
-      msg.setSlot(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setIndex(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new massa_model_v1_slot_pb.Slot;
+        reader.readMessage(value, massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
+        msg.setSlot(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readUint32());
+        msg.setIndex(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1564,7 +1564,7 @@ proto.massa.model.v1.DenunciationEndorsement.deserializeBinaryFromReader = funct
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.DenunciationEndorsement.prototype.serializeBinary = function() {
+proto.massa.model.v1.DenunciationEndorsement.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.DenunciationEndorsement.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1578,7 +1578,7 @@ proto.massa.model.v1.DenunciationEndorsement.prototype.serializeBinary = functio
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.DenunciationEndorsement.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.DenunciationEndorsement.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getSlot();
   if (f != null) {
@@ -1602,7 +1602,7 @@ proto.massa.model.v1.DenunciationEndorsement.serializeBinaryToWriter = function(
  * optional Slot slot = 1;
  * @return {?proto.massa.model.v1.Slot}
  */
-proto.massa.model.v1.DenunciationEndorsement.prototype.getSlot = function() {
+proto.massa.model.v1.DenunciationEndorsement.prototype.getSlot = function () {
   return /** @type{?proto.massa.model.v1.Slot} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_slot_pb.Slot, 1));
 };
@@ -1612,7 +1612,7 @@ proto.massa.model.v1.DenunciationEndorsement.prototype.getSlot = function() {
  * @param {?proto.massa.model.v1.Slot|undefined} value
  * @return {!proto.massa.model.v1.DenunciationEndorsement} returns this
 */
-proto.massa.model.v1.DenunciationEndorsement.prototype.setSlot = function(value) {
+proto.massa.model.v1.DenunciationEndorsement.prototype.setSlot = function (value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
@@ -1621,7 +1621,7 @@ proto.massa.model.v1.DenunciationEndorsement.prototype.setSlot = function(value)
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.DenunciationEndorsement} returns this
  */
-proto.massa.model.v1.DenunciationEndorsement.prototype.clearSlot = function() {
+proto.massa.model.v1.DenunciationEndorsement.prototype.clearSlot = function () {
   return this.setSlot(undefined);
 };
 
@@ -1630,7 +1630,7 @@ proto.massa.model.v1.DenunciationEndorsement.prototype.clearSlot = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.DenunciationEndorsement.prototype.hasSlot = function() {
+proto.massa.model.v1.DenunciationEndorsement.prototype.hasSlot = function () {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -1639,7 +1639,7 @@ proto.massa.model.v1.DenunciationEndorsement.prototype.hasSlot = function() {
  * optional uint32 index = 2;
  * @return {number}
  */
-proto.massa.model.v1.DenunciationEndorsement.prototype.getIndex = function() {
+proto.massa.model.v1.DenunciationEndorsement.prototype.getIndex = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -1648,7 +1648,7 @@ proto.massa.model.v1.DenunciationEndorsement.prototype.getIndex = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.DenunciationEndorsement} returns this
  */
-proto.massa.model.v1.DenunciationEndorsement.prototype.setIndex = function(value) {
+proto.massa.model.v1.DenunciationEndorsement.prototype.setIndex = function (value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -1657,44 +1657,44 @@ proto.massa.model.v1.DenunciationEndorsement.prototype.setIndex = function(value
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.DenunciationAddress.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.DenunciationAddress.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.DenunciationAddress} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.DenunciationAddress.toObject = function(includeInstance, msg) {
-  var f, obj = {
-addressDenounced: jspb.Message.getFieldWithDefault(msg, 1, ""),
-slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
-slashed: (f = msg.getSlashed()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.DenunciationAddress.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.DenunciationAddress.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.DenunciationAddress} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.DenunciationAddress.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      addressDenounced: jspb.Message.getFieldWithDefault(msg, 1, ""),
+      slot: (f = msg.getSlot()) && massa_model_v1_slot_pb.Slot.toObject(includeInstance, f),
+      slashed: (f = msg.getSlashed()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1703,7 +1703,7 @@ slashed: (f = msg.getSlashed()) && massa_model_v1_amount_pb.NativeAmount.toObjec
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.DenunciationAddress}
  */
-proto.massa.model.v1.DenunciationAddress.deserializeBinary = function(bytes) {
+proto.massa.model.v1.DenunciationAddress.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.DenunciationAddress;
   return proto.massa.model.v1.DenunciationAddress.deserializeBinaryFromReader(msg, reader);
@@ -1717,30 +1717,30 @@ proto.massa.model.v1.DenunciationAddress.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.DenunciationAddress}
  */
-proto.massa.model.v1.DenunciationAddress.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.DenunciationAddress.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setAddressDenounced(value);
-      break;
-    case 2:
-      var value = new massa_model_v1_slot_pb.Slot;
-      reader.readMessage(value,massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
-      msg.setSlot(value);
-      break;
-    case 4:
-      var value = new massa_model_v1_amount_pb.NativeAmount;
-      reader.readMessage(value,massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
-      msg.setSlashed(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setAddressDenounced(value);
+        break;
+      case 2:
+        var value = new massa_model_v1_slot_pb.Slot;
+        reader.readMessage(value, massa_model_v1_slot_pb.Slot.deserializeBinaryFromReader);
+        msg.setSlot(value);
+        break;
+      case 4:
+        var value = new massa_model_v1_amount_pb.NativeAmount;
+        reader.readMessage(value, massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
+        msg.setSlashed(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1751,7 +1751,7 @@ proto.massa.model.v1.DenunciationAddress.deserializeBinaryFromReader = function(
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.DenunciationAddress.prototype.serializeBinary = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.DenunciationAddress.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1765,7 +1765,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.serializeBinary = function() 
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.DenunciationAddress.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.DenunciationAddress.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getAddressDenounced();
   if (f.length > 0) {
@@ -1797,7 +1797,7 @@ proto.massa.model.v1.DenunciationAddress.serializeBinaryToWriter = function(mess
  * optional string address_denounced = 1;
  * @return {string}
  */
-proto.massa.model.v1.DenunciationAddress.prototype.getAddressDenounced = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.getAddressDenounced = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1806,7 +1806,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.getAddressDenounced = functio
  * @param {string} value
  * @return {!proto.massa.model.v1.DenunciationAddress} returns this
  */
-proto.massa.model.v1.DenunciationAddress.prototype.setAddressDenounced = function(value) {
+proto.massa.model.v1.DenunciationAddress.prototype.setAddressDenounced = function (value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -1815,7 +1815,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.setAddressDenounced = functio
  * optional Slot slot = 2;
  * @return {?proto.massa.model.v1.Slot}
  */
-proto.massa.model.v1.DenunciationAddress.prototype.getSlot = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.getSlot = function () {
   return /** @type{?proto.massa.model.v1.Slot} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_slot_pb.Slot, 2));
 };
@@ -1825,7 +1825,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.getSlot = function() {
  * @param {?proto.massa.model.v1.Slot|undefined} value
  * @return {!proto.massa.model.v1.DenunciationAddress} returns this
 */
-proto.massa.model.v1.DenunciationAddress.prototype.setSlot = function(value) {
+proto.massa.model.v1.DenunciationAddress.prototype.setSlot = function (value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
@@ -1834,7 +1834,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.setSlot = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.DenunciationAddress} returns this
  */
-proto.massa.model.v1.DenunciationAddress.prototype.clearSlot = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.clearSlot = function () {
   return this.setSlot(undefined);
 };
 
@@ -1843,7 +1843,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.clearSlot = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.DenunciationAddress.prototype.hasSlot = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.hasSlot = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -1852,7 +1852,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.hasSlot = function() {
  * optional NativeAmount slashed = 4;
  * @return {?proto.massa.model.v1.NativeAmount}
  */
-proto.massa.model.v1.DenunciationAddress.prototype.getSlashed = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.getSlashed = function () {
   return /** @type{?proto.massa.model.v1.NativeAmount} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_amount_pb.NativeAmount, 4));
 };
@@ -1862,7 +1862,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.getSlashed = function() {
  * @param {?proto.massa.model.v1.NativeAmount|undefined} value
  * @return {!proto.massa.model.v1.DenunciationAddress} returns this
 */
-proto.massa.model.v1.DenunciationAddress.prototype.setSlashed = function(value) {
+proto.massa.model.v1.DenunciationAddress.prototype.setSlashed = function (value) {
   return jspb.Message.setWrapperField(this, 4, value);
 };
 
@@ -1871,7 +1871,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.setSlashed = function(value) 
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.DenunciationAddress} returns this
  */
-proto.massa.model.v1.DenunciationAddress.prototype.clearSlashed = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.clearSlashed = function () {
   return this.setSlashed(undefined);
 };
 
@@ -1880,7 +1880,7 @@ proto.massa.model.v1.DenunciationAddress.prototype.clearSlashed = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.DenunciationAddress.prototype.hasSlashed = function() {
+proto.massa.model.v1.DenunciationAddress.prototype.hasSlashed = function () {
   return jspb.Message.getField(this, 4) != null;
 };
 

@@ -14,12 +14,12 @@
 var jspb = require('google-protobuf');
 var goog = jspb;
 var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+  (typeof globalThis !== 'undefined' && globalThis) ||
+  (typeof window !== 'undefined' && window) ||
+  (typeof global !== 'undefined' && global) ||
+  (typeof self !== 'undefined' && self) ||
+  (function () { return this; }).call(null) ||
+  Function('return this')();
 
 var massa_model_v1_amount_pb = require('../../../massa/model/v1/amount_pb.js');
 goog.object.extend(proto, massa_model_v1_amount_pb);
@@ -51,7 +51,7 @@ goog.exportSymbol('proto.massa.model.v1.Transaction', null, global);
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.Operation = function(opt_data) {
+proto.massa.model.v1.Operation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.Operation, jspb.Message);
@@ -72,7 +72,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.OperationType = function(opt_data) {
+proto.massa.model.v1.OperationType = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, proto.massa.model.v1.OperationType.oneofGroups_);
 };
 goog.inherits(proto.massa.model.v1.OperationType, jspb.Message);
@@ -93,7 +93,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.Transaction = function(opt_data) {
+proto.massa.model.v1.Transaction = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.Transaction, jspb.Message);
@@ -114,7 +114,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.RollBuy = function(opt_data) {
+proto.massa.model.v1.RollBuy = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.RollBuy, jspb.Message);
@@ -135,7 +135,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.RollSell = function(opt_data) {
+proto.massa.model.v1.RollSell = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.RollSell, jspb.Message);
@@ -156,7 +156,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.ExecuteSC = function(opt_data) {
+proto.massa.model.v1.ExecuteSC = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, proto.massa.model.v1.ExecuteSC.repeatedFields_, null);
 };
 goog.inherits(proto.massa.model.v1.ExecuteSC, jspb.Message);
@@ -177,7 +177,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.CallSC = function(opt_data) {
+proto.massa.model.v1.CallSC = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.CallSC, jspb.Message);
@@ -198,7 +198,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.SignedOperation = function(opt_data) {
+proto.massa.model.v1.SignedOperation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.massa.model.v1.SignedOperation, jspb.Message);
@@ -219,7 +219,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.OperationWrapper = function(opt_data) {
+proto.massa.model.v1.OperationWrapper = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, proto.massa.model.v1.OperationWrapper.repeatedFields_, null);
 };
 goog.inherits(proto.massa.model.v1.OperationWrapper, jspb.Message);
@@ -240,7 +240,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.OperationInfo = function(opt_data) {
+proto.massa.model.v1.OperationInfo = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, proto.massa.model.v1.OperationInfo.repeatedFields_, null);
 };
 goog.inherits(proto.massa.model.v1.OperationInfo, jspb.Message);
@@ -261,7 +261,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.OperationIds = function(opt_data) {
+proto.massa.model.v1.OperationIds = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, proto.massa.model.v1.OperationIds.repeatedFields_, null);
 };
 goog.inherits(proto.massa.model.v1.OperationIds, jspb.Message);
@@ -282,7 +282,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.OpTypes = function(opt_data) {
+proto.massa.model.v1.OpTypes = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, proto.massa.model.v1.OpTypes.repeatedFields_, null);
 };
 goog.inherits(proto.massa.model.v1.OpTypes, jspb.Message);
@@ -303,7 +303,7 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.massa.model.v1.OperationTypeRoll = function(opt_data) {
+proto.massa.model.v1.OperationTypeRoll = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, proto.massa.model.v1.OperationTypeRoll.oneofGroups_);
 };
 goog.inherits(proto.massa.model.v1.OperationTypeRoll, jspb.Message);
@@ -318,44 +318,44 @@ if (goog.DEBUG && !COMPILED) {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.Operation.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.Operation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.Operation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.Operation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-fee: (f = msg.getFee()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f),
-expirePeriod: jspb.Message.getFieldWithDefault(msg, 2, 0),
-op: (f = msg.getOp()) && proto.massa.model.v1.OperationType.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.Operation.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.Operation.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.Operation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.Operation.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      fee: (f = msg.getFee()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f),
+      expirePeriod: jspb.Message.getFieldWithDefault(msg, 2, 0),
+      op: (f = msg.getOp()) && proto.massa.model.v1.OperationType.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -364,7 +364,7 @@ op: (f = msg.getOp()) && proto.massa.model.v1.OperationType.toObject(includeInst
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.Operation}
  */
-proto.massa.model.v1.Operation.deserializeBinary = function(bytes) {
+proto.massa.model.v1.Operation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.Operation;
   return proto.massa.model.v1.Operation.deserializeBinaryFromReader(msg, reader);
@@ -378,30 +378,30 @@ proto.massa.model.v1.Operation.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.Operation}
  */
-proto.massa.model.v1.Operation.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.Operation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new massa_model_v1_amount_pb.NativeAmount;
-      reader.readMessage(value,massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
-      msg.setFee(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setExpirePeriod(value);
-      break;
-    case 3:
-      var value = new proto.massa.model.v1.OperationType;
-      reader.readMessage(value,proto.massa.model.v1.OperationType.deserializeBinaryFromReader);
-      msg.setOp(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new massa_model_v1_amount_pb.NativeAmount;
+        reader.readMessage(value, massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
+        msg.setFee(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setExpirePeriod(value);
+        break;
+      case 3:
+        var value = new proto.massa.model.v1.OperationType;
+        reader.readMessage(value, proto.massa.model.v1.OperationType.deserializeBinaryFromReader);
+        msg.setOp(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -412,7 +412,7 @@ proto.massa.model.v1.Operation.deserializeBinaryFromReader = function(msg, reade
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.Operation.prototype.serializeBinary = function() {
+proto.massa.model.v1.Operation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.Operation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -426,7 +426,7 @@ proto.massa.model.v1.Operation.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.Operation.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.Operation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getFee();
   if (f != null) {
@@ -458,7 +458,7 @@ proto.massa.model.v1.Operation.serializeBinaryToWriter = function(message, write
  * optional NativeAmount fee = 1;
  * @return {?proto.massa.model.v1.NativeAmount}
  */
-proto.massa.model.v1.Operation.prototype.getFee = function() {
+proto.massa.model.v1.Operation.prototype.getFee = function () {
   return /** @type{?proto.massa.model.v1.NativeAmount} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_amount_pb.NativeAmount, 1));
 };
@@ -468,7 +468,7 @@ proto.massa.model.v1.Operation.prototype.getFee = function() {
  * @param {?proto.massa.model.v1.NativeAmount|undefined} value
  * @return {!proto.massa.model.v1.Operation} returns this
 */
-proto.massa.model.v1.Operation.prototype.setFee = function(value) {
+proto.massa.model.v1.Operation.prototype.setFee = function (value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
@@ -477,7 +477,7 @@ proto.massa.model.v1.Operation.prototype.setFee = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.Operation} returns this
  */
-proto.massa.model.v1.Operation.prototype.clearFee = function() {
+proto.massa.model.v1.Operation.prototype.clearFee = function () {
   return this.setFee(undefined);
 };
 
@@ -486,7 +486,7 @@ proto.massa.model.v1.Operation.prototype.clearFee = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.Operation.prototype.hasFee = function() {
+proto.massa.model.v1.Operation.prototype.hasFee = function () {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -495,7 +495,7 @@ proto.massa.model.v1.Operation.prototype.hasFee = function() {
  * optional uint64 expire_period = 2;
  * @return {number}
  */
-proto.massa.model.v1.Operation.prototype.getExpirePeriod = function() {
+proto.massa.model.v1.Operation.prototype.getExpirePeriod = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -504,7 +504,7 @@ proto.massa.model.v1.Operation.prototype.getExpirePeriod = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.Operation} returns this
  */
-proto.massa.model.v1.Operation.prototype.setExpirePeriod = function(value) {
+proto.massa.model.v1.Operation.prototype.setExpirePeriod = function (value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -513,7 +513,7 @@ proto.massa.model.v1.Operation.prototype.setExpirePeriod = function(value) {
  * optional OperationType op = 3;
  * @return {?proto.massa.model.v1.OperationType}
  */
-proto.massa.model.v1.Operation.prototype.getOp = function() {
+proto.massa.model.v1.Operation.prototype.getOp = function () {
   return /** @type{?proto.massa.model.v1.OperationType} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.OperationType, 3));
 };
@@ -523,7 +523,7 @@ proto.massa.model.v1.Operation.prototype.getOp = function() {
  * @param {?proto.massa.model.v1.OperationType|undefined} value
  * @return {!proto.massa.model.v1.Operation} returns this
 */
-proto.massa.model.v1.Operation.prototype.setOp = function(value) {
+proto.massa.model.v1.Operation.prototype.setOp = function (value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
@@ -532,7 +532,7 @@ proto.massa.model.v1.Operation.prototype.setOp = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.Operation} returns this
  */
-proto.massa.model.v1.Operation.prototype.clearOp = function() {
+proto.massa.model.v1.Operation.prototype.clearOp = function () {
   return this.setOp(undefined);
 };
 
@@ -541,7 +541,7 @@ proto.massa.model.v1.Operation.prototype.clearOp = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.Operation.prototype.hasOp = function() {
+proto.massa.model.v1.Operation.prototype.hasOp = function () {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -555,7 +555,7 @@ proto.massa.model.v1.Operation.prototype.hasOp = function() {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.massa.model.v1.OperationType.oneofGroups_ = [[1,2,3,4,5]];
+proto.massa.model.v1.OperationType.oneofGroups_ = [[1, 2, 3, 4, 5]];
 
 /**
  * @enum {number}
@@ -572,53 +572,53 @@ proto.massa.model.v1.OperationType.TypeCase = {
 /**
  * @return {proto.massa.model.v1.OperationType.TypeCase}
  */
-proto.massa.model.v1.OperationType.prototype.getTypeCase = function() {
+proto.massa.model.v1.OperationType.prototype.getTypeCase = function () {
   return /** @type {proto.massa.model.v1.OperationType.TypeCase} */(jspb.Message.computeOneofCase(this, proto.massa.model.v1.OperationType.oneofGroups_[0]));
 };
 
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.OperationType.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.OperationType.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.OperationType} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.OperationType.toObject = function(includeInstance, msg) {
-  var f, obj = {
-transaction: (f = msg.getTransaction()) && proto.massa.model.v1.Transaction.toObject(includeInstance, f),
-rollBuy: (f = msg.getRollBuy()) && proto.massa.model.v1.RollBuy.toObject(includeInstance, f),
-rollSell: (f = msg.getRollSell()) && proto.massa.model.v1.RollSell.toObject(includeInstance, f),
-executSc: (f = msg.getExecutSc()) && proto.massa.model.v1.ExecuteSC.toObject(includeInstance, f),
-callSc: (f = msg.getCallSc()) && proto.massa.model.v1.CallSC.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.OperationType.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.OperationType.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.OperationType} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.OperationType.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      transaction: (f = msg.getTransaction()) && proto.massa.model.v1.Transaction.toObject(includeInstance, f),
+      rollBuy: (f = msg.getRollBuy()) && proto.massa.model.v1.RollBuy.toObject(includeInstance, f),
+      rollSell: (f = msg.getRollSell()) && proto.massa.model.v1.RollSell.toObject(includeInstance, f),
+      executSc: (f = msg.getExecutSc()) && proto.massa.model.v1.ExecuteSC.toObject(includeInstance, f),
+      callSc: (f = msg.getCallSc()) && proto.massa.model.v1.CallSC.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -627,7 +627,7 @@ callSc: (f = msg.getCallSc()) && proto.massa.model.v1.CallSC.toObject(includeIns
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.OperationType}
  */
-proto.massa.model.v1.OperationType.deserializeBinary = function(bytes) {
+proto.massa.model.v1.OperationType.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.OperationType;
   return proto.massa.model.v1.OperationType.deserializeBinaryFromReader(msg, reader);
@@ -641,41 +641,41 @@ proto.massa.model.v1.OperationType.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.OperationType}
  */
-proto.massa.model.v1.OperationType.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.OperationType.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new proto.massa.model.v1.Transaction;
-      reader.readMessage(value,proto.massa.model.v1.Transaction.deserializeBinaryFromReader);
-      msg.setTransaction(value);
-      break;
-    case 2:
-      var value = new proto.massa.model.v1.RollBuy;
-      reader.readMessage(value,proto.massa.model.v1.RollBuy.deserializeBinaryFromReader);
-      msg.setRollBuy(value);
-      break;
-    case 3:
-      var value = new proto.massa.model.v1.RollSell;
-      reader.readMessage(value,proto.massa.model.v1.RollSell.deserializeBinaryFromReader);
-      msg.setRollSell(value);
-      break;
-    case 4:
-      var value = new proto.massa.model.v1.ExecuteSC;
-      reader.readMessage(value,proto.massa.model.v1.ExecuteSC.deserializeBinaryFromReader);
-      msg.setExecutSc(value);
-      break;
-    case 5:
-      var value = new proto.massa.model.v1.CallSC;
-      reader.readMessage(value,proto.massa.model.v1.CallSC.deserializeBinaryFromReader);
-      msg.setCallSc(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.massa.model.v1.Transaction;
+        reader.readMessage(value, proto.massa.model.v1.Transaction.deserializeBinaryFromReader);
+        msg.setTransaction(value);
+        break;
+      case 2:
+        var value = new proto.massa.model.v1.RollBuy;
+        reader.readMessage(value, proto.massa.model.v1.RollBuy.deserializeBinaryFromReader);
+        msg.setRollBuy(value);
+        break;
+      case 3:
+        var value = new proto.massa.model.v1.RollSell;
+        reader.readMessage(value, proto.massa.model.v1.RollSell.deserializeBinaryFromReader);
+        msg.setRollSell(value);
+        break;
+      case 4:
+        var value = new proto.massa.model.v1.ExecuteSC;
+        reader.readMessage(value, proto.massa.model.v1.ExecuteSC.deserializeBinaryFromReader);
+        msg.setExecutSc(value);
+        break;
+      case 5:
+        var value = new proto.massa.model.v1.CallSC;
+        reader.readMessage(value, proto.massa.model.v1.CallSC.deserializeBinaryFromReader);
+        msg.setCallSc(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -686,7 +686,7 @@ proto.massa.model.v1.OperationType.deserializeBinaryFromReader = function(msg, r
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.OperationType.prototype.serializeBinary = function() {
+proto.massa.model.v1.OperationType.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.OperationType.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -700,7 +700,7 @@ proto.massa.model.v1.OperationType.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.OperationType.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.OperationType.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getTransaction();
   if (f != null) {
@@ -749,7 +749,7 @@ proto.massa.model.v1.OperationType.serializeBinaryToWriter = function(message, w
  * optional Transaction transaction = 1;
  * @return {?proto.massa.model.v1.Transaction}
  */
-proto.massa.model.v1.OperationType.prototype.getTransaction = function() {
+proto.massa.model.v1.OperationType.prototype.getTransaction = function () {
   return /** @type{?proto.massa.model.v1.Transaction} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.Transaction, 1));
 };
@@ -759,7 +759,7 @@ proto.massa.model.v1.OperationType.prototype.getTransaction = function() {
  * @param {?proto.massa.model.v1.Transaction|undefined} value
  * @return {!proto.massa.model.v1.OperationType} returns this
 */
-proto.massa.model.v1.OperationType.prototype.setTransaction = function(value) {
+proto.massa.model.v1.OperationType.prototype.setTransaction = function (value) {
   return jspb.Message.setOneofWrapperField(this, 1, proto.massa.model.v1.OperationType.oneofGroups_[0], value);
 };
 
@@ -768,7 +768,7 @@ proto.massa.model.v1.OperationType.prototype.setTransaction = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationType} returns this
  */
-proto.massa.model.v1.OperationType.prototype.clearTransaction = function() {
+proto.massa.model.v1.OperationType.prototype.clearTransaction = function () {
   return this.setTransaction(undefined);
 };
 
@@ -777,7 +777,7 @@ proto.massa.model.v1.OperationType.prototype.clearTransaction = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationType.prototype.hasTransaction = function() {
+proto.massa.model.v1.OperationType.prototype.hasTransaction = function () {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -786,7 +786,7 @@ proto.massa.model.v1.OperationType.prototype.hasTransaction = function() {
  * optional RollBuy roll_buy = 2;
  * @return {?proto.massa.model.v1.RollBuy}
  */
-proto.massa.model.v1.OperationType.prototype.getRollBuy = function() {
+proto.massa.model.v1.OperationType.prototype.getRollBuy = function () {
   return /** @type{?proto.massa.model.v1.RollBuy} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.RollBuy, 2));
 };
@@ -796,7 +796,7 @@ proto.massa.model.v1.OperationType.prototype.getRollBuy = function() {
  * @param {?proto.massa.model.v1.RollBuy|undefined} value
  * @return {!proto.massa.model.v1.OperationType} returns this
 */
-proto.massa.model.v1.OperationType.prototype.setRollBuy = function(value) {
+proto.massa.model.v1.OperationType.prototype.setRollBuy = function (value) {
   return jspb.Message.setOneofWrapperField(this, 2, proto.massa.model.v1.OperationType.oneofGroups_[0], value);
 };
 
@@ -805,7 +805,7 @@ proto.massa.model.v1.OperationType.prototype.setRollBuy = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationType} returns this
  */
-proto.massa.model.v1.OperationType.prototype.clearRollBuy = function() {
+proto.massa.model.v1.OperationType.prototype.clearRollBuy = function () {
   return this.setRollBuy(undefined);
 };
 
@@ -814,7 +814,7 @@ proto.massa.model.v1.OperationType.prototype.clearRollBuy = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationType.prototype.hasRollBuy = function() {
+proto.massa.model.v1.OperationType.prototype.hasRollBuy = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -823,7 +823,7 @@ proto.massa.model.v1.OperationType.prototype.hasRollBuy = function() {
  * optional RollSell roll_sell = 3;
  * @return {?proto.massa.model.v1.RollSell}
  */
-proto.massa.model.v1.OperationType.prototype.getRollSell = function() {
+proto.massa.model.v1.OperationType.prototype.getRollSell = function () {
   return /** @type{?proto.massa.model.v1.RollSell} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.RollSell, 3));
 };
@@ -833,7 +833,7 @@ proto.massa.model.v1.OperationType.prototype.getRollSell = function() {
  * @param {?proto.massa.model.v1.RollSell|undefined} value
  * @return {!proto.massa.model.v1.OperationType} returns this
 */
-proto.massa.model.v1.OperationType.prototype.setRollSell = function(value) {
+proto.massa.model.v1.OperationType.prototype.setRollSell = function (value) {
   return jspb.Message.setOneofWrapperField(this, 3, proto.massa.model.v1.OperationType.oneofGroups_[0], value);
 };
 
@@ -842,7 +842,7 @@ proto.massa.model.v1.OperationType.prototype.setRollSell = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationType} returns this
  */
-proto.massa.model.v1.OperationType.prototype.clearRollSell = function() {
+proto.massa.model.v1.OperationType.prototype.clearRollSell = function () {
   return this.setRollSell(undefined);
 };
 
@@ -851,7 +851,7 @@ proto.massa.model.v1.OperationType.prototype.clearRollSell = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationType.prototype.hasRollSell = function() {
+proto.massa.model.v1.OperationType.prototype.hasRollSell = function () {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -860,7 +860,7 @@ proto.massa.model.v1.OperationType.prototype.hasRollSell = function() {
  * optional ExecuteSC execut_sc = 4;
  * @return {?proto.massa.model.v1.ExecuteSC}
  */
-proto.massa.model.v1.OperationType.prototype.getExecutSc = function() {
+proto.massa.model.v1.OperationType.prototype.getExecutSc = function () {
   return /** @type{?proto.massa.model.v1.ExecuteSC} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.ExecuteSC, 4));
 };
@@ -870,7 +870,7 @@ proto.massa.model.v1.OperationType.prototype.getExecutSc = function() {
  * @param {?proto.massa.model.v1.ExecuteSC|undefined} value
  * @return {!proto.massa.model.v1.OperationType} returns this
 */
-proto.massa.model.v1.OperationType.prototype.setExecutSc = function(value) {
+proto.massa.model.v1.OperationType.prototype.setExecutSc = function (value) {
   return jspb.Message.setOneofWrapperField(this, 4, proto.massa.model.v1.OperationType.oneofGroups_[0], value);
 };
 
@@ -879,7 +879,7 @@ proto.massa.model.v1.OperationType.prototype.setExecutSc = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationType} returns this
  */
-proto.massa.model.v1.OperationType.prototype.clearExecutSc = function() {
+proto.massa.model.v1.OperationType.prototype.clearExecutSc = function () {
   return this.setExecutSc(undefined);
 };
 
@@ -888,7 +888,7 @@ proto.massa.model.v1.OperationType.prototype.clearExecutSc = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationType.prototype.hasExecutSc = function() {
+proto.massa.model.v1.OperationType.prototype.hasExecutSc = function () {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -897,7 +897,7 @@ proto.massa.model.v1.OperationType.prototype.hasExecutSc = function() {
  * optional CallSC call_sc = 5;
  * @return {?proto.massa.model.v1.CallSC}
  */
-proto.massa.model.v1.OperationType.prototype.getCallSc = function() {
+proto.massa.model.v1.OperationType.prototype.getCallSc = function () {
   return /** @type{?proto.massa.model.v1.CallSC} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.CallSC, 5));
 };
@@ -907,7 +907,7 @@ proto.massa.model.v1.OperationType.prototype.getCallSc = function() {
  * @param {?proto.massa.model.v1.CallSC|undefined} value
  * @return {!proto.massa.model.v1.OperationType} returns this
 */
-proto.massa.model.v1.OperationType.prototype.setCallSc = function(value) {
+proto.massa.model.v1.OperationType.prototype.setCallSc = function (value) {
   return jspb.Message.setOneofWrapperField(this, 5, proto.massa.model.v1.OperationType.oneofGroups_[0], value);
 };
 
@@ -916,7 +916,7 @@ proto.massa.model.v1.OperationType.prototype.setCallSc = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationType} returns this
  */
-proto.massa.model.v1.OperationType.prototype.clearCallSc = function() {
+proto.massa.model.v1.OperationType.prototype.clearCallSc = function () {
   return this.setCallSc(undefined);
 };
 
@@ -925,7 +925,7 @@ proto.massa.model.v1.OperationType.prototype.clearCallSc = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationType.prototype.hasCallSc = function() {
+proto.massa.model.v1.OperationType.prototype.hasCallSc = function () {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -934,43 +934,43 @@ proto.massa.model.v1.OperationType.prototype.hasCallSc = function() {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.Transaction.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.Transaction.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.Transaction} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.Transaction.toObject = function(includeInstance, msg) {
-  var f, obj = {
-recipientAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
-amount: (f = msg.getAmount()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.Transaction.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.Transaction.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.Transaction} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.Transaction.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      recipientAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
+      amount: (f = msg.getAmount()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -979,7 +979,7 @@ amount: (f = msg.getAmount()) && massa_model_v1_amount_pb.NativeAmount.toObject(
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.Transaction}
  */
-proto.massa.model.v1.Transaction.deserializeBinary = function(bytes) {
+proto.massa.model.v1.Transaction.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.Transaction;
   return proto.massa.model.v1.Transaction.deserializeBinaryFromReader(msg, reader);
@@ -993,25 +993,25 @@ proto.massa.model.v1.Transaction.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.Transaction}
  */
-proto.massa.model.v1.Transaction.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.Transaction.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setRecipientAddress(value);
-      break;
-    case 2:
-      var value = new massa_model_v1_amount_pb.NativeAmount;
-      reader.readMessage(value,massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
-      msg.setAmount(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setRecipientAddress(value);
+        break;
+      case 2:
+        var value = new massa_model_v1_amount_pb.NativeAmount;
+        reader.readMessage(value, massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
+        msg.setAmount(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1022,7 +1022,7 @@ proto.massa.model.v1.Transaction.deserializeBinaryFromReader = function(msg, rea
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.Transaction.prototype.serializeBinary = function() {
+proto.massa.model.v1.Transaction.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.Transaction.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1036,7 +1036,7 @@ proto.massa.model.v1.Transaction.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.Transaction.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.Transaction.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getRecipientAddress();
   if (f.length > 0) {
@@ -1060,7 +1060,7 @@ proto.massa.model.v1.Transaction.serializeBinaryToWriter = function(message, wri
  * optional string recipient_address = 1;
  * @return {string}
  */
-proto.massa.model.v1.Transaction.prototype.getRecipientAddress = function() {
+proto.massa.model.v1.Transaction.prototype.getRecipientAddress = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1069,7 +1069,7 @@ proto.massa.model.v1.Transaction.prototype.getRecipientAddress = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.Transaction} returns this
  */
-proto.massa.model.v1.Transaction.prototype.setRecipientAddress = function(value) {
+proto.massa.model.v1.Transaction.prototype.setRecipientAddress = function (value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -1078,7 +1078,7 @@ proto.massa.model.v1.Transaction.prototype.setRecipientAddress = function(value)
  * optional NativeAmount amount = 2;
  * @return {?proto.massa.model.v1.NativeAmount}
  */
-proto.massa.model.v1.Transaction.prototype.getAmount = function() {
+proto.massa.model.v1.Transaction.prototype.getAmount = function () {
   return /** @type{?proto.massa.model.v1.NativeAmount} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_amount_pb.NativeAmount, 2));
 };
@@ -1088,7 +1088,7 @@ proto.massa.model.v1.Transaction.prototype.getAmount = function() {
  * @param {?proto.massa.model.v1.NativeAmount|undefined} value
  * @return {!proto.massa.model.v1.Transaction} returns this
 */
-proto.massa.model.v1.Transaction.prototype.setAmount = function(value) {
+proto.massa.model.v1.Transaction.prototype.setAmount = function (value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
@@ -1097,7 +1097,7 @@ proto.massa.model.v1.Transaction.prototype.setAmount = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.Transaction} returns this
  */
-proto.massa.model.v1.Transaction.prototype.clearAmount = function() {
+proto.massa.model.v1.Transaction.prototype.clearAmount = function () {
   return this.setAmount(undefined);
 };
 
@@ -1106,7 +1106,7 @@ proto.massa.model.v1.Transaction.prototype.clearAmount = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.Transaction.prototype.hasAmount = function() {
+proto.massa.model.v1.Transaction.prototype.hasAmount = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -1115,42 +1115,42 @@ proto.massa.model.v1.Transaction.prototype.hasAmount = function() {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.RollBuy.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.RollBuy.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.RollBuy} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.RollBuy.toObject = function(includeInstance, msg) {
-  var f, obj = {
-rollCount: jspb.Message.getFieldWithDefault(msg, 1, 0)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.RollBuy.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.RollBuy.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.RollBuy} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.RollBuy.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      rollCount: jspb.Message.getFieldWithDefault(msg, 1, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1159,7 +1159,7 @@ rollCount: jspb.Message.getFieldWithDefault(msg, 1, 0)
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.RollBuy}
  */
-proto.massa.model.v1.RollBuy.deserializeBinary = function(bytes) {
+proto.massa.model.v1.RollBuy.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.RollBuy;
   return proto.massa.model.v1.RollBuy.deserializeBinaryFromReader(msg, reader);
@@ -1173,20 +1173,20 @@ proto.massa.model.v1.RollBuy.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.RollBuy}
  */
-proto.massa.model.v1.RollBuy.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.RollBuy.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setRollCount(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setRollCount(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1197,7 +1197,7 @@ proto.massa.model.v1.RollBuy.deserializeBinaryFromReader = function(msg, reader)
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.RollBuy.prototype.serializeBinary = function() {
+proto.massa.model.v1.RollBuy.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.RollBuy.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1211,7 +1211,7 @@ proto.massa.model.v1.RollBuy.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.RollBuy.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.RollBuy.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getRollCount();
   if (f !== 0) {
@@ -1227,7 +1227,7 @@ proto.massa.model.v1.RollBuy.serializeBinaryToWriter = function(message, writer)
  * optional uint64 roll_count = 1;
  * @return {number}
  */
-proto.massa.model.v1.RollBuy.prototype.getRollCount = function() {
+proto.massa.model.v1.RollBuy.prototype.getRollCount = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
@@ -1236,7 +1236,7 @@ proto.massa.model.v1.RollBuy.prototype.getRollCount = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.RollBuy} returns this
  */
-proto.massa.model.v1.RollBuy.prototype.setRollCount = function(value) {
+proto.massa.model.v1.RollBuy.prototype.setRollCount = function (value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -1245,42 +1245,42 @@ proto.massa.model.v1.RollBuy.prototype.setRollCount = function(value) {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.RollSell.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.RollSell.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.RollSell} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.RollSell.toObject = function(includeInstance, msg) {
-  var f, obj = {
-rollCount: jspb.Message.getFieldWithDefault(msg, 1, 0)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.RollSell.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.RollSell.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.RollSell} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.RollSell.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      rollCount: jspb.Message.getFieldWithDefault(msg, 1, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1289,7 +1289,7 @@ rollCount: jspb.Message.getFieldWithDefault(msg, 1, 0)
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.RollSell}
  */
-proto.massa.model.v1.RollSell.deserializeBinary = function(bytes) {
+proto.massa.model.v1.RollSell.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.RollSell;
   return proto.massa.model.v1.RollSell.deserializeBinaryFromReader(msg, reader);
@@ -1303,20 +1303,20 @@ proto.massa.model.v1.RollSell.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.RollSell}
  */
-proto.massa.model.v1.RollSell.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.RollSell.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setRollCount(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setRollCount(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1327,7 +1327,7 @@ proto.massa.model.v1.RollSell.deserializeBinaryFromReader = function(msg, reader
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.RollSell.prototype.serializeBinary = function() {
+proto.massa.model.v1.RollSell.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.RollSell.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1341,7 +1341,7 @@ proto.massa.model.v1.RollSell.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.RollSell.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.RollSell.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getRollCount();
   if (f !== 0) {
@@ -1357,7 +1357,7 @@ proto.massa.model.v1.RollSell.serializeBinaryToWriter = function(message, writer
  * optional uint64 roll_count = 1;
  * @return {number}
  */
-proto.massa.model.v1.RollSell.prototype.getRollCount = function() {
+proto.massa.model.v1.RollSell.prototype.getRollCount = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
@@ -1366,7 +1366,7 @@ proto.massa.model.v1.RollSell.prototype.getRollCount = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.RollSell} returns this
  */
-proto.massa.model.v1.RollSell.prototype.setRollCount = function(value) {
+proto.massa.model.v1.RollSell.prototype.setRollCount = function (value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -1382,46 +1382,46 @@ proto.massa.model.v1.ExecuteSC.repeatedFields_ = [4];
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.ExecuteSC.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.ExecuteSC.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.ExecuteSC} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.ExecuteSC.toObject = function(includeInstance, msg) {
-  var f, obj = {
-data: msg.getData_asB64(),
-maxCoins: jspb.Message.getFieldWithDefault(msg, 2, 0),
-maxGas: jspb.Message.getFieldWithDefault(msg, 3, 0),
-datastoreList: jspb.Message.toObjectList(msg.getDatastoreList(),
-    massa_model_v1_commons_pb.BytesMapFieldEntry.toObject, includeInstance)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.ExecuteSC.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.ExecuteSC.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.ExecuteSC} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.ExecuteSC.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      data: msg.getData_asB64(),
+      maxCoins: jspb.Message.getFieldWithDefault(msg, 2, 0),
+      maxGas: jspb.Message.getFieldWithDefault(msg, 3, 0),
+      datastoreList: jspb.Message.toObjectList(msg.getDatastoreList(),
+        massa_model_v1_commons_pb.BytesMapFieldEntry.toObject, includeInstance)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1430,7 +1430,7 @@ datastoreList: jspb.Message.toObjectList(msg.getDatastoreList(),
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.ExecuteSC}
  */
-proto.massa.model.v1.ExecuteSC.deserializeBinary = function(bytes) {
+proto.massa.model.v1.ExecuteSC.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.ExecuteSC;
   return proto.massa.model.v1.ExecuteSC.deserializeBinaryFromReader(msg, reader);
@@ -1444,33 +1444,33 @@ proto.massa.model.v1.ExecuteSC.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.ExecuteSC}
  */
-proto.massa.model.v1.ExecuteSC.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.ExecuteSC.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setData(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setMaxCoins(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setMaxGas(value);
-      break;
-    case 4:
-      var value = new massa_model_v1_commons_pb.BytesMapFieldEntry;
-      reader.readMessage(value,massa_model_v1_commons_pb.BytesMapFieldEntry.deserializeBinaryFromReader);
-      msg.addDatastore(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {!Uint8Array} */ (reader.readBytes());
+        msg.setData(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setMaxCoins(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setMaxGas(value);
+        break;
+      case 4:
+        var value = new massa_model_v1_commons_pb.BytesMapFieldEntry;
+        reader.readMessage(value, massa_model_v1_commons_pb.BytesMapFieldEntry.deserializeBinaryFromReader);
+        msg.addDatastore(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1481,7 +1481,7 @@ proto.massa.model.v1.ExecuteSC.deserializeBinaryFromReader = function(msg, reade
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.ExecuteSC.prototype.serializeBinary = function() {
+proto.massa.model.v1.ExecuteSC.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.ExecuteSC.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1495,7 +1495,7 @@ proto.massa.model.v1.ExecuteSC.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.ExecuteSC.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.ExecuteSC.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getData_asU8();
   if (f.length > 0) {
@@ -1533,7 +1533,7 @@ proto.massa.model.v1.ExecuteSC.serializeBinaryToWriter = function(message, write
  * optional bytes data = 1;
  * @return {string}
  */
-proto.massa.model.v1.ExecuteSC.prototype.getData = function() {
+proto.massa.model.v1.ExecuteSC.prototype.getData = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1543,9 +1543,9 @@ proto.massa.model.v1.ExecuteSC.prototype.getData = function() {
  * This is a type-conversion wrapper around `getData()`
  * @return {string}
  */
-proto.massa.model.v1.ExecuteSC.prototype.getData_asB64 = function() {
+proto.massa.model.v1.ExecuteSC.prototype.getData_asB64 = function () {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getData()));
+    this.getData()));
 };
 
 
@@ -1556,9 +1556,9 @@ proto.massa.model.v1.ExecuteSC.prototype.getData_asB64 = function() {
  * This is a type-conversion wrapper around `getData()`
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.ExecuteSC.prototype.getData_asU8 = function() {
+proto.massa.model.v1.ExecuteSC.prototype.getData_asU8 = function () {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getData()));
+    this.getData()));
 };
 
 
@@ -1566,7 +1566,7 @@ proto.massa.model.v1.ExecuteSC.prototype.getData_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.massa.model.v1.ExecuteSC} returns this
  */
-proto.massa.model.v1.ExecuteSC.prototype.setData = function(value) {
+proto.massa.model.v1.ExecuteSC.prototype.setData = function (value) {
   return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
@@ -1575,7 +1575,7 @@ proto.massa.model.v1.ExecuteSC.prototype.setData = function(value) {
  * optional uint64 max_coins = 2;
  * @return {number}
  */
-proto.massa.model.v1.ExecuteSC.prototype.getMaxCoins = function() {
+proto.massa.model.v1.ExecuteSC.prototype.getMaxCoins = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -1584,7 +1584,7 @@ proto.massa.model.v1.ExecuteSC.prototype.getMaxCoins = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.ExecuteSC} returns this
  */
-proto.massa.model.v1.ExecuteSC.prototype.setMaxCoins = function(value) {
+proto.massa.model.v1.ExecuteSC.prototype.setMaxCoins = function (value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -1593,7 +1593,7 @@ proto.massa.model.v1.ExecuteSC.prototype.setMaxCoins = function(value) {
  * optional uint64 max_gas = 3;
  * @return {number}
  */
-proto.massa.model.v1.ExecuteSC.prototype.getMaxGas = function() {
+proto.massa.model.v1.ExecuteSC.prototype.getMaxGas = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -1602,7 +1602,7 @@ proto.massa.model.v1.ExecuteSC.prototype.getMaxGas = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.ExecuteSC} returns this
  */
-proto.massa.model.v1.ExecuteSC.prototype.setMaxGas = function(value) {
+proto.massa.model.v1.ExecuteSC.prototype.setMaxGas = function (value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -1611,7 +1611,7 @@ proto.massa.model.v1.ExecuteSC.prototype.setMaxGas = function(value) {
  * repeated BytesMapFieldEntry datastore = 4;
  * @return {!Array<!proto.massa.model.v1.BytesMapFieldEntry>}
  */
-proto.massa.model.v1.ExecuteSC.prototype.getDatastoreList = function() {
+proto.massa.model.v1.ExecuteSC.prototype.getDatastoreList = function () {
   return /** @type{!Array<!proto.massa.model.v1.BytesMapFieldEntry>} */ (
     jspb.Message.getRepeatedWrapperField(this, massa_model_v1_commons_pb.BytesMapFieldEntry, 4));
 };
@@ -1621,7 +1621,7 @@ proto.massa.model.v1.ExecuteSC.prototype.getDatastoreList = function() {
  * @param {!Array<!proto.massa.model.v1.BytesMapFieldEntry>} value
  * @return {!proto.massa.model.v1.ExecuteSC} returns this
 */
-proto.massa.model.v1.ExecuteSC.prototype.setDatastoreList = function(value) {
+proto.massa.model.v1.ExecuteSC.prototype.setDatastoreList = function (value) {
   return jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
 
@@ -1631,7 +1631,7 @@ proto.massa.model.v1.ExecuteSC.prototype.setDatastoreList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.massa.model.v1.BytesMapFieldEntry}
  */
-proto.massa.model.v1.ExecuteSC.prototype.addDatastore = function(opt_value, opt_index) {
+proto.massa.model.v1.ExecuteSC.prototype.addDatastore = function (opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.massa.model.v1.BytesMapFieldEntry, opt_index);
 };
 
@@ -1640,7 +1640,7 @@ proto.massa.model.v1.ExecuteSC.prototype.addDatastore = function(opt_value, opt_
  * Clears the list making it empty but non-null.
  * @return {!proto.massa.model.v1.ExecuteSC} returns this
  */
-proto.massa.model.v1.ExecuteSC.prototype.clearDatastoreList = function() {
+proto.massa.model.v1.ExecuteSC.prototype.clearDatastoreList = function () {
   return this.setDatastoreList([]);
 };
 
@@ -1649,46 +1649,46 @@ proto.massa.model.v1.ExecuteSC.prototype.clearDatastoreList = function() {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.CallSC.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.CallSC.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.CallSC} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.CallSC.toObject = function(includeInstance, msg) {
-  var f, obj = {
-targetAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
-targetFunction: jspb.Message.getFieldWithDefault(msg, 2, ""),
-parameter: msg.getParameter_asB64(),
-maxGas: jspb.Message.getFieldWithDefault(msg, 4, 0),
-coins: (f = msg.getCoins()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.CallSC.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.CallSC.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.CallSC} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.CallSC.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      targetAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
+      targetFunction: jspb.Message.getFieldWithDefault(msg, 2, ""),
+      parameter: msg.getParameter_asB64(),
+      maxGas: jspb.Message.getFieldWithDefault(msg, 4, 0),
+      coins: (f = msg.getCoins()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1697,7 +1697,7 @@ coins: (f = msg.getCoins()) && massa_model_v1_amount_pb.NativeAmount.toObject(in
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.CallSC}
  */
-proto.massa.model.v1.CallSC.deserializeBinary = function(bytes) {
+proto.massa.model.v1.CallSC.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.CallSC;
   return proto.massa.model.v1.CallSC.deserializeBinaryFromReader(msg, reader);
@@ -1711,37 +1711,37 @@ proto.massa.model.v1.CallSC.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.CallSC}
  */
-proto.massa.model.v1.CallSC.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.CallSC.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTargetAddress(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTargetFunction(value);
-      break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setParameter(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setMaxGas(value);
-      break;
-    case 5:
-      var value = new massa_model_v1_amount_pb.NativeAmount;
-      reader.readMessage(value,massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
-      msg.setCoins(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setTargetAddress(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setTargetFunction(value);
+        break;
+      case 3:
+        var value = /** @type {!Uint8Array} */ (reader.readBytes());
+        msg.setParameter(value);
+        break;
+      case 4:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setMaxGas(value);
+        break;
+      case 5:
+        var value = new massa_model_v1_amount_pb.NativeAmount;
+        reader.readMessage(value, massa_model_v1_amount_pb.NativeAmount.deserializeBinaryFromReader);
+        msg.setCoins(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -1752,7 +1752,7 @@ proto.massa.model.v1.CallSC.deserializeBinaryFromReader = function(msg, reader) 
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.CallSC.prototype.serializeBinary = function() {
+proto.massa.model.v1.CallSC.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.CallSC.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -1766,7 +1766,7 @@ proto.massa.model.v1.CallSC.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.CallSC.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.CallSC.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getTargetAddress();
   if (f.length > 0) {
@@ -1811,7 +1811,7 @@ proto.massa.model.v1.CallSC.serializeBinaryToWriter = function(message, writer) 
  * optional string target_address = 1;
  * @return {string}
  */
-proto.massa.model.v1.CallSC.prototype.getTargetAddress = function() {
+proto.massa.model.v1.CallSC.prototype.getTargetAddress = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1820,7 +1820,7 @@ proto.massa.model.v1.CallSC.prototype.getTargetAddress = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.CallSC} returns this
  */
-proto.massa.model.v1.CallSC.prototype.setTargetAddress = function(value) {
+proto.massa.model.v1.CallSC.prototype.setTargetAddress = function (value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -1829,7 +1829,7 @@ proto.massa.model.v1.CallSC.prototype.setTargetAddress = function(value) {
  * optional string target_function = 2;
  * @return {string}
  */
-proto.massa.model.v1.CallSC.prototype.getTargetFunction = function() {
+proto.massa.model.v1.CallSC.prototype.getTargetFunction = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -1838,7 +1838,7 @@ proto.massa.model.v1.CallSC.prototype.getTargetFunction = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.CallSC} returns this
  */
-proto.massa.model.v1.CallSC.prototype.setTargetFunction = function(value) {
+proto.massa.model.v1.CallSC.prototype.setTargetFunction = function (value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -1847,7 +1847,7 @@ proto.massa.model.v1.CallSC.prototype.setTargetFunction = function(value) {
  * optional bytes parameter = 3;
  * @return {string}
  */
-proto.massa.model.v1.CallSC.prototype.getParameter = function() {
+proto.massa.model.v1.CallSC.prototype.getParameter = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -1857,9 +1857,9 @@ proto.massa.model.v1.CallSC.prototype.getParameter = function() {
  * This is a type-conversion wrapper around `getParameter()`
  * @return {string}
  */
-proto.massa.model.v1.CallSC.prototype.getParameter_asB64 = function() {
+proto.massa.model.v1.CallSC.prototype.getParameter_asB64 = function () {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getParameter()));
+    this.getParameter()));
 };
 
 
@@ -1870,9 +1870,9 @@ proto.massa.model.v1.CallSC.prototype.getParameter_asB64 = function() {
  * This is a type-conversion wrapper around `getParameter()`
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.CallSC.prototype.getParameter_asU8 = function() {
+proto.massa.model.v1.CallSC.prototype.getParameter_asU8 = function () {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getParameter()));
+    this.getParameter()));
 };
 
 
@@ -1880,7 +1880,7 @@ proto.massa.model.v1.CallSC.prototype.getParameter_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.massa.model.v1.CallSC} returns this
  */
-proto.massa.model.v1.CallSC.prototype.setParameter = function(value) {
+proto.massa.model.v1.CallSC.prototype.setParameter = function (value) {
   return jspb.Message.setProto3BytesField(this, 3, value);
 };
 
@@ -1889,7 +1889,7 @@ proto.massa.model.v1.CallSC.prototype.setParameter = function(value) {
  * optional uint64 max_gas = 4;
  * @return {number}
  */
-proto.massa.model.v1.CallSC.prototype.getMaxGas = function() {
+proto.massa.model.v1.CallSC.prototype.getMaxGas = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
@@ -1898,7 +1898,7 @@ proto.massa.model.v1.CallSC.prototype.getMaxGas = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.CallSC} returns this
  */
-proto.massa.model.v1.CallSC.prototype.setMaxGas = function(value) {
+proto.massa.model.v1.CallSC.prototype.setMaxGas = function (value) {
   return jspb.Message.setProto3IntField(this, 4, value);
 };
 
@@ -1907,7 +1907,7 @@ proto.massa.model.v1.CallSC.prototype.setMaxGas = function(value) {
  * optional NativeAmount coins = 5;
  * @return {?proto.massa.model.v1.NativeAmount}
  */
-proto.massa.model.v1.CallSC.prototype.getCoins = function() {
+proto.massa.model.v1.CallSC.prototype.getCoins = function () {
   return /** @type{?proto.massa.model.v1.NativeAmount} */ (
     jspb.Message.getWrapperField(this, massa_model_v1_amount_pb.NativeAmount, 5));
 };
@@ -1917,7 +1917,7 @@ proto.massa.model.v1.CallSC.prototype.getCoins = function() {
  * @param {?proto.massa.model.v1.NativeAmount|undefined} value
  * @return {!proto.massa.model.v1.CallSC} returns this
 */
-proto.massa.model.v1.CallSC.prototype.setCoins = function(value) {
+proto.massa.model.v1.CallSC.prototype.setCoins = function (value) {
   return jspb.Message.setWrapperField(this, 5, value);
 };
 
@@ -1926,7 +1926,7 @@ proto.massa.model.v1.CallSC.prototype.setCoins = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.CallSC} returns this
  */
-proto.massa.model.v1.CallSC.prototype.clearCoins = function() {
+proto.massa.model.v1.CallSC.prototype.clearCoins = function () {
   return this.setCoins(undefined);
 };
 
@@ -1935,7 +1935,7 @@ proto.massa.model.v1.CallSC.prototype.clearCoins = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.CallSC.prototype.hasCoins = function() {
+proto.massa.model.v1.CallSC.prototype.hasCoins = function () {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -1944,47 +1944,47 @@ proto.massa.model.v1.CallSC.prototype.hasCoins = function() {
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.SignedOperation.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.SignedOperation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.SignedOperation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.SignedOperation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-content: (f = msg.getContent()) && proto.massa.model.v1.Operation.toObject(includeInstance, f),
-signature: jspb.Message.getFieldWithDefault(msg, 2, ""),
-contentCreatorPubKey: jspb.Message.getFieldWithDefault(msg, 3, ""),
-contentCreatorAddress: jspb.Message.getFieldWithDefault(msg, 4, ""),
-secureHash: jspb.Message.getFieldWithDefault(msg, 5, ""),
-serializedSize: jspb.Message.getFieldWithDefault(msg, 6, 0)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.SignedOperation.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.SignedOperation.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.SignedOperation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.SignedOperation.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      content: (f = msg.getContent()) && proto.massa.model.v1.Operation.toObject(includeInstance, f),
+      signature: jspb.Message.getFieldWithDefault(msg, 2, ""),
+      contentCreatorPubKey: jspb.Message.getFieldWithDefault(msg, 3, ""),
+      contentCreatorAddress: jspb.Message.getFieldWithDefault(msg, 4, ""),
+      secureHash: jspb.Message.getFieldWithDefault(msg, 5, ""),
+      serializedSize: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -1993,7 +1993,7 @@ serializedSize: jspb.Message.getFieldWithDefault(msg, 6, 0)
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.SignedOperation}
  */
-proto.massa.model.v1.SignedOperation.deserializeBinary = function(bytes) {
+proto.massa.model.v1.SignedOperation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.SignedOperation;
   return proto.massa.model.v1.SignedOperation.deserializeBinaryFromReader(msg, reader);
@@ -2007,41 +2007,41 @@ proto.massa.model.v1.SignedOperation.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.SignedOperation}
  */
-proto.massa.model.v1.SignedOperation.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.SignedOperation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new proto.massa.model.v1.Operation;
-      reader.readMessage(value,proto.massa.model.v1.Operation.deserializeBinaryFromReader);
-      msg.setContent(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSignature(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContentCreatorPubKey(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContentCreatorAddress(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSecureHash(value);
-      break;
-    case 6:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setSerializedSize(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.massa.model.v1.Operation;
+        reader.readMessage(value, proto.massa.model.v1.Operation.deserializeBinaryFromReader);
+        msg.setContent(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSignature(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setContentCreatorPubKey(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setContentCreatorAddress(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSecureHash(value);
+        break;
+      case 6:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setSerializedSize(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -2052,7 +2052,7 @@ proto.massa.model.v1.SignedOperation.deserializeBinaryFromReader = function(msg,
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.SignedOperation.prototype.serializeBinary = function() {
+proto.massa.model.v1.SignedOperation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.SignedOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -2066,7 +2066,7 @@ proto.massa.model.v1.SignedOperation.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.SignedOperation.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.SignedOperation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getContent();
   if (f != null) {
@@ -2118,7 +2118,7 @@ proto.massa.model.v1.SignedOperation.serializeBinaryToWriter = function(message,
  * optional Operation content = 1;
  * @return {?proto.massa.model.v1.Operation}
  */
-proto.massa.model.v1.SignedOperation.prototype.getContent = function() {
+proto.massa.model.v1.SignedOperation.prototype.getContent = function () {
   return /** @type{?proto.massa.model.v1.Operation} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.Operation, 1));
 };
@@ -2128,7 +2128,7 @@ proto.massa.model.v1.SignedOperation.prototype.getContent = function() {
  * @param {?proto.massa.model.v1.Operation|undefined} value
  * @return {!proto.massa.model.v1.SignedOperation} returns this
 */
-proto.massa.model.v1.SignedOperation.prototype.setContent = function(value) {
+proto.massa.model.v1.SignedOperation.prototype.setContent = function (value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
@@ -2137,7 +2137,7 @@ proto.massa.model.v1.SignedOperation.prototype.setContent = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.SignedOperation} returns this
  */
-proto.massa.model.v1.SignedOperation.prototype.clearContent = function() {
+proto.massa.model.v1.SignedOperation.prototype.clearContent = function () {
   return this.setContent(undefined);
 };
 
@@ -2146,7 +2146,7 @@ proto.massa.model.v1.SignedOperation.prototype.clearContent = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.SignedOperation.prototype.hasContent = function() {
+proto.massa.model.v1.SignedOperation.prototype.hasContent = function () {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -2155,7 +2155,7 @@ proto.massa.model.v1.SignedOperation.prototype.hasContent = function() {
  * optional string signature = 2;
  * @return {string}
  */
-proto.massa.model.v1.SignedOperation.prototype.getSignature = function() {
+proto.massa.model.v1.SignedOperation.prototype.getSignature = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -2164,7 +2164,7 @@ proto.massa.model.v1.SignedOperation.prototype.getSignature = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.SignedOperation} returns this
  */
-proto.massa.model.v1.SignedOperation.prototype.setSignature = function(value) {
+proto.massa.model.v1.SignedOperation.prototype.setSignature = function (value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -2173,7 +2173,7 @@ proto.massa.model.v1.SignedOperation.prototype.setSignature = function(value) {
  * optional string content_creator_pub_key = 3;
  * @return {string}
  */
-proto.massa.model.v1.SignedOperation.prototype.getContentCreatorPubKey = function() {
+proto.massa.model.v1.SignedOperation.prototype.getContentCreatorPubKey = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -2182,7 +2182,7 @@ proto.massa.model.v1.SignedOperation.prototype.getContentCreatorPubKey = functio
  * @param {string} value
  * @return {!proto.massa.model.v1.SignedOperation} returns this
  */
-proto.massa.model.v1.SignedOperation.prototype.setContentCreatorPubKey = function(value) {
+proto.massa.model.v1.SignedOperation.prototype.setContentCreatorPubKey = function (value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -2191,7 +2191,7 @@ proto.massa.model.v1.SignedOperation.prototype.setContentCreatorPubKey = functio
  * optional string content_creator_address = 4;
  * @return {string}
  */
-proto.massa.model.v1.SignedOperation.prototype.getContentCreatorAddress = function() {
+proto.massa.model.v1.SignedOperation.prototype.getContentCreatorAddress = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -2200,7 +2200,7 @@ proto.massa.model.v1.SignedOperation.prototype.getContentCreatorAddress = functi
  * @param {string} value
  * @return {!proto.massa.model.v1.SignedOperation} returns this
  */
-proto.massa.model.v1.SignedOperation.prototype.setContentCreatorAddress = function(value) {
+proto.massa.model.v1.SignedOperation.prototype.setContentCreatorAddress = function (value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -2209,7 +2209,7 @@ proto.massa.model.v1.SignedOperation.prototype.setContentCreatorAddress = functi
  * optional string secure_hash = 5;
  * @return {string}
  */
-proto.massa.model.v1.SignedOperation.prototype.getSecureHash = function() {
+proto.massa.model.v1.SignedOperation.prototype.getSecureHash = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
@@ -2218,7 +2218,7 @@ proto.massa.model.v1.SignedOperation.prototype.getSecureHash = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.SignedOperation} returns this
  */
-proto.massa.model.v1.SignedOperation.prototype.setSecureHash = function(value) {
+proto.massa.model.v1.SignedOperation.prototype.setSecureHash = function (value) {
   return jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -2227,7 +2227,7 @@ proto.massa.model.v1.SignedOperation.prototype.setSecureHash = function(value) {
  * optional uint64 serialized_size = 6;
  * @return {number}
  */
-proto.massa.model.v1.SignedOperation.prototype.getSerializedSize = function() {
+proto.massa.model.v1.SignedOperation.prototype.getSerializedSize = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
@@ -2236,7 +2236,7 @@ proto.massa.model.v1.SignedOperation.prototype.getSerializedSize = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.SignedOperation} returns this
  */
-proto.massa.model.v1.SignedOperation.prototype.setSerializedSize = function(value) {
+proto.massa.model.v1.SignedOperation.prototype.setSerializedSize = function (value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
@@ -2252,44 +2252,44 @@ proto.massa.model.v1.OperationWrapper.repeatedFields_ = [1];
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.OperationWrapper.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.OperationWrapper.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.OperationWrapper} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.OperationWrapper.toObject = function(includeInstance, msg) {
-  var f, obj = {
-blockIdsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
-thread: jspb.Message.getFieldWithDefault(msg, 2, 0),
-operation: (f = msg.getOperation()) && proto.massa.model.v1.SignedOperation.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.OperationWrapper.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.OperationWrapper.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.OperationWrapper} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.OperationWrapper.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      blockIdsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
+      thread: jspb.Message.getFieldWithDefault(msg, 2, 0),
+      operation: (f = msg.getOperation()) && proto.massa.model.v1.SignedOperation.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -2298,7 +2298,7 @@ operation: (f = msg.getOperation()) && proto.massa.model.v1.SignedOperation.toOb
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.OperationWrapper}
  */
-proto.massa.model.v1.OperationWrapper.deserializeBinary = function(bytes) {
+proto.massa.model.v1.OperationWrapper.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.OperationWrapper;
   return proto.massa.model.v1.OperationWrapper.deserializeBinaryFromReader(msg, reader);
@@ -2312,29 +2312,29 @@ proto.massa.model.v1.OperationWrapper.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.OperationWrapper}
  */
-proto.massa.model.v1.OperationWrapper.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.OperationWrapper.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addBlockIds(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setThread(value);
-      break;
-    case 3:
-      var value = new proto.massa.model.v1.SignedOperation;
-      reader.readMessage(value,proto.massa.model.v1.SignedOperation.deserializeBinaryFromReader);
-      msg.setOperation(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.addBlockIds(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readUint32());
+        msg.setThread(value);
+        break;
+      case 3:
+        var value = new proto.massa.model.v1.SignedOperation;
+        reader.readMessage(value, proto.massa.model.v1.SignedOperation.deserializeBinaryFromReader);
+        msg.setOperation(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -2345,7 +2345,7 @@ proto.massa.model.v1.OperationWrapper.deserializeBinaryFromReader = function(msg
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.OperationWrapper.prototype.serializeBinary = function() {
+proto.massa.model.v1.OperationWrapper.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.OperationWrapper.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -2359,7 +2359,7 @@ proto.massa.model.v1.OperationWrapper.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.OperationWrapper.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.OperationWrapper.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getBlockIdsList();
   if (f.length > 0) {
@@ -2390,7 +2390,7 @@ proto.massa.model.v1.OperationWrapper.serializeBinaryToWriter = function(message
  * repeated string block_ids = 1;
  * @return {!Array<string>}
  */
-proto.massa.model.v1.OperationWrapper.prototype.getBlockIdsList = function() {
+proto.massa.model.v1.OperationWrapper.prototype.getBlockIdsList = function () {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
@@ -2399,7 +2399,7 @@ proto.massa.model.v1.OperationWrapper.prototype.getBlockIdsList = function() {
  * @param {!Array<string>} value
  * @return {!proto.massa.model.v1.OperationWrapper} returns this
  */
-proto.massa.model.v1.OperationWrapper.prototype.setBlockIdsList = function(value) {
+proto.massa.model.v1.OperationWrapper.prototype.setBlockIdsList = function (value) {
   return jspb.Message.setField(this, 1, value || []);
 };
 
@@ -2409,7 +2409,7 @@ proto.massa.model.v1.OperationWrapper.prototype.setBlockIdsList = function(value
  * @param {number=} opt_index
  * @return {!proto.massa.model.v1.OperationWrapper} returns this
  */
-proto.massa.model.v1.OperationWrapper.prototype.addBlockIds = function(value, opt_index) {
+proto.massa.model.v1.OperationWrapper.prototype.addBlockIds = function (value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
 };
 
@@ -2418,7 +2418,7 @@ proto.massa.model.v1.OperationWrapper.prototype.addBlockIds = function(value, op
  * Clears the list making it empty but non-null.
  * @return {!proto.massa.model.v1.OperationWrapper} returns this
  */
-proto.massa.model.v1.OperationWrapper.prototype.clearBlockIdsList = function() {
+proto.massa.model.v1.OperationWrapper.prototype.clearBlockIdsList = function () {
   return this.setBlockIdsList([]);
 };
 
@@ -2427,7 +2427,7 @@ proto.massa.model.v1.OperationWrapper.prototype.clearBlockIdsList = function() {
  * optional uint32 thread = 2;
  * @return {number}
  */
-proto.massa.model.v1.OperationWrapper.prototype.getThread = function() {
+proto.massa.model.v1.OperationWrapper.prototype.getThread = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
@@ -2436,7 +2436,7 @@ proto.massa.model.v1.OperationWrapper.prototype.getThread = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.OperationWrapper} returns this
  */
-proto.massa.model.v1.OperationWrapper.prototype.setThread = function(value) {
+proto.massa.model.v1.OperationWrapper.prototype.setThread = function (value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -2445,7 +2445,7 @@ proto.massa.model.v1.OperationWrapper.prototype.setThread = function(value) {
  * optional SignedOperation operation = 3;
  * @return {?proto.massa.model.v1.SignedOperation}
  */
-proto.massa.model.v1.OperationWrapper.prototype.getOperation = function() {
+proto.massa.model.v1.OperationWrapper.prototype.getOperation = function () {
   return /** @type{?proto.massa.model.v1.SignedOperation} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.SignedOperation, 3));
 };
@@ -2455,7 +2455,7 @@ proto.massa.model.v1.OperationWrapper.prototype.getOperation = function() {
  * @param {?proto.massa.model.v1.SignedOperation|undefined} value
  * @return {!proto.massa.model.v1.OperationWrapper} returns this
 */
-proto.massa.model.v1.OperationWrapper.prototype.setOperation = function(value) {
+proto.massa.model.v1.OperationWrapper.prototype.setOperation = function (value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
@@ -2464,7 +2464,7 @@ proto.massa.model.v1.OperationWrapper.prototype.setOperation = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationWrapper} returns this
  */
-proto.massa.model.v1.OperationWrapper.prototype.clearOperation = function() {
+proto.massa.model.v1.OperationWrapper.prototype.clearOperation = function () {
   return this.setOperation(undefined);
 };
 
@@ -2473,7 +2473,7 @@ proto.massa.model.v1.OperationWrapper.prototype.clearOperation = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationWrapper.prototype.hasOperation = function() {
+proto.massa.model.v1.OperationWrapper.prototype.hasOperation = function () {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -2489,44 +2489,44 @@ proto.massa.model.v1.OperationInfo.repeatedFields_ = [2];
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.OperationInfo.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.OperationInfo.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.OperationInfo} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.OperationInfo.toObject = function(includeInstance, msg) {
-  var f, obj = {
-id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-blockIdsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
-thread: jspb.Message.getFieldWithDefault(msg, 3, 0)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.OperationInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.OperationInfo.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.OperationInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.OperationInfo.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+      blockIdsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+      thread: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -2535,7 +2535,7 @@ thread: jspb.Message.getFieldWithDefault(msg, 3, 0)
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.OperationInfo}
  */
-proto.massa.model.v1.OperationInfo.deserializeBinary = function(bytes) {
+proto.massa.model.v1.OperationInfo.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.OperationInfo;
   return proto.massa.model.v1.OperationInfo.deserializeBinaryFromReader(msg, reader);
@@ -2549,28 +2549,28 @@ proto.massa.model.v1.OperationInfo.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.OperationInfo}
  */
-proto.massa.model.v1.OperationInfo.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.OperationInfo.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addBlockIds(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setThread(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setId(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.addBlockIds(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readUint32());
+        msg.setThread(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -2581,7 +2581,7 @@ proto.massa.model.v1.OperationInfo.deserializeBinaryFromReader = function(msg, r
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.OperationInfo.prototype.serializeBinary = function() {
+proto.massa.model.v1.OperationInfo.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.OperationInfo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -2595,7 +2595,7 @@ proto.massa.model.v1.OperationInfo.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.OperationInfo.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.OperationInfo.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getId();
   if (f.length > 0) {
@@ -2625,7 +2625,7 @@ proto.massa.model.v1.OperationInfo.serializeBinaryToWriter = function(message, w
  * optional string id = 1;
  * @return {string}
  */
-proto.massa.model.v1.OperationInfo.prototype.getId = function() {
+proto.massa.model.v1.OperationInfo.prototype.getId = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -2634,7 +2634,7 @@ proto.massa.model.v1.OperationInfo.prototype.getId = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.OperationInfo} returns this
  */
-proto.massa.model.v1.OperationInfo.prototype.setId = function(value) {
+proto.massa.model.v1.OperationInfo.prototype.setId = function (value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -2643,7 +2643,7 @@ proto.massa.model.v1.OperationInfo.prototype.setId = function(value) {
  * repeated string block_ids = 2;
  * @return {!Array<string>}
  */
-proto.massa.model.v1.OperationInfo.prototype.getBlockIdsList = function() {
+proto.massa.model.v1.OperationInfo.prototype.getBlockIdsList = function () {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
@@ -2652,7 +2652,7 @@ proto.massa.model.v1.OperationInfo.prototype.getBlockIdsList = function() {
  * @param {!Array<string>} value
  * @return {!proto.massa.model.v1.OperationInfo} returns this
  */
-proto.massa.model.v1.OperationInfo.prototype.setBlockIdsList = function(value) {
+proto.massa.model.v1.OperationInfo.prototype.setBlockIdsList = function (value) {
   return jspb.Message.setField(this, 2, value || []);
 };
 
@@ -2662,7 +2662,7 @@ proto.massa.model.v1.OperationInfo.prototype.setBlockIdsList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.massa.model.v1.OperationInfo} returns this
  */
-proto.massa.model.v1.OperationInfo.prototype.addBlockIds = function(value, opt_index) {
+proto.massa.model.v1.OperationInfo.prototype.addBlockIds = function (value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
@@ -2671,7 +2671,7 @@ proto.massa.model.v1.OperationInfo.prototype.addBlockIds = function(value, opt_i
  * Clears the list making it empty but non-null.
  * @return {!proto.massa.model.v1.OperationInfo} returns this
  */
-proto.massa.model.v1.OperationInfo.prototype.clearBlockIdsList = function() {
+proto.massa.model.v1.OperationInfo.prototype.clearBlockIdsList = function () {
   return this.setBlockIdsList([]);
 };
 
@@ -2680,7 +2680,7 @@ proto.massa.model.v1.OperationInfo.prototype.clearBlockIdsList = function() {
  * optional uint32 thread = 3;
  * @return {number}
  */
-proto.massa.model.v1.OperationInfo.prototype.getThread = function() {
+proto.massa.model.v1.OperationInfo.prototype.getThread = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -2689,7 +2689,7 @@ proto.massa.model.v1.OperationInfo.prototype.getThread = function() {
  * @param {number} value
  * @return {!proto.massa.model.v1.OperationInfo} returns this
  */
-proto.massa.model.v1.OperationInfo.prototype.setThread = function(value) {
+proto.massa.model.v1.OperationInfo.prototype.setThread = function (value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -2705,42 +2705,42 @@ proto.massa.model.v1.OperationIds.repeatedFields_ = [1];
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.OperationIds.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.OperationIds.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.OperationIds} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.OperationIds.toObject = function(includeInstance, msg) {
-  var f, obj = {
-operationIdsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.OperationIds.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.OperationIds.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.OperationIds} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.OperationIds.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      operationIdsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -2749,7 +2749,7 @@ operationIdsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefine
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.OperationIds}
  */
-proto.massa.model.v1.OperationIds.deserializeBinary = function(bytes) {
+proto.massa.model.v1.OperationIds.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.OperationIds;
   return proto.massa.model.v1.OperationIds.deserializeBinaryFromReader(msg, reader);
@@ -2763,20 +2763,20 @@ proto.massa.model.v1.OperationIds.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.OperationIds}
  */
-proto.massa.model.v1.OperationIds.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.OperationIds.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addOperationIds(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.addOperationIds(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -2787,7 +2787,7 @@ proto.massa.model.v1.OperationIds.deserializeBinaryFromReader = function(msg, re
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.OperationIds.prototype.serializeBinary = function() {
+proto.massa.model.v1.OperationIds.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.OperationIds.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -2801,7 +2801,7 @@ proto.massa.model.v1.OperationIds.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.OperationIds.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.OperationIds.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getOperationIdsList();
   if (f.length > 0) {
@@ -2817,7 +2817,7 @@ proto.massa.model.v1.OperationIds.serializeBinaryToWriter = function(message, wr
  * repeated string operation_ids = 1;
  * @return {!Array<string>}
  */
-proto.massa.model.v1.OperationIds.prototype.getOperationIdsList = function() {
+proto.massa.model.v1.OperationIds.prototype.getOperationIdsList = function () {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
@@ -2826,7 +2826,7 @@ proto.massa.model.v1.OperationIds.prototype.getOperationIdsList = function() {
  * @param {!Array<string>} value
  * @return {!proto.massa.model.v1.OperationIds} returns this
  */
-proto.massa.model.v1.OperationIds.prototype.setOperationIdsList = function(value) {
+proto.massa.model.v1.OperationIds.prototype.setOperationIdsList = function (value) {
   return jspb.Message.setField(this, 1, value || []);
 };
 
@@ -2836,7 +2836,7 @@ proto.massa.model.v1.OperationIds.prototype.setOperationIdsList = function(value
  * @param {number=} opt_index
  * @return {!proto.massa.model.v1.OperationIds} returns this
  */
-proto.massa.model.v1.OperationIds.prototype.addOperationIds = function(value, opt_index) {
+proto.massa.model.v1.OperationIds.prototype.addOperationIds = function (value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
 };
 
@@ -2845,7 +2845,7 @@ proto.massa.model.v1.OperationIds.prototype.addOperationIds = function(value, op
  * Clears the list making it empty but non-null.
  * @return {!proto.massa.model.v1.OperationIds} returns this
  */
-proto.massa.model.v1.OperationIds.prototype.clearOperationIdsList = function() {
+proto.massa.model.v1.OperationIds.prototype.clearOperationIdsList = function () {
   return this.setOperationIdsList([]);
 };
 
@@ -2861,42 +2861,42 @@ proto.massa.model.v1.OpTypes.repeatedFields_ = [1];
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.OpTypes.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.OpTypes.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.OpTypes} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.OpTypes.toObject = function(includeInstance, msg) {
-  var f, obj = {
-opTypesList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.OpTypes.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.OpTypes.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.OpTypes} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.OpTypes.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      opTypesList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -2905,7 +2905,7 @@ opTypesList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.OpTypes}
  */
-proto.massa.model.v1.OpTypes.deserializeBinary = function(bytes) {
+proto.massa.model.v1.OpTypes.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.OpTypes;
   return proto.massa.model.v1.OpTypes.deserializeBinaryFromReader(msg, reader);
@@ -2919,22 +2919,22 @@ proto.massa.model.v1.OpTypes.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.OpTypes}
  */
-proto.massa.model.v1.OpTypes.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.OpTypes.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var values = /** @type {!Array<!proto.massa.model.v1.OpType>} */ (reader.isDelimited() ? reader.readPackedEnum() : [reader.readEnum()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addOpTypes(values[i]);
-      }
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var values = /** @type {!Array<!proto.massa.model.v1.OpType>} */ (reader.isDelimited() ? reader.readPackedEnum() : [reader.readEnum()]);
+        for (var i = 0; i < values.length; i++) {
+          msg.addOpTypes(values[i]);
+        }
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -2945,7 +2945,7 @@ proto.massa.model.v1.OpTypes.deserializeBinaryFromReader = function(msg, reader)
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.OpTypes.prototype.serializeBinary = function() {
+proto.massa.model.v1.OpTypes.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.OpTypes.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -2959,7 +2959,7 @@ proto.massa.model.v1.OpTypes.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.OpTypes.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.OpTypes.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getOpTypesList();
   if (f.length > 0) {
@@ -2975,7 +2975,7 @@ proto.massa.model.v1.OpTypes.serializeBinaryToWriter = function(message, writer)
  * repeated OpType op_types = 1;
  * @return {!Array<!proto.massa.model.v1.OpType>}
  */
-proto.massa.model.v1.OpTypes.prototype.getOpTypesList = function() {
+proto.massa.model.v1.OpTypes.prototype.getOpTypesList = function () {
   return /** @type {!Array<!proto.massa.model.v1.OpType>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
@@ -2984,7 +2984,7 @@ proto.massa.model.v1.OpTypes.prototype.getOpTypesList = function() {
  * @param {!Array<!proto.massa.model.v1.OpType>} value
  * @return {!proto.massa.model.v1.OpTypes} returns this
  */
-proto.massa.model.v1.OpTypes.prototype.setOpTypesList = function(value) {
+proto.massa.model.v1.OpTypes.prototype.setOpTypesList = function (value) {
   return jspb.Message.setField(this, 1, value || []);
 };
 
@@ -2994,7 +2994,7 @@ proto.massa.model.v1.OpTypes.prototype.setOpTypesList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.massa.model.v1.OpTypes} returns this
  */
-proto.massa.model.v1.OpTypes.prototype.addOpTypes = function(value, opt_index) {
+proto.massa.model.v1.OpTypes.prototype.addOpTypes = function (value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
 };
 
@@ -3003,7 +3003,7 @@ proto.massa.model.v1.OpTypes.prototype.addOpTypes = function(value, opt_index) {
  * Clears the list making it empty but non-null.
  * @return {!proto.massa.model.v1.OpTypes} returns this
  */
-proto.massa.model.v1.OpTypes.prototype.clearOpTypesList = function() {
+proto.massa.model.v1.OpTypes.prototype.clearOpTypesList = function () {
   return this.setOpTypesList([]);
 };
 
@@ -3017,7 +3017,7 @@ proto.massa.model.v1.OpTypes.prototype.clearOpTypesList = function() {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.massa.model.v1.OperationTypeRoll.oneofGroups_ = [[2,3]];
+proto.massa.model.v1.OperationTypeRoll.oneofGroups_ = [[2, 3]];
 
 /**
  * @enum {number}
@@ -3031,51 +3031,51 @@ proto.massa.model.v1.OperationTypeRoll.TypeCase = {
 /**
  * @return {proto.massa.model.v1.OperationTypeRoll.TypeCase}
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.getTypeCase = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.getTypeCase = function () {
   return /** @type {proto.massa.model.v1.OperationTypeRoll.TypeCase} */(jspb.Message.computeOneofCase(this, proto.massa.model.v1.OperationTypeRoll.oneofGroups_[0]));
 };
 
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.massa.model.v1.OperationTypeRoll.prototype.toObject = function(opt_includeInstance) {
-  return proto.massa.model.v1.OperationTypeRoll.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.massa.model.v1.OperationTypeRoll} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.massa.model.v1.OperationTypeRoll.toObject = function(includeInstance, msg) {
-  var f, obj = {
-address: jspb.Message.getFieldWithDefault(msg, 1, ""),
-rollBuy: (f = msg.getRollBuy()) && proto.massa.model.v1.RollBuy.toObject(includeInstance, f),
-rollSell: (f = msg.getRollSell()) && proto.massa.model.v1.RollSell.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.massa.model.v1.OperationTypeRoll.prototype.toObject = function (opt_includeInstance) {
+    return proto.massa.model.v1.OperationTypeRoll.toObject(opt_includeInstance, this);
   };
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.massa.model.v1.OperationTypeRoll} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.massa.model.v1.OperationTypeRoll.toObject = function (includeInstance, msg) {
+    var f, obj = {
+      address: jspb.Message.getFieldWithDefault(msg, 1, ""),
+      rollBuy: (f = msg.getRollBuy()) && proto.massa.model.v1.RollBuy.toObject(includeInstance, f),
+      rollSell: (f = msg.getRollSell()) && proto.massa.model.v1.RollSell.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
 }
 
 
@@ -3084,7 +3084,7 @@ rollSell: (f = msg.getRollSell()) && proto.massa.model.v1.RollSell.toObject(incl
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.massa.model.v1.OperationTypeRoll}
  */
-proto.massa.model.v1.OperationTypeRoll.deserializeBinary = function(bytes) {
+proto.massa.model.v1.OperationTypeRoll.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
   var msg = new proto.massa.model.v1.OperationTypeRoll;
   return proto.massa.model.v1.OperationTypeRoll.deserializeBinaryFromReader(msg, reader);
@@ -3098,30 +3098,30 @@ proto.massa.model.v1.OperationTypeRoll.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.massa.model.v1.OperationTypeRoll}
  */
-proto.massa.model.v1.OperationTypeRoll.deserializeBinaryFromReader = function(msg, reader) {
+proto.massa.model.v1.OperationTypeRoll.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setAddress(value);
-      break;
-    case 2:
-      var value = new proto.massa.model.v1.RollBuy;
-      reader.readMessage(value,proto.massa.model.v1.RollBuy.deserializeBinaryFromReader);
-      msg.setRollBuy(value);
-      break;
-    case 3:
-      var value = new proto.massa.model.v1.RollSell;
-      reader.readMessage(value,proto.massa.model.v1.RollSell.deserializeBinaryFromReader);
-      msg.setRollSell(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setAddress(value);
+        break;
+      case 2:
+        var value = new proto.massa.model.v1.RollBuy;
+        reader.readMessage(value, proto.massa.model.v1.RollBuy.deserializeBinaryFromReader);
+        msg.setRollBuy(value);
+        break;
+      case 3:
+        var value = new proto.massa.model.v1.RollSell;
+        reader.readMessage(value, proto.massa.model.v1.RollSell.deserializeBinaryFromReader);
+        msg.setRollSell(value);
+        break;
+      default:
+        reader.skipField();
+        break;
     }
   }
   return msg;
@@ -3132,7 +3132,7 @@ proto.massa.model.v1.OperationTypeRoll.deserializeBinaryFromReader = function(ms
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.serializeBinary = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.massa.model.v1.OperationTypeRoll.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
@@ -3146,7 +3146,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.massa.model.v1.OperationTypeRoll.serializeBinaryToWriter = function(message, writer) {
+proto.massa.model.v1.OperationTypeRoll.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getAddress();
   if (f.length > 0) {
@@ -3178,7 +3178,7 @@ proto.massa.model.v1.OperationTypeRoll.serializeBinaryToWriter = function(messag
  * optional string address = 1;
  * @return {string}
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.getAddress = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.getAddress = function () {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -3187,7 +3187,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.getAddress = function() {
  * @param {string} value
  * @return {!proto.massa.model.v1.OperationTypeRoll} returns this
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.setAddress = function(value) {
+proto.massa.model.v1.OperationTypeRoll.prototype.setAddress = function (value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -3196,7 +3196,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.setAddress = function(value) {
  * optional RollBuy roll_buy = 2;
  * @return {?proto.massa.model.v1.RollBuy}
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.getRollBuy = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.getRollBuy = function () {
   return /** @type{?proto.massa.model.v1.RollBuy} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.RollBuy, 2));
 };
@@ -3206,7 +3206,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.getRollBuy = function() {
  * @param {?proto.massa.model.v1.RollBuy|undefined} value
  * @return {!proto.massa.model.v1.OperationTypeRoll} returns this
 */
-proto.massa.model.v1.OperationTypeRoll.prototype.setRollBuy = function(value) {
+proto.massa.model.v1.OperationTypeRoll.prototype.setRollBuy = function (value) {
   return jspb.Message.setOneofWrapperField(this, 2, proto.massa.model.v1.OperationTypeRoll.oneofGroups_[0], value);
 };
 
@@ -3215,7 +3215,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.setRollBuy = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationTypeRoll} returns this
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.clearRollBuy = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.clearRollBuy = function () {
   return this.setRollBuy(undefined);
 };
 
@@ -3224,7 +3224,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.clearRollBuy = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.hasRollBuy = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.hasRollBuy = function () {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -3233,7 +3233,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.hasRollBuy = function() {
  * optional RollSell roll_sell = 3;
  * @return {?proto.massa.model.v1.RollSell}
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.getRollSell = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.getRollSell = function () {
   return /** @type{?proto.massa.model.v1.RollSell} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.RollSell, 3));
 };
@@ -3243,7 +3243,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.getRollSell = function() {
  * @param {?proto.massa.model.v1.RollSell|undefined} value
  * @return {!proto.massa.model.v1.OperationTypeRoll} returns this
 */
-proto.massa.model.v1.OperationTypeRoll.prototype.setRollSell = function(value) {
+proto.massa.model.v1.OperationTypeRoll.prototype.setRollSell = function (value) {
   return jspb.Message.setOneofWrapperField(this, 3, proto.massa.model.v1.OperationTypeRoll.oneofGroups_[0], value);
 };
 
@@ -3252,7 +3252,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.setRollSell = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationTypeRoll} returns this
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.clearRollSell = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.clearRollSell = function () {
   return this.setRollSell(undefined);
 };
 
@@ -3261,7 +3261,7 @@ proto.massa.model.v1.OperationTypeRoll.prototype.clearRollSell = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationTypeRoll.prototype.hasRollSell = function() {
+proto.massa.model.v1.OperationTypeRoll.prototype.hasRollSell = function () {
   return jspb.Message.getField(this, 3) != null;
 };
 

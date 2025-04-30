@@ -9,15 +9,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js 18
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: "npm"
-      - run: npm ci
-      - run: npm run build
+      - run: |
+          npm ci
+          npm run build
       - run: npm run fmt:check
+
       - name: unit test
         run: npm test
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
+      - name: unit test browser
+        run: npm run test:browser

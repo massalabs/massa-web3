@@ -37,7 +37,7 @@ export namespace Denunciation {
     address?: DenunciationAddress.AsObject,
   }
 
-  export enum EntryCase { 
+  export enum EntryCase {
     ENTRY_NOT_SET = 0,
     BLOCK_HEADER = 1,
     ENDORSEMENT = 2,
@@ -156,7 +156,7 @@ export namespace DenunciationIndex {
     endorsement?: DenunciationEndorsement.AsObject,
   }
 
-  export enum EntryCase { 
+  export enum EntryCase {
     ENTRY_NOT_SET = 0,
     BLOCK_HEADER = 1,
     ENDORSEMENT = 2,

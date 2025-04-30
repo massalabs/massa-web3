@@ -42,10 +42,10 @@ export type Provider = PublicProvider & {
   /** Retrieves the account's address. */
   get address(): string
 
-  /** Retrieves the provider's name associated with the account. */
+  /** Retrieves the account's name. */
   get accountName(): string
 
-  /** Retrieves the account's name. */
+  /** Retrieves the provider's name associated with the account. */
   get providerName(): string
 
   /** Initiates a balance retrieval request for the account. */

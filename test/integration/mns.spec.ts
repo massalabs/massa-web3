@@ -8,7 +8,7 @@ describe('MNS tests', () => {
   const syntraContract = 'AS1hyi3cyBocobFtFZHhTs84mTLhThDK4KvCkj6bijbtHEi3d8Vv'
 
   beforeAll(async () => {
-    mns = MNS.buildnet(provider)
+    mns = await MNS.init(provider)
   })
 
   test('resolve', async () => {

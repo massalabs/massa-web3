@@ -1,9 +1,10 @@
-import { Mas, fromMicroMas } from './mas'
-import { U32 } from './serializers'
-
-const BYTE_COST_MICRO_MASSA = 100n
+import { strToBytes } from '.'
+import { Mas, fromString } from './mas'
 
 const ACCOUNT_SIZE_BYTES = 10
+
+const STORAGE_BYTE_COST = fromString('0.0001')
+const NEW_STORAGE_ENTRY_COST = 4n
 
 /**
  * Calculates the cost of a given number of bytes.
@@ -13,7 +14,7 @@ const ACCOUNT_SIZE_BYTES = 10
  * @returns The cost in the smallest unit of the Massa currency.
  */
 export function bytes(numberOfBytes: number): Mas {
-  return BigInt(numberOfBytes) * fromMicroMas(BYTE_COST_MICRO_MASSA)
+  return BigInt(numberOfBytes) * STORAGE_BYTE_COST
 }
 
 /**
@@ -35,15 +36,29 @@ export function account(): Mas {
  *
  * @returns The cost in the smallest unit of the Massa currency.
  */
-export function smartContract(numberOfBytes: number): Mas {
+export function smartContractDeploy(numberOfBytes: number): Mas {
   return bytes(numberOfBytes) + account()
 }
 
 /**
- * Calculates the cost of creating a new entry in the datastore.
- *
- * @returns The cost in the smallest unit of the Massa currency.
+ * Compute the storage cost for a given key and value size based on the documentation at:
+ * https://docs.massa.net/docs/learn/storage-costs
+ * @param key- The key to store
+ * @param value - The value to store
+ * @returns the storage cost for the given key and value size
  */
-export function newEntry(): Mas {
-  return bytes(U32.SIZE_BYTE)
+export function datastoreEntry(
+  key: Uint8Array | string,
+  value: Uint8Array | string
+): bigint {
+  if (typeof key === 'string') {
+    key = strToBytes(key)
+  }
+  if (typeof value === 'string') {
+    value = strToBytes(value)
+  }
+  return (
+    (BigInt(key.length) + BigInt(value.length) + NEW_STORAGE_ENTRY_COST) *
+    STORAGE_BYTE_COST
+  )
 }

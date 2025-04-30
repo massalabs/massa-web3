@@ -8,7 +8,7 @@ export enum PublicApiUrl {
 
 export enum GrpcApiUrl {
   Mainnet = 'https://mainnet.massa.net:33037',
-  Buildnet = 'https://buildnet.massa.net:33037',
+  Buildnet = 'https://buildnet.massa.net/api/grpc',
 }
 
 export enum NetworkName {
