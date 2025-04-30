@@ -26,9 +26,9 @@ export class PublicServiceClient {
   credentials_: null | { [index: string]: string; };
   options_: null | { [index: string]: any; };
 
-  constructor(hostname: string,
-    credentials?: null | { [index: string]: string; },
-    options?: null | { [index: string]: any; }) {
+  constructor (hostname: string,
+               credentials?: null | { [index: string]: string; },
+               options?: null | { [index: string]: any; }) {
     if (!options) options = {};
     if (!credentials) credentials = {};
     options['format'] = 'text';
@@ -58,28 +58,28 @@ export class PublicServiceClient {
     request: public_pb.ExecuteReadOnlyCallRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.ExecuteReadOnlyCallResponse) => void): grpcWeb.ClientReadableStream<public_pb.ExecuteReadOnlyCallResponse>;
+               response: public_pb.ExecuteReadOnlyCallResponse) => void): grpcWeb.ClientReadableStream<public_pb.ExecuteReadOnlyCallResponse>;
 
   executeReadOnlyCall(
     request: public_pb.ExecuteReadOnlyCallRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.ExecuteReadOnlyCallResponse) => void) {
+               response: public_pb.ExecuteReadOnlyCallResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/ExecuteReadOnlyCall',
+          '/massa.api.v1.PublicService/ExecuteReadOnlyCall',
         request,
         metadata || {},
         this.methodDescriptorExecuteReadOnlyCall,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/ExecuteReadOnlyCall',
-      request,
-      metadata || {},
-      this.methodDescriptorExecuteReadOnlyCall);
+    request,
+    metadata || {},
+    this.methodDescriptorExecuteReadOnlyCall);
   }
 
   methodDescriptorGetBlocks = new grpcWeb.MethodDescriptor(
@@ -101,28 +101,28 @@ export class PublicServiceClient {
     request: public_pb.GetBlocksRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetBlocksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetBlocksResponse>;
+               response: public_pb.GetBlocksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetBlocksResponse>;
 
   getBlocks(
     request: public_pb.GetBlocksRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetBlocksResponse) => void) {
+               response: public_pb.GetBlocksResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetBlocks',
+          '/massa.api.v1.PublicService/GetBlocks',
         request,
         metadata || {},
         this.methodDescriptorGetBlocks,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetBlocks',
-      request,
-      metadata || {},
-      this.methodDescriptorGetBlocks);
+    request,
+    metadata || {},
+    this.methodDescriptorGetBlocks);
   }
 
   methodDescriptorGetDatastoreEntries = new grpcWeb.MethodDescriptor(
@@ -144,28 +144,28 @@ export class PublicServiceClient {
     request: public_pb.GetDatastoreEntriesRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetDatastoreEntriesResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetDatastoreEntriesResponse>;
+               response: public_pb.GetDatastoreEntriesResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetDatastoreEntriesResponse>;
 
   getDatastoreEntries(
     request: public_pb.GetDatastoreEntriesRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetDatastoreEntriesResponse) => void) {
+               response: public_pb.GetDatastoreEntriesResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetDatastoreEntries',
+          '/massa.api.v1.PublicService/GetDatastoreEntries',
         request,
         metadata || {},
         this.methodDescriptorGetDatastoreEntries,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetDatastoreEntries',
-      request,
-      metadata || {},
-      this.methodDescriptorGetDatastoreEntries);
+    request,
+    metadata || {},
+    this.methodDescriptorGetDatastoreEntries);
   }
 
   methodDescriptorGetEndorsements = new grpcWeb.MethodDescriptor(
@@ -187,28 +187,28 @@ export class PublicServiceClient {
     request: public_pb.GetEndorsementsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetEndorsementsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetEndorsementsResponse>;
+               response: public_pb.GetEndorsementsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetEndorsementsResponse>;
 
   getEndorsements(
     request: public_pb.GetEndorsementsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetEndorsementsResponse) => void) {
+               response: public_pb.GetEndorsementsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetEndorsements',
+          '/massa.api.v1.PublicService/GetEndorsements',
         request,
         metadata || {},
         this.methodDescriptorGetEndorsements,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetEndorsements',
-      request,
-      metadata || {},
-      this.methodDescriptorGetEndorsements);
+    request,
+    metadata || {},
+    this.methodDescriptorGetEndorsements);
   }
 
   methodDescriptorGetNextBlockBestParents = new grpcWeb.MethodDescriptor(
@@ -230,28 +230,28 @@ export class PublicServiceClient {
     request: public_pb.GetNextBlockBestParentsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetNextBlockBestParentsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetNextBlockBestParentsResponse>;
+               response: public_pb.GetNextBlockBestParentsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetNextBlockBestParentsResponse>;
 
   getNextBlockBestParents(
     request: public_pb.GetNextBlockBestParentsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetNextBlockBestParentsResponse) => void) {
+               response: public_pb.GetNextBlockBestParentsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetNextBlockBestParents',
+          '/massa.api.v1.PublicService/GetNextBlockBestParents',
         request,
         metadata || {},
         this.methodDescriptorGetNextBlockBestParents,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetNextBlockBestParents',
-      request,
-      metadata || {},
-      this.methodDescriptorGetNextBlockBestParents);
+    request,
+    metadata || {},
+    this.methodDescriptorGetNextBlockBestParents);
   }
 
   methodDescriptorGetOperations = new grpcWeb.MethodDescriptor(
@@ -273,28 +273,28 @@ export class PublicServiceClient {
     request: public_pb.GetOperationsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetOperationsResponse>;
+               response: public_pb.GetOperationsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetOperationsResponse>;
 
   getOperations(
     request: public_pb.GetOperationsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationsResponse) => void) {
+               response: public_pb.GetOperationsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetOperations',
+          '/massa.api.v1.PublicService/GetOperations',
         request,
         metadata || {},
         this.methodDescriptorGetOperations,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetOperations',
-      request,
-      metadata || {},
-      this.methodDescriptorGetOperations);
+    request,
+    metadata || {},
+    this.methodDescriptorGetOperations);
   }
 
   methodDescriptorGetScExecutionEvents = new grpcWeb.MethodDescriptor(
@@ -316,28 +316,28 @@ export class PublicServiceClient {
     request: public_pb.GetScExecutionEventsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetScExecutionEventsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetScExecutionEventsResponse>;
+               response: public_pb.GetScExecutionEventsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetScExecutionEventsResponse>;
 
   getScExecutionEvents(
     request: public_pb.GetScExecutionEventsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetScExecutionEventsResponse) => void) {
+               response: public_pb.GetScExecutionEventsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetScExecutionEvents',
+          '/massa.api.v1.PublicService/GetScExecutionEvents',
         request,
         metadata || {},
         this.methodDescriptorGetScExecutionEvents,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetScExecutionEvents',
-      request,
-      metadata || {},
-      this.methodDescriptorGetScExecutionEvents);
+    request,
+    metadata || {},
+    this.methodDescriptorGetScExecutionEvents);
   }
 
   methodDescriptorGetSelectorDraws = new grpcWeb.MethodDescriptor(
@@ -359,28 +359,28 @@ export class PublicServiceClient {
     request: public_pb.GetSelectorDrawsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetSelectorDrawsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSelectorDrawsResponse>;
+               response: public_pb.GetSelectorDrawsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSelectorDrawsResponse>;
 
   getSelectorDraws(
     request: public_pb.GetSelectorDrawsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetSelectorDrawsResponse) => void) {
+               response: public_pb.GetSelectorDrawsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetSelectorDraws',
+          '/massa.api.v1.PublicService/GetSelectorDraws',
         request,
         metadata || {},
         this.methodDescriptorGetSelectorDraws,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetSelectorDraws',
-      request,
-      metadata || {},
-      this.methodDescriptorGetSelectorDraws);
+    request,
+    metadata || {},
+    this.methodDescriptorGetSelectorDraws);
   }
 
   methodDescriptorGetStakers = new grpcWeb.MethodDescriptor(
@@ -402,28 +402,28 @@ export class PublicServiceClient {
     request: public_pb.GetStakersRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetStakersResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetStakersResponse>;
+               response: public_pb.GetStakersResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetStakersResponse>;
 
   getStakers(
     request: public_pb.GetStakersRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetStakersResponse) => void) {
+               response: public_pb.GetStakersResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetStakers',
+          '/massa.api.v1.PublicService/GetStakers',
         request,
         metadata || {},
         this.methodDescriptorGetStakers,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetStakers',
-      request,
-      metadata || {},
-      this.methodDescriptorGetStakers);
+    request,
+    metadata || {},
+    this.methodDescriptorGetStakers);
   }
 
   methodDescriptorGetStatus = new grpcWeb.MethodDescriptor(
@@ -445,28 +445,28 @@ export class PublicServiceClient {
     request: public_pb.GetStatusRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetStatusResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetStatusResponse>;
+               response: public_pb.GetStatusResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetStatusResponse>;
 
   getStatus(
     request: public_pb.GetStatusRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetStatusResponse) => void) {
+               response: public_pb.GetStatusResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetStatus',
+          '/massa.api.v1.PublicService/GetStatus',
         request,
         metadata || {},
         this.methodDescriptorGetStatus,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetStatus',
-      request,
-      metadata || {},
-      this.methodDescriptorGetStatus);
+    request,
+    metadata || {},
+    this.methodDescriptorGetStatus);
   }
 
   methodDescriptorGetTransactionsThroughput = new grpcWeb.MethodDescriptor(
@@ -488,28 +488,28 @@ export class PublicServiceClient {
     request: public_pb.GetTransactionsThroughputRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetTransactionsThroughputResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetTransactionsThroughputResponse>;
+               response: public_pb.GetTransactionsThroughputResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetTransactionsThroughputResponse>;
 
   getTransactionsThroughput(
     request: public_pb.GetTransactionsThroughputRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetTransactionsThroughputResponse) => void) {
+               response: public_pb.GetTransactionsThroughputResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetTransactionsThroughput',
+          '/massa.api.v1.PublicService/GetTransactionsThroughput',
         request,
         metadata || {},
         this.methodDescriptorGetTransactionsThroughput,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetTransactionsThroughput',
-      request,
-      metadata || {},
-      this.methodDescriptorGetTransactionsThroughput);
+    request,
+    metadata || {},
+    this.methodDescriptorGetTransactionsThroughput);
   }
 
   methodDescriptorQueryState = new grpcWeb.MethodDescriptor(
@@ -531,28 +531,28 @@ export class PublicServiceClient {
     request: public_pb.QueryStateRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.QueryStateResponse) => void): grpcWeb.ClientReadableStream<public_pb.QueryStateResponse>;
+               response: public_pb.QueryStateResponse) => void): grpcWeb.ClientReadableStream<public_pb.QueryStateResponse>;
 
   queryState(
     request: public_pb.QueryStateRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.QueryStateResponse) => void) {
+               response: public_pb.QueryStateResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/QueryState',
+          '/massa.api.v1.PublicService/QueryState',
         request,
         metadata || {},
         this.methodDescriptorQueryState,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/QueryState',
-      request,
-      metadata || {},
-      this.methodDescriptorQueryState);
+    request,
+    metadata || {},
+    this.methodDescriptorQueryState);
   }
 
   methodDescriptorSearchBlocks = new grpcWeb.MethodDescriptor(
@@ -574,28 +574,28 @@ export class PublicServiceClient {
     request: public_pb.SearchBlocksRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.SearchBlocksResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchBlocksResponse>;
+               response: public_pb.SearchBlocksResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchBlocksResponse>;
 
   searchBlocks(
     request: public_pb.SearchBlocksRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.SearchBlocksResponse) => void) {
+               response: public_pb.SearchBlocksResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/SearchBlocks',
+          '/massa.api.v1.PublicService/SearchBlocks',
         request,
         metadata || {},
         this.methodDescriptorSearchBlocks,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/SearchBlocks',
-      request,
-      metadata || {},
-      this.methodDescriptorSearchBlocks);
+    request,
+    metadata || {},
+    this.methodDescriptorSearchBlocks);
   }
 
   methodDescriptorSearchEndorsements = new grpcWeb.MethodDescriptor(
@@ -617,28 +617,28 @@ export class PublicServiceClient {
     request: public_pb.SearchEndorsementsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.SearchEndorsementsResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchEndorsementsResponse>;
+               response: public_pb.SearchEndorsementsResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchEndorsementsResponse>;
 
   searchEndorsements(
     request: public_pb.SearchEndorsementsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.SearchEndorsementsResponse) => void) {
+               response: public_pb.SearchEndorsementsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/SearchEndorsements',
+          '/massa.api.v1.PublicService/SearchEndorsements',
         request,
         metadata || {},
         this.methodDescriptorSearchEndorsements,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/SearchEndorsements',
-      request,
-      metadata || {},
-      this.methodDescriptorSearchEndorsements);
+    request,
+    metadata || {},
+    this.methodDescriptorSearchEndorsements);
   }
 
   methodDescriptorSearchOperations = new grpcWeb.MethodDescriptor(
@@ -660,28 +660,28 @@ export class PublicServiceClient {
     request: public_pb.SearchOperationsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.SearchOperationsResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchOperationsResponse>;
+               response: public_pb.SearchOperationsResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchOperationsResponse>;
 
   searchOperations(
     request: public_pb.SearchOperationsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.SearchOperationsResponse) => void) {
+               response: public_pb.SearchOperationsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/SearchOperations',
+          '/massa.api.v1.PublicService/SearchOperations',
         request,
         metadata || {},
         this.methodDescriptorSearchOperations,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/SearchOperations',
-      request,
-      metadata || {},
-      this.methodDescriptorSearchOperations);
+    request,
+    metadata || {},
+    this.methodDescriptorSearchOperations);
   }
 
   methodDescriptorGetOperationABICallStacks = new grpcWeb.MethodDescriptor(
@@ -703,28 +703,28 @@ export class PublicServiceClient {
     request: public_pb.GetOperationABICallStacksRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationABICallStacksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetOperationABICallStacksResponse>;
+               response: public_pb.GetOperationABICallStacksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetOperationABICallStacksResponse>;
 
   getOperationABICallStacks(
     request: public_pb.GetOperationABICallStacksRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationABICallStacksResponse) => void) {
+               response: public_pb.GetOperationABICallStacksResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetOperationABICallStacks',
+          '/massa.api.v1.PublicService/GetOperationABICallStacks',
         request,
         metadata || {},
         this.methodDescriptorGetOperationABICallStacks,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetOperationABICallStacks',
-      request,
-      metadata || {},
-      this.methodDescriptorGetOperationABICallStacks);
+    request,
+    metadata || {},
+    this.methodDescriptorGetOperationABICallStacks);
   }
 
   methodDescriptorGetSlotABICallStacks = new grpcWeb.MethodDescriptor(
@@ -746,28 +746,28 @@ export class PublicServiceClient {
     request: public_pb.GetSlotABICallStacksRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotABICallStacksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSlotABICallStacksResponse>;
+               response: public_pb.GetSlotABICallStacksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSlotABICallStacksResponse>;
 
   getSlotABICallStacks(
     request: public_pb.GetSlotABICallStacksRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotABICallStacksResponse) => void) {
+               response: public_pb.GetSlotABICallStacksResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetSlotABICallStacks',
+          '/massa.api.v1.PublicService/GetSlotABICallStacks',
         request,
         metadata || {},
         this.methodDescriptorGetSlotABICallStacks,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetSlotABICallStacks',
-      request,
-      metadata || {},
-      this.methodDescriptorGetSlotABICallStacks);
+    request,
+    metadata || {},
+    this.methodDescriptorGetSlotABICallStacks);
   }
 
   methodDescriptorGetSlotTransfers = new grpcWeb.MethodDescriptor(
@@ -789,845 +789,28 @@ export class PublicServiceClient {
     request: public_pb.GetSlotTransfersRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotTransfersResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSlotTransfersResponse>;
+               response: public_pb.GetSlotTransfersResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSlotTransfersResponse>;
 
   getSlotTransfers(
     request: public_pb.GetSlotTransfersRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotTransfersResponse) => void) {
+               response: public_pb.GetSlotTransfersResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-        '/massa.api.v1.PublicService/GetSlotTransfers',
+          '/massa.api.v1.PublicService/GetSlotTransfers',
         request,
         metadata || {},
         this.methodDescriptorGetSlotTransfers,
         callback);
     }
     return this.client_.unaryCall(
-      this.hostname_ +
+    this.hostname_ +
       '/massa.api.v1.PublicService/GetSlotTransfers',
-      request,
-      metadata || {},
-      this.methodDescriptorGetSlotTransfers);
-  }
-
-}
-
-/**
- * @fileoverview gRPC-Web generated client stub for massa.api.v1
- * @enhanceable
- * @public
- */
-
-// Code generated by protoc-gen-grpc-web. DO NOT EDIT.
-// versions:
-// 	protoc-gen-grpc-web v1.5.0
-// 	protoc              v4.23.3
-// source: public.proto
-
-
-/* eslint-disable */
-// @ts-nocheck
-
-
-import * as grpcWeb from 'grpc-web';
-
-import * as public_pb from './public_pb'; // proto import: "public.proto"
-
-
-export class PublicServiceClient {
-  client_: grpcWeb.AbstractClientBase;
-  hostname_: string;
-  credentials_: null | { [index: string]: string; };
-  options_: null | { [index: string]: any; };
-
-  constructor(hostname: string,
-    credentials?: null | { [index: string]: string; },
-    options?: null | { [index: string]: any; }) {
-    if (!options) options = {};
-    if (!credentials) credentials = {};
-    options['format'] = 'text';
-
-    this.client_ = new grpcWeb.GrpcWebClientBase(options);
-    this.hostname_ = hostname.replace(/\/+$/, '');
-    this.credentials_ = credentials;
-    this.options_ = options;
-  }
-
-  methodDescriptorExecuteReadOnlyCall = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/ExecuteReadOnlyCall',
-    grpcWeb.MethodType.UNARY,
-    public_pb.ExecuteReadOnlyCallRequest,
-    public_pb.ExecuteReadOnlyCallResponse,
-    (request: public_pb.ExecuteReadOnlyCallRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.ExecuteReadOnlyCallResponse.deserializeBinary
-  );
-
-  executeReadOnlyCall(
-    request: public_pb.ExecuteReadOnlyCallRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.ExecuteReadOnlyCallResponse>;
-
-  executeReadOnlyCall(
-    request: public_pb.ExecuteReadOnlyCallRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.ExecuteReadOnlyCallResponse) => void): grpcWeb.ClientReadableStream<public_pb.ExecuteReadOnlyCallResponse>;
-
-  executeReadOnlyCall(
-    request: public_pb.ExecuteReadOnlyCallRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.ExecuteReadOnlyCallResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/ExecuteReadOnlyCall',
-        request,
-        metadata || {},
-        this.methodDescriptorExecuteReadOnlyCall,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/ExecuteReadOnlyCall',
-      request,
-      metadata || {},
-      this.methodDescriptorExecuteReadOnlyCall);
-  }
-
-  methodDescriptorGetBlocks = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetBlocks',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetBlocksRequest,
-    public_pb.GetBlocksResponse,
-    (request: public_pb.GetBlocksRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetBlocksResponse.deserializeBinary
-  );
-
-  getBlocks(
-    request: public_pb.GetBlocksRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetBlocksResponse>;
-
-  getBlocks(
-    request: public_pb.GetBlocksRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetBlocksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetBlocksResponse>;
-
-  getBlocks(
-    request: public_pb.GetBlocksRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetBlocksResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetBlocks',
-        request,
-        metadata || {},
-        this.methodDescriptorGetBlocks,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetBlocks',
-      request,
-      metadata || {},
-      this.methodDescriptorGetBlocks);
-  }
-
-  methodDescriptorGetDatastoreEntries = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetDatastoreEntries',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetDatastoreEntriesRequest,
-    public_pb.GetDatastoreEntriesResponse,
-    (request: public_pb.GetDatastoreEntriesRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetDatastoreEntriesResponse.deserializeBinary
-  );
-
-  getDatastoreEntries(
-    request: public_pb.GetDatastoreEntriesRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetDatastoreEntriesResponse>;
-
-  getDatastoreEntries(
-    request: public_pb.GetDatastoreEntriesRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetDatastoreEntriesResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetDatastoreEntriesResponse>;
-
-  getDatastoreEntries(
-    request: public_pb.GetDatastoreEntriesRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetDatastoreEntriesResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetDatastoreEntries',
-        request,
-        metadata || {},
-        this.methodDescriptorGetDatastoreEntries,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetDatastoreEntries',
-      request,
-      metadata || {},
-      this.methodDescriptorGetDatastoreEntries);
-  }
-
-  methodDescriptorGetEndorsements = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetEndorsements',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetEndorsementsRequest,
-    public_pb.GetEndorsementsResponse,
-    (request: public_pb.GetEndorsementsRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetEndorsementsResponse.deserializeBinary
-  );
-
-  getEndorsements(
-    request: public_pb.GetEndorsementsRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetEndorsementsResponse>;
-
-  getEndorsements(
-    request: public_pb.GetEndorsementsRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetEndorsementsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetEndorsementsResponse>;
-
-  getEndorsements(
-    request: public_pb.GetEndorsementsRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetEndorsementsResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetEndorsements',
-        request,
-        metadata || {},
-        this.methodDescriptorGetEndorsements,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetEndorsements',
-      request,
-      metadata || {},
-      this.methodDescriptorGetEndorsements);
-  }
-
-  methodDescriptorGetNextBlockBestParents = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetNextBlockBestParents',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetNextBlockBestParentsRequest,
-    public_pb.GetNextBlockBestParentsResponse,
-    (request: public_pb.GetNextBlockBestParentsRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetNextBlockBestParentsResponse.deserializeBinary
-  );
-
-  getNextBlockBestParents(
-    request: public_pb.GetNextBlockBestParentsRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetNextBlockBestParentsResponse>;
-
-  getNextBlockBestParents(
-    request: public_pb.GetNextBlockBestParentsRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetNextBlockBestParentsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetNextBlockBestParentsResponse>;
-
-  getNextBlockBestParents(
-    request: public_pb.GetNextBlockBestParentsRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetNextBlockBestParentsResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetNextBlockBestParents',
-        request,
-        metadata || {},
-        this.methodDescriptorGetNextBlockBestParents,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetNextBlockBestParents',
-      request,
-      metadata || {},
-      this.methodDescriptorGetNextBlockBestParents);
-  }
-
-  methodDescriptorGetOperations = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetOperations',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetOperationsRequest,
-    public_pb.GetOperationsResponse,
-    (request: public_pb.GetOperationsRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetOperationsResponse.deserializeBinary
-  );
-
-  getOperations(
-    request: public_pb.GetOperationsRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetOperationsResponse>;
-
-  getOperations(
-    request: public_pb.GetOperationsRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetOperationsResponse>;
-
-  getOperations(
-    request: public_pb.GetOperationsRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationsResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetOperations',
-        request,
-        metadata || {},
-        this.methodDescriptorGetOperations,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetOperations',
-      request,
-      metadata || {},
-      this.methodDescriptorGetOperations);
-  }
-
-  methodDescriptorGetScExecutionEvents = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetScExecutionEvents',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetScExecutionEventsRequest,
-    public_pb.GetScExecutionEventsResponse,
-    (request: public_pb.GetScExecutionEventsRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetScExecutionEventsResponse.deserializeBinary
-  );
-
-  getScExecutionEvents(
-    request: public_pb.GetScExecutionEventsRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetScExecutionEventsResponse>;
-
-  getScExecutionEvents(
-    request: public_pb.GetScExecutionEventsRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetScExecutionEventsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetScExecutionEventsResponse>;
-
-  getScExecutionEvents(
-    request: public_pb.GetScExecutionEventsRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetScExecutionEventsResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetScExecutionEvents',
-        request,
-        metadata || {},
-        this.methodDescriptorGetScExecutionEvents,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetScExecutionEvents',
-      request,
-      metadata || {},
-      this.methodDescriptorGetScExecutionEvents);
-  }
-
-  methodDescriptorGetSelectorDraws = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetSelectorDraws',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetSelectorDrawsRequest,
-    public_pb.GetSelectorDrawsResponse,
-    (request: public_pb.GetSelectorDrawsRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetSelectorDrawsResponse.deserializeBinary
-  );
-
-  getSelectorDraws(
-    request: public_pb.GetSelectorDrawsRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetSelectorDrawsResponse>;
-
-  getSelectorDraws(
-    request: public_pb.GetSelectorDrawsRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetSelectorDrawsResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSelectorDrawsResponse>;
-
-  getSelectorDraws(
-    request: public_pb.GetSelectorDrawsRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetSelectorDrawsResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetSelectorDraws',
-        request,
-        metadata || {},
-        this.methodDescriptorGetSelectorDraws,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetSelectorDraws',
-      request,
-      metadata || {},
-      this.methodDescriptorGetSelectorDraws);
-  }
-
-  methodDescriptorGetStakers = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetStakers',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetStakersRequest,
-    public_pb.GetStakersResponse,
-    (request: public_pb.GetStakersRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetStakersResponse.deserializeBinary
-  );
-
-  getStakers(
-    request: public_pb.GetStakersRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetStakersResponse>;
-
-  getStakers(
-    request: public_pb.GetStakersRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetStakersResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetStakersResponse>;
-
-  getStakers(
-    request: public_pb.GetStakersRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetStakersResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetStakers',
-        request,
-        metadata || {},
-        this.methodDescriptorGetStakers,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetStakers',
-      request,
-      metadata || {},
-      this.methodDescriptorGetStakers);
-  }
-
-  methodDescriptorGetStatus = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetStatus',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetStatusRequest,
-    public_pb.GetStatusResponse,
-    (request: public_pb.GetStatusRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetStatusResponse.deserializeBinary
-  );
-
-  getStatus(
-    request: public_pb.GetStatusRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetStatusResponse>;
-
-  getStatus(
-    request: public_pb.GetStatusRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetStatusResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetStatusResponse>;
-
-  getStatus(
-    request: public_pb.GetStatusRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetStatusResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetStatus',
-        request,
-        metadata || {},
-        this.methodDescriptorGetStatus,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetStatus',
-      request,
-      metadata || {},
-      this.methodDescriptorGetStatus);
-  }
-
-  methodDescriptorGetTransactionsThroughput = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetTransactionsThroughput',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetTransactionsThroughputRequest,
-    public_pb.GetTransactionsThroughputResponse,
-    (request: public_pb.GetTransactionsThroughputRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetTransactionsThroughputResponse.deserializeBinary
-  );
-
-  getTransactionsThroughput(
-    request: public_pb.GetTransactionsThroughputRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetTransactionsThroughputResponse>;
-
-  getTransactionsThroughput(
-    request: public_pb.GetTransactionsThroughputRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetTransactionsThroughputResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetTransactionsThroughputResponse>;
-
-  getTransactionsThroughput(
-    request: public_pb.GetTransactionsThroughputRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetTransactionsThroughputResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetTransactionsThroughput',
-        request,
-        metadata || {},
-        this.methodDescriptorGetTransactionsThroughput,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetTransactionsThroughput',
-      request,
-      metadata || {},
-      this.methodDescriptorGetTransactionsThroughput);
-  }
-
-  methodDescriptorQueryState = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/QueryState',
-    grpcWeb.MethodType.UNARY,
-    public_pb.QueryStateRequest,
-    public_pb.QueryStateResponse,
-    (request: public_pb.QueryStateRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.QueryStateResponse.deserializeBinary
-  );
-
-  queryState(
-    request: public_pb.QueryStateRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.QueryStateResponse>;
-
-  queryState(
-    request: public_pb.QueryStateRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.QueryStateResponse) => void): grpcWeb.ClientReadableStream<public_pb.QueryStateResponse>;
-
-  queryState(
-    request: public_pb.QueryStateRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.QueryStateResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/QueryState',
-        request,
-        metadata || {},
-        this.methodDescriptorQueryState,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/QueryState',
-      request,
-      metadata || {},
-      this.methodDescriptorQueryState);
-  }
-
-  methodDescriptorSearchBlocks = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/SearchBlocks',
-    grpcWeb.MethodType.UNARY,
-    public_pb.SearchBlocksRequest,
-    public_pb.SearchBlocksResponse,
-    (request: public_pb.SearchBlocksRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.SearchBlocksResponse.deserializeBinary
-  );
-
-  searchBlocks(
-    request: public_pb.SearchBlocksRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.SearchBlocksResponse>;
-
-  searchBlocks(
-    request: public_pb.SearchBlocksRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.SearchBlocksResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchBlocksResponse>;
-
-  searchBlocks(
-    request: public_pb.SearchBlocksRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.SearchBlocksResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/SearchBlocks',
-        request,
-        metadata || {},
-        this.methodDescriptorSearchBlocks,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/SearchBlocks',
-      request,
-      metadata || {},
-      this.methodDescriptorSearchBlocks);
-  }
-
-  methodDescriptorSearchEndorsements = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/SearchEndorsements',
-    grpcWeb.MethodType.UNARY,
-    public_pb.SearchEndorsementsRequest,
-    public_pb.SearchEndorsementsResponse,
-    (request: public_pb.SearchEndorsementsRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.SearchEndorsementsResponse.deserializeBinary
-  );
-
-  searchEndorsements(
-    request: public_pb.SearchEndorsementsRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.SearchEndorsementsResponse>;
-
-  searchEndorsements(
-    request: public_pb.SearchEndorsementsRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.SearchEndorsementsResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchEndorsementsResponse>;
-
-  searchEndorsements(
-    request: public_pb.SearchEndorsementsRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.SearchEndorsementsResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/SearchEndorsements',
-        request,
-        metadata || {},
-        this.methodDescriptorSearchEndorsements,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/SearchEndorsements',
-      request,
-      metadata || {},
-      this.methodDescriptorSearchEndorsements);
-  }
-
-  methodDescriptorSearchOperations = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/SearchOperations',
-    grpcWeb.MethodType.UNARY,
-    public_pb.SearchOperationsRequest,
-    public_pb.SearchOperationsResponse,
-    (request: public_pb.SearchOperationsRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.SearchOperationsResponse.deserializeBinary
-  );
-
-  searchOperations(
-    request: public_pb.SearchOperationsRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.SearchOperationsResponse>;
-
-  searchOperations(
-    request: public_pb.SearchOperationsRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.SearchOperationsResponse) => void): grpcWeb.ClientReadableStream<public_pb.SearchOperationsResponse>;
-
-  searchOperations(
-    request: public_pb.SearchOperationsRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.SearchOperationsResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/SearchOperations',
-        request,
-        metadata || {},
-        this.methodDescriptorSearchOperations,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/SearchOperations',
-      request,
-      metadata || {},
-      this.methodDescriptorSearchOperations);
-  }
-
-  methodDescriptorGetOperationABICallStacks = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetOperationABICallStacks',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetOperationABICallStacksRequest,
-    public_pb.GetOperationABICallStacksResponse,
-    (request: public_pb.GetOperationABICallStacksRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetOperationABICallStacksResponse.deserializeBinary
-  );
-
-  getOperationABICallStacks(
-    request: public_pb.GetOperationABICallStacksRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetOperationABICallStacksResponse>;
-
-  getOperationABICallStacks(
-    request: public_pb.GetOperationABICallStacksRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationABICallStacksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetOperationABICallStacksResponse>;
-
-  getOperationABICallStacks(
-    request: public_pb.GetOperationABICallStacksRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetOperationABICallStacksResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetOperationABICallStacks',
-        request,
-        metadata || {},
-        this.methodDescriptorGetOperationABICallStacks,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetOperationABICallStacks',
-      request,
-      metadata || {},
-      this.methodDescriptorGetOperationABICallStacks);
-  }
-
-  methodDescriptorGetSlotABICallStacks = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetSlotABICallStacks',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetSlotABICallStacksRequest,
-    public_pb.GetSlotABICallStacksResponse,
-    (request: public_pb.GetSlotABICallStacksRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetSlotABICallStacksResponse.deserializeBinary
-  );
-
-  getSlotABICallStacks(
-    request: public_pb.GetSlotABICallStacksRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetSlotABICallStacksResponse>;
-
-  getSlotABICallStacks(
-    request: public_pb.GetSlotABICallStacksRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotABICallStacksResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSlotABICallStacksResponse>;
-
-  getSlotABICallStacks(
-    request: public_pb.GetSlotABICallStacksRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotABICallStacksResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetSlotABICallStacks',
-        request,
-        metadata || {},
-        this.methodDescriptorGetSlotABICallStacks,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetSlotABICallStacks',
-      request,
-      metadata || {},
-      this.methodDescriptorGetSlotABICallStacks);
-  }
-
-  methodDescriptorGetSlotTransfers = new grpcWeb.MethodDescriptor(
-    '/massa.api.v1.PublicService/GetSlotTransfers',
-    grpcWeb.MethodType.UNARY,
-    public_pb.GetSlotTransfersRequest,
-    public_pb.GetSlotTransfersResponse,
-    (request: public_pb.GetSlotTransfersRequest) => {
-      return request.serializeBinary();
-    },
-    public_pb.GetSlotTransfersResponse.deserializeBinary
-  );
-
-  getSlotTransfers(
-    request: public_pb.GetSlotTransfersRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<public_pb.GetSlotTransfersResponse>;
-
-  getSlotTransfers(
-    request: public_pb.GetSlotTransfersRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotTransfersResponse) => void): grpcWeb.ClientReadableStream<public_pb.GetSlotTransfersResponse>;
-
-  getSlotTransfers(
-    request: public_pb.GetSlotTransfersRequest,
-    metadata?: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.RpcError,
-      response: public_pb.GetSlotTransfersResponse) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-        '/massa.api.v1.PublicService/GetSlotTransfers',
-        request,
-        metadata || {},
-        this.methodDescriptorGetSlotTransfers,
-        callback);
-    }
-    return this.client_.unaryCall(
-      this.hostname_ +
-      '/massa.api.v1.PublicService/GetSlotTransfers',
-      request,
-      metadata || {},
-      this.methodDescriptorGetSlotTransfers);
+    request,
+    metadata || {},
+    this.methodDescriptorGetSlotTransfers);
   }
 
   methodDescriptorNewBlocksServer = new grpcWeb.MethodDescriptor(
@@ -1646,7 +829,7 @@ export class PublicServiceClient {
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.NewBlocksServerResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-      '/massa.api.v1.PublicService/NewBlocksServer',
+        '/massa.api.v1.PublicService/NewBlocksServer',
       request,
       metadata || {},
       this.methodDescriptorNewBlocksServer);
@@ -1668,7 +851,7 @@ export class PublicServiceClient {
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.NewEndorsementsServerResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-      '/massa.api.v1.PublicService/NewEndorsementsServer',
+        '/massa.api.v1.PublicService/NewEndorsementsServer',
       request,
       metadata || {},
       this.methodDescriptorNewEndorsementsServer);
@@ -1690,7 +873,7 @@ export class PublicServiceClient {
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.NewFilledBlocksServerResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-      '/massa.api.v1.PublicService/NewFilledBlocksServer',
+        '/massa.api.v1.PublicService/NewFilledBlocksServer',
       request,
       metadata || {},
       this.methodDescriptorNewFilledBlocksServer);
@@ -1712,7 +895,7 @@ export class PublicServiceClient {
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.NewOperationsServerResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-      '/massa.api.v1.PublicService/NewOperationsServer',
+        '/massa.api.v1.PublicService/NewOperationsServer',
       request,
       metadata || {},
       this.methodDescriptorNewOperationsServer);
@@ -1734,7 +917,7 @@ export class PublicServiceClient {
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.NewSlotExecutionOutputsServerResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-      '/massa.api.v1.PublicService/NewSlotExecutionOutputsServer',
+        '/massa.api.v1.PublicService/NewSlotExecutionOutputsServer',
       request,
       metadata || {},
       this.methodDescriptorNewSlotExecutionOutputsServer);
@@ -1756,7 +939,7 @@ export class PublicServiceClient {
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.TransactionsThroughputServerResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-      '/massa.api.v1.PublicService/TransactionsThroughputServer',
+        '/massa.api.v1.PublicService/TransactionsThroughputServer',
       request,
       metadata || {},
       this.methodDescriptorTransactionsThroughputServer);
@@ -1778,7 +961,7 @@ export class PublicServiceClient {
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<public_pb.NewTransfersInfoServerResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-      '/massa.api.v1.PublicService/NewTransfersInfoServer',
+        '/massa.api.v1.PublicService/NewTransfersInfoServer',
       request,
       metadata || {},
       this.methodDescriptorNewTransfersInfoServer);

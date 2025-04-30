@@ -332,7 +332,7 @@ export namespace AsyncPoolChangeValue {
     updatedMessage?: AsyncMessageUpdate.AsObject,
   }
 
-  export enum MessageCase {
+  export enum MessageCase { 
     MESSAGE_NOT_SET = 0,
     CREATED_MESSAGE = 2,
     UPDATED_MESSAGE = 3,
@@ -538,7 +538,7 @@ export namespace SetOrKeepSlot {
     keep?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     KEEP = 2,
@@ -572,7 +572,7 @@ export namespace SetOrKeepUint64 {
     keep?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     KEEP = 2,
@@ -606,7 +606,7 @@ export namespace SetOrKeepString {
     keep?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     KEEP = 2,
@@ -640,7 +640,7 @@ export namespace SetOrKeepBytes {
     keep?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     KEEP = 2,
@@ -674,7 +674,7 @@ export namespace SetOrKeepBool {
     keep?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     KEEP = 2,
@@ -708,7 +708,7 @@ export namespace SetOrKeepAsyncMessageTrigger {
     keep?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     KEEP = 2,
@@ -794,7 +794,7 @@ export namespace LedgerChangeValue {
     updatedEntry?: LedgerEntryUpdate.AsObject,
   }
 
-  export enum EntryCase {
+  export enum EntryCase { 
     ENTRY_NOT_SET = 0,
     CREATED_ENTRY = 2,
     UPDATED_ENTRY = 3,
@@ -892,7 +892,7 @@ export namespace SetOrKeepBalance {
     keep?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     KEEP = 2,
@@ -926,7 +926,7 @@ export namespace SetOrDeleteDatastoreEntry {
     pb_delete?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum ChangeCase {
+  export enum ChangeCase { 
     CHANGE_NOT_SET = 0,
     SET = 1,
     DELETE = 2,
@@ -982,7 +982,7 @@ export namespace ReadOnlyExecutionCall {
     fee?: massa_model_v1_amount_pb.NativeAmount.AsObject,
   }
 
-  export enum TargetCase {
+  export enum TargetCase { 
     TARGET_NOT_SET = 0,
     BYTECODE_CALL = 3,
     FUNCTION_CALL = 4,
@@ -1302,7 +1302,7 @@ export namespace TransferValue {
     deferredCredits?: massa_model_v1_amount_pb.NativeAmount.AsObject,
   }
 
-  export enum ValueCase {
+  export enum ValueCase { 
     VALUE_NOT_SET = 0,
     ROLLS = 1,
     COINS = 2,
@@ -1310,36 +1310,36 @@ export namespace TransferValue {
   }
 }
 
-export enum ScExecutionEventStatus {
+export enum ScExecutionEventStatus { 
   SC_EXECUTION_EVENT_STATUS_UNSPECIFIED = 0,
   SC_EXECUTION_EVENT_STATUS_FINAL = 1,
   SC_EXECUTION_EVENT_STATUS_READ_ONLY = 2,
   SC_EXECUTION_EVENT_STATUS_CANDIDATE = 3,
 }
-export enum ExecutionOutputStatus {
+export enum ExecutionOutputStatus { 
   EXECUTION_OUTPUT_STATUS_UNSPECIFIED = 0,
   EXECUTION_OUTPUT_STATUS_CANDIDATE = 1,
   EXECUTION_OUTPUT_STATUS_FINAL = 2,
   EXECUTION_OUTPUT_STATUS_UNKNOWN = 3,
 }
-export enum OperationExecutionStatus {
+export enum OperationExecutionStatus { 
   OPERATION_EXECUTION_STATUS_UNSPECIFIED = 0,
   OPERATION_EXECUTION_STATUS_SUCCESS = 1,
   OPERATION_EXECUTION_STATUS_FAILED = 2,
 }
-export enum AsyncPoolChangeType {
+export enum AsyncPoolChangeType { 
   ASYNC_POOL_CHANGE_TYPE_UNSPECIFIED = 0,
   ASYNC_POOL_CHANGE_TYPE_SET = 1,
   ASYNC_POOL_CHANGE_TYPE_UPDATE = 2,
   ASYNC_POOL_CHANGE_TYPE_DELETE = 3,
 }
-export enum LedgerChangeType {
+export enum LedgerChangeType { 
   LEDGER_CHANGE_TYPE_UNSPECIFIED = 0,
   LEDGER_CHANGE_TYPE_SET = 1,
   LEDGER_CHANGE_TYPE_UPDATE = 2,
   LEDGER_CHANGE_TYPE_DELETE = 3,
 }
-export enum CoinOrigin {
+export enum CoinOrigin { 
   COIN_ORIGIN_UNSPECIFIED = 0,
   COIN_ORIGIN_BLOCK_REWARD = 1,
   COIN_ORIGIN_DEFERRED_CALL_FAIL = 2,

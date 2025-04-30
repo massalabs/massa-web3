@@ -79,7 +79,7 @@ export namespace OperationType {
     callSc?: CallSC.AsObject,
   }
 
-  export enum TypeCase {
+  export enum TypeCase { 
     TYPE_NOT_SET = 0,
     TRANSACTION = 1,
     ROLL_BUY = 2,
@@ -390,14 +390,14 @@ export namespace OperationTypeRoll {
     rollSell?: RollSell.AsObject,
   }
 
-  export enum TypeCase {
+  export enum TypeCase { 
     TYPE_NOT_SET = 0,
     ROLL_BUY = 2,
     ROLL_SELL = 3,
   }
 }
 
-export enum OpType {
+export enum OpType { 
   OP_TYPE_UNSPECIFIED = 0,
   OP_TYPE_TRANSACTION = 1,
   OP_TYPE_ROLL_BUY = 2,

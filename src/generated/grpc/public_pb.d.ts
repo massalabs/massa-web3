@@ -138,7 +138,7 @@ export namespace GetDatastoreEntryFilter {
     addressKey?: massa_model_v1_datastore_pb.AddressKeyEntry.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     ADDRESS_KEY = 1,
   }
@@ -339,7 +339,7 @@ export namespace ScExecutionEventsFilter {
     status: massa_model_v1_execution_pb.ScExecutionEventStatus,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     SLOT_RANGE = 1,
     CALLER_ADDRESS = 2,
@@ -451,7 +451,7 @@ export namespace SelectorDrawsFilter {
     slotRange?: massa_model_v1_slot_pb.SlotRange.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     ADDRESSES = 1,
     SLOT_RANGE = 2,
@@ -525,7 +525,7 @@ export namespace StakersFilter {
     limit: number,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     MIN_ROLLS = 1,
     MAX_ROLLS = 2,
@@ -758,7 +758,7 @@ export namespace ExecutionQueryRequestItem {
     deferredCallsBySlot?: DeferredCallsBySlot.AsObject,
   }
 
-  export enum RequestItemCase {
+  export enum RequestItemCase { 
     REQUEST_ITEM_NOT_SET = 0,
     ADDRESS_EXISTS_CANDIDATE = 1,
     ADDRESS_EXISTS_FINAL = 2,
@@ -1513,7 +1513,7 @@ export namespace ExecutionQueryResponse {
     error?: massa_model_v1_commons_pb.Error.AsObject,
   }
 
-  export enum ResponseCase {
+  export enum ResponseCase { 
     RESPONSE_NOT_SET = 0,
     RESULT = 1,
     ERROR = 2,
@@ -1601,7 +1601,7 @@ export namespace ExecutionQueryResponseItem {
     deferredCallsBySlot?: DeferredCallsBySlotResponse.AsObject,
   }
 
-  export enum ResponseItemCase {
+  export enum ResponseItemCase { 
     RESPONSE_ITEM_NOT_SET = 0,
     BOOLEAN = 1,
     ROLL_COUNT = 2,
@@ -1879,7 +1879,7 @@ export namespace NewBlocksFilter {
     slotRange?: massa_model_v1_slot_pb.SlotRange.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     BLOCK_IDS = 1,
     ADDRESSES = 2,
@@ -2000,7 +2000,7 @@ export namespace NewEndorsementsFilter {
     blockIds?: massa_model_v1_block_pb.BlockIds.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     ENDORSEMENT_IDS = 1,
     ADDRESSES = 2,
@@ -2121,7 +2121,7 @@ export namespace NewFilledBlocksFilter {
     slotRange?: massa_model_v1_slot_pb.SlotRange.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     BLOCK_IDS = 1,
     ADDRESSES = 2,
@@ -2242,7 +2242,7 @@ export namespace NewOperationsFilter {
     operationTypes?: massa_model_v1_operation_pb.OpTypes.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     OPERATION_IDS = 1,
     ADDRESSES = 2,
@@ -2441,7 +2441,7 @@ export namespace NewSlotExecutionOutputsFilter {
     ledgerChangesFilter?: LedgerChangesFilter.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     STATUS = 1,
     SLOT_RANGE = 2,
@@ -2494,7 +2494,7 @@ export namespace AsyncPoolChangesFilter {
     canBeExecuted: boolean,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     NONE = 1,
     TYPE = 2,
@@ -2530,7 +2530,7 @@ export namespace PosChangesFilter {
     address: string,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     NONE = 1,
     ADDRESS = 2,
@@ -2574,7 +2574,7 @@ export namespace ExecutionEventFilter {
     isFailure: boolean,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     NONE = 1,
     CALLER_ADDRESS = 2,
@@ -2609,7 +2609,7 @@ export namespace ExecutedOpsChangesFilter {
     operationId: string,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     NONE = 1,
     OPERATION_ID = 2,
@@ -2637,7 +2637,7 @@ export namespace ExecutedDenounciationFilter {
     none?: massa_model_v1_commons_pb.Empty.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     NONE = 1,
   }
@@ -2668,7 +2668,7 @@ export namespace LedgerChangesFilter {
     address: string,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     NONE = 1,
     ADDRESS = 2,
@@ -2854,7 +2854,7 @@ export namespace SendBlocksResponse {
     error?: massa_model_v1_commons_pb.Error.AsObject,
   }
 
-  export enum ResultCase {
+  export enum ResultCase { 
     RESULT_NOT_SET = 0,
     BLOCK_ID = 1,
     ERROR = 2,
@@ -2908,7 +2908,7 @@ export namespace SendEndorsementsResponse {
     error?: massa_model_v1_commons_pb.Error.AsObject,
   }
 
-  export enum ResultCase {
+  export enum ResultCase { 
     RESULT_NOT_SET = 0,
     ENDORSEMENT_IDS = 1,
     ERROR = 2,
@@ -2962,7 +2962,7 @@ export namespace SendOperationsResponse {
     error?: massa_model_v1_commons_pb.Error.AsObject,
   }
 
-  export enum ResultCase {
+  export enum ResultCase { 
     RESULT_NOT_SET = 0,
     OPERATION_IDS = 1,
     ERROR = 2,
@@ -3098,7 +3098,7 @@ export namespace SearchBlocksFilter {
     slotRange?: massa_model_v1_slot_pb.SlotRange.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     BLOCK_IDS = 1,
     ADDRESSES = 2,
@@ -3179,7 +3179,7 @@ export namespace SearchEndorsementsFilter {
     blockIds?: massa_model_v1_block_pb.BlockIds.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     ENDORSEMENT_IDS = 1,
     ADDRESSES = 2,
@@ -3254,7 +3254,7 @@ export namespace SearchOperationsFilter {
     addresses?: massa_model_v1_address_pb.Addresses.AsObject,
   }
 
-  export enum FilterCase {
+  export enum FilterCase { 
     FILTER_NOT_SET = 0,
     OPERATION_IDS = 1,
     ADDRESSES = 2,
@@ -3390,7 +3390,7 @@ export namespace ABICallStackElementParent {
     elementCall?: ABICallStackElementCall.AsObject,
   }
 
-  export enum CallStackElementCase {
+  export enum CallStackElementCase { 
     CALL_STACK_ELEMENT_NOT_SET = 0,
     ELEMENT = 1,
     ELEMENT_CALL = 2,
@@ -3606,7 +3606,7 @@ export namespace TransferInfo {
     ascIndex: number,
   }
 
-  export enum OperationIdOrAscIndexCase {
+  export enum OperationIdOrAscIndexCase { 
     OPERATION_ID_OR_ASC_INDEX_NOT_SET = 0,
     OPERATION_ID = 4,
     ASC_INDEX = 5,
@@ -3659,13 +3659,13 @@ export namespace GetSlotTransfersResponse {
   }
 }
 
-export enum ExecutionQueryExecutionStatus {
+export enum ExecutionQueryExecutionStatus { 
   EXECUTION_QUERY_EXECUTION_STATUS_UNSPECIFIED = 0,
   EXECUTION_QUERY_EXECUTION_STATUS_ALREADY_EXECUTED_WITH_SUCCESS = 1,
   EXECUTION_QUERY_EXECUTION_STATUS_ALREADY_EXECUTED_WITH_FAILURE = 2,
   EXECUTION_QUERY_EXECUTION_STATUS_EXECUTABLE_OR_EXPIRED = 3,
 }
-export enum FinalityLevel {
+export enum FinalityLevel { 
   FINALITY_LEVEL_UNSPECIFIED = 0,
   FINALITY_LEVEL_CANDIDATE = 1,
   FINALITY_LEVEL_FINAL = 2,
