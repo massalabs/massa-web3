@@ -1,6 +1,6 @@
 import { Provider } from 'src/provider'
 import { Operation } from 'src/operation'
-import { PublicAPI } from 'src/client'
+import { PublicAPI } from '../client'
 
 export async function makeImmutable(
   address: string,
