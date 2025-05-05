@@ -12,6 +12,7 @@ import { Address, Args, bytesToStr, Mas } from '../../src/basicElements'
 
 import { execute } from '../../src/basicElements/bytecode'
 import { Operation } from '../../src/operation'
+import { JsonRPCClient } from '../../src'
 
 const INSUFFICIENT_MAX_GAS = MIN_GAS_CALL - 1n
 const contractPath = path.join(__dirname, './contracts/scTest.wasm')
@@ -107,6 +108,27 @@ describe('Smart Contract', () => {
       const events = await op.getSpeculativeEvents()
       const firstEvent = events[0].data
       expect(firstEvent).toBe(`Set value ${value} to key ${key}`)
+
+      const keys = await provider.getStorageKeys(
+        contractTest.address,
+        key,
+        false
+      )
+      expect(keys).toHaveLength(1)
+      expect(bytesToStr(keys[0])).toBe(key)
+
+      const keysV2 = await provider.client.getAddressesDatastoreKeys([
+        {
+          address: contractTest.address,
+          prefix: key,
+          final: false,
+        },
+      ])
+      expect(keysV2).toHaveLength(1)
+      expect(keysV2[0].address).toBe(contractTest.address)
+      expect(keysV2[0].isFinal).toBeDefined()
+      expect(keysV2[0].keys).toHaveLength(1)
+      expect(bytesToStr(keysV2[0].keys[0])).toBe(key)
     })
 
     test('call with send coins', async () => {

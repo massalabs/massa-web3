@@ -76,10 +76,40 @@ export interface ReadOnlyCall {
 }
 /**
  *
- * Operation is final
+ * true if final
  *
  */
 export type IsFinal = boolean;
+/**
+ *
+ * The final datastore entry value bytes
+ *
+ */
+export type BytesOption = NullQu0Arl1F | Bytes;
+export type BooleanVyG3AETh = boolean;
+/**
+ *
+ * true if the operation execution succeeded, false if failed, None means unknown
+ *
+ */
+export type BoolOption = NullQu0Arl1F | BooleanVyG3AETh;
+export type NumberHo1ClIqD = number;
+/**
+ *
+ * limit the number of keys
+ *
+ */
+export type OneOfNullQu0Arl1FNumberHo1ClIqDZYVejSp3 = NullQu0Arl1F | NumberHo1ClIqD;
+export interface GetAddressDatastoreKeysRequest {
+  address: Address;
+  prefix: Bytes;
+  is_final: IsFinal;
+  start_key?: BytesOption;
+  inclusive_start_key?: BoolOption;
+  end_key?: BytesOption;
+  inclusive_end_key?: BoolOption;
+  count?: OneOfNullQu0Arl1FNumberHo1ClIqDZYVejSp3;
+}
 /**
  *
  * Address filter
@@ -138,7 +168,6 @@ export type OperationId = string;
  *
  */
 export type Error = boolean;
-export type NumberHo1ClIqD = number;
 export interface DeferredCallsQuoteRequest {
   target_slot: Slot;
   max_gas_request: NumberHo1ClIqD;
@@ -386,6 +415,12 @@ export interface AddressInfo {
   created_endorsements: UnorderedSetOfEndorsementIdwrpyYBUS;
   cycle_infos: UnorderedSetOfExecutionAddressCycleInfowrpyYBUS;
 }
+export type KeysList = Bytes[];
+export interface GetAddressDatastoreKeysResponse {
+  address: Address;
+  is_final: IsFinal;
+  keys: KeysList;
+}
 /**
  *
  * true if candidate
@@ -526,12 +561,6 @@ export interface Clique {
 }
 /**
  *
- * The final datastore entry value bytes
- *
- */
-export type BytesOption = NullQu0Arl1F | Bytes;
-/**
- *
  * Datastore entry
  *
  */
@@ -567,7 +596,6 @@ export interface TransferReceipt {
   block_id: BlockId;
 }
 export type UnorderedSetOfTransferReceiptzpyvh8AY = TransferReceipt[];
-export type BooleanVyG3AETh = boolean;
 /**
  *
  * Endorsement
@@ -618,7 +646,7 @@ export type BooleanSJ3TNusg = boolean;
  * True if the operation is final (for example in a final block)
  *
  */
-export type IsFinalOperation = NullQu0Arl1F | IsFinal;
+export type IsFinalOperation = NullQu0Arl1F | BooleanVyG3AETh;
 /**
  *
  * transfer coins from sender to recipient
@@ -715,12 +743,6 @@ export interface WrappedOperation {
 }
 /**
  *
- * true if the operation execution succeeded, false if failed, None means unknown
- *
- */
-export type OneOfBooleanVyG3AEThNullQu0Arl1FE3Qax0Os = NullQu0Arl1F | BooleanVyG3AETh;
-/**
- *
  * Operation info
  *
  */
@@ -731,7 +753,7 @@ export interface OperationInfo {
   is_operation_final: IsFinalOperation;
   thread: Thread;
   operation: WrappedOperation;
-  op_exec_status?: OneOfBooleanVyG3AEThNullQu0Arl1FE3Qax0Os;
+  op_exec_status?: BoolOption;
 }
 export interface ObjectOfAddressRollAmountUf3B9Cb5 {
   address?: Address;
@@ -972,6 +994,12 @@ export interface ExecutionStats {
  *
  */
 export type NumberBte4OVdF = number;
+/**
+ *
+ * Current MIP version
+ *
+ */
+export type NumberYYhfgFTd = number;
 export interface DeferredCallsQuoteResponse {
   target_slot: Slot;
   max_gas_request: NumberHo1ClIqD;
@@ -1040,6 +1068,7 @@ export interface FilledBlockInfoContent {
 export type UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A = ReadOnlyBytecodeExecution[];
 export type UnorderedSetOfReadOnlyCallfpPkkjmf = ReadOnlyCall[];
 export type UnorderedSetOfAddressjJsnATCO = Address[];
+export type DatastoreKeysFilter = GetAddressDatastoreKeysRequest[];
 export type AddressList = AddressFilter[];
 export type UnorderedSetOfDatastoreEntryInputLrTgdYH8 = DatastoreEntryInput[];
 export type UnorderedSetOfEndorsementIdqnHAk5M0 = EndorsementId[];
@@ -1082,6 +1111,7 @@ export interface ApiRequest {
 }
 export type UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS = ExecuteReadOnlyResponse[];
 export type UnorderedSetOfAddressInfowrpyYBUS = AddressInfo[];
+export type AddressesDatastoreKeys = GetAddressDatastoreKeysResponse[];
 export type BytecodeList = Bytes[];
 export type UnorderedSetOfBlockInfowrpyYBUS = BlockInfo[];
 export type UnorderedSetOfCliqueMz9JAAOV = Clique[];
@@ -1113,6 +1143,7 @@ export interface NodeStatus {
   execution_stats: ExecutionStats;
   chain_id: NumberBte4OVdF;
   minimal_fees?: Amount;
+  current_mip_version: NumberYYhfgFTd;
 }
 export type UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS = DeferredCallsQuoteResponse[];
 export type UnorderedSetOfDeferredCallResponsewrpyYBUS = DeferredCallResponse[];
@@ -1145,10 +1176,11 @@ export interface FilledBlockInfo {
  * Generated! Represents an alias to any of the provided schemas
  *
  */
-export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCOAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotwrpyYBUSUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfDeferredCallsSlotResponsewrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A | UnorderedSetOfReadOnlyCallfpPkkjmf | UnorderedSetOfAddressjJsnATCO | AddressList | BlockIdList | Slot | UnorderedSetOfDatastoreEntryInputLrTgdYH8 | UnorderedSetOfSlotwrpyYBUS | UnorderedSetOfEndorsementIdqnHAk5M0 | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | UnorderedSetOfOperationId5TxbV4NZ | Pagination | UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS | UnorderedSetOfStringDoaGddGADvj0XlFa | UnorderedSetOfPrivateKeyG69QLiLP | IpAddressList | Bytes | UnorderedSetOfIpAddressiIc9WbOi | UnorderedSetOfOperationInputx51DfMZX | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfowrpyYBUS | BytecodeList | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueMz9JAAOV | UnorderedSetOfDatastoreEntryOutputgBhWTzxI | UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7 | UnorderedSetOfEndorsementInfowrpyYBUS | OutputEvents | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfowrpyYBUS | UnorderedSetOfStakerdplIH7J8 | NodeStatus | UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS | UnorderedSetOfDeferredCallResponsewrpyYBUS | UnorderedSetOfDeferredCallsSlotResponsewrpyYBUS | AlwaysFalse | PubkeySig | PagedVecStaker | UnorderedSetOfBlockParentwrpyYBUS | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
+export type AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCODatastoreKeysFilterAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotwrpyYBUSUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSAddressesDatastoreKeysBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfDeferredCallsSlotResponsewrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A | UnorderedSetOfReadOnlyCallfpPkkjmf | UnorderedSetOfAddressjJsnATCO | DatastoreKeysFilter | AddressList | BlockIdList | Slot | UnorderedSetOfDatastoreEntryInputLrTgdYH8 | UnorderedSetOfSlotwrpyYBUS | UnorderedSetOfEndorsementIdqnHAk5M0 | EventFilter | ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq | UnorderedSetOfOperationId5TxbV4NZ | Pagination | UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS | UnorderedSetOfStringDoaGddGADvj0XlFa | UnorderedSetOfPrivateKeyG69QLiLP | IpAddressList | Bytes | UnorderedSetOfIpAddressiIc9WbOi | UnorderedSetOfOperationInputx51DfMZX | ApiRequest | Integer2AHOqbcQ | UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS | UnorderedSetOfAddressInfowrpyYBUS | AddressesDatastoreKeys | BytecodeList | UnorderedSetOfBlockInfowrpyYBUS | Block | UnorderedSetOfCliqueMz9JAAOV | UnorderedSetOfDatastoreEntryOutputgBhWTzxI | UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7 | UnorderedSetOfEndorsementInfowrpyYBUS | OutputEvents | UnorderedSetOfGraphIntervalwrpyYBUS | UnorderedSetOfOperationInfowrpyYBUS | UnorderedSetOfStakerdplIH7J8 | NodeStatus | UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS | UnorderedSetOfDeferredCallResponsewrpyYBUS | UnorderedSetOfDeferredCallsSlotResponsewrpyYBUS | AlwaysFalse | PubkeySig | PagedVecStaker | UnorderedSetOfBlockParentwrpyYBUS | Version | BlockInfo | WrappedHeader | FilledBlockInfo | Operation | BooleanVyG3AETh;
 export type ExecuteReadOnlyBytecode = (ReadOnlyBytecodeExecution: UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
 export type ExecuteReadOnlyCall = (ReadOnlyCall: UnorderedSetOfReadOnlyCallfpPkkjmf) => Promise<UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS>;
 export type GetAddresses = (address: UnorderedSetOfAddressjJsnATCO) => Promise<UnorderedSetOfAddressInfowrpyYBUS>;
+export type GetAddressesDatastoreKeys = (AddressesDatastoreKeys: DatastoreKeysFilter) => Promise<AddressesDatastoreKeys>;
 export type GetAddressesBytecode = (addressFilter: AddressList) => Promise<BytecodeList>;
 export type GetBlocks = (blockIds: BlockIdList) => Promise<UnorderedSetOfBlockInfowrpyYBUS>;
 export type GetBlockcliqueBlockBySlot = (slot: Slot) => Promise<Block>;

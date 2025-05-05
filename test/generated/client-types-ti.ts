@@ -42,6 +42,30 @@ export const ReadOnlyCall = t.iface([], {
   "fee": "AmountOption",
 });
 
+export const BooleanVyG3AETh = t.name("boolean");
+
+export const BytesOption = t.union("NullQu0Arl1F", "Bytes");
+
+export const OneOfBooleanVyG3AEThNullQu0Arl1FFlEDIoHw = t.union("NullQu0Arl1F", "BooleanVyG3AETh");
+
+export const OneOfBooleanVyG3AEThNullQu0Arl1FMIe9M4Sx = t.union("NullQu0Arl1F", "BooleanVyG3AETh");
+
+export const NumberHo1ClIqD = t.name("number");
+
+export const OneOfNullQu0Arl1FNumberHo1ClIqDZYVejSp3 = t.union("NullQu0Arl1F", "NumberHo1ClIqD");
+
+export const GetAddressDatastoreKeysRequest = t.iface([], {
+  "address": "Address",
+  "prefix": "Bytes",
+  "is_final": "BooleanVyG3AETh",
+  "start_key": t.opt("BytesOption"),
+  "inclusive_start_key": t.opt("OneOfBooleanVyG3AEThNullQu0Arl1FFlEDIoHw"),
+  "end_key": t.opt("BytesOption"),
+  "inclusive_end_key": t.opt("OneOfBooleanVyG3AEThNullQu0Arl1FMIe9M4Sx"),
+  "count": t.opt("OneOfNullQu0Arl1FNumberHo1ClIqDZYVejSp3"),
+  [t.indexKey]: "any",
+});
+
 export const IsFinal = t.name("boolean");
 
 export const AddressFilter = t.iface([], {
@@ -70,8 +94,6 @@ export const EndorsementId = t.name("string");
 export const OperationId = t.name("string");
 
 export const Error = t.name("boolean");
-
-export const NumberHo1ClIqD = t.name("number");
 
 export const DeferredCallsQuoteRequest = t.iface([], {
   "target_slot": "Slot",
@@ -245,6 +267,15 @@ export const AddressInfo = t.iface([], {
   "cycle_infos": "UnorderedSetOfExecutionAddressCycleInfowrpyYBUS",
 });
 
+export const KeysList = t.array("Bytes");
+
+export const GetAddressDatastoreKeysResponse = t.iface([], {
+  "address": "Address",
+  "is_final": "BooleanVyG3AETh",
+  "keys": "KeysList",
+  [t.indexKey]: "any",
+});
+
 export const IsCandidate = t.name("boolean");
 
 export const IsDiscarded = t.name("boolean");
@@ -343,8 +374,6 @@ export const Clique = t.iface([], {
   "is_blockclique": "BooleanXIboFXzF",
 });
 
-export const BytesOption = t.union("NullQu0Arl1F", "Bytes");
-
 export const DatastoreEntryOutput = t.iface([], {
   "candidate_value": "BytesOption",
   "final_value": "BytesOption",
@@ -368,8 +397,6 @@ export const TransferReceipt = t.iface([], {
 });
 
 export const UnorderedSetOfTransferReceiptzpyvh8AY = t.array("TransferReceipt");
-
-export const BooleanVyG3AETh = t.name("boolean");
 
 export const Endorsement = t.iface([], {
   "content": "EndorsementContent",
@@ -582,6 +609,8 @@ export const ExecutionStats = t.iface([], {
 
 export const NumberBte4OVdF = t.name("number");
 
+export const NumberYYhfgFTd = t.name("number");
+
 export const DeferredCallsQuoteResponse = t.iface([], {
   "target_slot": "Slot",
   "max_gas_request": "NumberHo1ClIqD",
@@ -653,6 +682,8 @@ export const UnorderedSetOfReadOnlyCallfpPkkjmf = t.array("ReadOnlyCall");
 
 export const UnorderedSetOfAddressjJsnATCO = t.array("Address");
 
+export const UnorderedSetOfGetAddressDatastoreKeysRequestwwbKJNso = t.array("GetAddressDatastoreKeysRequest");
+
 export const AddressList = t.array("AddressFilter");
 
 export const UnorderedSetOfDatastoreEntryInputLrTgdYH8 = t.array("DatastoreEntryInput");
@@ -694,6 +725,8 @@ export const UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS = t.array("ExecuteRea
 
 export const UnorderedSetOfAddressInfowrpyYBUS = t.array("AddressInfo");
 
+export const UnorderedSetOfGetAddressDatastoreKeysResponseryprqbOT = t.array("GetAddressDatastoreKeysResponse");
+
 export const BytecodeList = t.array("Bytes");
 
 export const UnorderedSetOfBlockInfowrpyYBUS = t.array("BlockInfo");
@@ -728,6 +761,7 @@ export const NodeStatus = t.iface([], {
   "execution_stats": "ExecutionStats",
   "chain_id": "NumberBte4OVdF",
   "minimal_fees": t.opt("Amount"),
+  "current_mip_version": "NumberYYhfgFTd",
 });
 
 export const UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS = t.array("DeferredCallsQuoteResponse");
@@ -753,13 +787,15 @@ export const FilledBlockInfo = t.iface([], {
   "content": t.opt("FilledBlockInfoContent"),
 });
 
-export const AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCOAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotwrpyYBUSUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfDeferredCallsSlotResponsewrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = t.union("UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A", "UnorderedSetOfReadOnlyCallfpPkkjmf", "UnorderedSetOfAddressjJsnATCO", "AddressList", "BlockIdList", "Slot", "UnorderedSetOfDatastoreEntryInputLrTgdYH8", "UnorderedSetOfSlotwrpyYBUS", "UnorderedSetOfEndorsementIdqnHAk5M0", "EventFilter", "ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq", "UnorderedSetOfOperationId5TxbV4NZ", "Pagination", "UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS", "UnorderedSetOfStringDoaGddGADvj0XlFa", "UnorderedSetOfPrivateKeyG69QLiLP", "IpAddressList", "Bytes", "UnorderedSetOfIpAddressiIc9WbOi", "UnorderedSetOfOperationInputx51DfMZX", "ApiRequest", "Integer2AHOqbcQ", "UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS", "UnorderedSetOfAddressInfowrpyYBUS", "BytecodeList", "UnorderedSetOfBlockInfowrpyYBUS", "Block", "UnorderedSetOfCliqueMz9JAAOV", "UnorderedSetOfDatastoreEntryOutputgBhWTzxI", "UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7", "UnorderedSetOfEndorsementInfowrpyYBUS", "OutputEvents", "UnorderedSetOfGraphIntervalwrpyYBUS", "UnorderedSetOfOperationInfowrpyYBUS", "UnorderedSetOfStakerdplIH7J8", "NodeStatus", "UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS", "UnorderedSetOfDeferredCallResponsewrpyYBUS", "UnorderedSetOfDeferredCallsSlotResponsewrpyYBUS", "AlwaysFalse", "PubkeySig", "PagedVecStaker", "UnorderedSetOfBlockParentwrpyYBUS", "Version", "BlockInfo", "WrappedHeader", "FilledBlockInfo", "Operation", "BooleanVyG3AETh");
+export const AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCOUnorderedSetOfGetAddressDatastoreKeysRequestwwbKJNsoAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotwrpyYBUSUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSUnorderedSetOfGetAddressDatastoreKeysResponseryprqbOTBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfDeferredCallsSlotResponsewrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh = t.union("UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A", "UnorderedSetOfReadOnlyCallfpPkkjmf", "UnorderedSetOfAddressjJsnATCO", "UnorderedSetOfGetAddressDatastoreKeysRequestwwbKJNso", "AddressList", "BlockIdList", "Slot", "UnorderedSetOfDatastoreEntryInputLrTgdYH8", "UnorderedSetOfSlotwrpyYBUS", "UnorderedSetOfEndorsementIdqnHAk5M0", "EventFilter", "ObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75Fq", "UnorderedSetOfOperationId5TxbV4NZ", "Pagination", "UnorderedSetOfDeferredCallsQuoteRequestwrpyYBUS", "UnorderedSetOfStringDoaGddGADvj0XlFa", "UnorderedSetOfPrivateKeyG69QLiLP", "IpAddressList", "Bytes", "UnorderedSetOfIpAddressiIc9WbOi", "UnorderedSetOfOperationInputx51DfMZX", "ApiRequest", "Integer2AHOqbcQ", "UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS", "UnorderedSetOfAddressInfowrpyYBUS", "UnorderedSetOfGetAddressDatastoreKeysResponseryprqbOT", "BytecodeList", "UnorderedSetOfBlockInfowrpyYBUS", "Block", "UnorderedSetOfCliqueMz9JAAOV", "UnorderedSetOfDatastoreEntryOutputgBhWTzxI", "UnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7", "UnorderedSetOfEndorsementInfowrpyYBUS", "OutputEvents", "UnorderedSetOfGraphIntervalwrpyYBUS", "UnorderedSetOfOperationInfowrpyYBUS", "UnorderedSetOfStakerdplIH7J8", "NodeStatus", "UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS", "UnorderedSetOfDeferredCallResponsewrpyYBUS", "UnorderedSetOfDeferredCallsSlotResponsewrpyYBUS", "AlwaysFalse", "PubkeySig", "PagedVecStaker", "UnorderedSetOfBlockParentwrpyYBUS", "Version", "BlockInfo", "WrappedHeader", "FilledBlockInfo", "Operation", "BooleanVyG3AETh");
 
 export const ExecuteReadOnlyBytecode = t.func("UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS", t.param("ReadOnlyBytecodeExecution", "UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A"));
 
 export const ExecuteReadOnlyCall = t.func("UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS", t.param("ReadOnlyCall", "UnorderedSetOfReadOnlyCallfpPkkjmf"));
 
 export const GetAddresses = t.func("UnorderedSetOfAddressInfowrpyYBUS", t.param("address", "UnorderedSetOfAddressjJsnATCO"));
+
+export const GetAddressesDatastoreKeys = t.name("address");
 
 export const GetAddressesBytecode = t.func("BytecodeList", t.param("addressFilter", "AddressList"));
 
@@ -870,6 +906,13 @@ const exportedTypeSuite: t.ITypeSuite = {
   ReadOnlyBytecodeExecution,
   TargetFunction,
   ReadOnlyCall,
+  BooleanVyG3AETh,
+  BytesOption,
+  OneOfBooleanVyG3AEThNullQu0Arl1FFlEDIoHw,
+  OneOfBooleanVyG3AEThNullQu0Arl1FMIe9M4Sx,
+  NumberHo1ClIqD,
+  OneOfNullQu0Arl1FNumberHo1ClIqDZYVejSp3,
+  GetAddressDatastoreKeysRequest,
   IsFinal,
   AddressFilter,
   BlockId,
@@ -880,7 +923,6 @@ const exportedTypeSuite: t.ITypeSuite = {
   EndorsementId,
   OperationId,
   Error,
-  NumberHo1ClIqD,
   DeferredCallsQuoteRequest,
   StringDoaGddGA,
   PrivateKey,
@@ -924,6 +966,8 @@ const exportedTypeSuite: t.ITypeSuite = {
   ExecutionAddressCycleInfo,
   UnorderedSetOfExecutionAddressCycleInfowrpyYBUS,
   AddressInfo,
+  KeysList,
+  GetAddressDatastoreKeysResponse,
   IsCandidate,
   IsDiscarded,
   InBlockClique,
@@ -944,13 +988,11 @@ const exportedTypeSuite: t.ITypeSuite = {
   Number7BVjpZ2Z,
   BooleanXIboFXzF,
   Clique,
-  BytesOption,
   DatastoreEntryOutput,
   Context,
   IsSuccess,
   TransferReceipt,
   UnorderedSetOfTransferReceiptzpyvh8AY,
-  BooleanVyG3AETh,
   Endorsement,
   EndorsementInfo,
   Stale,
@@ -1005,6 +1047,7 @@ const exportedTypeSuite: t.ITypeSuite = {
   NumberJ4Dz6P30,
   ExecutionStats,
   NumberBte4OVdF,
+  NumberYYhfgFTd,
   DeferredCallsQuoteResponse,
   UnorderedSetOfNumberHo1ClIqDAokMKuEf,
   DeferredCall,
@@ -1021,6 +1064,7 @@ const exportedTypeSuite: t.ITypeSuite = {
   UnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8A,
   UnorderedSetOfReadOnlyCallfpPkkjmf,
   UnorderedSetOfAddressjJsnATCO,
+  UnorderedSetOfGetAddressDatastoreKeysRequestwwbKJNso,
   AddressList,
   UnorderedSetOfDatastoreEntryInputLrTgdYH8,
   UnorderedSetOfEndorsementIdqnHAk5M0,
@@ -1035,6 +1079,7 @@ const exportedTypeSuite: t.ITypeSuite = {
   ApiRequest,
   UnorderedSetOfExecuteReadOnlyResponsewrpyYBUS,
   UnorderedSetOfAddressInfowrpyYBUS,
+  UnorderedSetOfGetAddressDatastoreKeysResponseryprqbOT,
   BytecodeList,
   UnorderedSetOfBlockInfowrpyYBUS,
   UnorderedSetOfCliqueMz9JAAOV,
@@ -1051,10 +1096,11 @@ const exportedTypeSuite: t.ITypeSuite = {
   PagedVecStaker,
   UnorderedSetOfBlockParentwrpyYBUS,
   FilledBlockInfo,
-  AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCOAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotwrpyYBUSUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfDeferredCallsSlotResponsewrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh,
+  AnyOfUnorderedSetOfReadOnlyBytecodeExecutionNzcRfs8AUnorderedSetOfReadOnlyCallfpPkkjmfUnorderedSetOfAddressjJsnATCOUnorderedSetOfGetAddressDatastoreKeysRequestwwbKJNsoAddressListBlockIdListSlotUnorderedSetOfDatastoreEntryInputLrTgdYH8UnorderedSetOfSlotwrpyYBUSUnorderedSetOfEndorsementIdqnHAk5M0EventFilterObjectOfNumberHo1ClIqDNumberHo1ClIqDTmeT75FqUnorderedSetOfOperationId5TxbV4NZPaginationUnorderedSetOfDeferredCallsQuoteRequestwrpyYBUSUnorderedSetOfStringDoaGddGADvj0XlFaUnorderedSetOfSlotwrpyYBUSUnorderedSetOfPrivateKeyG69QLiLPIpAddressListIpAddressListIpAddressListUnorderedSetOfStringDoaGddGADvj0XlFaIpAddressListIpAddressListIpAddressListIpAddressListIpAddressListUnorderedSetOfAddressjJsnATCOBytesUnorderedSetOfIpAddressiIc9WbOiIpAddressListIpAddressListUnorderedSetOfOperationInputx51DfMZXApiRequestInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQInteger2AHOqbcQUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfExecuteReadOnlyResponsewrpyYBUSUnorderedSetOfAddressInfowrpyYBUSUnorderedSetOfGetAddressDatastoreKeysResponseryprqbOTBytecodeListUnorderedSetOfBlockInfowrpyYBUSBlockUnorderedSetOfCliqueMz9JAAOVUnorderedSetOfDatastoreEntryOutputgBhWTzxIUnorderedSetOfUnorderedSetOfTransferReceiptzpyvh8AYeEDRSdp7UnorderedSetOfEndorsementInfowrpyYBUSOutputEventsUnorderedSetOfGraphIntervalwrpyYBUSUnorderedSetOfOperationInfowrpyYBUSUnorderedSetOfStakerdplIH7J8NodeStatusUnorderedSetOfDeferredCallsQuoteResponsewrpyYBUSUnorderedSetOfDeferredCallResponsewrpyYBUSUnorderedSetOfDeferredCallsSlotResponsewrpyYBUSAlwaysFalseUnorderedSetOfAddressjJsnATCOAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseIpAddressListIpAddressListAlwaysFalseIpAddressListAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalsePubkeySigAlwaysFalseAlwaysFalseAlwaysFalseAlwaysFalseUnorderedSetOfOperationId5TxbV4NZPagedVecStakerUnorderedSetOfBlockParentwrpyYBUSVersionBlockInfoWrappedHeaderFilledBlockInfoOperationBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AEThBooleanVyG3AETh,
   ExecuteReadOnlyBytecode,
   ExecuteReadOnlyCall,
   GetAddresses,
+  GetAddressesDatastoreKeys,
   GetAddressesBytecode,
   GetBlocks,
   GetBlockcliqueBlockBySlot,
