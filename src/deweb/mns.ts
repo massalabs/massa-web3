@@ -62,11 +62,11 @@ export async function resolveDeweb(uri: string): Promise<string> {
 
   try {
     const response = await fetch(
-      `${currentProtocol}//${subdomains.slice(1).join('.')}/__deweb_info`
+      `${currentProtocol}//${currentHost}/__deweb_info`
     )
     if (await isDewebInfoData(response)) {
       subdomains[0] = mnsDomain
-      return `${currentProtocol}//${subdomains.join('.')}/${mnsPath}${mnsSearch}`
+      return `${currentProtocol}//${subdomains.join('.')}${mnsPath}${mnsSearch}`
     }
     return defaultUrl
   } catch (error) {
