@@ -34,7 +34,6 @@ export async function isImmutable(
     }
   }
 
-  console.log('nodeUrl', nodeUrl)
   const client = new PublicAPI(nodeUrl)
   const bytecode = await client.getAddressesBytecode({
     address: address,
