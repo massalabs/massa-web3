@@ -34,6 +34,17 @@ export function getNetworkNameByChainId(
   return undefined
 }
 
+export function getPublicApiByChainId(
+  chainId: bigint
+): PublicApiUrl | undefined {
+  for (const [key, value] of Object.entries(CHAIN_ID)) {
+    if (value === chainId) {
+      return PublicApiUrl[key as keyof typeof PublicApiUrl]
+    }
+  }
+  return undefined
+}
+
 export type Network = {
   name: NetworkName | string
   chainId: bigint

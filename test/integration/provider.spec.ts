@@ -1,4 +1,4 @@
-import { CHAIN_ID, GrpcApiUrl, NetworkName } from '../../src'
+import { CHAIN_ID, GrpcApiUrl, PublicApiUrl, NetworkName } from '../../src'
 import { grpcProvider, provider } from './setup'
 import { strToBytes, U256 } from '../../src/basicElements/serializers'
 
@@ -12,7 +12,7 @@ describe('Provider JsonRPC tests', () => {
       name: NetworkName.Buildnet,
       minimalFee: 10000000n,
       chainId: CHAIN_ID.Buildnet,
-      url: 'https://buildnet.massa.net/api/v2',
+      url: PublicApiUrl.Buildnet,
     })
     expect(infos_grpc).toEqual({
       name: NetworkName.Buildnet,

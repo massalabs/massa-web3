@@ -1,6 +1,7 @@
-import { Provider } from 'src/provider'
+import { Provider, PublicProvider } from 'src/provider'
 import { Operation } from 'src/operation'
-import { PublicAPI } from '../client'
+import { PublicAPI } from '..'
+import { getPublicApiByChainId } from '../utils/networks'
 
 export async function makeImmutable(
   address: string,
@@ -20,12 +21,24 @@ export async function makeImmutable(
 
 export async function isImmutable(
   address: string,
-  nodeUrl: string,
-  waitFinal = false
+  provider: PublicProvider,
+  final = false
 ): Promise<boolean> {
-  const bytecode = await new PublicAPI(nodeUrl).getAddressesBytecode({
+  const networkInfo = await provider.networkInfos()
+  let nodeUrl = networkInfo.url
+
+  if (!nodeUrl) {
+    nodeUrl = getPublicApiByChainId(networkInfo.chainId)
+    if (!nodeUrl) {
+      throw new Error(`Unknown network chainId: ${networkInfo.chainId}`)
+    }
+  }
+
+  console.log('nodeUrl', nodeUrl)
+  const client = new PublicAPI(nodeUrl)
+  const bytecode = await client.getAddressesBytecode({
     address: address,
-    is_final: waitFinal, // eslint-disable-line @typescript-eslint/naming-convention
+    is_final: final, // eslint-disable-line @typescript-eslint/naming-convention
   })
 
   return bytecode.length === 0
