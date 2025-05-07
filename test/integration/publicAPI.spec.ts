@@ -5,7 +5,7 @@ import { EventFilter, PublicAPI } from '../../src/client'
 import { MAX_GAS_CALL } from '../../src/smartContracts'
 import { bytesToStr, strToBytes } from '../../src/basicElements'
 import { provider } from './setup'
-import { DEPLOYER_BYTECODE } from '../../src'
+import { DEPLOYER_BYTECODE, MAX_GAS_EXECUTE } from '../../src'
 
 const {
   NodeStatus,
@@ -237,9 +237,9 @@ describe('client tests', () => {
   // skip it til mainnet is updated
   test.skip('executeReadOnlyBytecode', async () => {
     const response = await client.executeReadOnlyBytecode({
-      bytecode: Array.from(DEPLOYER_BYTECODE),
-      address: TEST_USER,
-      max_gas: Number(MAX_GAS_CALL),
+      byteCode: DEPLOYER_BYTECODE,
+      caller: TEST_USER,
+      maxGas: MAX_GAS_EXECUTE,
     })
 
     ExecuteReadOnlyResponse.strictCheck(response)
@@ -247,9 +247,9 @@ describe('client tests', () => {
 
   test('executeMultipleReadOnlyBytecode', async () => {
     const req = {
-      bytecode: Array.from(DEPLOYER_BYTECODE),
+      byteCode: DEPLOYER_BYTECODE,
       address: TEST_USER,
-      max_gas: Number(MAX_GAS_CALL),
+      maxGas: MAX_GAS_EXECUTE,
     }
     const responses = await client.executeMultipleReadOnlyBytecode([req, req])
     expect(responses).toHaveLength(2)
