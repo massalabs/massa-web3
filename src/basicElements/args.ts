@@ -392,7 +392,7 @@ export class Args {
   }
 
   /**
-   * Returns the next {@link ISerializable} object in the serialized byte array
+   * Returns the next {@link Serializable} object in the serialized byte array
    *
    * @remarks
    * Increments to offset to point the data after the one that as been deserialized in the byte array.
@@ -412,14 +412,14 @@ export class Args {
   }
 
   /**
-   * Returns the next array of {@link ISerializable} objects in the serialized byte array
+   * Returns the next array of {@link Serializable} objects in the serialized byte array
    *
    * @remarks
    * Increments to offset to point the data after the one that as been deserialized in the byte array.
    *
    * @param ctor - the class constructor prototype T.prototype
    *
-   * @returns the deserialized array of object that implement ISerializable
+   * @returns the deserialized array of object that implement Serializable
    */
   public nextSerializableObjectArray<T extends Serializable<T>>(
     ctor: new () => T
@@ -729,9 +729,9 @@ export class Args {
    * Adds a serializable object to the serialized arguments.
    *
    * @remarks
-   * The object must implement the {@link ISerializable} interface
+   * The object must implement the {@link Serializable} interface
    *
-   * @see {@link ISerializable}
+   * @see {@link Serializable}
    *
    * @param value - the object to add
    *
@@ -749,11 +749,11 @@ export class Args {
    * Adds an array of serializable objects to the serialized arguments.
    *
    * @remarks
-   * Each object must implement the {@link ISerializable} interface.
-   * This will perform a deep copy of your objects thanks to the {@link ISerializable.serialize}
+   * Each object must implement the {@link Serializable} interface.
+   * This will perform a deep copy of your objects thanks to the {@link Serializable.serialize}
    * method you define in your class.
    *
-   * @see {@link ISerializable}
+   * @see {@link Serializable}
    *
    * @param arg - the argument to add
    *
