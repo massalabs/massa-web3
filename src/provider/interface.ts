@@ -1,4 +1,11 @@
-import { Address, EventFilter, Network, SmartContract } from '..'
+import {
+  Address,
+  EventFilter,
+  ExecuteSCReadOnlyParams,
+  ExecuteSCReadOnlyResult,
+  Network,
+  SmartContract,
+} from '..'
 import { Mas } from '../basicElements/mas'
 import { Operation, OperationOptions, OperationStatus } from '../operation'
 import { rpcTypes as t } from '../generated'
@@ -33,6 +40,9 @@ export type PublicProvider = {
     keys: Uint8Array[] | string[],
     final?: boolean
   ): Promise<(Uint8Array | null)[]>
+  executeSCReadOnly(
+    params: ExecuteSCReadOnlyParams
+  ): Promise<ExecuteSCReadOnlyResult>
 }
 
 /**
