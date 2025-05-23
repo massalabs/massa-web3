@@ -1115,6 +1115,201 @@ export namespace ExecutionStackElement {
   }
 }
 
+export class TargetAmount extends jspb.Message {
+  getAmount(): massa_model_v1_amount_pb.NativeAmount | undefined;
+  setAmount(value?: massa_model_v1_amount_pb.NativeAmount): TargetAmount;
+  hasAmount(): boolean;
+  clearAmount(): TargetAmount;
+
+  getAddress(): string;
+  setAddress(value: string): TargetAmount;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TargetAmount.AsObject;
+  static toObject(includeInstance: boolean, msg: TargetAmount): TargetAmount.AsObject;
+  static serializeBinaryToWriter(message: TargetAmount, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TargetAmount;
+  static deserializeBinaryFromReader(message: TargetAmount, reader: jspb.BinaryReader): TargetAmount;
+}
+
+export namespace TargetAmount {
+  export type AsObject = {
+    amount?: massa_model_v1_amount_pb.NativeAmount.AsObject,
+    address: string,
+  }
+}
+
+export class AsyncMessageExecution extends jspb.Message {
+  getSuccess(): boolean;
+  setSuccess(value: boolean): AsyncMessageExecution;
+
+  getSender(): string;
+  setSender(value: string): AsyncMessageExecution;
+
+  getDestination(): string;
+  setDestination(value: string): AsyncMessageExecution;
+
+  getCoins(): massa_model_v1_amount_pb.NativeAmount | undefined;
+  setCoins(value?: massa_model_v1_amount_pb.NativeAmount): AsyncMessageExecution;
+  hasCoins(): boolean;
+  clearCoins(): AsyncMessageExecution;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AsyncMessageExecution.AsObject;
+  static toObject(includeInstance: boolean, msg: AsyncMessageExecution): AsyncMessageExecution.AsObject;
+  static serializeBinaryToWriter(message: AsyncMessageExecution, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AsyncMessageExecution;
+  static deserializeBinaryFromReader(message: AsyncMessageExecution, reader: jspb.BinaryReader): AsyncMessageExecution;
+}
+
+export namespace AsyncMessageExecution {
+  export type AsObject = {
+    success: boolean,
+    sender: string,
+    destination: string,
+    coins?: massa_model_v1_amount_pb.NativeAmount.AsObject,
+  }
+}
+
+export class DeferredCallExecution extends jspb.Message {
+  getSuccess(): boolean;
+  setSuccess(value: boolean): DeferredCallExecution;
+
+  getSender(): string;
+  setSender(value: string): DeferredCallExecution;
+
+  getTargetAddress(): string;
+  setTargetAddress(value: string): DeferredCallExecution;
+
+  getTargetFunction(): string;
+  setTargetFunction(value: string): DeferredCallExecution;
+
+  getCoins(): massa_model_v1_amount_pb.NativeAmount | undefined;
+  setCoins(value?: massa_model_v1_amount_pb.NativeAmount): DeferredCallExecution;
+  hasCoins(): boolean;
+  clearCoins(): DeferredCallExecution;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeferredCallExecution.AsObject;
+  static toObject(includeInstance: boolean, msg: DeferredCallExecution): DeferredCallExecution.AsObject;
+  static serializeBinaryToWriter(message: DeferredCallExecution, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeferredCallExecution;
+  static deserializeBinaryFromReader(message: DeferredCallExecution, reader: jspb.BinaryReader): DeferredCallExecution;
+}
+
+export namespace DeferredCallExecution {
+  export type AsObject = {
+    success: boolean,
+    sender: string,
+    targetAddress: string,
+    targetFunction: string,
+    coins?: massa_model_v1_amount_pb.NativeAmount.AsObject,
+  }
+}
+
+export class ExecTransferInfo extends jspb.Message {
+  getId(): string;
+  setId(value: string): ExecTransferInfo;
+
+  getFromAddress(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setFromAddress(value?: google_protobuf_wrappers_pb.StringValue): ExecTransferInfo;
+  hasFromAddress(): boolean;
+  clearFromAddress(): ExecTransferInfo;
+
+  getToAddress(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setToAddress(value?: google_protobuf_wrappers_pb.StringValue): ExecTransferInfo;
+  hasToAddress(): boolean;
+  clearToAddress(): ExecTransferInfo;
+
+  getValue(): TransferValue | undefined;
+  setValue(value?: TransferValue): ExecTransferInfo;
+  hasValue(): boolean;
+  clearValue(): ExecTransferInfo;
+
+  getOrigin(): CoinOrigin;
+  setOrigin(value: CoinOrigin): ExecTransferInfo;
+
+  getOperationId(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setOperationId(value?: google_protobuf_wrappers_pb.StringValue): ExecTransferInfo;
+  hasOperationId(): boolean;
+  clearOperationId(): ExecTransferInfo;
+
+  getAsyncMsgId(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setAsyncMsgId(value?: google_protobuf_wrappers_pb.StringValue): ExecTransferInfo;
+  hasAsyncMsgId(): boolean;
+  clearAsyncMsgId(): ExecTransferInfo;
+
+  getDeferredCallId(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setDeferredCallId(value?: google_protobuf_wrappers_pb.StringValue): ExecTransferInfo;
+  hasDeferredCallId(): boolean;
+  clearDeferredCallId(): ExecTransferInfo;
+
+  getDenunciationIndex(): massa_model_v1_denunciation_pb.DenunciationIndex | undefined;
+  setDenunciationIndex(value?: massa_model_v1_denunciation_pb.DenunciationIndex): ExecTransferInfo;
+  hasDenunciationIndex(): boolean;
+  clearDenunciationIndex(): ExecTransferInfo;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ExecTransferInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: ExecTransferInfo): ExecTransferInfo.AsObject;
+  static serializeBinaryToWriter(message: ExecTransferInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ExecTransferInfo;
+  static deserializeBinaryFromReader(message: ExecTransferInfo, reader: jspb.BinaryReader): ExecTransferInfo;
+}
+
+export namespace ExecTransferInfo {
+  export type AsObject = {
+    id: string,
+    fromAddress?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    toAddress?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    value?: TransferValue.AsObject,
+    origin: CoinOrigin,
+    operationId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    asyncMsgId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    deferredCallId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    denunciationIndex?: massa_model_v1_denunciation_pb.DenunciationIndex.AsObject,
+  }
+}
+
+export class TransferValue extends jspb.Message {
+  getRolls(): number;
+  setRolls(value: number): TransferValue;
+
+  getCoins(): massa_model_v1_amount_pb.NativeAmount | undefined;
+  setCoins(value?: massa_model_v1_amount_pb.NativeAmount): TransferValue;
+  hasCoins(): boolean;
+  clearCoins(): TransferValue;
+
+  getDeferredCredits(): massa_model_v1_amount_pb.NativeAmount | undefined;
+  setDeferredCredits(value?: massa_model_v1_amount_pb.NativeAmount): TransferValue;
+  hasDeferredCredits(): boolean;
+  clearDeferredCredits(): TransferValue;
+
+  getValueCase(): TransferValue.ValueCase;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TransferValue.AsObject;
+  static toObject(includeInstance: boolean, msg: TransferValue): TransferValue.AsObject;
+  static serializeBinaryToWriter(message: TransferValue, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TransferValue;
+  static deserializeBinaryFromReader(message: TransferValue, reader: jspb.BinaryReader): TransferValue;
+}
+
+export namespace TransferValue {
+  export type AsObject = {
+    rolls: number,
+    coins?: massa_model_v1_amount_pb.NativeAmount.AsObject,
+    deferredCredits?: massa_model_v1_amount_pb.NativeAmount.AsObject,
+  }
+
+  export enum ValueCase { 
+    VALUE_NOT_SET = 0,
+    ROLLS = 1,
+    COINS = 2,
+    DEFERRED_CREDITS = 3,
+  }
+}
+
 export enum ScExecutionEventStatus { 
   SC_EXECUTION_EVENT_STATUS_UNSPECIFIED = 0,
   SC_EXECUTION_EVENT_STATUS_FINAL = 1,
@@ -1143,4 +1338,37 @@ export enum LedgerChangeType {
   LEDGER_CHANGE_TYPE_SET = 1,
   LEDGER_CHANGE_TYPE_UPDATE = 2,
   LEDGER_CHANGE_TYPE_DELETE = 3,
+}
+export enum CoinOrigin { 
+  COIN_ORIGIN_UNSPECIFIED = 0,
+  COIN_ORIGIN_BLOCK_REWARD = 1,
+  COIN_ORIGIN_DEFERRED_CALL_FAIL = 2,
+  COIN_ORIGIN_DEFERRED_CALL_CANCEL = 3,
+  COIN_ORIGIN_DEFERRED_CALL_COINS = 4,
+  COIN_ORIGIN_DEFERRED_CALL_REGISTER = 5,
+  COIN_ORIGIN_DEFERRED_CALL_STORAGE_REFUND = 6,
+  COIN_ORIGIN_ENDORSEMENT_REWARD = 7,
+  COIN_ORIGIN_ENDORSED_REWARD = 8,
+  COIN_ORIGIN_SLASH = 9,
+  COIN_ORIGIN_OP_ROLL_BUY = 10,
+  COIN_ORIGIN_OP_ROLL_SELL = 11,
+  COIN_ORIGIN_OP_CALLSC_COINS = 12,
+  COIN_ORIGIN_READ_ONLY_FN_CALL_FEES = 13,
+  COIN_ORIGIN_READ_ONLY_FN_CALL_COINS = 14,
+  COIN_ORIGIN_READ_ONLY_BYTECODE_EXEC_FEES = 15,
+  COIN_ORIGIN_SET_BYTECODE_STORAGE = 16,
+  COIN_ORIGIN_ABI_CALL_COINS = 17,
+  COIN_ORIGIN_ABI_TRANSFER_COINS = 18,
+  COIN_ORIGIN_ABI_TRANSFER_FOR_COINS = 19,
+  COIN_ORIGIN_ABI_SEND_MSG_COINS = 20,
+  COIN_ORIGIN_ABI_SEND_MSG_FEES = 21,
+  COIN_ORIGIN_OP_ROLL_SELL_DEFERRED_MAS = 22,
+  COIN_ORIGIN_OP_EXECUTESC_FEES = 23,
+  COIN_ORIGIN_OP_TRANSACTION_COINS = 24,
+  COIN_ORIGIN_OP_TRANSACTION_FEES = 25,
+  COIN_ORIGIN_ASYNC_MSG_COINS = 26,
+  COIN_ORIGIN_ASYNC_MSG_CANCEL = 27,
+  COIN_ORIGIN_CREATE_SC_STORAGE = 28,
+  COIN_ORIGIN_DATASTORE_STORAGE = 29,
+  COIN_ORIGIN_DEFERRED_CREDIT = 30,
 }
