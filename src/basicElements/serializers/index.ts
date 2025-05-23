@@ -37,5 +37,3 @@ export function argsListToBytes(argsList: IParam[]): Uint8Array {
 }
 
 export * from './number/index'
-
-export * from './interface'

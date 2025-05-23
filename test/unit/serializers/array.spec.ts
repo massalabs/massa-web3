@@ -1,10 +1,4 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { Args, ArrayTypes } from '../../../src/basicElements/args'
-import {
-  ISerializable,
-  IDeserializedResult,
-} from '../../../src/basicElements/serializers/interface/ISerializable'
-import { U8, U32, U64, I128, I32 } from '../../../src/basicElements/serializers'
 import {
   arrayToBytes,
   bytesToArray,
@@ -12,9 +6,18 @@ import {
   deserializeObj,
   getDatatypeSize,
   serializableObjectsArrayToBytes,
-} from '../../../src/basicElements/serializers/arrays'
+  U8,
+  U32,
+  U64,
+  I128,
+  I32,
+  Args,
+  ArrayTypes,
+  DeserializedResult,
+  Serializable,
+} from '../../../src/basicElements'
 
-class TestSerializable implements ISerializable<TestSerializable> {
+class TestSerializable implements Serializable<TestSerializable> {
   value: number
 
   constructor(value = 0) {
@@ -28,7 +31,7 @@ class TestSerializable implements ISerializable<TestSerializable> {
   deserialize(
     data: Uint8Array,
     offset: number
-  ): IDeserializedResult<TestSerializable> {
+  ): DeserializedResult<TestSerializable> {
     this.value = data[offset]
     return { instance: this, offset: offset + 1 }
   }
