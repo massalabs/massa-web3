@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Account } from '../../account'
-import { EventFilter } from '../../client'
+import {
+  EventFilter,
+  ExecuteSCReadOnlyParams,
+  ExecuteSCReadOnlyResult,
+} from '../../client'
 import { Network, NetworkName } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
@@ -774,5 +778,13 @@ export class GrpcPublicProvider implements PublicProvider {
       },
     }
     return result
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  executeSCReadOnly(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    params: ExecuteSCReadOnlyParams
+  ): Promise<ExecuteSCReadOnlyResult> {
+    throw new Error('executeSCReadOnly not implemented for GrpcPublicProvider.')
   }
 }
