@@ -11,6 +11,7 @@ export const MAINNET_TOKENS = {
   WETHb: 'AS125oPLYRTtfVjpWisPZVTLjBhCFfQ1jDsi75XNtRm1NZux54eCj',
   PUR: 'AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan',
   WMAS: 'AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9',
+  WBTCe: 'AS12fr54YtBY575Dfhtt7yftpT8KXgXb1ia5Pn1LofoLFLf9WcjGL',
 }
 
 export const BUILDNET_TOKENS = {
@@ -20,6 +21,7 @@ export const BUILDNET_TOKENS = {
   USDTbt: 'AS12ix1Qfpue7BB8q6mWVtjNdNE9UV3x4MaUo7WhdUubov8sJ3CuP',
   WETHbt: 'AS12RmCXTA9NZaTBUBnRJuH66AGNmtEfEoqXKxLdmrTybS6GFJPFs',
   WMAS: 'AS12FW5Rs5YN2zdpEnqwj4iHUUPt9R4Eqjq2qtpJFNKW3mn33RuLU',
+  WBTCs: 'AS1ZXy3nvqXAMm2w6viAg7frte6cZfJM8hoMvWf4KoKDzvLzYKqE',
 }
 
 export function checkNetwork(
@@ -127,5 +129,33 @@ export class WMASBuildnet extends MRC20 {
   constructor(public provider: Provider | PublicProvider) {
     checkNetwork(provider, false)
     super(provider, BUILDNET_TOKENS.WMAS)
+  }
+}
+
+export class WBTC extends MRC20 {
+  // Mainnne WBTCe
+  constructor(public provider: Provider | PublicProvider) {
+    checkNetwork(provider, true)
+    super(provider, MAINNET_TOKENS.WBTCe)
+  }
+
+  // Buildnet WBTCs
+  static buildnet(provider: Provider | PublicProvider): WBTC {
+    checkNetwork(provider, false)
+    return new MRC20(provider, BUILDNET_TOKENS.WBTCs)
+  }
+
+  // Automatically detect the network and return the appropriate WBTC instance
+  static async fromProvider(
+    provider: Provider | PublicProvider
+  ): Promise<WBTC> {
+    const { chainId } = await provider.networkInfos()
+    if (chainId === CHAIN_ID.Mainnet) {
+      return new MRC20(provider, MAINNET_TOKENS.WBTCe)
+    }
+    if (chainId === CHAIN_ID.Buildnet) {
+      return new MRC20(provider, BUILDNET_TOKENS.WBTCs)
+    }
+    throw new Error('Unsupported network for WBTC')
   }
 }
