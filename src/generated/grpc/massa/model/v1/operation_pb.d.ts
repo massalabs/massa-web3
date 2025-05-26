@@ -359,6 +359,44 @@ export namespace OpTypes {
   }
 }
 
+export class OperationTypeRoll extends jspb.Message {
+  getAddress(): string;
+  setAddress(value: string): OperationTypeRoll;
+
+  getRollBuy(): RollBuy | undefined;
+  setRollBuy(value?: RollBuy): OperationTypeRoll;
+  hasRollBuy(): boolean;
+  clearRollBuy(): OperationTypeRoll;
+
+  getRollSell(): RollSell | undefined;
+  setRollSell(value?: RollSell): OperationTypeRoll;
+  hasRollSell(): boolean;
+  clearRollSell(): OperationTypeRoll;
+
+  getTypeCase(): OperationTypeRoll.TypeCase;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): OperationTypeRoll.AsObject;
+  static toObject(includeInstance: boolean, msg: OperationTypeRoll): OperationTypeRoll.AsObject;
+  static serializeBinaryToWriter(message: OperationTypeRoll, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): OperationTypeRoll;
+  static deserializeBinaryFromReader(message: OperationTypeRoll, reader: jspb.BinaryReader): OperationTypeRoll;
+}
+
+export namespace OperationTypeRoll {
+  export type AsObject = {
+    address: string,
+    rollBuy?: RollBuy.AsObject,
+    rollSell?: RollSell.AsObject,
+  }
+
+  export enum TypeCase { 
+    TYPE_NOT_SET = 0,
+    ROLL_BUY = 2,
+    ROLL_SELL = 3,
+  }
+}
+
 export enum OpType { 
   OP_TYPE_UNSPECIFIED = 0,
   OP_TYPE_TRANSACTION = 1,
