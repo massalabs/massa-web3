@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { Args, StorageCost, U256 } from '../basicElements'
+import { Operation } from '../operation'
 import { Provider, PublicProvider } from '../provider'
+import { isProvider } from '../provider/helpers'
 import { CHAIN_ID, Network } from '../utils'
 import { MRC20 } from './token'
 
@@ -81,13 +84,6 @@ export class PUR extends MRC20 {
   }
 }
 
-export class WMAS extends MRC20 {
-  constructor(public provider: Provider | PublicProvider) {
-    checkNetwork(provider, true)
-    super(provider, MAINNET_TOKENS.WMAS)
-  }
-}
-
 ///////////////// BUILDNET TOKENS //////////////////////
 
 export class DAIs extends MRC20 {
@@ -125,24 +121,30 @@ export class WETHbt extends MRC20 {
   }
 }
 
-export class WMASBuildnet extends MRC20 {
-  constructor(public provider: Provider | PublicProvider) {
-    checkNetwork(provider, false)
-    super(provider, BUILDNET_TOKENS.WMAS)
-  }
-}
+///////////////// MAINNET + BUILDNET TOKENS //////////////////////
 
 export class WBTC extends MRC20 {
-  // Mainnne WBTCe
-  constructor(public provider: Provider | PublicProvider) {
-    checkNetwork(provider, true)
-    super(provider, MAINNET_TOKENS.WBTCe)
+  constructor(
+    public provider: Provider | PublicProvider,
+    chainId = CHAIN_ID.Mainnet
+  ) {
+    checkNetwork(provider, chainId === CHAIN_ID.Mainnet)
+    if (chainId === CHAIN_ID.Mainnet) {
+      super(provider, MAINNET_TOKENS.WBTCe)
+    } else if (chainId === CHAIN_ID.Buildnet) {
+      super(provider, BUILDNET_TOKENS.WBTCs)
+    }
+    throw new Error(`Unsupported network id ${chainId} for WMAS`)
   }
 
-  // Buildnet WBTCs
   static buildnet(provider: Provider | PublicProvider): WBTC {
     checkNetwork(provider, false)
-    return new MRC20(provider, BUILDNET_TOKENS.WBTCs)
+    return new WBTC(provider, CHAIN_ID.Buildnet)
+  }
+
+  static mainnet(provider: Provider | PublicProvider): WBTC {
+    checkNetwork(provider, true)
+    return new WBTC(provider, CHAIN_ID.Mainnet)
   }
 
   // Automatically detect the network and return the appropriate WBTC instance
@@ -150,12 +152,71 @@ export class WBTC extends MRC20 {
     provider: Provider | PublicProvider
   ): Promise<WBTC> {
     const { chainId } = await provider.networkInfos()
+    return new WBTC(provider, chainId)
+  }
+}
+
+export class WMAS extends MRC20 {
+  constructor(
+    public provider: Provider | PublicProvider,
+    chainId = CHAIN_ID.Mainnet
+  ) {
+    checkNetwork(provider, chainId === CHAIN_ID.Mainnet)
     if (chainId === CHAIN_ID.Mainnet) {
-      return new MRC20(provider, MAINNET_TOKENS.WBTCe)
+      super(provider, MAINNET_TOKENS.WMAS)
+    } else if (chainId === CHAIN_ID.Buildnet) {
+      super(provider, BUILDNET_TOKENS.WMAS)
     }
-    if (chainId === CHAIN_ID.Buildnet) {
-      return new MRC20(provider, BUILDNET_TOKENS.WBTCs)
+    throw new Error(`Unsupported network id ${chainId} for WMAS`)
+  }
+
+  static buildnet(provider: Provider | PublicProvider): WMAS {
+    checkNetwork(provider, false)
+    return new WMAS(provider, CHAIN_ID.Buildnet)
+  }
+
+  static mainnet(provider: Provider | PublicProvider): WMAS {
+    checkNetwork(provider, true)
+    return new WMAS(provider)
+  }
+
+  // Automatically detect the network and return the appropriate token address
+  static async fromProvider(
+    provider: Provider | PublicProvider
+  ): Promise<WMAS> {
+    const { chainId } = await provider.networkInfos()
+    return new WMAS(provider, chainId)
+  }
+
+  wrap(amount: bigint): Promise<Operation> {
+    if (!isProvider(this.provider)) {
+      throw new Error('Method not available for PublicProvider')
     }
-    throw new Error('Unsupported network for WBTC')
+
+    // check whether user has already created a balance entry
+    const balanceKey = 'BALANCE' + this.provider.address
+    const storageVals = this.provider.readStorage(this.address, [balanceKey])
+    const storageCost =
+      storageVals[0] === null
+        ? StorageCost.datastoreEntry(balanceKey, U256.toBytes(0n))
+        : 0n
+
+    return this.provider.callSC({
+      target: this.address,
+      func: 'deposit',
+      coins: amount + storageCost,
+    })
+  }
+
+  unwrap(amount: bigint, recipient = this.address): Promise<Operation> {
+    if (!isProvider(this.provider)) {
+      throw new Error('Method not available for PublicProvider')
+    }
+
+    return this.provider.callSC({
+      target: this.address,
+      func: 'withdraw',
+      parameter: new Args().addU64(amount).addString(recipient),
+    })
   }
 }
