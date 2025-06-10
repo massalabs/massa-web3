@@ -6,7 +6,7 @@ import {
   ExecuteSCReadOnlyParams,
   ExecuteSCReadOnlyResult,
 } from '../../client'
-import { Network, NetworkName } from '../../utils'
+import { Network, NetworkName, parseCallArgs } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
 import { NodeStatusInfo, PublicProvider, ReadSCData, ReadSCParams } from '..'
@@ -710,7 +710,7 @@ export class GrpcPublicProvider implements PublicProvider {
   }
 
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
-    const args = params.parameter ?? new Uint8Array()
+    const parameter = parseCallArgs(params.parameter)
     const caller =
       params.caller ?? (await Account.generate()).address.toString()
     const maxGas = params.maxGas ?? 0n
@@ -724,7 +724,7 @@ export class GrpcPublicProvider implements PublicProvider {
       new FunctionCall()
         .setTargetAddress(params.target)
         .setTargetFunction(params.func)
-        .setParameter(args instanceof Uint8Array ? args : args.serialize())
+        .setParameter(parameter)
     )
 
     // fee

@@ -18,6 +18,7 @@ import {
   minBigInt,
   Network,
   NetworkName,
+  parseCallArgs,
   PublicAPI,
   PublicApiUrl,
   strToBytes,
@@ -96,13 +97,14 @@ export class JsonRpcPublicProvider implements PublicProvider {
    * @remarks Be a aware that if you don't provide a caller address, it will generate a random one.
    */
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
-    const args = params.parameter ?? new Uint8Array()
+    const parameter = parseCallArgs(params.parameter)
+
     const caller =
       params.caller ?? (await Account.generate()).address.toString()
     const readOnlyParams = {
       ...params,
       caller,
-      parameter: args instanceof Uint8Array ? args : args.serialize(),
+      parameter,
     }
     return this.client.executeReadOnlyCall(readOnlyParams)
   }
@@ -160,7 +162,10 @@ export class JsonRpcPublicProvider implements PublicProvider {
     params: ExecuteSCReadOnlyParams
   ): Promise<ExecuteSCReadOnlyResult> {
     const caller =
-      params.caller ?? (await Account.generate()).address.toString()
+      // Use randomly chosen address that exists on buildnet & mainnet.
+      // this is a workaround for the https://github.com/massalabs/massa/issues/4912
+      params.caller ?? 'AU1bfnCAQAhPT2gAcJkL31fCWJixFFtH7RjRHZsvaThVoeNUckep'
+    // params.caller ?? (await Account.generate()).address.toString()
     const result = await this.client.executeReadOnlyBytecode({
       ...params,
       caller,
