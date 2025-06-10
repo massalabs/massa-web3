@@ -23,6 +23,7 @@ import {
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
 import { SCOutputEvent } from '../../generated/client-types'
+import { parseCallArgs } from '../../utils'
 
 /**
  * GrpcProvider implements the Provider interface using gRPC for Massa blockchain interactions
@@ -95,7 +96,7 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
    * Executes a read-only smart contract call
    */
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
-    const args = params.parameter ?? new Uint8Array()
+    const parameter = parseCallArgs(params.parameter)
     const account = await Account.generate()
     const caller = account.address.toString()
     const maxGas = params.maxGas ?? 0n
@@ -109,7 +110,7 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
       new FunctionCall()
         .setTargetAddress(params.target)
         .setTargetFunction(params.func)
-        .setParameter(args instanceof Uint8Array ? args : args.serialize())
+        .setParameter(parameter)
     )
 
     // fee

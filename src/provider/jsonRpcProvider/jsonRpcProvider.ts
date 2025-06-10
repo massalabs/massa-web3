@@ -15,6 +15,7 @@ import {
   MAX_GAS_CALL,
   MAX_GAS_EXECUTE,
   MIN_GAS_CALL,
+  parseCallArgs,
   populateDatastore,
   PublicAPI,
   PublicApiUrl,
@@ -265,8 +266,7 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
     const coins = params.coins ?? 0n
     await this.checkAccountBalance(coins)
 
-    const args = params.parameter ?? new Uint8Array()
-    const parameter = args instanceof Uint8Array ? args : args.serialize()
+    const parameter = parseCallArgs(params.parameter)
 
     const fee = params.fee ?? (await this.client.getMinimalFee())
 
@@ -334,8 +334,7 @@ export class JsonRpcProvider extends JsonRpcPublicProvider implements Provider {
     await this.checkAccountBalance(totalCost)
 
     const maxCoins = params.maxCoins ?? totalCost
-    const args = params.parameter ?? new Uint8Array()
-    const parameter = args instanceof Uint8Array ? args : args.serialize()
+    const parameter = parseCallArgs(params.parameter)
 
     const datastore = populateDatastore([
       {
