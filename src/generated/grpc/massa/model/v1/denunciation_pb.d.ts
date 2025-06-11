@@ -1,5 +1,6 @@
 import * as jspb from 'google-protobuf'
 
+import * as massa_model_v1_amount_pb from '../../../massa/model/v1/amount_pb'; // proto import: "massa/model/v1/amount.proto"
 import * as massa_model_v1_slot_pb from '../../../massa/model/v1/slot_pb'; // proto import: "massa/model/v1/slot.proto"
 
 
@@ -13,6 +14,11 @@ export class Denunciation extends jspb.Message {
   setEndorsement(value?: EndorsementDenunciation): Denunciation;
   hasEndorsement(): boolean;
   clearEndorsement(): Denunciation;
+
+  getAddress(): DenunciationAddress | undefined;
+  setAddress(value?: DenunciationAddress): Denunciation;
+  hasAddress(): boolean;
+  clearAddress(): Denunciation;
 
   getEntryCase(): Denunciation.EntryCase;
 
@@ -28,12 +34,14 @@ export namespace Denunciation {
   export type AsObject = {
     blockHeader?: BlockHeaderDenunciation.AsObject,
     endorsement?: EndorsementDenunciation.AsObject,
+    address?: DenunciationAddress.AsObject,
   }
 
   export enum EntryCase { 
     ENTRY_NOT_SET = 0,
     BLOCK_HEADER = 1,
     ENDORSEMENT = 2,
+    ADDRESS = 3,
   }
 }
 
@@ -196,6 +204,36 @@ export namespace DenunciationEndorsement {
   export type AsObject = {
     slot?: massa_model_v1_slot_pb.Slot.AsObject,
     index: number,
+  }
+}
+
+export class DenunciationAddress extends jspb.Message {
+  getAddressDenounced(): string;
+  setAddressDenounced(value: string): DenunciationAddress;
+
+  getSlot(): massa_model_v1_slot_pb.Slot | undefined;
+  setSlot(value?: massa_model_v1_slot_pb.Slot): DenunciationAddress;
+  hasSlot(): boolean;
+  clearSlot(): DenunciationAddress;
+
+  getSlashed(): massa_model_v1_amount_pb.NativeAmount | undefined;
+  setSlashed(value?: massa_model_v1_amount_pb.NativeAmount): DenunciationAddress;
+  hasSlashed(): boolean;
+  clearSlashed(): DenunciationAddress;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DenunciationAddress.AsObject;
+  static toObject(includeInstance: boolean, msg: DenunciationAddress): DenunciationAddress.AsObject;
+  static serializeBinaryToWriter(message: DenunciationAddress, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DenunciationAddress;
+  static deserializeBinaryFromReader(message: DenunciationAddress, reader: jspb.BinaryReader): DenunciationAddress;
+}
+
+export namespace DenunciationAddress {
+  export type AsObject = {
+    addressDenounced: string,
+    slot?: massa_model_v1_slot_pb.Slot.AsObject,
+    slashed?: massa_model_v1_amount_pb.NativeAmount.AsObject,
   }
 }
 
