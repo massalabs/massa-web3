@@ -4,7 +4,7 @@ import {
   MAX_GAS_EXECUTE,
   Multicall,
   parseMas,
-  WETHbt,
+  WETHb,
 } from '../../src'
 import { provider, publicProvider } from './setup'
 
@@ -40,7 +40,7 @@ describe('Multicall tests', () => {
   test('execute multicall write', async () => {
     const multicall = new Multicall(provider)
 
-    const token = new WETHbt(publicProvider)
+    const token = await WETHb.fromProvider(publicProvider)
 
     const spender = 'AS12q8aNM621smQgXVG6wHjQGjSoms3gKfkzGZgbnzjEBedC6t56F'
 
