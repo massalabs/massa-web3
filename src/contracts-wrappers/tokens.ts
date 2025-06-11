@@ -259,7 +259,6 @@ export class WBTC extends MRC20 {
     return new WBTC(provider, CHAIN_ID.Mainnet)
   }
 
-  // Automatically detect the network and return the appropriate WBTC instance
   static async fromProvider(
     provider: Provider | PublicProvider
   ): Promise<WBTC> {
