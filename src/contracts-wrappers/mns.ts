@@ -2,9 +2,9 @@ import { Args, bytesToStr, strToBytes, U256, U64 } from '../basicElements'
 import { Operation } from '../operation'
 import { Provider, PublicProvider } from '../provider'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
-import { checkNetwork } from './tokens'
 import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
 import { CHAIN_ID } from '../utils'
+import { checkNetwork } from './utils'
 
 export const MNS_CONTRACTS = {
   mainnet: 'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT',
