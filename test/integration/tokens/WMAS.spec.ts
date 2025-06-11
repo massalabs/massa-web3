@@ -1,12 +1,12 @@
-import { USDTb } from '../../../src/contracts-wrappers'
+import { WMAS } from '../../../src/contracts-wrappers'
 import { mainnetProvider, provider as buildnetProvider } from './../setup'
 
-describe('USDTb wrapper tests', () => {
-  let mainnetContract: USDTb
-  let buildnetContract: USDTb
+describe('WMAS wrapper tests', () => {
+  let mainnetContract: WMAS
+  let buildnetContract: WMAS
   beforeAll(async () => {
-    mainnetContract = await USDTb.fromProvider(mainnetProvider)
-    buildnetContract = await USDTb.fromProvider(buildnetProvider)
+    mainnetContract = await WMAS.fromProvider(mainnetProvider)
+    buildnetContract = await WMAS.fromProvider(buildnetProvider)
   })
 
   // Mainnet tests
@@ -17,17 +17,17 @@ describe('USDTb wrapper tests', () => {
 
   test('name', async () => {
     const name = await mainnetContract.name()
-    expect(name).toBe('Bsc USDT')
+    expect(name).toBe('Wrapped Massa')
   })
 
   test('symbol', async () => {
     const symbol = await mainnetContract.symbol()
-    expect(symbol).toBe('USDT.b')
+    expect(symbol).toBe('WMAS')
   })
 
   test('decimals', async () => {
     const decimals = await mainnetContract.decimals()
-    expect(decimals).toBe(18)
+    expect(decimals).toBe(9)
   })
 
   // Buildnet tests
@@ -38,16 +38,16 @@ describe('USDTb wrapper tests', () => {
 
   test('name', async () => {
     const name = await buildnetContract.name()
-    expect(name).toBe('Binance-peg USD')
+    expect(name).toBe('Wrapped Massa')
   })
 
   test('symbol', async () => {
     const symbol = await buildnetContract.symbol()
-    expect(symbol).toBe('USDT.bt')
+    expect(symbol).toBe('WMAS')
   })
 
   test('decimals', async () => {
     const decimals = await buildnetContract.decimals()
-    expect(decimals).toBe(18)
+    expect(decimals).toBe(9)
   })
 })

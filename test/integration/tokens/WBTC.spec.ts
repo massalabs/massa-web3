@@ -1,12 +1,12 @@
 import { WBTC } from '../../../src/contracts-wrappers'
-import { mainnetProvider, provider } from './../setup'
+import { mainnetProvider, provider as buildnetProvider } from './../setup'
 
-describe('USDTb wrapper tests', () => {
+describe('WBTC wrapper tests', () => {
   let mainnetContract: WBTC
   let buildnetContract: WBTC
   beforeAll(async () => {
     mainnetContract = await WBTC.fromProvider(mainnetProvider)
-    buildnetContract = await WBTC.fromProvider(provider)
+    buildnetContract = await WBTC.fromProvider(buildnetProvider)
   })
 
   // Mainnet tests
