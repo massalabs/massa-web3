@@ -903,6 +903,31 @@ export class AddressDatastoreKeysCandidate extends jspb.Message {
   getPrefix_asB64(): string;
   setPrefix(value: Uint8Array | string): AddressDatastoreKeysCandidate;
 
+  getStartKey(): google_protobuf_wrappers_pb.BytesValue | undefined;
+  setStartKey(value?: google_protobuf_wrappers_pb.BytesValue): AddressDatastoreKeysCandidate;
+  hasStartKey(): boolean;
+  clearStartKey(): AddressDatastoreKeysCandidate;
+
+  getInclusiveStartKey(): google_protobuf_wrappers_pb.BoolValue | undefined;
+  setInclusiveStartKey(value?: google_protobuf_wrappers_pb.BoolValue): AddressDatastoreKeysCandidate;
+  hasInclusiveStartKey(): boolean;
+  clearInclusiveStartKey(): AddressDatastoreKeysCandidate;
+
+  getEndKey(): google_protobuf_wrappers_pb.BytesValue | undefined;
+  setEndKey(value?: google_protobuf_wrappers_pb.BytesValue): AddressDatastoreKeysCandidate;
+  hasEndKey(): boolean;
+  clearEndKey(): AddressDatastoreKeysCandidate;
+
+  getInclusiveEndKey(): google_protobuf_wrappers_pb.BoolValue | undefined;
+  setInclusiveEndKey(value?: google_protobuf_wrappers_pb.BoolValue): AddressDatastoreKeysCandidate;
+  hasInclusiveEndKey(): boolean;
+  clearInclusiveEndKey(): AddressDatastoreKeysCandidate;
+
+  getLimit(): google_protobuf_wrappers_pb.UInt32Value | undefined;
+  setLimit(value?: google_protobuf_wrappers_pb.UInt32Value): AddressDatastoreKeysCandidate;
+  hasLimit(): boolean;
+  clearLimit(): AddressDatastoreKeysCandidate;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AddressDatastoreKeysCandidate.AsObject;
   static toObject(includeInstance: boolean, msg: AddressDatastoreKeysCandidate): AddressDatastoreKeysCandidate.AsObject;
@@ -915,6 +940,11 @@ export namespace AddressDatastoreKeysCandidate {
   export type AsObject = {
     address: string,
     prefix: Uint8Array | string,
+    startKey?: google_protobuf_wrappers_pb.BytesValue.AsObject,
+    inclusiveStartKey?: google_protobuf_wrappers_pb.BoolValue.AsObject,
+    endKey?: google_protobuf_wrappers_pb.BytesValue.AsObject,
+    inclusiveEndKey?: google_protobuf_wrappers_pb.BoolValue.AsObject,
+    limit?: google_protobuf_wrappers_pb.UInt32Value.AsObject,
   }
 }
 
@@ -926,6 +956,31 @@ export class AddressDatastoreKeysFinal extends jspb.Message {
   getPrefix_asU8(): Uint8Array;
   getPrefix_asB64(): string;
   setPrefix(value: Uint8Array | string): AddressDatastoreKeysFinal;
+
+  getStartKey(): google_protobuf_wrappers_pb.BytesValue | undefined;
+  setStartKey(value?: google_protobuf_wrappers_pb.BytesValue): AddressDatastoreKeysFinal;
+  hasStartKey(): boolean;
+  clearStartKey(): AddressDatastoreKeysFinal;
+
+  getInclusiveStartKey(): google_protobuf_wrappers_pb.BoolValue | undefined;
+  setInclusiveStartKey(value?: google_protobuf_wrappers_pb.BoolValue): AddressDatastoreKeysFinal;
+  hasInclusiveStartKey(): boolean;
+  clearInclusiveStartKey(): AddressDatastoreKeysFinal;
+
+  getEndKey(): google_protobuf_wrappers_pb.BytesValue | undefined;
+  setEndKey(value?: google_protobuf_wrappers_pb.BytesValue): AddressDatastoreKeysFinal;
+  hasEndKey(): boolean;
+  clearEndKey(): AddressDatastoreKeysFinal;
+
+  getInclusiveEndKey(): google_protobuf_wrappers_pb.BoolValue | undefined;
+  setInclusiveEndKey(value?: google_protobuf_wrappers_pb.BoolValue): AddressDatastoreKeysFinal;
+  hasInclusiveEndKey(): boolean;
+  clearInclusiveEndKey(): AddressDatastoreKeysFinal;
+
+  getLimit(): google_protobuf_wrappers_pb.UInt32Value | undefined;
+  setLimit(value?: google_protobuf_wrappers_pb.UInt32Value): AddressDatastoreKeysFinal;
+  hasLimit(): boolean;
+  clearLimit(): AddressDatastoreKeysFinal;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AddressDatastoreKeysFinal.AsObject;
@@ -939,6 +994,11 @@ export namespace AddressDatastoreKeysFinal {
   export type AsObject = {
     address: string,
     prefix: Uint8Array | string,
+    startKey?: google_protobuf_wrappers_pb.BytesValue.AsObject,
+    inclusiveStartKey?: google_protobuf_wrappers_pb.BoolValue.AsObject,
+    endKey?: google_protobuf_wrappers_pb.BytesValue.AsObject,
+    inclusiveEndKey?: google_protobuf_wrappers_pb.BoolValue.AsObject,
+    limit?: google_protobuf_wrappers_pb.UInt32Value.AsObject,
   }
 }
 
@@ -1766,6 +1826,26 @@ export namespace NewBlocksRequest {
   }
 }
 
+export class NewBlocksServerRequest extends jspb.Message {
+  getFiltersList(): Array<NewBlocksFilter>;
+  setFiltersList(value: Array<NewBlocksFilter>): NewBlocksServerRequest;
+  clearFiltersList(): NewBlocksServerRequest;
+  addFilters(value?: NewBlocksFilter, index?: number): NewBlocksFilter;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewBlocksServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: NewBlocksServerRequest): NewBlocksServerRequest.AsObject;
+  static serializeBinaryToWriter(message: NewBlocksServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewBlocksServerRequest;
+  static deserializeBinaryFromReader(message: NewBlocksServerRequest, reader: jspb.BinaryReader): NewBlocksServerRequest;
+}
+
+export namespace NewBlocksServerRequest {
+  export type AsObject = {
+    filtersList: Array<NewBlocksFilter.AsObject>,
+  }
+}
+
 export class NewBlocksFilter extends jspb.Message {
   getBlockIds(): massa_model_v1_block_pb.BlockIds | undefined;
   setBlockIds(value?: massa_model_v1_block_pb.BlockIds): NewBlocksFilter;
@@ -1827,6 +1907,26 @@ export namespace NewBlocksResponse {
   }
 }
 
+export class NewBlocksServerResponse extends jspb.Message {
+  getSignedBlock(): massa_model_v1_block_pb.SignedBlock | undefined;
+  setSignedBlock(value?: massa_model_v1_block_pb.SignedBlock): NewBlocksServerResponse;
+  hasSignedBlock(): boolean;
+  clearSignedBlock(): NewBlocksServerResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewBlocksServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewBlocksServerResponse): NewBlocksServerResponse.AsObject;
+  static serializeBinaryToWriter(message: NewBlocksServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewBlocksServerResponse;
+  static deserializeBinaryFromReader(message: NewBlocksServerResponse, reader: jspb.BinaryReader): NewBlocksServerResponse;
+}
+
+export namespace NewBlocksServerResponse {
+  export type AsObject = {
+    signedBlock?: massa_model_v1_block_pb.SignedBlock.AsObject,
+  }
+}
+
 export class NewEndorsementsRequest extends jspb.Message {
   getFiltersList(): Array<NewEndorsementsFilter>;
   setFiltersList(value: Array<NewEndorsementsFilter>): NewEndorsementsRequest;
@@ -1842,6 +1942,26 @@ export class NewEndorsementsRequest extends jspb.Message {
 }
 
 export namespace NewEndorsementsRequest {
+  export type AsObject = {
+    filtersList: Array<NewEndorsementsFilter.AsObject>,
+  }
+}
+
+export class NewEndorsementsServerRequest extends jspb.Message {
+  getFiltersList(): Array<NewEndorsementsFilter>;
+  setFiltersList(value: Array<NewEndorsementsFilter>): NewEndorsementsServerRequest;
+  clearFiltersList(): NewEndorsementsServerRequest;
+  addFilters(value?: NewEndorsementsFilter, index?: number): NewEndorsementsFilter;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewEndorsementsServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: NewEndorsementsServerRequest): NewEndorsementsServerRequest.AsObject;
+  static serializeBinaryToWriter(message: NewEndorsementsServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewEndorsementsServerRequest;
+  static deserializeBinaryFromReader(message: NewEndorsementsServerRequest, reader: jspb.BinaryReader): NewEndorsementsServerRequest;
+}
+
+export namespace NewEndorsementsServerRequest {
   export type AsObject = {
     filtersList: Array<NewEndorsementsFilter.AsObject>,
   }
@@ -1908,6 +2028,26 @@ export namespace NewEndorsementsResponse {
   }
 }
 
+export class NewEndorsementsServerResponse extends jspb.Message {
+  getSignedEndorsement(): massa_model_v1_endorsement_pb.SignedEndorsement | undefined;
+  setSignedEndorsement(value?: massa_model_v1_endorsement_pb.SignedEndorsement): NewEndorsementsServerResponse;
+  hasSignedEndorsement(): boolean;
+  clearSignedEndorsement(): NewEndorsementsServerResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewEndorsementsServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewEndorsementsServerResponse): NewEndorsementsServerResponse.AsObject;
+  static serializeBinaryToWriter(message: NewEndorsementsServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewEndorsementsServerResponse;
+  static deserializeBinaryFromReader(message: NewEndorsementsServerResponse, reader: jspb.BinaryReader): NewEndorsementsServerResponse;
+}
+
+export namespace NewEndorsementsServerResponse {
+  export type AsObject = {
+    signedEndorsement?: massa_model_v1_endorsement_pb.SignedEndorsement.AsObject,
+  }
+}
+
 export class NewFilledBlocksRequest extends jspb.Message {
   getFiltersList(): Array<NewBlocksFilter>;
   setFiltersList(value: Array<NewBlocksFilter>): NewFilledBlocksRequest;
@@ -1923,6 +2063,26 @@ export class NewFilledBlocksRequest extends jspb.Message {
 }
 
 export namespace NewFilledBlocksRequest {
+  export type AsObject = {
+    filtersList: Array<NewBlocksFilter.AsObject>,
+  }
+}
+
+export class NewFilledBlocksServerRequest extends jspb.Message {
+  getFiltersList(): Array<NewBlocksFilter>;
+  setFiltersList(value: Array<NewBlocksFilter>): NewFilledBlocksServerRequest;
+  clearFiltersList(): NewFilledBlocksServerRequest;
+  addFilters(value?: NewBlocksFilter, index?: number): NewBlocksFilter;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewFilledBlocksServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: NewFilledBlocksServerRequest): NewFilledBlocksServerRequest.AsObject;
+  static serializeBinaryToWriter(message: NewFilledBlocksServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewFilledBlocksServerRequest;
+  static deserializeBinaryFromReader(message: NewFilledBlocksServerRequest, reader: jspb.BinaryReader): NewFilledBlocksServerRequest;
+}
+
+export namespace NewFilledBlocksServerRequest {
   export type AsObject = {
     filtersList: Array<NewBlocksFilter.AsObject>,
   }
@@ -1989,6 +2149,26 @@ export namespace NewFilledBlocksResponse {
   }
 }
 
+export class NewFilledBlocksServerResponse extends jspb.Message {
+  getFilledBlock(): massa_model_v1_block_pb.FilledBlock | undefined;
+  setFilledBlock(value?: massa_model_v1_block_pb.FilledBlock): NewFilledBlocksServerResponse;
+  hasFilledBlock(): boolean;
+  clearFilledBlock(): NewFilledBlocksServerResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewFilledBlocksServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewFilledBlocksServerResponse): NewFilledBlocksServerResponse.AsObject;
+  static serializeBinaryToWriter(message: NewFilledBlocksServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewFilledBlocksServerResponse;
+  static deserializeBinaryFromReader(message: NewFilledBlocksServerResponse, reader: jspb.BinaryReader): NewFilledBlocksServerResponse;
+}
+
+export namespace NewFilledBlocksServerResponse {
+  export type AsObject = {
+    filledBlock?: massa_model_v1_block_pb.FilledBlock.AsObject,
+  }
+}
+
 export class NewOperationsRequest extends jspb.Message {
   getFiltersList(): Array<NewOperationsFilter>;
   setFiltersList(value: Array<NewOperationsFilter>): NewOperationsRequest;
@@ -2004,6 +2184,26 @@ export class NewOperationsRequest extends jspb.Message {
 }
 
 export namespace NewOperationsRequest {
+  export type AsObject = {
+    filtersList: Array<NewOperationsFilter.AsObject>,
+  }
+}
+
+export class NewOperationsServerRequest extends jspb.Message {
+  getFiltersList(): Array<NewOperationsFilter>;
+  setFiltersList(value: Array<NewOperationsFilter>): NewOperationsServerRequest;
+  clearFiltersList(): NewOperationsServerRequest;
+  addFilters(value?: NewOperationsFilter, index?: number): NewOperationsFilter;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewOperationsServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: NewOperationsServerRequest): NewOperationsServerRequest.AsObject;
+  static serializeBinaryToWriter(message: NewOperationsServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewOperationsServerRequest;
+  static deserializeBinaryFromReader(message: NewOperationsServerRequest, reader: jspb.BinaryReader): NewOperationsServerRequest;
+}
+
+export namespace NewOperationsServerRequest {
   export type AsObject = {
     filtersList: Array<NewOperationsFilter.AsObject>,
   }
@@ -2070,6 +2270,82 @@ export namespace NewOperationsResponse {
   }
 }
 
+export class NewOperationsServerResponse extends jspb.Message {
+  getSignedOperation(): massa_model_v1_operation_pb.SignedOperation | undefined;
+  setSignedOperation(value?: massa_model_v1_operation_pb.SignedOperation): NewOperationsServerResponse;
+  hasSignedOperation(): boolean;
+  clearSignedOperation(): NewOperationsServerResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewOperationsServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewOperationsServerResponse): NewOperationsServerResponse.AsObject;
+  static serializeBinaryToWriter(message: NewOperationsServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewOperationsServerResponse;
+  static deserializeBinaryFromReader(message: NewOperationsServerResponse, reader: jspb.BinaryReader): NewOperationsServerResponse;
+}
+
+export namespace NewOperationsServerResponse {
+  export type AsObject = {
+    signedOperation?: massa_model_v1_operation_pb.SignedOperation.AsObject,
+  }
+}
+
+export class NewTransfersInfoServerRequest extends jspb.Message {
+  getAddress(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setAddress(value?: google_protobuf_wrappers_pb.StringValue): NewTransfersInfoServerRequest;
+  hasAddress(): boolean;
+  clearAddress(): NewTransfersInfoServerRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewTransfersInfoServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: NewTransfersInfoServerRequest): NewTransfersInfoServerRequest.AsObject;
+  static serializeBinaryToWriter(message: NewTransfersInfoServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewTransfersInfoServerRequest;
+  static deserializeBinaryFromReader(message: NewTransfersInfoServerRequest, reader: jspb.BinaryReader): NewTransfersInfoServerRequest;
+}
+
+export namespace NewTransfersInfoServerRequest {
+  export type AsObject = {
+    address?: google_protobuf_wrappers_pb.StringValue.AsObject,
+  }
+}
+
+export class NewTransfersInfoServerResponse extends jspb.Message {
+  getSlot(): massa_model_v1_slot_pb.Slot | undefined;
+  setSlot(value?: massa_model_v1_slot_pb.Slot): NewTransfersInfoServerResponse;
+  hasSlot(): boolean;
+  clearSlot(): NewTransfersInfoServerResponse;
+
+  getTimestamp(): number;
+  setTimestamp(value: number): NewTransfersInfoServerResponse;
+
+  getBlockId(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setBlockId(value?: google_protobuf_wrappers_pb.StringValue): NewTransfersInfoServerResponse;
+  hasBlockId(): boolean;
+  clearBlockId(): NewTransfersInfoServerResponse;
+
+  getTransfersInfoList(): Array<massa_model_v1_execution_pb.ExecTransferInfo>;
+  setTransfersInfoList(value: Array<massa_model_v1_execution_pb.ExecTransferInfo>): NewTransfersInfoServerResponse;
+  clearTransfersInfoList(): NewTransfersInfoServerResponse;
+  addTransfersInfo(value?: massa_model_v1_execution_pb.ExecTransferInfo, index?: number): massa_model_v1_execution_pb.ExecTransferInfo;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewTransfersInfoServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewTransfersInfoServerResponse): NewTransfersInfoServerResponse.AsObject;
+  static serializeBinaryToWriter(message: NewTransfersInfoServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewTransfersInfoServerResponse;
+  static deserializeBinaryFromReader(message: NewTransfersInfoServerResponse, reader: jspb.BinaryReader): NewTransfersInfoServerResponse;
+}
+
+export namespace NewTransfersInfoServerResponse {
+  export type AsObject = {
+    slot?: massa_model_v1_slot_pb.Slot.AsObject,
+    timestamp: number,
+    blockId?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    transfersInfoList: Array<massa_model_v1_execution_pb.ExecTransferInfo.AsObject>,
+  }
+}
+
 export class NewSlotExecutionOutputsRequest extends jspb.Message {
   getFiltersList(): Array<NewSlotExecutionOutputsFilter>;
   setFiltersList(value: Array<NewSlotExecutionOutputsFilter>): NewSlotExecutionOutputsRequest;
@@ -2085,6 +2361,26 @@ export class NewSlotExecutionOutputsRequest extends jspb.Message {
 }
 
 export namespace NewSlotExecutionOutputsRequest {
+  export type AsObject = {
+    filtersList: Array<NewSlotExecutionOutputsFilter.AsObject>,
+  }
+}
+
+export class NewSlotExecutionOutputsServerRequest extends jspb.Message {
+  getFiltersList(): Array<NewSlotExecutionOutputsFilter>;
+  setFiltersList(value: Array<NewSlotExecutionOutputsFilter>): NewSlotExecutionOutputsServerRequest;
+  clearFiltersList(): NewSlotExecutionOutputsServerRequest;
+  addFilters(value?: NewSlotExecutionOutputsFilter, index?: number): NewSlotExecutionOutputsFilter;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewSlotExecutionOutputsServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: NewSlotExecutionOutputsServerRequest): NewSlotExecutionOutputsServerRequest.AsObject;
+  static serializeBinaryToWriter(message: NewSlotExecutionOutputsServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewSlotExecutionOutputsServerRequest;
+  static deserializeBinaryFromReader(message: NewSlotExecutionOutputsServerRequest, reader: jspb.BinaryReader): NewSlotExecutionOutputsServerRequest;
+}
+
+export namespace NewSlotExecutionOutputsServerRequest {
   export type AsObject = {
     filtersList: Array<NewSlotExecutionOutputsFilter.AsObject>,
   }
@@ -2399,6 +2695,26 @@ export namespace NewSlotExecutionOutputsResponse {
   }
 }
 
+export class NewSlotExecutionOutputsServerResponse extends jspb.Message {
+  getOutput(): massa_model_v1_execution_pb.SlotExecutionOutput | undefined;
+  setOutput(value?: massa_model_v1_execution_pb.SlotExecutionOutput): NewSlotExecutionOutputsServerResponse;
+  hasOutput(): boolean;
+  clearOutput(): NewSlotExecutionOutputsServerResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewSlotExecutionOutputsServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewSlotExecutionOutputsServerResponse): NewSlotExecutionOutputsServerResponse.AsObject;
+  static serializeBinaryToWriter(message: NewSlotExecutionOutputsServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewSlotExecutionOutputsServerResponse;
+  static deserializeBinaryFromReader(message: NewSlotExecutionOutputsServerResponse, reader: jspb.BinaryReader): NewSlotExecutionOutputsServerResponse;
+}
+
+export namespace NewSlotExecutionOutputsServerResponse {
+  export type AsObject = {
+    output?: massa_model_v1_execution_pb.SlotExecutionOutput.AsObject,
+  }
+}
+
 export class NewSlotABICallStacksRequest extends jspb.Message {
   getFinalityLevel(): FinalityLevel;
   setFinalityLevel(value: FinalityLevel): NewSlotABICallStacksRequest;
@@ -2673,6 +2989,26 @@ export namespace TransactionsThroughputRequest {
   }
 }
 
+export class TransactionsThroughputServerRequest extends jspb.Message {
+  getInterval(): google_protobuf_wrappers_pb.UInt64Value | undefined;
+  setInterval(value?: google_protobuf_wrappers_pb.UInt64Value): TransactionsThroughputServerRequest;
+  hasInterval(): boolean;
+  clearInterval(): TransactionsThroughputServerRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TransactionsThroughputServerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: TransactionsThroughputServerRequest): TransactionsThroughputServerRequest.AsObject;
+  static serializeBinaryToWriter(message: TransactionsThroughputServerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TransactionsThroughputServerRequest;
+  static deserializeBinaryFromReader(message: TransactionsThroughputServerRequest, reader: jspb.BinaryReader): TransactionsThroughputServerRequest;
+}
+
+export namespace TransactionsThroughputServerRequest {
+  export type AsObject = {
+    interval?: google_protobuf_wrappers_pb.UInt64Value.AsObject,
+  }
+}
+
 export class TransactionsThroughputResponse extends jspb.Message {
   getThroughput(): number;
   setThroughput(value: number): TransactionsThroughputResponse;
@@ -2686,6 +3022,24 @@ export class TransactionsThroughputResponse extends jspb.Message {
 }
 
 export namespace TransactionsThroughputResponse {
+  export type AsObject = {
+    throughput: number,
+  }
+}
+
+export class TransactionsThroughputServerResponse extends jspb.Message {
+  getThroughput(): number;
+  setThroughput(value: number): TransactionsThroughputServerResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TransactionsThroughputServerResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: TransactionsThroughputServerResponse): TransactionsThroughputServerResponse.AsObject;
+  static serializeBinaryToWriter(message: TransactionsThroughputServerResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TransactionsThroughputServerResponse;
+  static deserializeBinaryFromReader(message: TransactionsThroughputServerResponse, reader: jspb.BinaryReader): TransactionsThroughputServerResponse;
+}
+
+export namespace TransactionsThroughputServerResponse {
   export type AsObject = {
     throughput: number,
   }

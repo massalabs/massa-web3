@@ -84,7 +84,7 @@ describe('Provider GRPC tests', () => {
     endSlot.setPeriod(currentPeriod + 10)
     endSlot.setThread(0)
     slotRange.setEndSlot(endSlot)
-    const draws = await grpcProvider.getSelectorDraws(slotRange)
+    const draws = await grpcProvider.getSelectorDraws(undefined, slotRange)
     expect(draws).toBeDefined()
     expect(draws.length).toBeGreaterThan(0)
   })
