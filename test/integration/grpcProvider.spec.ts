@@ -1,4 +1,4 @@
-import { CHAIN_ID, GrpcApiUrl, Mas, NetworkName } from '../../src'
+import { CHAIN_ID, GrpcApiUrl, Mas, NetworkName, strToBytes } from '../../src'
 import { account, grpcProvider, publicProvider } from './setup'
 import { StakerEntry } from '../../src/generated/grpc/massa/model/v1/staker_pb'
 import {
@@ -112,9 +112,10 @@ describe('Provider GRPC tests', () => {
     expect(response2.getResult()?.getAmount()?.getScale()).toBe(9)
   })
 
-  // test('getStorageKeys', async () => {
-  //     const keys = await grpcProvider.getStorageKeys("AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL");
-  //     expect(keys).toBeDefined()
-  //     expect(keys.length).toBeGreaterThan(0)
-  // })
+  test('readStorage', async () => {
+    const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
+    const res = await grpcProvider.readStorage(USDC, ['SYMBOL'], true)
+    expect(res.length).toBe(1)
+    expect(res[0]).toStrictEqual(strToBytes('USDC.s'))
+  })
 })
