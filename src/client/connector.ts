@@ -44,6 +44,14 @@ export class Connector {
   }
 
   /**
+   * Get storage keys for the given addresses and filters.
+   */
+
+  public get_addresses_keys: t.GetAddressesDatastoreKeys = (params) => {
+    return this.client.request('get_addresses_datastore_keys', params)
+  }
+
+  /**
    * Get blocks
    */
 
