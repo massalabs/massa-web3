@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Mas, strToBytes } from '../basicElements'
+import { Mas } from '../basicElements'
 import {
   SendOperationInput,
   EventFilter as EvtFilter,
@@ -12,7 +12,10 @@ import {
   ExecuteSCReadOnlyResult,
   formatReadOnlyExecuteSCResponse,
   formatReadOnlyExecuteSCParams,
+  AddressDatastoreKeys,
+  DatastoreKeysRequest,
 } from '.'
+import { formatDatastoreKey } from '../utils/formatter'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
 import isEqual from 'lodash.isequal'
@@ -133,6 +136,44 @@ export class PublicAPI {
     return this.connector.get_cliques()
   }
 
+  async getAddressesDatastoreKeys(
+    params: DatastoreKeysRequest[]
+  ): Promise<AddressDatastoreKeys[]> {
+    const parsedParams = params.map((param) => {
+      const prefix = param.prefix
+        ? Array.from(formatDatastoreKey(param.prefix))
+        : []
+      const start_key = param.startKey
+        ? Array.from(formatDatastoreKey(param.startKey))
+        : null
+      const end_key = param.endKey
+        ? Array.from(formatDatastoreKey(param.endKey))
+        : null
+
+      return {
+        address: param.address,
+        is_final: param.final ?? true,
+        prefix,
+        start_key,
+        // default value is true
+        inclusive_start_key: param.inclusiveStartKey ?? null,
+        end_key,
+        // default value is true
+        inclusive_end_key: param.inclusiveEndKey ?? null,
+        // default value is 500
+        count: param.maxCount ?? null,
+      }
+    })
+
+    const data = await this.connector.get_addresses_keys(parsedParams)
+
+    return data.map((r) => ({
+      address: r.address,
+      isFinal: r.is_final,
+      keys: r.keys.map((key) => Uint8Array.from(key)),
+    }))
+  }
+
   async getDataStoreKeys(
     contract: string,
     filter: Uint8Array = new Uint8Array(),
@@ -156,8 +197,7 @@ export class PublicAPI {
     final = true
   ): Promise<(Uint8Array | null)[]> {
     const entriesQuery = inputs.map((entry) => {
-      const byteKey: Uint8Array =
-        typeof entry.key === 'string' ? strToBytes(entry.key) : entry.key
+      const byteKey = formatDatastoreKey(entry.key)
       return {
         key: Array.from(byteKey),
         address: entry.address,

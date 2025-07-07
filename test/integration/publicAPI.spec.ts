@@ -16,7 +16,6 @@ const {
   Staker,
   Block,
   BlockInfo,
-  OperationInfo,
   SCOutputEvent,
   ExecuteReadOnlyResponse,
 } = createCheckers(validator)
@@ -31,6 +30,18 @@ const TEST_USER = 'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
 const NAME_KEY = 'name_key'
 const NAME_VAL = 'Massa'
 const TEST_CONTRACT = 'AS12N5DvTVwvaLbaniMgDJqKwJ3uXBGwzzGuB1f6fjeSx3nhhahTE'
+
+// New contract with multiple datastore keys
+const MULTI_KEY_CONTRACT =
+  'AS1SRDPALic5jX9xMwH8yrkP23k1tQRsMX6TEgmB8ag8RJmQxRxA'
+
+// Test keys prefix from the multi-key contract
+const TEST_PREFIX = {
+  USER: 'user_',
+  CONFIG: 'config_',
+  DATA: 'data_',
+  METADATA: 'metadata_',
+}
 
 let client: PublicAPI
 beforeAll(() => {
@@ -169,6 +180,373 @@ describe('client tests', () => {
     expect(entries[0]).toBeNull()
     expect(entries[1]).not.toBeNull()
     expect(bytesToStr(entries[1] as Uint8Array)).toBe(NAME_VAL)
+  })
+
+  test('getAddressesDatastoreKeys', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+      },
+    ])
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getAddressesDatastoreKeys with prefix', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        prefix: NAME_KEY,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getAddressesDatastoreKeys with multiple addresses', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+      },
+      {
+        address: MULTI_KEY_CONTRACT,
+      },
+    ])
+
+    expect(keys).toHaveLength(2)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[1].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[1].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(keys[1].keys.length).toBeGreaterThan(20) // Multi-key contract has many keys
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getAddressesDatastoreKeys with startKey', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        startKey: NAME_KEY,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getAddressesDatastoreKeys with endKey', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        endKey: NAME_KEY,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getAddressesDatastoreKeys with startKey and endKey range', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        startKey: NAME_KEY,
+        endKey: NAME_KEY,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getAddressesDatastoreKeys with maxCount', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        maxCount: 1,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  test('getAddressesDatastoreKeys with non-existent prefix', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        prefix: 'non_existent_key',
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys).toHaveLength(0)
+  })
+
+  test('getAddressesDatastoreKeys with empty array', async () => {
+    const keys = await client.getAddressesDatastoreKeys([])
+
+    expect(keys).toHaveLength(0)
+  })
+
+  test('getAddressesDatastoreKeys with non-existent address', async () => {
+    // Use a clearly non-existent address
+    const nonExistentAddress =
+      'AU12dG5xP1RDEB5ocdHkymNVvvSJmUL9BgHwCksDowqmGWxfpm93x'
+
+    await expect(
+      client.getAddressesDatastoreKeys([
+        {
+          address: nonExistentAddress,
+        },
+      ])
+    ).rejects.toThrow('Not found: Account')
+  })
+
+  test('getAddressesDatastoreKeys with complex filter combination', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        prefix: NAME_KEY,
+        final: false,
+        maxCount: 1,
+        inclusiveStartKey: true,
+        inclusiveEndKey: true,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(false)
+    expect(keys[0].keys).toHaveLength(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+  })
+
+  // Advanced tests with multi-key contract
+  test('getAddressesDatastoreKeys - get all keys from multi-key contract', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBeGreaterThan(20) // Should have many keys
+  })
+
+  test('getAddressesDatastoreKeys - filter by user prefix', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        prefix: TEST_PREFIX.USER,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(17) // user_001 to user_017
+
+    // Verify all keys start with 'user_'
+    keys[0].keys.forEach((key) => {
+      const keyStr = bytesToStr(key)
+      expect(keyStr.startsWith(TEST_PREFIX.USER)).toBe(true)
+    })
+  })
+
+  test('getAddressesDatastoreKeys - filter by config prefix', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        prefix: TEST_PREFIX.CONFIG,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(2) // config_version, config_settings
+
+    const keyStrings = keys[0].keys.map((key) => bytesToStr(key))
+    expect(keyStrings).toContain('config_version')
+    expect(keyStrings).toContain('config_settings')
+  })
+
+  test('getAddressesDatastoreKeys - filter by data prefix', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        prefix: TEST_PREFIX.DATA,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(3) // data_alpha, data_beta, data_gamma
+
+    const keyStrings = keys[0].keys.map((key) => bytesToStr(key))
+    expect(keyStrings).toContain('data_alpha')
+    expect(keyStrings).toContain('data_beta')
+    expect(keyStrings).toContain('data_gamma')
+  })
+
+  test('getAddressesDatastoreKeys - pagination with maxCount', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        maxCount: 5,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(5) // Should return exactly 5 keys
+  })
+
+  test('getAddressesDatastoreKeys - pagination with user prefix and maxCount', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        prefix: TEST_PREFIX.USER,
+        maxCount: 3,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(3) // Should return exactly 3 user keys
+
+    // Verify all keys start with 'user_'
+    keys[0].keys.forEach((key) => {
+      const keyStr = bytesToStr(key)
+      expect(keyStr.startsWith(TEST_PREFIX.USER)).toBe(true)
+    })
+  })
+
+  test('getAddressesDatastoreKeys - range query with startKey and endKey', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        startKey: 'user_005',
+        endKey: 'user_010',
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(6) // user_005 to user_010 inclusive
+
+    const keyStrings = keys[0].keys.map((key) => bytesToStr(key))
+    expect(keyStrings).toContain('user_005')
+    expect(keyStrings).toContain('user_010')
+    expect(keyStrings).not.toContain('user_004')
+    expect(keyStrings).not.toContain('user_011')
+  })
+
+  test('getAddressesDatastoreKeys - range query with exclusive bounds', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        startKey: 'user_005',
+        endKey: 'user_010',
+        inclusiveStartKey: false,
+        inclusiveEndKey: false,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(4) // user_006 to user_009 (exclusive)
+
+    const keyStrings = keys[0].keys.map((key) => bytesToStr(key))
+    expect(keyStrings).not.toContain('user_005')
+    expect(keyStrings).not.toContain('user_010')
+    expect(keyStrings).toContain('user_006')
+    expect(keyStrings).toContain('user_009')
+  })
+
+  test('getAddressesDatastoreKeys - complex filter combination', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: MULTI_KEY_CONTRACT,
+        prefix: TEST_PREFIX.USER,
+        startKey: 'user_010',
+        endKey: 'user_015',
+        maxCount: 3,
+        final: false,
+      },
+    ])
+
+    expect(keys).toHaveLength(1)
+    expect(keys[0].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[0].isFinal).toBe(false)
+    expect(keys[0].keys.length).toBe(3) // Should return 3 keys within the range
+
+    const keyStrings = keys[0].keys.map((key) => bytesToStr(key))
+    keyStrings.forEach((keyStr) => {
+      expect(keyStr.startsWith(TEST_PREFIX.USER)).toBe(true)
+      expect(keyStr >= 'user_010').toBe(true)
+      expect(keyStr <= 'user_015').toBe(true)
+    })
+  })
+
+  test('getAddressesDatastoreKeys - multiple addresses with different filters', async () => {
+    const keys = await client.getAddressesDatastoreKeys([
+      {
+        address: TEST_CONTRACT,
+        prefix: NAME_KEY,
+      },
+      {
+        address: MULTI_KEY_CONTRACT,
+        prefix: TEST_PREFIX.CONFIG,
+      },
+    ])
+
+    expect(keys).toHaveLength(2)
+
+    // First address (TEST_CONTRACT)
+    expect(keys[0].address).toBe(TEST_CONTRACT)
+    expect(keys[0].isFinal).toBe(true)
+    expect(keys[0].keys.length).toBe(1)
+    expect(bytesToStr(keys[0].keys[0])).toBe(NAME_KEY)
+
+    // Second address (MULTI_KEY_CONTRACT)
+    expect(keys[1].address).toBe(MULTI_KEY_CONTRACT)
+    expect(keys[1].isFinal).toBe(true)
+    expect(keys[1].keys.length).toBe(2)
+
+    const keyStrings = keys[1].keys.map((key) => bytesToStr(key))
+    expect(keyStrings).toContain('config_version')
+    expect(keyStrings).toContain('config_settings')
   })
 
   test.skip('sendOperations', async () => {
