@@ -14,8 +14,8 @@ import {
   formatReadOnlyExecuteSCParams,
   AddressDatastoreKeys,
   DatastoreKeysRequest,
-  formatDatastoreKey,
 } from '.'
+import { formatDatastoreKey } from '../utils/formatter'
 import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
 import isEqual from 'lodash.isequal'

@@ -1,7 +1,6 @@
 import { CHAIN_ID, GrpcApiUrl, PublicApiUrl, NetworkName } from '../../src'
 import { grpcProvider, provider } from './setup'
 import { strToBytes, U256 } from '../../src/basicElements/serializers'
-import { PublicStatus } from '../../src/generated/grpc/massa/model/v1/node_pb'
 
 const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
 

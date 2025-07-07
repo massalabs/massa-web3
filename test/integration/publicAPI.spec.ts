@@ -16,7 +16,6 @@ const {
   Staker,
   Block,
   BlockInfo,
-  OperationInfo,
   SCOutputEvent,
   ExecuteReadOnlyResponse,
 } = createCheckers(validator)
