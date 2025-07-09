@@ -213,4 +213,22 @@ describe('Serialization tests', () => {
     const arr = new Uint8Array(0)
     expect(bytesToStr(arr)).toEqual('')
   })
+
+  it('Args: deserialize Uint8Array with a byteOffset', () => {
+    const str1 = 'Hello world'
+    const str2 = 'Bonjour'
+    const str3 = 'Namaste'
+    const buf1 = new Args().addString(str1).serialize()
+    const buf2 = new Args().addString(str2).addString(str3).serialize()
+    const fullBuffer = new Uint8Array([...buf1, ...buf2])
+
+    const offset = buf1.length
+    const subArray = fullBuffer.subarray(offset)
+
+    expect(subArray.byteOffset).toEqual(offset)
+
+    const args = new Args(subArray)
+    expect(args.nextString()).toEqual(str2)
+    expect(args.nextString()).toEqual(str3)
+  })
 })
