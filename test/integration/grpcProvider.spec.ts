@@ -1,5 +1,17 @@
-import { CHAIN_ID, GrpcApiUrl, Mas, NetworkName, strToBytes } from '../../src'
-import { account, grpcProvider, publicProvider } from './setup'
+import {
+  CHAIN_ID,
+  GrpcApiUrl,
+  Mas,
+  NetworkName,
+  strToBytes,
+  USDCe,
+} from '../../src'
+import {
+  account,
+  grpcProvider,
+  grpcPublicProvider,
+  publicProvider,
+} from './setup'
 import { StakerEntry } from '../../src/generated/grpc/massa/model/v1/staker_pb'
 import {
   Slot as grpcSlot,
@@ -113,9 +125,34 @@ describe('Provider GRPC tests', () => {
   })
 
   test('readStorage', async () => {
-    const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
-    const res = await grpcProvider.readStorage(USDC, ['SYMBOL'], true)
+    const USDC = await USDCe.fromProvider(grpcProvider)
+    const res = await grpcProvider.readStorage(USDC.address, ['SYMBOL'], true)
     expect(res.length).toBe(1)
     expect(res[0]).toStrictEqual(strToBytes('USDC.s'))
+  })
+
+  test('readSC from provider', async () => {
+    const USDC = await USDCe.fromProvider(grpcProvider)
+
+    const res = await grpcProvider.readSC({
+      target: USDC.address,
+      func: 'name',
+    })
+
+    expect(res.value).toStrictEqual(strToBytes('Sepolia USDC'))
+  })
+
+  test('readSC from public provider', async () => {
+    const USDC = await USDCe.fromProvider(grpcPublicProvider)
+
+    const res = await grpcPublicProvider.readSC({
+      target: USDC.address,
+      func: 'name',
+      // Caller has to be set because of https://github.com/massalabs/massa/issues/4924
+      // remove this when the issue is fixed
+      caller: 'AU1bQadvjLgKBA9GGzxiSRmA6H5ufYiASwPWwmbRxUdpxHbAHsEP',
+    })
+
+    expect(res.value).toStrictEqual(strToBytes('Sepolia USDC'))
   })
 })
