@@ -1,29 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Mas } from '../../basicElements'
 import { Operation } from '../../operation'
 import { SmartContract } from '../../smartContracts'
 import { Provider, ReadSCData, ReadSCParams, SignedData } from '..'
 import { Account } from '../../account'
 import { GrpcPublicProvider } from './grpcPublicProvider'
 import { GrpcApiUrl } from '../../utils/networks'
-import {
-  FunctionCall,
-  ReadOnlyExecutionCall,
-  ScExecutionEvent,
-  ScExecutionEventStatus,
-} from '../../generated/grpc/massa/model/v1/execution_pb'
-import {
-  AddressBalanceCandidate,
-  AddressBalanceFinal,
-  ExecuteReadOnlyCallRequest,
-  ExecutionQueryRequestItem,
-  QueryStateRequest,
-} from '../../generated/grpc/public_pb'
-import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
-import { SCOutputEvent } from '../../generated/client-types'
-import { parseCallArgs } from '../../utils'
 
 /**
  * GrpcProvider implements the Provider interface using gRPC for Massa blockchain interactions
@@ -96,133 +79,16 @@ export class GrpcProvider extends GrpcPublicProvider implements Provider {
    * Executes a read-only smart contract call
    */
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
-    const parameter = parseCallArgs(params.parameter)
-    const account = await Account.generate()
-    const caller = account.address.toString()
-    const maxGas = params.maxGas ?? 0n
-
-    const request = new ExecuteReadOnlyCallRequest()
-    const call = new ReadOnlyExecutionCall()
-    call.setMaxGas(Number(maxGas))
-    call.setCallerAddress(caller)
-    call.setCallStackList([])
-    call.setFunctionCall(
-      new FunctionCall()
-        .setTargetAddress(params.target)
-        .setTargetFunction(params.func)
-        .setParameter(parameter)
-    )
-
-    // fee
-    if (params.fee) {
-      call.setFee(
-        new NativeAmount()
-          .setMantissa(Number(params.fee))
-          .setScale(Mas.NB_DECIMALS)
-      )
-    }
-    request.setCall(call)
-    const response = await this.client.executeReadOnlyCall(request)
-
-    const output = response.getOutput()
-    if (!output) {
-      throw new Error('No output received')
-    }
-
-    const result: ReadSCData = {
-      value: output.getCallResult_asU8(),
-      info: {
-        gasCost: output.getUsedGas(),
-        events:
-          output
-            .getOut()
-            ?.getEventsList()
-            .map((ev: ScExecutionEvent) => {
-              const event: SCOutputEvent = {
-                data: ev.getData_asB64(),
-                context: {
-                  slot: {
-                    period: Number(
-                      ev.getContext()?.getOriginSlot()?.getPeriod() ?? 0
-                    ),
-                    thread: Number(
-                      ev.getContext()?.getOriginSlot()?.getThread() ?? 0
-                    ),
-                  },
-                  read_only:
-                    ev.getContext()?.getStatus() ===
-                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_READ_ONLY,
-                  call_stack: ev.getContext()?.getCallStackList() ?? [],
-                  index_in_slot: Number(ev.getContext()?.getIndexInSlot() ?? 0),
-                  is_final:
-                    ev.getContext()?.getStatus() ===
-                    ScExecutionEventStatus.SC_EXECUTION_EVENT_STATUS_FINAL,
-                },
-              }
-              return event
-            }) ?? [],
-      },
-    }
-
-    return result
+    const caller = params.caller ?? this.address
+    return super.readSC({ ...params, caller })
   }
 
   /**
    * Retrieves the balance of the associated account
    */
   async balance(final = true): Promise<bigint> {
-    try {
-      const queries = new ExecutionQueryRequestItem()
-      if (final) {
-        queries.setAddressBalanceFinal(
-          new AddressBalanceFinal().setAddress(this.account.address.toString())
-        )
-      } else {
-        queries.setAddressBalanceCandidate(
-          new AddressBalanceCandidate().setAddress(
-            this.account.address.toString()
-          )
-        )
-      }
-
-      const response = await this.client.queryState(
-        new QueryStateRequest().setQueriesList([queries])
-      )
-
-      const list = response.getResponsesList()
-      const result = list[0]
-      if (!result) {
-        throw new Error('No response received for balance query')
-      }
-
-      if (result.hasError()) {
-        throw new Error(
-          `Query state error: ${result.getError()?.getMessage() || 'Unknown error'}`
-        )
-      }
-
-      if (!result.hasResult()) {
-        throw new Error('No response item received for balance query')
-      }
-
-      const responseItem = result.getResult()
-
-      if (!responseItem?.hasAmount()) {
-        throw new Error('No response item received for balance query')
-      }
-
-      const amount = responseItem.getAmount()
-      if (!amount) {
-        throw new Error('No amount received for balance query')
-      }
-
-      return BigInt(amount.getMantissa())
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to get balance: ${error.message}`)
-      }
-      throw new Error('Failed to get balance: Unknown error')
-    }
+    const balance = await super.balanceOf([this.address], final)
+    return balance[0].balance
   }
 
   /**

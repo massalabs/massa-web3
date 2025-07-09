@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Account } from '../../account'
 import {
   EventFilter,
   ExecuteSCReadOnlyParams,
@@ -105,7 +104,9 @@ import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
 import { ClientReadableStream } from 'grpc-web'
+import { StringValue } from '../../generated/grpc/google/protobuf/wrappers_pb'
 import { FilterBuilder } from './filterBuilder'
+import { MAX_GAS_CALL } from '../../smartContracts'
 
 export class GrpcPublicProvider implements PublicProvider {
   constructor(
@@ -932,14 +933,18 @@ export class GrpcPublicProvider implements PublicProvider {
 
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const parameter = parseCallArgs(params.parameter)
-    const caller =
-      params.caller ?? (await Account.generate()).address.toString()
-    const maxGas = params.maxGas ?? 0n
+    const maxGas = params.maxGas ?? MAX_GAS_CALL
 
     const request = new ExecuteReadOnlyCallRequest()
     const call = new ReadOnlyExecutionCall()
     call.setMaxGas(Number(maxGas))
-    call.setCallerAddress(caller)
+
+    if (params.caller) {
+      const stringValue = new StringValue()
+      stringValue.setValue(params.caller)
+      call.setCallerAddress(stringValue)
+    }
+
     call.setCallStackList([])
     call.setFunctionCall(
       new FunctionCall()
@@ -953,6 +958,14 @@ export class GrpcPublicProvider implements PublicProvider {
       call.setFee(
         new NativeAmount()
           .setMantissa(Number(params.fee))
+          .setScale(Mas.NB_DECIMALS)
+      )
+    } else {
+      // this should be removed when https://github.com/massalabs/massa/issues/4924 is fixed and released
+      const { minimalFee } = await this.networkInfos()
+      call.setFee(
+        new NativeAmount()
+          .setMantissa(Number(minimalFee))
           .setScale(Mas.NB_DECIMALS)
       )
     }
@@ -998,6 +1011,7 @@ export class GrpcPublicProvider implements PublicProvider {
             }) ?? [],
       },
     }
+
     return result
   }
 

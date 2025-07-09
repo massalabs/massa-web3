@@ -5,6 +5,7 @@ import {
   JsonRpcPublicProvider,
   JsonRpcProvider,
   GrpcProvider,
+  GrpcPublicProvider,
 } from '../../src/provider'
 
 import { XMLHttpRequest } from 'xhr2'
@@ -15,12 +16,15 @@ export let provider: JsonRpcProvider
 export let publicProvider: JsonRpcPublicProvider
 export let mainnetProvider: JsonRpcProvider
 export let grpcProvider: GrpcProvider
+export let grpcPublicProvider: GrpcPublicProvider
+
 jest.setTimeout(120_000)
 
 beforeAll(async () => {
   account = await Account.fromEnv()
   provider = JsonRpcProvider.buildnet(account)
   grpcProvider = GrpcProvider.buildnet(account)
+  grpcPublicProvider = GrpcProvider.buildnet()
   publicProvider = JsonRpcProvider.buildnet()
   mainnetProvider = JsonRpcProvider.mainnet(account)
 
