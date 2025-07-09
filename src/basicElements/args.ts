@@ -135,7 +135,11 @@ export class Args {
   constructor(
     public serialized: Uint8Array = new Uint8Array(),
     public offset = DEFAULT_OFFSET
-  ) {}
+  ) {
+    if (serialized.byteOffset) {
+      this.serialized = new Uint8Array([...serialized])
+    }
+  }
 
   public getArgsList(): IParam[] {
     return this.argsList
