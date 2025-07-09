@@ -61,6 +61,7 @@ export function formatNodeStatusObject(status: NodeStatus): NodeStatusInfo {
     },
     chainId: status.chain_id,
     minimalFees: status.minimal_fees,
+    currentMipVersion: status.current_mip_version,
   }
 }
 
