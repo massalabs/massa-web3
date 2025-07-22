@@ -6,7 +6,6 @@ import {
   ReadSCParams,
 } from '..'
 import {
-  Account,
   CHAIN_ID,
   DatastoreEntry,
   EventFilter,
@@ -27,6 +26,11 @@ import { rpcTypes as t } from '../../generated'
 import { OperationStatus } from '../../operation'
 import { formatNodeStatusObject } from '../../client/formatObjects'
 import { U64_t } from '../../basicElements/serializers/number/u64'
+
+// Randomly chosen address that exists on buildnet & mainnet.
+// this is used as a workaround for https://github.com/massalabs/massa/issues/4912
+const PLACEHOLDER_CALLER =
+  'AU12hCMYq5LoYktCeEYetJWow9Ttr2N4Pcbek7uS9e5u2Er5X4tAn'
 
 export class JsonRpcPublicProvider implements PublicProvider {
   constructor(public client: PublicAPI) {}
@@ -99,8 +103,8 @@ export class JsonRpcPublicProvider implements PublicProvider {
   async readSC(params: ReadSCParams): Promise<ReadSCData> {
     const parameter = parseCallArgs(params.parameter)
 
-    const caller =
-      params.caller ?? (await Account.generate()).address.toString()
+    const caller = params.caller ?? PLACEHOLDER_CALLER
+
     const readOnlyParams = {
       ...params,
       caller,
@@ -161,11 +165,7 @@ export class JsonRpcPublicProvider implements PublicProvider {
   public async executeSCReadOnly(
     params: ExecuteSCReadOnlyParams
   ): Promise<ExecuteSCReadOnlyResult> {
-    const caller =
-      // Use randomly chosen address that exists on buildnet & mainnet.
-      // this is a workaround for the https://github.com/massalabs/massa/issues/4912
-      params.caller ?? 'AU1bfnCAQAhPT2gAcJkL31fCWJixFFtH7RjRHZsvaThVoeNUckep'
-    // params.caller ?? (await Account.generate()).address.toString()
+    const caller = params.caller ?? PLACEHOLDER_CALLER
     const result = await this.client.executeReadOnlyBytecode({
       ...params,
       caller,
