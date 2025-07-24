@@ -49,7 +49,8 @@ export async function resolveDeweb(uri: string): Promise<string> {
   const subdomains = currentHost.split('.')
 
   // If the current domain is not a Deweb provider, we redirect to the default URL
-  const defaultUrl = `${DEWEB_REDIRECT_URL}?deweb_url="${mns}${mnsPath}${mnsSearch}"`
+  // Use proper URL encoding for the deweb_url parameter as per RFC 3986
+  const defaultUrl = `${DEWEB_REDIRECT_URL}?deweb_url=${encodeURIComponent(mns + mnsPath + mnsSearch)}`
 
   /* 
     If the current domain has no subdomains, it can't be a Deweb provider.
