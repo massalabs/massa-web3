@@ -1,4 +1,10 @@
-import { Args, bytesToStr, U256, U8 } from '../basicElements'
+import {
+  Args,
+  bytesToStr,
+  MRC20BalanceCreationCost,
+  U256,
+  U8,
+} from '../basicElements'
 import { Operation } from '../operation'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
@@ -130,11 +136,19 @@ export class MRC20 extends SmartContract {
     amount: bigint,
     options?: CallSCOptions
   ): Promise<Operation> {
-    return this.call(
-      'transfer',
-      new Args().addString(to).addU256(amount),
-      options
-    )
+    let opts = options
+    if (!options?.coins) {
+      const coins = await MRC20BalanceCreationCost(
+        this.provider,
+        this.address,
+        to
+      )
+      opts = {
+        ...options,
+        coins,
+      }
+    }
+    return this.call('transfer', new Args().addString(to).addU256(amount), opts)
   }
 
   async allowance(
@@ -180,13 +194,25 @@ export class MRC20 extends SmartContract {
     amount: bigint,
     options?: CallSCOptions
   ): Promise<Operation> {
+    let opts = options
+    if (!options?.coins) {
+      const coins = await MRC20BalanceCreationCost(
+        this.provider,
+        this.address,
+        recipientAddress
+      )
+      opts = {
+        ...options,
+        coins,
+      }
+    }
     return this.call(
       'transferFrom',
       new Args()
         .addString(spenderAddress)
         .addString(recipientAddress)
         .addU256(amount),
-      options
+      opts
     )
   }
 }
