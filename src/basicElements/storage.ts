@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { strToBytes } from '.'
+import { PublicProvider } from '../provider'
 import { Mas, fromString } from './mas'
 
 const ACCOUNT_SIZE_BYTES = 10
@@ -61,4 +63,40 @@ export function datastoreEntry(
     (BigInt(key.length) + BigInt(value.length) + NEW_STORAGE_ENTRY_COST) *
     STORAGE_BYTE_COST
   )
+}
+
+/**
+ * Calculates the cost of creating a new MRC20 balance.
+ *
+ * @param provider - The provider to use.
+ * @param recipient - The recipient of the balance.
+ *
+ * @returns The cost in the smallest unit of the Massa currency.
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export async function MRC20BalanceCreationCost(
+  provider: PublicProvider,
+  tokenAddress: string,
+  recipient: string
+): Promise<bigint> {
+  let cost = 0n
+  const balanceKeyPrefix = 'BALANCE'
+  const balanceKey = balanceKeyPrefix + recipient
+  const [actualRecipientBalance] = await provider.readStorage(
+    tokenAddress,
+    [balanceKey],
+    false
+  )
+
+  if (!actualRecipientBalance) {
+    // baseCost = NEW_LEDGER_ENTRY_COST = STORAGE_BYTE_COST * 4 = STORAGE_BYTE_COST * 4 = 400_000
+    cost = 400_000n
+    // keyCost =
+    // LEDGER_COST_PER_BYTE * stringToBytes(BALANCE_KEY_PREFIX + receiver).length = STORAGE_BYTE_COST * (7 + receiver.length)
+    cost += STORAGE_BYTE_COST * BigInt(7 + recipient.length)
+    // valCost = LEDGER_COST_PER_BYTE * u256ToBytes(u256.Zero).length = STORAGE_BYTE_COST * 32 = 3_200_000
+    cost += 3_200_000n
+  }
+
+  return cost
 }
