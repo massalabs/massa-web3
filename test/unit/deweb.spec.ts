@@ -133,7 +133,7 @@ describe('resolveDeweb Unit Tests', () => {
 
       const result = await resolveDeweb('test.massa')
 
-      expect(result).toBe(buildDefaultUrl('test.massa/'))
+      expect(result).toBe(buildDefaultUrl('test.massa'))
     })
 
     test('should continue when localhost returns non-deweb response', async () => {
@@ -147,7 +147,7 @@ describe('resolveDeweb Unit Tests', () => {
 
       const result = await resolveDeweb('test.massa')
 
-      expect(result).toBe(buildDefaultUrl('test.massa/'))
+      expect(result).toBe(buildDefaultUrl('test.massa'))
     })
   })
 
@@ -231,7 +231,7 @@ describe('resolveDeweb Unit Tests', () => {
 
       const result = await resolveDeweb('test.massa')
 
-      expect(result).toBe('https://test.sub2.deweb-provider.com/')
+      expect(result).toBe('https://test.sub2.deweb-provider.com')
     })
 
     test('should handle complex paths and query parameters', async () => {
@@ -284,7 +284,7 @@ describe('resolveDeweb Unit Tests', () => {
 
       const result = await resolveDeweb('test.massa')
 
-      expect(result).toBe(buildDefaultUrl('test.massa/'))
+      expect(result).toBe(buildDefaultUrl('test.massa'))
     })
   })
 

@@ -21,6 +21,9 @@ export async function resolveDeweb(uri: string): Promise<string> {
     throw new Error('Not a MNS domain')
   }
 
+  // remove trailing "/"
+  const urlSearch = (mnsPath + mnsSearch).replace(/\/$/, '')
+
   /* -- Check if mns domain are natively supported by the current browser -- */
   try {
     const response = await fetch(`http://${mns}/__deweb_info`)
@@ -37,7 +40,7 @@ export async function resolveDeweb(uri: string): Promise<string> {
   try {
     const response = await fetch('http://localhost:8080/__deweb_info')
     if (await isDewebInfoData(response)) {
-      return `http://${mnsDomain}.localhost:8080${mnsPath}${mnsSearch}`
+      return `http://${mnsDomain}.localhost:8080${urlSearch}`
     }
   } catch (error) {
     // ignore error
@@ -50,7 +53,7 @@ export async function resolveDeweb(uri: string): Promise<string> {
 
   // If the current domain is not a Deweb provider, we redirect to the default URL
   // Use proper URL encoding for the deweb_url parameter as per RFC 3986
-  const defaultUrl = `${DEWEB_REDIRECT_URL}?deweb_url=${encodeURIComponent(mns + mnsPath + mnsSearch)}`
+  const defaultUrl = `${DEWEB_REDIRECT_URL}?deweb_url=${encodeURIComponent(mns + urlSearch)}`
 
   /* 
     If the current domain has no subdomains, it can't be a Deweb provider.
@@ -67,7 +70,7 @@ export async function resolveDeweb(uri: string): Promise<string> {
     )
     if (await isDewebInfoData(response)) {
       subdomains[0] = mnsDomain
-      return `${currentProtocol}//${subdomains.join('.')}${mnsPath}${mnsSearch}`
+      return `${currentProtocol}//${subdomains.join('.')}${urlSearch}`
     }
     return defaultUrl
   } catch (error) {
