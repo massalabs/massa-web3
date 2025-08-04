@@ -1,4 +1,4 @@
-import { resolveDeweb, DEWEB_REDIRECT_URL } from '../../src/deweb/mns'
+import { resolveDeweb, DEWEB_REDIRECT_URL } from '../../src/deweb'
 
 // Mock the browser environment
 const mockWindow = {

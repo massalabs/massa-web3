@@ -118,18 +118,14 @@ describe('Smart Contract', () => {
       expect(keys).toHaveLength(1)
       expect(bytesToStr(keys[0])).toBe(key)
 
-      const keysV2 = await provider.client.getAddressesDatastoreKeys([
-        {
-          address: contractTest.address,
-          prefix: key,
-          final: false,
-        },
-      ])
-      expect(keysV2).toHaveLength(1)
-      expect(keysV2[0].address).toBe(contractTest.address)
-      expect(keysV2[0].isFinal).toBeDefined()
-      expect(keysV2[0].keys).toHaveLength(1)
-      expect(bytesToStr(keysV2[0].keys[0])).toBe(key)
+      // compare with the old method
+      const keysLegacy = await provider.client.getDataStoreKeys(
+        contractTest.address,
+        strToBytes(key),
+        false
+      )
+      expect(keysLegacy).toHaveLength(1)
+      expect(bytesToStr(keysLegacy[0])).toBe(key)
     })
 
     test('call with send coins', async () => {

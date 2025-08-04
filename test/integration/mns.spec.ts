@@ -81,11 +81,11 @@ describe('MNS tests', () => {
     expect(balance2).toBeGreaterThan(0n)
   })
 
-  test('getTargets', async () => {
+  test('getTargets, getOwnedDomains', async () => {
     // Alloc some domains
-    const domain1 = 'trloloooooooooooooooololololzs1'
-    const domain2 = 'trloloooooooooooooooololololzs2'
-    const domain3 = 'trloloooooooooooooooololololzs3'
+    const domain1 = 'trloloooooooooooooooololololyoyyyzs1'
+    const domain2 = 'trloloooooooooooooooololololoyoyyyzs2'
+    const domain3 = 'trloloooooooooooooooololololozyoyyys3'
 
     const op1 = await mns.alloc(domain1, provider.address, {
       coins: 2064100000n,
@@ -102,6 +102,14 @@ describe('MNS tests', () => {
       op2.waitFinalExecution(),
       op3.waitFinalExecution(),
     ])
+
+    // Get owned domains for the provider address
+    const ownedDomains = await mns.getOwnedDomains(provider.address)
+
+    // Should contain the domains we just allocated
+    expect(ownedDomains).toContain(domain1)
+    expect(ownedDomains).toContain(domain2)
+    expect(ownedDomains).toContain(domain3)
 
     const targets = await mns.getTargets([domain1, domain2, domain3])
     expect(targets).toEqual([
