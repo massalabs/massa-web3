@@ -1,2 +1,2 @@
-export * from './mns'
+export * from './redirection'
 export * from './immutable'
