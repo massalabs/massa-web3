@@ -8,6 +8,7 @@ import {
 import {
   CHAIN_ID,
   DatastoreEntry,
+  DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
   EventFilter,
   ExecuteSCReadOnlyParams,
   ExecuteSCReadOnlyResult,
@@ -20,7 +21,6 @@ import {
   parseCallArgs,
   PublicAPI,
   PublicApiUrl,
-  strToBytes,
 } from '../..'
 import { rpcTypes as t } from '../../generated'
 import { OperationStatus } from '../../operation'
@@ -118,9 +118,55 @@ export class JsonRpcPublicProvider implements PublicProvider {
     filter: Uint8Array | string = new Uint8Array(),
     final = true
   ): Promise<Uint8Array[]> {
-    const filterBytes: Uint8Array =
-      typeof filter === 'string' ? strToBytes(filter) : filter
-    return this.client.getDataStoreKeys(address, filterBytes, final)
+    return this.getAllDatastoreKeys(address, filter, final)
+  }
+
+  /**
+   * Wrapper for getAddressesDatastoreKeys that handles pagination to fetch all datastore keys.
+   * @param address - The address to get datastore keys for
+   * @param filter - Optional prefix filter for keys
+   * @param final - Whether to get final or candidate keys
+   * @returns Promise resolving to all datastore keys for the address
+   */
+  private async getAllDatastoreKeys(
+    address: string,
+    filter: Uint8Array | string = new Uint8Array(),
+    final = true
+  ): Promise<Uint8Array[]> {
+    const allKeys: Uint8Array[] = []
+    let startKey: Uint8Array | undefined = undefined
+    let hasMoreKeys = true
+
+    while (hasMoreKeys) {
+      const request = {
+        address,
+        final,
+        prefix: filter.length > 0 ? filter : undefined,
+        startKey,
+        inclusiveStartKey: startKey ? false : true, // Exclude the start key if it's from previous batch
+        maxCount: DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
+      }
+
+      const response = await this.client.getAddressesDatastoreKeys([request])
+      const addressKeys = response[0]
+
+      if (!addressKeys || addressKeys.keys.length === 0) {
+        hasMoreKeys = false
+        break
+      }
+
+      allKeys.push(...addressKeys.keys)
+
+      // If we got less than the max count, we've reached the end
+      if (addressKeys.keys.length < DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE) {
+        hasMoreKeys = false
+      } else {
+        // Use the last key as start for next iteration
+        startKey = addressKeys.keys[addressKeys.keys.length - 1]
+      }
+    }
+
+    return allKeys
   }
 
   public async readStorage(
