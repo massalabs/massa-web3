@@ -114,7 +114,7 @@ export class GrpcPublicProvider implements PublicProvider {
     public url: string
   ) {}
 
-  static fromGrpcUrl(url: string): PublicProvider {
+  static fromGrpcUrl(url: string): GrpcPublicProvider {
     return new GrpcPublicProvider(new PublicServiceClient(url), url)
   }
 

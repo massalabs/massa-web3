@@ -35,15 +35,15 @@ const PLACEHOLDER_CALLER =
 export class JsonRpcPublicProvider implements PublicProvider {
   constructor(public client: PublicAPI) {}
 
-  static fromRPCUrl(url: string): PublicProvider {
+  static fromRPCUrl(url: string): JsonRpcPublicProvider {
     return new JsonRpcPublicProvider(new PublicAPI(url))
   }
 
-  static mainnet(): PublicProvider {
+  static mainnet(): JsonRpcPublicProvider {
     return JsonRpcPublicProvider.fromRPCUrl(PublicApiUrl.Mainnet)
   }
 
-  static buildnet(): PublicProvider {
+  static buildnet(): JsonRpcPublicProvider {
     return JsonRpcPublicProvider.fromRPCUrl(PublicApiUrl.Buildnet)
   }
 
