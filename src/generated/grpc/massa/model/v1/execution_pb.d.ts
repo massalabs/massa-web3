@@ -1274,6 +1274,8 @@ export namespace ExecTransferInfo {
 export class TransferValue extends jspb.Message {
   getRolls(): number;
   setRolls(value: number): TransferValue;
+  hasRolls(): boolean;
+  clearRolls(): TransferValue;
 
   getCoins(): massa_model_v1_amount_pb.NativeAmount | undefined;
   setCoins(value?: massa_model_v1_amount_pb.NativeAmount): TransferValue;
@@ -1297,7 +1299,7 @@ export class TransferValue extends jspb.Message {
 
 export namespace TransferValue {
   export type AsObject = {
-    rolls: number,
+    rolls?: number,
     coins?: massa_model_v1_amount_pb.NativeAmount.AsObject,
     deferredCredits?: massa_model_v1_amount_pb.NativeAmount.AsObject,
   }
