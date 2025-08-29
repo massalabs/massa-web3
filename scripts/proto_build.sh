@@ -6,7 +6,7 @@ echo "Running proto_build script..."
 REPO_URL="https://github.com/massalabs/massa-proto" 
 TARGET_DIR="proto"  
 DESTINATION="tmp" 
-BRANCH="improve_datastore_keys_query"  
+BRANCH="main"
 
 rm -rf "$DESTINATION/$TARGET_DIR"
 

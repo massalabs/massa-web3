@@ -50,10 +50,10 @@ export class OperationType extends jspb.Message {
   hasRollSell(): boolean;
   clearRollSell(): OperationType;
 
-  getExecutSc(): ExecuteSC | undefined;
-  setExecutSc(value?: ExecuteSC): OperationType;
-  hasExecutSc(): boolean;
-  clearExecutSc(): OperationType;
+  getExecuteSc(): ExecuteSC | undefined;
+  setExecuteSc(value?: ExecuteSC): OperationType;
+  hasExecuteSc(): boolean;
+  clearExecuteSc(): OperationType;
 
   getCallSc(): CallSC | undefined;
   setCallSc(value?: CallSC): OperationType;
@@ -75,7 +75,7 @@ export namespace OperationType {
     transaction?: Transaction.AsObject,
     rollBuy?: RollBuy.AsObject,
     rollSell?: RollSell.AsObject,
-    executSc?: ExecuteSC.AsObject,
+    executeSc?: ExecuteSC.AsObject,
     callSc?: CallSC.AsObject,
   }
 
@@ -84,7 +84,7 @@ export namespace OperationType {
     TRANSACTION = 1,
     ROLL_BUY = 2,
     ROLL_SELL = 3,
-    EXECUT_SC = 4,
+    EXECUTE_SC = 4,
     CALL_SC = 5,
   }
 }
