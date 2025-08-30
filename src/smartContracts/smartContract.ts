@@ -88,4 +88,14 @@ export class SmartContract {
     }
     return provider.deploySC(deployParams)
   }
+
+  /**
+   * Get the MAS balance of the smart contract
+   * @param final - Whether to get the final balance or the pending balance
+   * @returns The MAS balance of the smart contract
+   */
+  async balance(final = false): Promise<bigint> {
+    const [balance] = await this.provider.balanceOf([this.address], final)
+    return balance.balance
+  }
 }
