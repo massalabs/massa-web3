@@ -1,3 +1,4 @@
+import { formatMas } from '../utils'
 import { ErrorBase } from './base'
 import { ErrorCodes } from './utils/codes'
 
@@ -18,8 +19,8 @@ export class ErrorInsufficientBalance extends ErrorBase {
 
   /**
    * Constructs an ErrorInsufficientBalance with a detailed message about the shortage.
-   * @param userBalance - The current balance of the user in nanoMassa.
-   * @param neededBalance - The balance required to successfully perform the operation in nanoMassa.
+   * @param userBalance - The current balance .
+   * @param neededBalance - The balance required to successfully perform the operation
    * @param cause - Optional error object that triggered this error, useful for chaining errors.
    */
   constructor({
@@ -28,7 +29,7 @@ export class ErrorInsufficientBalance extends ErrorBase {
     cause,
   }: InsufficientBalanceParameters) {
     super(
-      `Insufficient balance for the operation. User has ${userBalance} nanoMassa, but ${neededBalance} nanoMassa is needed.`,
+      `Insufficient balance for the operation. User has ${formatMas(userBalance)} MAS, but ${formatMas(neededBalance)} MAS is needed.`,
       {
         code: ErrorCodes.InsufficientBalance,
         cause,
