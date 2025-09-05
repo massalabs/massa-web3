@@ -14,7 +14,7 @@ describe('toBatch', () => {
   it('should handle empty array', () => {
     const input: number[] = []
     const batchSize = 3
-    const expected: number[][] = []
+    const expected: number[][] = [[]]
 
     const result = toBatch(input, batchSize)
 

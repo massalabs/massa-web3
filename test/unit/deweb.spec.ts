@@ -1,4 +1,15 @@
-import { resolveDeweb, DEWEB_REDIRECT_URL } from '../../src/deweb'
+import {
+  resolveDeweb,
+  DEWEB_REDIRECT_URL,
+  extractWebsiteMetadata,
+} from '../../src/deweb'
+import { Metadata } from '../../src/deweb/models/Metadata'
+import {
+  TITLE_METADATA_KEY,
+  DESCRIPTION_METADATA_KEY,
+  KEYWORD_METADATA_KEY_PREFIX,
+  LAST_UPDATE_KEY,
+} from '../../src/deweb/const'
 
 // Mock the browser environment
 const mockWindow = {
@@ -363,5 +374,153 @@ describe('Deweb info validation', () => {
     const result = await resolveDeweb('test.massa')
 
     expect(result).toBe('http://test.massa')
+  })
+})
+
+describe('extractWebsiteMetadata Unit Tests', () => {
+  test('should extract all types of metadata together', () => {
+    const metadata = [
+      new Metadata(TITLE_METADATA_KEY, 'Complete Website'),
+      new Metadata(DESCRIPTION_METADATA_KEY, 'A complete website example'),
+      new Metadata(LAST_UPDATE_KEY, '2024-01-01T12:00:00Z'),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_1`, 'complete'),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_2`, 'example'),
+      new Metadata('author', 'Jane Smith'),
+      new Metadata('category', 'demo'),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      title: 'Complete Website',
+      description: 'A complete website example',
+      lastUpdate: '2024-01-01T12:00:00Z',
+      keywords: ['complete', 'example'],
+      custom: {
+        author: 'Jane Smith',
+        category: 'demo',
+      },
+    })
+  })
+  test('should handle empty metadata array', () => {
+    const metadata: Metadata[] = []
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({})
+  })
+
+  test('should handle metadata with empty values', () => {
+    const metadata = [
+      new Metadata(TITLE_METADATA_KEY, ''),
+      new Metadata(DESCRIPTION_METADATA_KEY, ''),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_1`, ''),
+      new Metadata('custom_field', ''),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      title: '',
+      description: '',
+      keywords: [''],
+      custom: {
+        custom_field: '',
+      },
+    })
+  })
+
+  test('should handle metadata with only keywords', () => {
+    const metadata = [
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_tag1`, 'tech'),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_tag2`, 'blockchain'),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      keywords: ['tech', 'blockchain'],
+    })
+  })
+
+  test('should handle metadata with only custom fields', () => {
+    const metadata = [
+      new Metadata('license', 'MIT'),
+      new Metadata('repository', 'https://github.com/example/repo'),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      custom: {
+        license: 'MIT',
+        repository: 'https://github.com/example/repo',
+      },
+    })
+  })
+
+  test('should handle duplicate standard metadata (last one wins)', () => {
+    const metadata = [
+      new Metadata(TITLE_METADATA_KEY, 'First Title'),
+      new Metadata(TITLE_METADATA_KEY, 'Second Title'),
+      new Metadata(DESCRIPTION_METADATA_KEY, 'First Description'),
+      new Metadata(DESCRIPTION_METADATA_KEY, 'Second Description'),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      title: 'Second Title',
+      description: 'Second Description',
+    })
+  })
+
+  test('should handle mixed keyword prefix variations', () => {
+    const metadata = [
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}1`, 'keyword1'),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_tag`, 'keyword2'),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}abc`, 'keyword3'),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      keywords: ['keyword1', 'keyword2', 'keyword3'],
+    })
+  })
+
+  test('should preserve order of keywords as they appear in metadata', () => {
+    const metadata = [
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_z`, 'last'),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_a`, 'first'),
+      new Metadata(`${KEYWORD_METADATA_KEY_PREFIX}_m`, 'middle'),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      keywords: ['last', 'first', 'middle'],
+    })
+  })
+
+  test('should handle special characters in metadata values', () => {
+    const metadata = [
+      new Metadata(TITLE_METADATA_KEY, 'Title with émojis 🎉 and ñ'),
+      new Metadata(
+        DESCRIPTION_METADATA_KEY,
+        'Description with "quotes" and <tags>'
+      ),
+      new Metadata('special', 'Value with\nnewlines\tand\ttabs'),
+    ]
+
+    const result = extractWebsiteMetadata(metadata)
+
+    expect(result).toEqual({
+      title: 'Title with émojis 🎉 and ñ',
+      description: 'Description with "quotes" and <tags>',
+      custom: {
+        special: 'Value with\nnewlines\tand\ttabs',
+      },
+    })
   })
 })
