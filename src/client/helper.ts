@@ -73,7 +73,7 @@ export async function getMultipleAddressesAllDatastoreKeys(
       try {
         responses = await client.getAddressesDatastoreKeys(requests)
       } catch (error) {
-        throw new Error(`Error retrieving datastore keys for batch: ${error}`)
+        throw new Error(`Error retrieving datastore keys: ${error}`)
       }
 
       // Process responses and update states using original indices

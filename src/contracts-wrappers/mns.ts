@@ -5,6 +5,14 @@ import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
 import { CHAIN_ID } from '../utils'
 import { checkNetwork } from './utils'
+import {
+  DOMAIN_SEPARATOR_KEY,
+  ADDRESS_KEY_PREFIX_V2,
+  TOKEN_ID_KEY_PREFIX,
+  DOMAIN_KEY_PREFIX,
+  OWNED_TOKENS_KEY,
+  TARGET_KEY_PREFIX,
+} from '../deweb/keys'
 
 export const MNS_CONTRACTS = {
   mainnet: 'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT',
@@ -27,19 +35,6 @@ export const MNS_CONTRACTS = {
  * ```
  *
  */
-
-// Constants are taken from the smart contract
-// https://github.com/massalabs/massa-name-service/blob/main/smart-contract/assembly/contracts/main.ts
-// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
-const DOMAIN_SEPARATOR_KEY = [0x42]
-const TOKEN_ID_KEY_PREFIX = [0x1]
-// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
-const TARGET_KEY_PREFIX = [0x02]
-// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
-const DOMAIN_KEY_PREFIX = [0x3]
-// eslint-disable-next-line  @typescript-eslint/no-magic-numbers
-const ADDRESS_KEY_PREFIX_V2 = [0x6]
-const OWNED_TOKENS_KEY = strToBytes('ownedTokens')
 
 export class MNS extends SmartContract {
   constructor(provider: Provider | PublicProvider, chainId: bigint) {

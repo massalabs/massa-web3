@@ -103,7 +103,7 @@ export class DewebIndexer extends SmartContract {
       ).flat() // regroup all batch result into a single list
     } catch (error) {
       throw new Error(
-        "error while filtering websites that don't have files",
+        "error while filtering websites that don't have files: " + error,
         error
       )
     }
