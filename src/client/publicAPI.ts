@@ -21,6 +21,8 @@ import { OperationStatus, ReadOnlyParams } from '../operation'
 import isEqual from 'lodash.isequal'
 import { Connector } from './connector'
 import { rpcTypes as t } from 'src/generated/'
+import { Provider } from '../provider'
+import { getPublicApiByChainId } from '../utils/networks'
 
 export class PublicAPI {
   connector: Connector
@@ -32,6 +34,17 @@ export class PublicAPI {
     public options: Partial<ClientOptions> = {}
   ) {
     this.connector = new Connector(url, this.options)
+  }
+
+  static async fromProvider(provider: Provider): Promise<PublicAPI> {
+    const networkInfo = await provider.networkInfos()
+    const url = networkInfo.url
+      ? networkInfo.url
+      : getPublicApiByChainId(networkInfo.chainId)
+    if (!url) {
+      throw new Error('Provider does not have a node URL')
+    }
+    return new PublicAPI(url)
   }
 
   async executeReadOnlyBytecode(
