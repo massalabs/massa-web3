@@ -224,7 +224,7 @@ export class MNS extends SmartContract {
       .addString(newOwner)
       .addU256(tokenId)
 
-    return await this.call('transferFrom', args, options)
+    return this.call('transferFrom', args, options)
   }
 
   async balanceOf(owner: string, options?: ReadSCOptions): Promise<bigint> {
