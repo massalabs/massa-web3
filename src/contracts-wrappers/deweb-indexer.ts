@@ -90,7 +90,7 @@ export class DewebIndexer extends SmartContract {
         await Promise.all(
           batchedWebsitesAddresses.map(async (websitesAddressesBatch) => {
             // retrieve files location keys for all websites addresses in the batch in a single request
-            return await publicAPI.getAddressesDatastoreKeys(
+            const result = await publicAPI.getAddressesDatastoreKeys(
               websitesAddressesBatch.map((address) => ({
                 address: bytesToStr(address),
                 prefix: FILE_LOCATION_TAG,
@@ -98,6 +98,7 @@ export class DewebIndexer extends SmartContract {
                 maxCount: 1,
               }))
             )
+            return result
           })
         )
       ).flat() // regroup all batch result into a single list

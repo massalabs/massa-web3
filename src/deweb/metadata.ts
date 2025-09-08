@@ -79,7 +79,11 @@ export async function getMultipleSitesGlobalMetadata(
 
   const metadataEntriesByBatch = await Promise.all(
     batchedMetadataKeysList.map(async (metadataKeysBatch) => {
-      return await publicAPI.getDatastoreEntries(metadataKeysBatch, true)
+      const result = await publicAPI.getDatastoreEntries(
+        metadataKeysBatch,
+        true
+      )
+      return result
     })
   )
 
