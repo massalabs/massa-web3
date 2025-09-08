@@ -7,8 +7,19 @@ module.exports = {
         'plugin:@typescript-eslint/stylistic',
     ],
     parser: '@typescript-eslint/parser',
+    parserOptions: {
+        project: './tsconfig.json',
+    },
     plugins: ['@typescript-eslint'],
     root: true,
+    ignorePatterns: [
+        'coverage/**',
+        'dist/**',
+        'node_modules/**',
+        'scripts/**',
+        'test/generated/**',
+        'docs/**',
+    ],
     rules: {
         'no-else-return': ['error', { allowElseIf: false }],
         'func-style': ['error', 'declaration', { 'allowArrowFunctions': false }],
@@ -90,5 +101,6 @@ module.exports = {
         //  'error',
         //  { ignoreConditionalTests: true, ignoreMixedLogicalExpressions: true },
         //],
+        '@typescript-eslint/return-await': ['error', 'in-try-catch'],
       },
   };

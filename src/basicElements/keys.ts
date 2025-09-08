@@ -347,7 +347,7 @@ export class PublicKey {
   ): Promise<boolean> {
     const { data: rawSignature } = this.versioner.extract(signature.toBytes())
     const { data: rawPublicKey } = this.versioner.extract(this.bytes)
-    return await this.signer.verify(
+    return this.signer.verify(
       rawPublicKey,
       this.hasher.hash(data),
       rawSignature
