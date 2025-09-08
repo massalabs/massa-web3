@@ -9,7 +9,7 @@ import {
   KEYWORD_METADATA_KEY_PREFIX,
   LAST_UPDATE_KEY,
 } from './const'
-import { Metadata } from './serializers/Metadata'
+import { Metadata } from './serializers'
 import { bytesToStr } from '../basicElements/serializers'
 import { getMultipleAddressesDatastoreKeys } from '../client/helper'
 
