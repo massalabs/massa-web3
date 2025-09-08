@@ -565,7 +565,7 @@ proto.massa.model.v1.OperationType.TypeCase = {
   TRANSACTION: 1,
   ROLL_BUY: 2,
   ROLL_SELL: 3,
-  EXECUT_SC: 4,
+  EXECUTE_SC: 4,
   CALL_SC: 5
 };
 
@@ -610,7 +610,7 @@ proto.massa.model.v1.OperationType.toObject = function(includeInstance, msg) {
 transaction: (f = msg.getTransaction()) && proto.massa.model.v1.Transaction.toObject(includeInstance, f),
 rollBuy: (f = msg.getRollBuy()) && proto.massa.model.v1.RollBuy.toObject(includeInstance, f),
 rollSell: (f = msg.getRollSell()) && proto.massa.model.v1.RollSell.toObject(includeInstance, f),
-executSc: (f = msg.getExecutSc()) && proto.massa.model.v1.ExecuteSC.toObject(includeInstance, f),
+executeSc: (f = msg.getExecuteSc()) && proto.massa.model.v1.ExecuteSC.toObject(includeInstance, f),
 callSc: (f = msg.getCallSc()) && proto.massa.model.v1.CallSC.toObject(includeInstance, f)
   };
 
@@ -666,7 +666,7 @@ proto.massa.model.v1.OperationType.deserializeBinaryFromReader = function(msg, r
     case 4:
       var value = new proto.massa.model.v1.ExecuteSC;
       reader.readMessage(value,proto.massa.model.v1.ExecuteSC.deserializeBinaryFromReader);
-      msg.setExecutSc(value);
+      msg.setExecuteSc(value);
       break;
     case 5:
       var value = new proto.massa.model.v1.CallSC;
@@ -726,7 +726,7 @@ proto.massa.model.v1.OperationType.serializeBinaryToWriter = function(message, w
       proto.massa.model.v1.RollSell.serializeBinaryToWriter
     );
   }
-  f = message.getExecutSc();
+  f = message.getExecuteSc();
   if (f != null) {
     writer.writeMessage(
       4,
@@ -857,10 +857,10 @@ proto.massa.model.v1.OperationType.prototype.hasRollSell = function() {
 
 
 /**
- * optional ExecuteSC execut_sc = 4;
+ * optional ExecuteSC execute_sc = 4;
  * @return {?proto.massa.model.v1.ExecuteSC}
  */
-proto.massa.model.v1.OperationType.prototype.getExecutSc = function() {
+proto.massa.model.v1.OperationType.prototype.getExecuteSc = function() {
   return /** @type{?proto.massa.model.v1.ExecuteSC} */ (
     jspb.Message.getWrapperField(this, proto.massa.model.v1.ExecuteSC, 4));
 };
@@ -870,7 +870,7 @@ proto.massa.model.v1.OperationType.prototype.getExecutSc = function() {
  * @param {?proto.massa.model.v1.ExecuteSC|undefined} value
  * @return {!proto.massa.model.v1.OperationType} returns this
 */
-proto.massa.model.v1.OperationType.prototype.setExecutSc = function(value) {
+proto.massa.model.v1.OperationType.prototype.setExecuteSc = function(value) {
   return jspb.Message.setOneofWrapperField(this, 4, proto.massa.model.v1.OperationType.oneofGroups_[0], value);
 };
 
@@ -879,8 +879,8 @@ proto.massa.model.v1.OperationType.prototype.setExecutSc = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.massa.model.v1.OperationType} returns this
  */
-proto.massa.model.v1.OperationType.prototype.clearExecutSc = function() {
-  return this.setExecutSc(undefined);
+proto.massa.model.v1.OperationType.prototype.clearExecuteSc = function() {
+  return this.setExecuteSc(undefined);
 };
 
 
@@ -888,7 +888,7 @@ proto.massa.model.v1.OperationType.prototype.clearExecutSc = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.massa.model.v1.OperationType.prototype.hasExecutSc = function() {
+proto.massa.model.v1.OperationType.prototype.hasExecuteSc = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 

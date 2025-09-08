@@ -306,18 +306,28 @@ export class ScExecutionEventsFilter extends jspb.Message {
 
   getCallerAddress(): string;
   setCallerAddress(value: string): ScExecutionEventsFilter;
+  hasCallerAddress(): boolean;
+  clearCallerAddress(): ScExecutionEventsFilter;
 
   getEmitterAddress(): string;
   setEmitterAddress(value: string): ScExecutionEventsFilter;
+  hasEmitterAddress(): boolean;
+  clearEmitterAddress(): ScExecutionEventsFilter;
 
   getOriginalOperationId(): string;
   setOriginalOperationId(value: string): ScExecutionEventsFilter;
+  hasOriginalOperationId(): boolean;
+  clearOriginalOperationId(): ScExecutionEventsFilter;
 
   getIsFailure(): boolean;
   setIsFailure(value: boolean): ScExecutionEventsFilter;
+  hasIsFailure(): boolean;
+  clearIsFailure(): ScExecutionEventsFilter;
 
   getStatus(): massa_model_v1_execution_pb.ScExecutionEventStatus;
   setStatus(value: massa_model_v1_execution_pb.ScExecutionEventStatus): ScExecutionEventsFilter;
+  hasStatus(): boolean;
+  clearStatus(): ScExecutionEventsFilter;
 
   getFilterCase(): ScExecutionEventsFilter.FilterCase;
 
@@ -332,11 +342,11 @@ export class ScExecutionEventsFilter extends jspb.Message {
 export namespace ScExecutionEventsFilter {
   export type AsObject = {
     slotRange?: massa_model_v1_slot_pb.SlotRange.AsObject,
-    callerAddress: string,
-    emitterAddress: string,
-    originalOperationId: string,
-    isFailure: boolean,
-    status: massa_model_v1_execution_pb.ScExecutionEventStatus,
+    callerAddress?: string,
+    emitterAddress?: string,
+    originalOperationId?: string,
+    isFailure?: boolean,
+    status?: massa_model_v1_execution_pb.ScExecutionEventStatus,
   }
 
   export enum FilterCase { 
@@ -501,12 +511,18 @@ export namespace GetStakersRequest {
 export class StakersFilter extends jspb.Message {
   getMinRolls(): number;
   setMinRolls(value: number): StakersFilter;
+  hasMinRolls(): boolean;
+  clearMinRolls(): StakersFilter;
 
   getMaxRolls(): number;
   setMaxRolls(value: number): StakersFilter;
+  hasMaxRolls(): boolean;
+  clearMaxRolls(): StakersFilter;
 
   getLimit(): number;
   setLimit(value: number): StakersFilter;
+  hasLimit(): boolean;
+  clearLimit(): StakersFilter;
 
   getFilterCase(): StakersFilter.FilterCase;
 
@@ -520,9 +536,9 @@ export class StakersFilter extends jspb.Message {
 
 export namespace StakersFilter {
   export type AsObject = {
-    minRolls: number,
-    maxRolls: number,
-    limit: number,
+    minRolls?: number,
+    maxRolls?: number,
+    limit?: number,
   }
 
   export enum FilterCase { 
@@ -1523,9 +1539,13 @@ export namespace ExecutionQueryResponse {
 export class ExecutionQueryResponseItem extends jspb.Message {
   getBoolean(): boolean;
   setBoolean(value: boolean): ExecutionQueryResponseItem;
+  hasBoolean(): boolean;
+  clearBoolean(): ExecutionQueryResponseItem;
 
   getRollCount(): number;
   setRollCount(value: number): ExecutionQueryResponseItem;
+  hasRollCount(): boolean;
+  clearRollCount(): ExecutionQueryResponseItem;
 
   getAmount(): massa_model_v1_amount_pb.NativeAmount | undefined;
   setAmount(value?: massa_model_v1_amount_pb.NativeAmount): ExecutionQueryResponseItem;
@@ -1536,6 +1556,8 @@ export class ExecutionQueryResponseItem extends jspb.Message {
   getBytes_asU8(): Uint8Array;
   getBytes_asB64(): string;
   setBytes(value: Uint8Array | string): ExecutionQueryResponseItem;
+  hasBytes(): boolean;
+  clearBytes(): ExecutionQueryResponseItem;
 
   getVecBytes(): massa_model_v1_commons_pb.ArrayOfBytesWrapper | undefined;
   setVecBytes(value?: massa_model_v1_commons_pb.ArrayOfBytesWrapper): ExecutionQueryResponseItem;
@@ -1549,6 +1571,8 @@ export class ExecutionQueryResponseItem extends jspb.Message {
 
   getExecutionStatus(): ExecutionQueryExecutionStatus;
   setExecutionStatus(value: ExecutionQueryExecutionStatus): ExecutionQueryResponseItem;
+  hasExecutionStatus(): boolean;
+  clearExecutionStatus(): ExecutionQueryResponseItem;
 
   getCycleInfos(): ExecutionQueryCycleInfos | undefined;
   setCycleInfos(value?: ExecutionQueryCycleInfos): ExecutionQueryResponseItem;
@@ -1587,13 +1611,13 @@ export class ExecutionQueryResponseItem extends jspb.Message {
 
 export namespace ExecutionQueryResponseItem {
   export type AsObject = {
-    pb_boolean: boolean,
-    rollCount: number,
+    pb_boolean?: boolean,
+    rollCount?: number,
     amount?: massa_model_v1_amount_pb.NativeAmount.AsObject,
-    bytes: Uint8Array | string,
+    bytes?: Uint8Array | string,
     vecBytes?: massa_model_v1_commons_pb.ArrayOfBytesWrapper.AsObject,
     deferredCredits?: DeferredCreditsEntryWrapper.AsObject,
-    executionStatus: ExecutionQueryExecutionStatus,
+    executionStatus?: ExecutionQueryExecutionStatus,
     cycleInfos?: ExecutionQueryCycleInfos.AsObject,
     events?: ScOutputEventsWrapper.AsObject,
     deferredCallQuote?: DeferredCallQuoteResponse.AsObject,
@@ -2389,6 +2413,8 @@ export namespace NewSlotExecutionOutputsServerRequest {
 export class NewSlotExecutionOutputsFilter extends jspb.Message {
   getStatus(): massa_model_v1_execution_pb.ExecutionOutputStatus;
   setStatus(value: massa_model_v1_execution_pb.ExecutionOutputStatus): NewSlotExecutionOutputsFilter;
+  hasStatus(): boolean;
+  clearStatus(): NewSlotExecutionOutputsFilter;
 
   getSlotRange(): massa_model_v1_slot_pb.SlotRange | undefined;
   setSlotRange(value?: massa_model_v1_slot_pb.SlotRange): NewSlotExecutionOutputsFilter;
@@ -2432,7 +2458,7 @@ export class NewSlotExecutionOutputsFilter extends jspb.Message {
 
 export namespace NewSlotExecutionOutputsFilter {
   export type AsObject = {
-    status: massa_model_v1_execution_pb.ExecutionOutputStatus,
+    status?: massa_model_v1_execution_pb.ExecutionOutputStatus,
     slotRange?: massa_model_v1_slot_pb.SlotRange.AsObject,
     asyncPoolChangesFilter?: AsyncPoolChangesFilter.AsObject,
     executedDenounciationFilter?: ExecutedDenounciationFilter.AsObject,
@@ -2461,18 +2487,28 @@ export class AsyncPoolChangesFilter extends jspb.Message {
 
   getType(): massa_model_v1_execution_pb.AsyncPoolChangeType;
   setType(value: massa_model_v1_execution_pb.AsyncPoolChangeType): AsyncPoolChangesFilter;
+  hasType(): boolean;
+  clearType(): AsyncPoolChangesFilter;
 
   getHandler(): string;
   setHandler(value: string): AsyncPoolChangesFilter;
+  hasHandler(): boolean;
+  clearHandler(): AsyncPoolChangesFilter;
 
   getDestinationAddress(): string;
   setDestinationAddress(value: string): AsyncPoolChangesFilter;
+  hasDestinationAddress(): boolean;
+  clearDestinationAddress(): AsyncPoolChangesFilter;
 
   getEmitterAddress(): string;
   setEmitterAddress(value: string): AsyncPoolChangesFilter;
+  hasEmitterAddress(): boolean;
+  clearEmitterAddress(): AsyncPoolChangesFilter;
 
   getCanBeExecuted(): boolean;
   setCanBeExecuted(value: boolean): AsyncPoolChangesFilter;
+  hasCanBeExecuted(): boolean;
+  clearCanBeExecuted(): AsyncPoolChangesFilter;
 
   getFilterCase(): AsyncPoolChangesFilter.FilterCase;
 
@@ -2487,11 +2523,11 @@ export class AsyncPoolChangesFilter extends jspb.Message {
 export namespace AsyncPoolChangesFilter {
   export type AsObject = {
     none?: massa_model_v1_commons_pb.Empty.AsObject,
-    type: massa_model_v1_execution_pb.AsyncPoolChangeType,
-    handler: string,
-    destinationAddress: string,
-    emitterAddress: string,
-    canBeExecuted: boolean,
+    type?: massa_model_v1_execution_pb.AsyncPoolChangeType,
+    handler?: string,
+    destinationAddress?: string,
+    emitterAddress?: string,
+    canBeExecuted?: boolean,
   }
 
   export enum FilterCase { 
@@ -2513,6 +2549,8 @@ export class PosChangesFilter extends jspb.Message {
 
   getAddress(): string;
   setAddress(value: string): PosChangesFilter;
+  hasAddress(): boolean;
+  clearAddress(): PosChangesFilter;
 
   getFilterCase(): PosChangesFilter.FilterCase;
 
@@ -2527,7 +2565,7 @@ export class PosChangesFilter extends jspb.Message {
 export namespace PosChangesFilter {
   export type AsObject = {
     none?: massa_model_v1_commons_pb.Empty.AsObject,
-    address: string,
+    address?: string,
   }
 
   export enum FilterCase { 
@@ -2545,15 +2583,23 @@ export class ExecutionEventFilter extends jspb.Message {
 
   getCallerAddress(): string;
   setCallerAddress(value: string): ExecutionEventFilter;
+  hasCallerAddress(): boolean;
+  clearCallerAddress(): ExecutionEventFilter;
 
   getEmitterAddress(): string;
   setEmitterAddress(value: string): ExecutionEventFilter;
+  hasEmitterAddress(): boolean;
+  clearEmitterAddress(): ExecutionEventFilter;
 
   getOriginalOperationId(): string;
   setOriginalOperationId(value: string): ExecutionEventFilter;
+  hasOriginalOperationId(): boolean;
+  clearOriginalOperationId(): ExecutionEventFilter;
 
   getIsFailure(): boolean;
   setIsFailure(value: boolean): ExecutionEventFilter;
+  hasIsFailure(): boolean;
+  clearIsFailure(): ExecutionEventFilter;
 
   getFilterCase(): ExecutionEventFilter.FilterCase;
 
@@ -2568,10 +2614,10 @@ export class ExecutionEventFilter extends jspb.Message {
 export namespace ExecutionEventFilter {
   export type AsObject = {
     none?: massa_model_v1_commons_pb.Empty.AsObject,
-    callerAddress: string,
-    emitterAddress: string,
-    originalOperationId: string,
-    isFailure: boolean,
+    callerAddress?: string,
+    emitterAddress?: string,
+    originalOperationId?: string,
+    isFailure?: boolean,
   }
 
   export enum FilterCase { 
@@ -2592,6 +2638,8 @@ export class ExecutedOpsChangesFilter extends jspb.Message {
 
   getOperationId(): string;
   setOperationId(value: string): ExecutedOpsChangesFilter;
+  hasOperationId(): boolean;
+  clearOperationId(): ExecutedOpsChangesFilter;
 
   getFilterCase(): ExecutedOpsChangesFilter.FilterCase;
 
@@ -2606,7 +2654,7 @@ export class ExecutedOpsChangesFilter extends jspb.Message {
 export namespace ExecutedOpsChangesFilter {
   export type AsObject = {
     none?: massa_model_v1_commons_pb.Empty.AsObject,
-    operationId: string,
+    operationId?: string,
   }
 
   export enum FilterCase { 
@@ -2651,6 +2699,8 @@ export class LedgerChangesFilter extends jspb.Message {
 
   getAddress(): string;
   setAddress(value: string): LedgerChangesFilter;
+  hasAddress(): boolean;
+  clearAddress(): LedgerChangesFilter;
 
   getFilterCase(): LedgerChangesFilter.FilterCase;
 
@@ -2665,7 +2715,7 @@ export class LedgerChangesFilter extends jspb.Message {
 export namespace LedgerChangesFilter {
   export type AsObject = {
     none?: massa_model_v1_commons_pb.Empty.AsObject,
-    address: string,
+    address?: string,
   }
 
   export enum FilterCase { 
@@ -2749,6 +2799,11 @@ export class NewSlotABICallStacksResponse extends jspb.Message {
   clearOperationCallStacksList(): NewSlotABICallStacksResponse;
   addOperationCallStacks(value?: OperationABICallStack, index?: number): OperationABICallStack;
 
+  getDeferredCallStacksList(): Array<DeferredCallABICallStack>;
+  setDeferredCallStacksList(value: Array<DeferredCallABICallStack>): NewSlotABICallStacksResponse;
+  clearDeferredCallStacksList(): NewSlotABICallStacksResponse;
+  addDeferredCallStacks(value?: DeferredCallABICallStack, index?: number): DeferredCallABICallStack;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): NewSlotABICallStacksResponse.AsObject;
   static toObject(includeInstance: boolean, msg: NewSlotABICallStacksResponse): NewSlotABICallStacksResponse.AsObject;
@@ -2762,6 +2817,7 @@ export namespace NewSlotABICallStacksResponse {
     slot?: massa_model_v1_slot_pb.Slot.AsObject,
     ascCallStacksList: Array<ASCABICallStack.AsObject>,
     operationCallStacksList: Array<OperationABICallStack.AsObject>,
+    deferredCallStacksList: Array<DeferredCallABICallStack.AsObject>,
   }
 }
 
@@ -2832,6 +2888,8 @@ export namespace SendBlocksRequest {
 export class SendBlocksResponse extends jspb.Message {
   getBlockId(): string;
   setBlockId(value: string): SendBlocksResponse;
+  hasBlockId(): boolean;
+  clearBlockId(): SendBlocksResponse;
 
   getError(): massa_model_v1_commons_pb.Error | undefined;
   setError(value?: massa_model_v1_commons_pb.Error): SendBlocksResponse;
@@ -2850,7 +2908,7 @@ export class SendBlocksResponse extends jspb.Message {
 
 export namespace SendBlocksResponse {
   export type AsObject = {
-    blockId: string,
+    blockId?: string,
     error?: massa_model_v1_commons_pb.Error.AsObject,
   }
 
@@ -3505,6 +3563,30 @@ export namespace OperationABICallStack {
   }
 }
 
+export class DeferredCallABICallStack extends jspb.Message {
+  getDeferredCallId(): string;
+  setDeferredCallId(value: string): DeferredCallABICallStack;
+
+  getCallStackList(): Array<ABICallStackElementParent>;
+  setCallStackList(value: Array<ABICallStackElementParent>): DeferredCallABICallStack;
+  clearCallStackList(): DeferredCallABICallStack;
+  addCallStack(value?: ABICallStackElementParent, index?: number): ABICallStackElementParent;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeferredCallABICallStack.AsObject;
+  static toObject(includeInstance: boolean, msg: DeferredCallABICallStack): DeferredCallABICallStack.AsObject;
+  static serializeBinaryToWriter(message: DeferredCallABICallStack, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeferredCallABICallStack;
+  static deserializeBinaryFromReader(message: DeferredCallABICallStack, reader: jspb.BinaryReader): DeferredCallABICallStack;
+}
+
+export namespace DeferredCallABICallStack {
+  export type AsObject = {
+    deferredCallId: string,
+    callStackList: Array<ABICallStackElementParent.AsObject>,
+  }
+}
+
 export class SlotABICallStacks extends jspb.Message {
   getAscCallStacksList(): Array<ASCABICallStack>;
   setAscCallStacksList(value: Array<ASCABICallStack>): SlotABICallStacks;
@@ -3515,6 +3597,11 @@ export class SlotABICallStacks extends jspb.Message {
   setOperationCallStacksList(value: Array<OperationABICallStack>): SlotABICallStacks;
   clearOperationCallStacksList(): SlotABICallStacks;
   addOperationCallStacks(value?: OperationABICallStack, index?: number): OperationABICallStack;
+
+  getDeferredCallStacksList(): Array<DeferredCallABICallStack>;
+  setDeferredCallStacksList(value: Array<DeferredCallABICallStack>): SlotABICallStacks;
+  clearDeferredCallStacksList(): SlotABICallStacks;
+  addDeferredCallStacks(value?: DeferredCallABICallStack, index?: number): DeferredCallABICallStack;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SlotABICallStacks.AsObject;
@@ -3528,6 +3615,7 @@ export namespace SlotABICallStacks {
   export type AsObject = {
     ascCallStacksList: Array<ASCABICallStack.AsObject>,
     operationCallStacksList: Array<OperationABICallStack.AsObject>,
+    deferredCallStacksList: Array<DeferredCallABICallStack.AsObject>,
   }
 }
 
@@ -3583,9 +3671,18 @@ export class TransferInfo extends jspb.Message {
 
   getOperationId(): string;
   setOperationId(value: string): TransferInfo;
+  hasOperationId(): boolean;
+  clearOperationId(): TransferInfo;
 
   getAscIndex(): number;
   setAscIndex(value: number): TransferInfo;
+  hasAscIndex(): boolean;
+  clearAscIndex(): TransferInfo;
+
+  getDeferredCallId(): string;
+  setDeferredCallId(value: string): TransferInfo;
+  hasDeferredCallId(): boolean;
+  clearDeferredCallId(): TransferInfo;
 
   getOperationIdOrAscIndexCase(): TransferInfo.OperationIdOrAscIndexCase;
 
@@ -3602,14 +3699,16 @@ export namespace TransferInfo {
     from: string,
     to: string,
     amount: number,
-    operationId: string,
-    ascIndex: number,
+    operationId?: string,
+    ascIndex?: number,
+    deferredCallId?: string,
   }
 
   export enum OperationIdOrAscIndexCase { 
     OPERATION_ID_OR_ASC_INDEX_NOT_SET = 0,
     OPERATION_ID = 4,
     ASC_INDEX = 5,
+    DEFERRED_CALL_ID = 6,
   }
 }
 
