@@ -9,7 +9,6 @@ const config: Config.InitialOptions = {
         tsconfig: '<rootDir>/tsconfig.json',
       },
     ],
-    '^.+\\.jsx?$': 'babel-jest',
   },
   testMatch: ['<rootDir>/test/**/*.(spec|test).ts?(x)'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
