@@ -9,9 +9,9 @@ import {
   KEYWORD_METADATA_KEY_PREFIX,
   LAST_UPDATE_KEY,
 } from './const'
-import { Metadata } from './models/Metadata'
+import { Metadata } from './serializers/Metadata'
 import { bytesToStr } from '../basicElements/serializers'
-import { getMultipleAddressesAllDatastoreKeys } from '../client/helper'
+import { getMultipleAddressesDatastoreKeys } from '../client/helper'
 
 export type ParsedMetadata = {
   title?: string
@@ -51,7 +51,7 @@ export async function getMultipleSitesGlobalMetadata(
   const publicAPI = await PublicAPI.fromProvider(provider)
 
   // get all global metadata keys for all addresses
-  const addressesMetadataKeysList = await getMultipleAddressesAllDatastoreKeys(
+  const addressesMetadataKeysList = await getMultipleAddressesDatastoreKeys(
     publicAPI,
     addresses.map((address) => ({
       address,

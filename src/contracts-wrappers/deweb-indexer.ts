@@ -28,7 +28,7 @@ export class DewebIndexer extends SmartContract {
     super(provider, address)
   }
 
-  static async init(
+  static async fromProvider(
     provider: Provider | PublicProvider
   ): Promise<DewebIndexer> {
     const { chainId } = await provider.networkInfos()
@@ -56,10 +56,10 @@ export class DewebIndexer extends SmartContract {
     provider: Provider
   ): Promise<string[]> {
     const prefix = indexByOwnerBaseKey(ownerAddress)
-    // retreives from indexer contract the list of websites addresses belonging to the owner
+    // retrieves from indexer contract the list of websites addresses belonging to the owner
     let keys: Uint8Array[] = []
     try {
-      keys = await provider.getStorageKeys(this.address, prefix) // retreives addresses of websites
+      keys = await provider.getStorageKeys(this.address, prefix) // retrieves addresses of websites
     } catch (error) {
       throw new Error(
         'error retrieving indexer website list belonging to ' + ownerAddress,

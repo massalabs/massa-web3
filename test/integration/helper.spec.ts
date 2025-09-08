@@ -1,4 +1,4 @@
-import { getMultipleAddressesAllDatastoreKeys } from '../../src/client/helper'
+import { getMultipleAddressesDatastoreKeys } from '../../src/client/helper'
 import { MNS_CONTRACTS } from '../../src/contracts-wrappers/mns'
 import { provider } from './setup'
 import {
@@ -11,7 +11,7 @@ import { DOMAIN_SEPARATOR_KEY } from '../../src/deweb/keys'
 const usdcAddress = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
 const mnsAddress = MNS_CONTRACTS.buildnet
 
-describe('Helper getMultipleAddressesAllDatastoreKeys', () => {
+describe('Helper getMultipleAddressesDatastoreKeys', () => {
   // Mock variables that we can change during tests
   let mockBatchSize = jest.fn()
   let mockPageSize = jest.fn()
@@ -66,21 +66,10 @@ describe('Helper getMultipleAddressesAllDatastoreKeys', () => {
       },
     ]
 
-    console.log(
-      'DEFAULT_MAX_ARGUMENT_ARRAY_SIZE',
-      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
-    )
-    console.log(
-      'DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE',
-      DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE
-    )
-
-    const results = await getMultipleAddressesAllDatastoreKeys(
+    const results = await getMultipleAddressesDatastoreKeys(
       provider.client,
       params
     )
-    console.log(results[0].keys.length)
-
     expect(Array.isArray(results)).toBe(true)
     expect(results).toHaveLength(1)
     expect(results[0]).toHaveProperty('address', usdcAddress)
@@ -101,7 +90,7 @@ describe('Helper getMultipleAddressesAllDatastoreKeys', () => {
       final: true,
     }))
 
-    const results = await getMultipleAddressesAllDatastoreKeys(
+    const results = await getMultipleAddressesDatastoreKeys(
       provider.client,
       params
     )
@@ -135,7 +124,7 @@ describe('Helper getMultipleAddressesAllDatastoreKeys', () => {
       },
     ]
 
-    const results = await getMultipleAddressesAllDatastoreKeys(
+    const results = await getMultipleAddressesDatastoreKeys(
       provider.client,
       params
     )
@@ -167,7 +156,7 @@ describe('Helper getMultipleAddressesAllDatastoreKeys', () => {
       },
     ]
 
-    const results = await getMultipleAddressesAllDatastoreKeys(
+    const results = await getMultipleAddressesDatastoreKeys(
       provider.client,
       params
     )
@@ -202,7 +191,7 @@ describe('Helper getMultipleAddressesAllDatastoreKeys', () => {
     ]
 
     await expect(
-      getMultipleAddressesAllDatastoreKeys(provider.client, params)
+      getMultipleAddressesDatastoreKeys(provider.client, params)
     ).rejects.toThrow('Error retrieving datastore keys')
   })
 
@@ -224,7 +213,7 @@ describe('Helper getMultipleAddressesAllDatastoreKeys', () => {
 
     // Test that the function throws an error containing the expected message
     await expect(
-      getMultipleAddressesAllDatastoreKeys(mockPublicAPI as any, params)
+      getMultipleAddressesDatastoreKeys(mockPublicAPI as any, params)
     ).rejects.toThrow('Error retrieving datastore keys')
 
     // Verify the mock was called

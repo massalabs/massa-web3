@@ -20,7 +20,7 @@ export type AddressDatastoreKeysParam = {
  * @param params - Array of AddressDatastoreKeysParam objects
  * @returns Promise resolving to a 2D array where each inner array contains all keys for the corresponding address
  */
-export async function getMultipleAddressesAllDatastoreKeys(
+export async function getMultipleAddressesDatastoreKeys(
   client: PublicAPI,
   params: AddressDatastoreKeysParam[]
 ): Promise<AddressDatastoreKeys[]> {
@@ -46,8 +46,8 @@ export async function getMultipleAddressesAllDatastoreKeys(
   while (toContinue) {
     // Get indices of addresses that still have more keys
     const activeIndices = addressStates
-      .map((state, index) => (state.hasMoreKeys ? index : -1))
-      .filter((index) => index !== -1)
+      .filter((state) => state.hasMoreKeys)
+      .map((state) => state.index)
 
     // Batch the active indices to respect DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
     const batchedIndices = toBatch(

@@ -6,7 +6,7 @@ import { provider, publicProvider } from './setup'
 import { DEFAULT_MAX_ARGUMENT_ARRAY_SIZE } from '../../src/provider/constants'
 
 /* Mock the DEFAULT_MAX_ARGUMENT_ARRAY_SIZE constants to test with different batch sizes. 
-This allows to simulate having more than DEFAULT_MAX_ARGUMENT_ARRAY_SIZE websites in order to be able to test batching logic*/
+This allows us to simulate having more than DEFAULT_MAX_ARGUMENT_ARRAY_SIZE websites in order to test batching logic.*/
 const mockMaxArgumentArraySizeConstants = jest.fn()
 
 // Store original module
@@ -26,10 +26,10 @@ let indexer: DewebIndexer
 
 describe('DewebIndexer initialization', () => {
   beforeAll(async () => {
-    indexer = await DewebIndexer.init(publicProvider)
+    indexer = await DewebIndexer.fromProvider(publicProvider)
   })
   test('should initialize with buildnet provider', async () => {
-    const buildnetIndexer = await DewebIndexer.init(publicProvider)
+    const buildnetIndexer = await DewebIndexer.fromProvider(publicProvider)
     expect(buildnetIndexer).toBeInstanceOf(DewebIndexer)
     expect(buildnetIndexer.address).toBeDefined()
     expect(typeof buildnetIndexer.address).toBe('string')
@@ -68,7 +68,7 @@ describe('DewebIndexer getIndexerWebsiteList', () => {
   }
 
   beforeAll(async () => {
-    indexer = await DewebIndexer.init(publicProvider)
+    indexer = await DewebIndexer.fromProvider(publicProvider)
   })
 
   beforeEach(() => {

@@ -3,7 +3,7 @@ import {
   DEWEB_REDIRECT_URL,
   extractWebsiteMetadata,
 } from '../../src/deweb'
-import { Metadata } from '../../src/deweb/models/Metadata'
+import { Metadata } from '../../src/deweb/serializers/Metadata'
 import {
   TITLE_METADATA_KEY,
   DESCRIPTION_METADATA_KEY,

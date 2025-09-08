@@ -14,7 +14,7 @@ describe('toBatch', () => {
   it('should handle empty array', () => {
     const input: number[] = []
     const batchSize = 3
-    const expected: number[][] = [[]]
+    const expected: number[][] = []
 
     const result = toBatch(input, batchSize)
 
@@ -126,10 +126,9 @@ describe('toBatch', () => {
   it('should handle negative batch size', () => {
     const input = [1, 2, 3, 4, 5]
     const batchSize = -1
-    const expected: number[][] = [[1, 2, 3, 4, 5]]
 
-    const result = toBatch(input, batchSize)
-
-    expect(result).toEqual(expected)
+    expect(() => toBatch(input, batchSize)).toThrow(
+      'batch size should be positive'
+    )
   })
 })
