@@ -8,6 +8,5 @@ module.exports = {
         tsconfig: '<rootDir>/tsconfig.json',
       },
     ],
-    '^.+\\.jsx?$': 'babel-jest',
   },
 }

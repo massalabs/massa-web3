@@ -72,7 +72,6 @@
         "google-protobuf": "^3.21.4"
     },
     "devDependencies": {
-        "@babel/preset-env": "^7.22.15",
         "@open-rpc/typings": "^1.12.4",
         "@protobuf-ts/plugin": "^2.9.4",
         "@types/jest": "^29.5.12",
@@ -80,7 +79,6 @@
         "@types/varint": "^6.0.3",
         "@typescript-eslint/eslint-plugin": "^7.8.0",
         "@typescript-eslint/parser": "^7.8.0",
-        "babel-jest": "^29.7.0",
         "eslint": "^8.57.0",
         "eslint-config-google": "^0.14.0",
         "eslint-config-prettier": "^9.1.0",
