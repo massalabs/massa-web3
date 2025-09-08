@@ -67,13 +67,11 @@
         "grpc-web": "^1.5.0",
         "lodash.isequal": "^4.5.0",
         "secure-random": "^1.1.2",
-        "tslib": "^2.8.0",
         "varint": "^6.0.0",
         "google-protobuf": "^3.21.4"
     },
     "devDependencies": {
         "@open-rpc/typings": "^1.12.4",
-        "@protobuf-ts/plugin": "^2.9.4",
         "@types/jest": "^29.5.12",
         "@types/node": "^20.12.13",
         "@types/varint": "^6.0.3",
@@ -100,7 +98,6 @@
         "ts-node": "^10.9.1",
         "typedoc": "^0.25.7",
         "typescript": "^5.4.5",
-        "typescript-eslint": "^7.8.0",
         "wait-for-expect": "^3.0.2",
         "xhr2": "^0.2.1"
     },
