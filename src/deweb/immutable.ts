@@ -19,6 +19,35 @@ export async function makeImmutable(
   return operation
 }
 
+/**
+ * Check if the given contract addresses are immutable in final state
+ * @param contractAddresses - The contract addresses list
+ * @returns - List of boolean values indicating if the respective contract is immutable
+ */
+export async function areImmutables(
+  provider: Provider,
+  contractAddresses: string[]
+): Promise<boolean[]> {
+  if (contractAddresses.length === 0) {
+    return []
+  }
+  const networkInfo = await provider.networkInfos()
+  const url = networkInfo.url
+    ? networkInfo.url
+    : getPublicApiByChainId(networkInfo.chainId)
+  if (!url) {
+    throw new Error('Provider does not have a node URL')
+  }
+  const publicAPI = new PublicAPI(url)
+  const bytecodes = await publicAPI.executeMultipleGetAddressesBytecode(
+    contractAddresses.map((address) => ({
+      address,
+      is_final: true, // eslint-disable-line @typescript-eslint/naming-convention
+    }))
+  )
+  return bytecodes.map((bytecode) => bytecode.length == 0)
+}
+
 export async function isImmutable(
   address: string,
   provider: PublicProvider,
