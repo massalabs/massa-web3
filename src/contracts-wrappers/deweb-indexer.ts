@@ -1,4 +1,4 @@
-import { NetworkName, CHAIN_ID, toBatch } from '../utils'
+import { NetworkName, CHAIN_ID } from '../utils'
 import {
   DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
   Provider,
@@ -11,6 +11,7 @@ import { indexByOwnerBaseKey } from '../deweb/keys/indexer_keys'
 import { FILE_LOCATION_TAG } from '../deweb/keys/deweb_site_keys'
 import { PublicAPI } from '../client/publicAPI'
 import { AddressDatastoreKeys } from '../client/types'
+import { toBatch } from '../operation/batchOpArrayParam'
 
 export const DEWEB_INDEXER_CONTRACTS = {
   [NetworkName.Mainnet]:
@@ -19,6 +20,20 @@ export const DEWEB_INDEXER_CONTRACTS = {
     'AS1TmA4GNpSYBseNNMXpbAp2trUwZxZy3T1sZ9Qd3Qdn9L8wGbMS',
 }
 
+/**
+ * @class DewebIndexer
+ * @extends SmartContract
+ *
+ * The DewebIndexer class provides methods to interact with the Deweb Indexer smart contract.
+ * Deweb Indexer contract is available here: https://raw.githubusercontent.com/massalabs/DeWeb/refs/heads/main/deweb-index/assembly/contracts/deweb-index.ts
+ *
+ * @example
+ * ```typescript
+ * const dewebIndexer = await DewebIndexer.mainnet(provider);
+ * const ownedDomains = await dewebIndexer.getIndexerWebsiteList("ownerAddress", provider);
+ * ```
+ *
+ */
 export class DewebIndexer extends SmartContract {
   constructor(provider: Provider | PublicProvider, chainId: bigint) {
     const address =
@@ -46,10 +61,10 @@ export class DewebIndexer extends SmartContract {
   }
 
   /**
-   * Retrieves the list of websites addresses belonging to the owner from the indexer contract
+   * Retrieves the list of deweb websites smart contract addresses belonging to the owner from the indexer contract
    * @param ownerAddress - The address of the owner
    * @param provider - The provider to use
-   * @returns The list of websites addresses belonging to the owner
+   * @returns The list of deweb websites smart contract addresses belonging to the owner
    */
   async getIndexerWebsiteList(
     ownerAddress: string,

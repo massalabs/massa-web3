@@ -1,4 +1,4 @@
-import { getMultipleAddressesDatastoreKeys } from '../../src/client/helper'
+import { getMultipleAddressesDatastoreKeys } from '../../src/client/storage'
 import { MNS_CONTRACTS } from '../../src/contracts-wrappers/mns'
 import { provider } from './setup'
 import {

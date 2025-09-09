@@ -1,9 +1,14 @@
 import { Args, bytesToStr, strToBytes, U256, U64 } from '../basicElements'
 import { Operation } from '../operation'
-import { Provider, PublicProvider } from '../provider'
+import {
+  DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
+  Provider,
+  PublicProvider,
+} from '../provider'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
 import { CHAIN_ID } from '../utils'
+import { batchListAndCall } from '../operation/batchOpArrayParam'
 import { checkNetwork } from './utils'
 import {
   DOMAIN_SEPARATOR_KEY,
@@ -13,6 +18,7 @@ import {
   OWNED_TOKENS_KEY,
   TARGET_KEY_PREFIX,
 } from '../deweb/keys'
+import { PublicAPI } from '../client/publicAPI'
 
 export const MNS_CONTRACTS = {
   mainnet: 'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT',
@@ -93,6 +99,43 @@ export class MNS extends SmartContract {
     ])
     const keys = await this.provider.getStorageKeys(this.address, filter, final)
     return keys.map((key) => bytesToStr(key.slice(filter.length)))
+  }
+
+  /**
+   * Returns the list of domains pointing to multiple addresses
+   * @param addresses - List of addresses to resolve domains for
+   * @returns Promise<string[][]> - List of domains for each address
+   * @throws Error if provider is PublicProvider only (doesn't have address property)
+   */
+  async getDomainsFromMultipleAddresses(
+    addresses: string[]
+  ): Promise<string[][]> {
+    // Check if provider implements full Provider interface (has address property)
+    if (!('address' in this.provider)) {
+      throw new Error(
+        'current MNS contract wrapper has PublicProvider but getDomainsFromMultipleAddresses need Provider'
+      )
+    }
+
+    const publicAPI = await PublicAPI.fromProvider(this.provider)
+
+    const results = await batchListAndCall(
+      addresses,
+      async (addressesBatch) => {
+        // Use the PublicAPI to get datastore keys for multiple addresses in a single call
+        return publicAPI.executeMultipleReadOnlyCall(
+          addressesBatch.map((address) => ({
+            target: this.address,
+            func: 'dnsReverseResolve',
+            caller: (this.provider as Provider).address,
+            parameter: new Args().addString(address).serialize(),
+          }))
+        )
+      },
+      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
+    )
+
+    return results.map((result) => bytesToStr(result.value).split(','))
   }
 
   async alloc(

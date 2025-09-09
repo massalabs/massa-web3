@@ -4,7 +4,7 @@ import {
   DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
   DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
 } from '../provider/constants'
-import { toBatch } from '../utils/array'
+import { toBatch } from '../operation/batchOpArrayParam'
 
 export type AddressDatastoreKeysParam = {
   address: string
