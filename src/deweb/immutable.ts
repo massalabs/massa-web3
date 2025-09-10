@@ -35,7 +35,7 @@ export async function makeImmutable(
 
 /**
  * indicates among a list of contract addresses if they are immutable
- * @remarks This function allow to check the immutable property of severals contract addresses in a single call
+ * @remarks This function allows to check the immutable property of several contract addresses in a single call
  * @param contractAddresses - The list of deweb smart contract addresses
  * @param provider - The provider to use
  * @param isFinal - Whether to check if the contract is immutable in the final state or in the pending state. False by default.

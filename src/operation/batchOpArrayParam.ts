@@ -23,7 +23,7 @@ export function toBatch<T>(array: T[], batchSize: number): T[][] {
 
 /**
  * Generic function to batch a list and apply an async function to each batch
- * @remarks This function allow to don't exceed the max argument limit of node api endpoints
+ * @remarks This function prevents exeeding the max argument limit of node API endpoints
  * @param list The input list to batch and process
  * @param batchFunction The async function to apply to each batch
  * @param batchSize The maximum size of each batch

@@ -10,6 +10,7 @@ import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
 import { CHAIN_ID } from '../utils'
 import { batchListAndCall } from '../operation/batchOpArrayParam'
 import { checkNetwork } from './utils'
+import { isProvider } from '../provider/helpers'
 import {
   DOMAIN_SEPARATOR_KEY,
   ADDRESS_KEY_PREFIX_V2,
@@ -105,19 +106,21 @@ export class MNS extends SmartContract {
    * Returns the list of domains pointing to multiple addresses
    * @param addresses - List of addresses to resolve domains for
    * @returns Promise<string[][]> - List of domains for each address
-   * @throws Error if provider is PublicProvider only (doesn't have address property)
+   * @throws Error if provider implements only PublicProvider interface
    */
   async getDomainsFromMultipleAddresses(
     addresses: string[]
   ): Promise<string[][]> {
     // Check if provider implements full Provider interface (has address property)
-    if (!('address' in this.provider)) {
+    if (!isProvider(this.provider)) {
       throw new Error(
         'current MNS contract wrapper has PublicProvider but getDomainsFromMultipleAddresses need Provider'
       )
     }
 
     const publicAPI = await PublicAPI.fromProvider(this.provider)
+
+    const caller = this.provider.address
 
     const results = await batchListAndCall(
       addresses,
@@ -127,7 +130,7 @@ export class MNS extends SmartContract {
           addressesBatch.map((address) => ({
             target: this.address,
             func: 'dnsReverseResolve',
-            caller: (this.provider as Provider).address,
+            caller: caller,
             parameter: new Args().addString(address).serialize(),
           }))
         )

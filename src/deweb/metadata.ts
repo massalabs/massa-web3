@@ -24,7 +24,7 @@ export type ParsedMetadata = {
 /**
  * Extracts the metadata from a list of Metadata objects into a [[ParsedMetadata]] object
  * @param metadata - The list of Metadata objects of a deweb website
- * @returns The an [[ParsedMetadata]] object
+ * @returns A [[ParsedMetadata]] object
  */
 export function extractWebsiteMetadata(metadata: Metadata[]): ParsedMetadata {
   return metadata.reduce((acc, m) => {
