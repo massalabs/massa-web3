@@ -2,7 +2,7 @@ import { DEFAULT_MAX_ARGUMENT_ARRAY_SIZE, Provider } from '../provider'
 import { PublicAPI } from '../client/publicAPI'
 import { DatastoreEntry } from '../client/types'
 import { GLOBAL_METADATA_TAG } from './keys/deweb_site_keys'
-import { toBatch } from '../utils/array'
+import { batchListAndCall } from '../operation/batchOpArrayParam'
 import {
   TITLE_METADATA_KEY,
   DESCRIPTION_METADATA_KEY,
@@ -11,7 +11,7 @@ import {
 } from './const'
 import { Metadata } from './serializers'
 import { bytesToStr } from '../basicElements/serializers'
-import { getMultipleAddressesDatastoreKeys } from '../client/helper'
+import { getMultipleAddressesDatastoreKeys } from '../client/storage'
 
 export type ParsedMetadata = {
   title?: string
@@ -21,6 +21,11 @@ export type ParsedMetadata = {
   custom?: Record<string, string>
 }
 
+/**
+ * Extracts the metadata from a list of Metadata objects into a [[ParsedMetadata]] object
+ * @param metadata - The list of Metadata objects of a deweb website
+ * @returns A [[ParsedMetadata]] object
+ */
 export function extractWebsiteMetadata(metadata: Metadata[]): ParsedMetadata {
   return metadata.reduce((acc, m) => {
     if (m.key === LAST_UPDATE_KEY) {
@@ -44,9 +49,17 @@ export function extractWebsiteMetadata(metadata: Metadata[]): ParsedMetadata {
   }, {} as ParsedMetadata)
 }
 
+/**
+ * Retrieves the global metadata for multiple addresses
+ * @param addresses - The list of deweb smart contract addresses from which to retrieve global metadatas
+ * @param provider - The provider to use
+ * @param isFinal - Whether to get metadata from the final state or from the pending state. False by default.
+ * @returns The global metadata for each address
+ */
 export async function getMultipleSitesGlobalMetadata(
   addresses: string[],
-  provider: Provider
+  provider: Provider,
+  isFinal = false
 ): Promise<ParsedMetadata[]> {
   const publicAPI = await PublicAPI.fromProvider(provider)
 
@@ -56,7 +69,7 @@ export async function getMultipleSitesGlobalMetadata(
     addresses.map((address) => ({
       address,
       prefix: GLOBAL_METADATA_TAG,
-      final: true,
+      final: isFinal,
     }))
   )
 
@@ -71,24 +84,16 @@ export async function getMultipleSitesGlobalMetadata(
     return acc
   }, [] as DatastoreEntry[])
 
-  // divide the metadata keys list into batches
-  const batchedMetadataKeysList = toBatch(
+  // Use the batchListAndCall function to process metadata keys in batches
+  const allMetadataEntries = await batchListAndCall(
     metadataKeysList,
+    async (metadataKeysBatch) => {
+      return publicAPI.getDatastoreEntries(metadataKeysBatch, isFinal)
+    },
     DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
   )
 
-  const metadataEntriesByBatch = await Promise.all(
-    batchedMetadataKeysList.map(async (metadataKeysBatch) => {
-      const result = await publicAPI.getDatastoreEntries(
-        metadataKeysBatch,
-        true
-      )
-      return result
-    })
-  )
-
-  const metadata = metadataEntriesByBatch
-    .flat() // regroup all metadata batch entries into a single list
+  const metadata = allMetadataEntries
     .map((metadataEntry, index) => {
       // map each metadata entry to a Metadata object
       const metadataKeyBytes = metadataKeysList[index].key.slice(

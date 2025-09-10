@@ -21,7 +21,7 @@ import { OperationStatus, ReadOnlyParams } from '../operation'
 import isEqual from 'lodash.isequal'
 import { Connector } from './connector'
 import { rpcTypes as t } from 'src/generated/'
-import { Provider } from '../provider'
+import { Provider, PublicProvider } from '../provider'
 import { getPublicApiByChainId } from '../utils/networks'
 
 export class PublicAPI {
@@ -36,7 +36,9 @@ export class PublicAPI {
     this.connector = new Connector(url, this.options)
   }
 
-  static async fromProvider(provider: Provider): Promise<PublicAPI> {
+  static async fromProvider(
+    provider: Provider | PublicProvider
+  ): Promise<PublicAPI> {
     const networkInfo = await provider.networkInfos()
     const url = networkInfo.url
       ? networkInfo.url
