@@ -5,5 +5,12 @@
     "navigationLinks": {
         "Main documentation": "https://docs.massa.net/"
     },
-    "entryPoints": ["src"]
+    "entryPoints": ["src"],
+    "exclude": [
+        "**/generated/client-types.ts"
+    ],
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "skipErrorChecking": true
 }
