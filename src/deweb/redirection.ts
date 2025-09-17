@@ -1,3 +1,5 @@
+import { CHAIN_ID } from '../utils/networks'
+
 export const DEWEB_REDIRECT_URL = 'https://deweb.massa.network/deweb_redirect'
 
 /* deweb plugin status */
@@ -8,6 +10,11 @@ const DEWEB_STATUS_RUNNING = 'running'
 type DewebStatus = {
   serverPort: number
   status: string
+}
+
+type DewebInfoData = {
+  app?: string
+  chainId?: bigint
 }
 
 /**
@@ -21,12 +28,12 @@ type DewebStatus = {
  *
  * If no provider is available, we redirect to the default URL
  * @param uri - The mns domain to resolve. It must be suffixed with a '.massa'
- * @param chainId - The returned url must belong to a provider having the same same chainid. If null, we don't check the chainId
+ * @param chainId - The returned url must belong to a provider having the same chainid. Mainnet by default
  * @returns The resolved URI
  */
 export async function resolveDeweb(
   uri: string,
-  chainId: number | null = null
+  chainId: bigint = CHAIN_ID.Mainnet
 ): Promise<string> {
   if (typeof window === 'undefined') {
     throw new Error('This function can only be used in a browser environment')
@@ -71,14 +78,10 @@ export async function resolveDeweb(
   /* -- Check if the deweb plugin is running -- */
   const dewebServePort = await pluginDewebServePort()
   if (dewebServePort) {
-    if (!chainId) {
-      return `http://${mnsDomain}.localhost:${dewebServePort}${urlSearch}${mnsHash}`
-    }
     try {
-      const response = await fetch(
-        `http://${mnsDomain}.localhost:${dewebServePort}/__deweb_info`
-      )
-      if (await checkDewebInfoData(response, chainId)) {
+      if (
+        await isDewebProvider(`http://localhost:${dewebServePort}`, chainId)
+      ) {
         return `http://${mnsDomain}.localhost:${dewebServePort}${urlSearch}${mnsHash}`
       }
     } catch (error) {
@@ -88,8 +91,7 @@ export async function resolveDeweb(
 
   /* -- Check if a localhost deweb provider is available -- */
   try {
-    const response = await fetch('http://localhost:8080/__deweb_info')
-    if (await checkDewebInfoData(response, chainId)) {
+    if (await isDewebProvider('http://localhost:8080', chainId)) {
       return `http://${mnsDomain}.localhost:8080${urlSearch}${mnsHash}`
     }
   } catch (error) {
@@ -103,7 +105,7 @@ export async function resolveDeweb(
 
   // If the current domain is not a Deweb provider, we redirect to the default URL
   // Use proper URL encoding for the deweb_url parameter as per RFC 3986
-  const defaultUrl = `${DEWEB_REDIRECT_URL}?${chainId ? `chainid=${chainId}&` : ''}deweb_url=${encodeURIComponent(mns + urlSearch + mnsHash)}`
+  const defaultUrl = `${DEWEB_REDIRECT_URL}?chainid=${chainId}&deweb_url=${encodeURIComponent(mns + urlSearch + mnsHash)}`
 
   /* 
     If the current domain has no subdomains, it can't be a Deweb provider.
@@ -116,10 +118,7 @@ export async function resolveDeweb(
 
   // try to fetch the deweb info data from the current domain
   try {
-    const response = await fetch(
-      `${currentProtocol}//${currentHost}/__deweb_info`
-    )
-    if (await checkDewebInfoData(response, chainId)) {
+    if (await isDewebProvider(`${currentProtocol}//${currentHost}`, chainId)) {
       subdomains[0] = mnsDomain
       return `${currentProtocol}//${subdomains.join('.')}${urlSearch}${mnsHash}`
     }
@@ -131,39 +130,41 @@ export async function resolveDeweb(
 }
 
 /* 
-Check if the response correspond to a provider's __deweb_info endpoint response
-If the chainId parameter is not zero, we check if it corresponds to the chainId of the provider
+Check if there is a deweb provider associated to a given url. 
+If so, check it run on the same chainId as the one provided
  */
-async function checkDewebInfoData(
-  response: Response,
-  chainId: number | null
+async function isDewebProvider(
+  providerUrl: string,
+  chainId: bigint
 ): Promise<boolean> {
+  const response = await fetch(providerUrl + '/__deweb_info')
   if (response.ok) {
-    const data = await response.json()
+    const data: DewebInfoData = await response.json()
     return (
-      data.app &&
+      !!data.app &&
       data.app == 'deweb' &&
-      (!chainId || (data.chainId && data.chainId == chainId))
+      !!data.chainId &&
+      data.chainId == chainId
     )
   }
   return false
 }
 
 /* Retrieve the port of the station deweb plugin.
-If the plugin is not running, we return null
+If the plugin is not running, we return undefined
  */
-async function pluginDewebServePort(): Promise<number | null> {
+async function pluginDewebServePort(): Promise<number | undefined> {
   try {
     const response = await fetch(STATION_DEWEB_STATUS_URL)
     if (response.ok) {
       const data: DewebStatus = await response.json()
       if (data.status !== DEWEB_STATUS_RUNNING) {
-        return null
+        return
       }
       return data.serverPort
     }
-    return null
+    return
   } catch (error) {
-    return null
+    return
   }
 }
