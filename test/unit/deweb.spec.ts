@@ -3,6 +3,7 @@ import {
   DEWEB_REDIRECT_URL,
   extractWebsiteMetadata,
 } from '../../src/deweb'
+import { CHAIN_ID } from '../../src/utils/networks'
 import { Metadata } from '../../src/deweb/serializers/Metadata'
 import {
   TITLE_METADATA_KEY,
@@ -24,8 +25,11 @@ const mockFetch = jest.fn()
 
 // Helper function to generate expected default URLs consistently
 // This uses proper URL encoding for the deweb_url parameter as per RFC 3986
-function buildDefaultUrl(mnsPath: string): string {
-  return `${DEWEB_REDIRECT_URL}?deweb_url=${encodeURIComponent(mnsPath)}`
+function buildDefaultUrl(
+  mnsPath: string,
+  chainId: bigint = CHAIN_ID.Mainnet
+): string {
+  return `${DEWEB_REDIRECT_URL}?chain_id=${chainId}&deweb_url=${encodeURIComponent(mnsPath)}`
 }
 
 describe('resolveDeweb Unit Tests', () => {
@@ -48,6 +52,23 @@ describe('resolveDeweb Unit Tests', () => {
     delete (global as any).window
     delete (global as any).fetch
   })
+
+  // Common test input including a hash fragment
+  const URL_TEST = 'test.massa/path?query=1#section'
+
+  // Helper function to create mock deweb info response with chainID
+  function createMockDewebInfoResponse(chainId?: bigint) {
+    return {
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          app: 'deweb',
+          network: {
+            chainID: chainId,
+          },
+        }),
+    }
+  }
 
   describe('Environment validation', () => {
     test('should throw error when not in browser environment', async () => {
@@ -101,9 +122,9 @@ describe('resolveDeweb Unit Tests', () => {
     test('should return original URI when native support is available', async () => {
       mockFetch.mockResolvedValue({ ok: true })
 
-      const result = await resolveDeweb('test.massa/path?query=1')
+      const result = await resolveDeweb(URL_TEST)
 
-      expect(result).toBe('http://test.massa/path?query=1')
+      expect(result).toBe('http://' + URL_TEST)
       expect(mockFetch).toHaveBeenCalledWith('http://test.massa/__deweb_info')
     })
 
@@ -113,9 +134,99 @@ describe('resolveDeweb Unit Tests', () => {
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
         .mockResolvedValueOnce({ ok: false }) // Current domain fails
 
-      const result = await resolveDeweb('test.massa/path?query=1')
+      const result = await resolveDeweb(URL_TEST)
 
-      expect(result).toBe(buildDefaultUrl('test.massa/path?query=1'))
+      expect(result).toBe(buildDefaultUrl(URL_TEST))
+    })
+  })
+
+  describe('Deweb plugin check', () => {
+    test('should return plugin URL when deweb plugin is running', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ serverPort: 3000, status: 'running' }),
+        }) // Plugin status succeeds
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Mainnet)) // Plugin provider __deweb_info matches chain
+
+      const result = await resolveDeweb(URL_TEST)
+
+      expect(result).toBe('http://test.localhost:3000/path?query=1#section')
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://station.massa/plugin/massa-labs/local-deweb-provider/api/server/status'
+      )
+    })
+
+    test('should continue to localhost check when plugin is not running', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ serverPort: 3000, status: 'stopped' }),
+        }) // Plugin not running
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Mainnet)) // Localhost succeeds with correct chain
+
+      const result = await resolveDeweb(URL_TEST)
+
+      expect(result).toBe('http://test.localhost:8080/path?query=1#section')
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://localhost:8080/__deweb_info'
+      )
+    })
+
+    test('should continue to localhost check when plugin status API fails', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin API not available')) // Plugin API fails
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Mainnet)) // Localhost succeeds with correct chain
+
+      const result = await resolveDeweb(URL_TEST)
+
+      expect(result).toBe('http://test.localhost:8080/path?query=1#section')
+    })
+
+    test('should continue to localhost check when plugin status API returns invalid response', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ serverPort: 3000 }), // Missing status field
+        }) // Plugin API returns incomplete data
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Mainnet)) // Localhost succeeds with correct chain
+
+      const result = await resolveDeweb(URL_TEST)
+
+      expect(result).toBe('http://test.localhost:8080/path?query=1#section')
+    })
+
+    test('should use deweb plugin when chainId matches', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ serverPort: 3000, status: 'running' }),
+        }) // Plugin status succeeds
+        .mockResolvedValueOnce(createMockDewebInfoResponse(123n)) // Plugin provider with chainId 123
+
+      const result = await resolveDeweb('test.massa', 123n)
+
+      expect(result).toBe('http://test.localhost:3000')
+    })
+
+    test('should skip deweb plugin when chainId does not match', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ serverPort: 3000, status: 'running' }),
+        }) // Plugin status succeeds
+        .mockResolvedValueOnce(createMockDewebInfoResponse(456n)) // Plugin provider with chainId 456
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Buildnet)) // Localhost with chainId 123
+
+      const result = await resolveDeweb('test.massa', CHAIN_ID.Buildnet)
+
+      expect(result).toBe('http://test.localhost:8080')
     })
   })
 
@@ -123,14 +234,12 @@ describe('resolveDeweb Unit Tests', () => {
     test('should return localhost URL when deweb provider is available', async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve({ app: 'deweb' }),
-        }) // Localhost succeeds
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Deweb Plugin fails
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Mainnet)) // Localhost succeeds
 
-      const result = await resolveDeweb('test.massa/path?query=1')
+      const result = await resolveDeweb(URL_TEST)
 
-      expect(result).toBe('http://test.localhost:8080/path?query=1')
+      expect(result).toBe('http://test.localhost:8080/path?query=1#section')
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost:8080/__deweb_info'
       )
@@ -139,26 +248,66 @@ describe('resolveDeweb Unit Tests', () => {
     test('should continue to next check when localhost fails', async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
         .mockResolvedValueOnce({ ok: false }) // Current domain fails
 
-      const result = await resolveDeweb('test.massa')
+      const result = await resolveDeweb(URL_TEST)
 
-      expect(result).toBe(buildDefaultUrl('test.massa'))
+      expect(result).toBe(buildDefaultUrl(URL_TEST))
     })
 
     test('should continue when localhost returns non-deweb response', async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
         .mockResolvedValueOnce({
           ok: true,
           json: () => Promise.resolve({ app: 'other' }),
         }) // Localhost returns non-deweb
         .mockResolvedValueOnce({ ok: false }) // Current domain fails
 
-      const result = await resolveDeweb('test.massa')
+      const result = await resolveDeweb(URL_TEST)
 
-      expect(result).toBe(buildDefaultUrl('test.massa'))
+      expect(result).toBe(buildDefaultUrl(URL_TEST))
+    })
+
+    test('should use localhost provider when chainId matches', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Buildnet)) // Localhost with chainId 123
+
+      const result = await resolveDeweb('test.massa', CHAIN_ID.Buildnet)
+
+      expect(result).toBe('http://test.localhost:8080')
+    })
+
+    test('should skip localhost provider when chainId does not match', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
+        .mockResolvedValueOnce(createMockDewebInfoResponse(456n)) // Localhost with chainId 456
+        .mockResolvedValueOnce({ ok: false }) // Current domain fails
+
+      const result = await resolveDeweb(URL_TEST, 123n)
+
+      expect(result).toBe(buildDefaultUrl(URL_TEST, 123n))
+    })
+
+    test("When no chainId is returned by local deweb provider don't use this provider", async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ app: 'deweb' }), // No chainId field
+        }) // Localhost without chainId
+        .mockResolvedValueOnce({ ok: false }) // Current domain fails
+
+      const result = await resolveDeweb(URL_TEST, CHAIN_ID.Buildnet)
+
+      expect(result).toBe(buildDefaultUrl(URL_TEST, CHAIN_ID.Buildnet))
     })
   })
 
@@ -169,13 +318,14 @@ describe('resolveDeweb Unit Tests', () => {
 
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve({ app: 'deweb' }),
-        }) // Current domain succeeds
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Mainnet)) // Current domain succeeds with correct chain
 
-      const result = await resolveDeweb('test.massa/path?query=1')
+      const result = await resolveDeweb(
+        'test.massa/path?query=1',
+        CHAIN_ID.Mainnet
+      )
 
       expect(result).toBe('https://test.deweb-provider.com/path?query=1')
       expect(mockFetch).toHaveBeenCalledWith(
@@ -188,14 +338,15 @@ describe('resolveDeweb Unit Tests', () => {
 
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
-      // No third call should be made for current domain
+      // No fourth call should be made for current domain
 
       const result = await resolveDeweb('test.massa/path?query=1')
 
       expect(result).toBe(buildDefaultUrl('test.massa/path?query=1'))
       // Should not try to check current domain when no subdomains
-      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockFetch).toHaveBeenCalledTimes(3)
     })
 
     test('should return default URL when current domain fails', async () => {
@@ -203,12 +354,13 @@ describe('resolveDeweb Unit Tests', () => {
 
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({ ok: false }) // Plugin fails
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
         .mockRejectedValueOnce(new Error('current domain fails')) // Current domain fails
 
-      const result = await resolveDeweb('test.massa/path?query=1')
+      const result = await resolveDeweb(URL_TEST)
 
-      expect(result).toBe(buildDefaultUrl('test.massa/path?query=1'))
+      expect(result).toBe(buildDefaultUrl(URL_TEST))
     })
 
     test('should return default URL when current domain returns non-deweb response', async () => {
@@ -216,15 +368,64 @@ describe('resolveDeweb Unit Tests', () => {
 
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({ ok: false }) // Plugin fails
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
         .mockResolvedValueOnce({
           ok: true,
           json: () => Promise.resolve({ app: 'other' }),
         }) // Current domain returns non-deweb
 
-      const result = await resolveDeweb('test.massa/path?query=1')
+      const result = await resolveDeweb(URL_TEST)
 
-      expect(result).toBe(buildDefaultUrl('test.massa/path?query=1'))
+      expect(result).toBe(buildDefaultUrl(URL_TEST))
+    })
+
+    test('should use current domain provider when chainId matches', async () => {
+      mockWindow.location.host = 'subdomain.deweb-provider.com'
+      mockWindow.location.protocol = 'https:'
+
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
+        .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
+        .mockResolvedValueOnce(createMockDewebInfoResponse(123n)) // Current domain with chainId 123
+
+      const result = await resolveDeweb('test.massa', 123n)
+
+      expect(result).toBe('https://test.deweb-provider.com')
+    })
+
+    test('should skip current domain provider when chainId does not match', async () => {
+      mockWindow.location.host = 'subdomain.deweb-provider.com'
+      mockWindow.location.protocol = 'https:'
+
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
+        .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
+        .mockResolvedValueOnce(createMockDewebInfoResponse(456n)) // Current domain with chainId 456
+
+      const result = await resolveDeweb(URL_TEST, 123n)
+
+      expect(result).toBe(buildDefaultUrl(URL_TEST, 123n))
+    })
+
+    test("When no chainId is returned by current domain deweb provider don't use it", async () => {
+      mockWindow.location.host = 'subdomain.deweb-provider.com'
+      mockWindow.location.protocol = 'https:'
+
+      mockFetch
+        .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
+        .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ app: 'deweb' }), // No chainId field
+        }) // Current domain without chainId
+
+      const result = await resolveDeweb(URL_TEST, 123n)
+
+      expect(result).toBe(buildDefaultUrl(URL_TEST, 123n))
     })
   })
 
@@ -234,11 +435,9 @@ describe('resolveDeweb Unit Tests', () => {
 
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({ ok: false }) // Plugin fails
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve({ app: 'deweb' }),
-        }) // Current domain succeeds
+        .mockResolvedValueOnce(createMockDewebInfoResponse(CHAIN_ID.Mainnet)) // Current domain succeeds with correct chain
 
       const result = await resolveDeweb('test.massa')
 
@@ -248,21 +447,19 @@ describe('resolveDeweb Unit Tests', () => {
     test('should handle complex paths and query parameters', async () => {
       mockFetch.mockResolvedValue({ ok: true })
 
-      const result = await resolveDeweb(
-        'test.massa/deep/path/file.html?param1=value1&param2=value2'
-      )
+      const input = 'test.massa/deep/path/file.html?param1=value1&param2=value2'
+      const result = await resolveDeweb(input)
 
-      expect(result).toBe(
-        'http://test.massa/deep/path/file.html?param1=value1&param2=value2'
-      )
+      expect(result).toBe(`http://${input}`)
     })
 
     test('should handle domains with special characters', async () => {
       mockFetch.mockResolvedValue({ ok: true })
 
-      const result = await resolveDeweb('test-domain.massa')
+      const input = 'test-domain.massa'
+      const result = await resolveDeweb(input)
 
-      expect(result).toBe('http://test-domain.massa')
+      expect(result).toBe(`http://${input}`)
       expect(mockFetch).toHaveBeenCalledWith(
         'http://test-domain.massa/__deweb_info'
       )
@@ -284,6 +481,7 @@ describe('resolveDeweb Unit Tests', () => {
 
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockResolvedValueOnce({ ok: false }) // Plugin fails
         .mockResolvedValueOnce({
           ok: true,
           json: () => Promise.reject(new Error('Invalid JSON')),
@@ -324,10 +522,19 @@ describe('resolveDeweb Unit Tests', () => {
       expect(result).toBe('http://test.massa/path')
     })
 
+    test('should handle URI with only hash', async () => {
+      mockFetch.mockResolvedValue({ ok: true })
+
+      const result = await resolveDeweb('test.massa#only-hash')
+
+      expect(result).toBe('http://test.massa#only-hash')
+    })
+
     test('should use URL encoding instead of literal quotes in default URL', async () => {
       mockWindow.location.host = 'localhost'
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
+        .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
         .mockRejectedValueOnce(new Error('localhost not available')) // Localhost fails
 
       const result = await resolveDeweb('test.massa/path')
@@ -353,29 +560,6 @@ function createMockDewebResponse(isDewebApp: boolean = true) {
       }),
   }
 }
-
-// Additional test for the isDewebInfoData helper function behavior
-describe('Deweb info validation', () => {
-  beforeAll(() => {
-    // Setup browser environment for this test
-    global.window = mockWindow as any
-    global.fetch = mockFetch
-    global.URL = URL
-  })
-
-  beforeEach(() => {
-    mockFetch.mockClear()
-  })
-
-  test('should validate deweb info response correctly', async () => {
-    // This tests the internal isDewebInfoData function behavior
-    mockFetch.mockResolvedValue(createMockDewebResponse(true))
-
-    const result = await resolveDeweb('test.massa')
-
-    expect(result).toBe('http://test.massa')
-  })
-})
 
 describe('extractWebsiteMetadata Unit Tests', () => {
   test('should extract all types of metadata together', () => {
