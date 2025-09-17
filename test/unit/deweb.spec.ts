@@ -29,7 +29,7 @@ function buildDefaultUrl(
   mnsPath: string,
   chainId: bigint = CHAIN_ID.Mainnet
 ): string {
-  return `${DEWEB_REDIRECT_URL}?chainid=${chainId}&deweb_url=${encodeURIComponent(mnsPath)}`
+  return `${DEWEB_REDIRECT_URL}?chain_id=${chainId}&deweb_url=${encodeURIComponent(mnsPath)}`
 }
 
 describe('resolveDeweb Unit Tests', () => {
@@ -293,7 +293,7 @@ describe('resolveDeweb Unit Tests', () => {
       expect(result).toBe(buildDefaultUrl(URL_TEST, 123n))
     })
 
-    test("When no chainid is returned by local deweb provider don't use this provider", async () => {
+    test("When no chainId is returned by local deweb provider don't use this provider", async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: false }) // Native support fails
         .mockRejectedValueOnce(new Error('Plugin not available')) // Plugin fails
@@ -408,7 +408,7 @@ describe('resolveDeweb Unit Tests', () => {
       expect(result).toBe(buildDefaultUrl(URL_TEST, 123n))
     })
 
-    test("When no chainid is returned by current domain deweb provider don't use it", async () => {
+    test("When no chainId is returned by current domain deweb provider don't use it", async () => {
       mockWindow.location.host = 'subdomain.deweb-provider.com'
       mockWindow.location.protocol = 'https:'
 

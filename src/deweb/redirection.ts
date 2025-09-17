@@ -7,14 +7,20 @@ const STATION_DEWEB_STATUS_URL =
   'https://station.massa/plugin/massa-labs/local-deweb-provider/api/server/status'
 const DEWEB_STATUS_RUNNING = 'running'
 
+/* return type of the station deweb plugin's server status API endpoint
+It contains info related to the deweb provider run by the station deweb plugin */
 type DewebStatus = {
   serverPort: number
   status: string
 }
 
+/* return type of the deweb provider's __deweb_info API endpoint
+It contains info related to the deweb provider */
 type DewebInfoData = {
   app?: string
-  chainId?: bigint
+  network?: {
+    chainID?: bigint
+  }
 }
 
 /**
@@ -33,7 +39,7 @@ type DewebInfoData = {
  */
 export async function resolveDeweb(
   uri: string,
-  chainId: bigint = CHAIN_ID.Mainnet
+  chainId = CHAIN_ID.Mainnet
 ): Promise<string> {
   if (typeof window === 'undefined') {
     throw new Error('This function can only be used in a browser environment')
@@ -105,7 +111,7 @@ export async function resolveDeweb(
 
   // If the current domain is not a Deweb provider, we redirect to the default URL
   // Use proper URL encoding for the deweb_url parameter as per RFC 3986
-  const defaultUrl = `${DEWEB_REDIRECT_URL}?chainid=${chainId}&deweb_url=${encodeURIComponent(mns + urlSearch + mnsHash)}`
+  const defaultUrl = `${DEWEB_REDIRECT_URL}?chain_id=${chainId}&deweb_url=${encodeURIComponent(mns + urlSearch + mnsHash)}`
 
   /* 
     If the current domain has no subdomains, it can't be a Deweb provider.
@@ -143,8 +149,8 @@ async function isDewebProvider(
     return (
       !!data.app &&
       data.app == 'deweb' &&
-      !!data.chainId &&
-      data.chainId == chainId
+      !!data.network?.chainID &&
+      data.network.chainID == chainId
     )
   }
   return false
