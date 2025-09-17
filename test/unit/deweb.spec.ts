@@ -56,14 +56,16 @@ describe('resolveDeweb Unit Tests', () => {
   // Common test input including a hash fragment
   const URL_TEST = 'test.massa/path?query=1#section'
 
-  // Helper function to create mock deweb info response with chainId
+  // Helper function to create mock deweb info response with chainID
   function createMockDewebInfoResponse(chainId?: bigint) {
     return {
       ok: true,
       json: () =>
         Promise.resolve({
           app: 'deweb',
-          ...(chainId !== undefined && { chainId }),
+          network: {
+            chainID: chainId,
+          },
         }),
     }
   }
