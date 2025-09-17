@@ -32,18 +32,28 @@ export class HttpRule extends jspb.Message {
 
   getGet(): string;
   setGet(value: string): HttpRule;
+  hasGet(): boolean;
+  clearGet(): HttpRule;
 
   getPut(): string;
   setPut(value: string): HttpRule;
+  hasPut(): boolean;
+  clearPut(): HttpRule;
 
   getPost(): string;
   setPost(value: string): HttpRule;
+  hasPost(): boolean;
+  clearPost(): HttpRule;
 
   getDelete(): string;
   setDelete(value: string): HttpRule;
+  hasDelete(): boolean;
+  clearDelete(): HttpRule;
 
   getPatch(): string;
   setPatch(value: string): HttpRule;
+  hasPatch(): boolean;
+  clearPatch(): HttpRule;
 
   getCustom(): CustomHttpPattern | undefined;
   setCustom(value?: CustomHttpPattern): HttpRule;
@@ -74,11 +84,11 @@ export class HttpRule extends jspb.Message {
 export namespace HttpRule {
   export type AsObject = {
     selector: string,
-    get: string,
-    put: string,
-    post: string,
-    pb_delete: string,
-    patch: string,
+    get?: string,
+    put?: string,
+    post?: string,
+    pb_delete?: string,
+    patch?: string,
     custom?: CustomHttpPattern.AsObject,
     body: string,
     responseBody: string,
