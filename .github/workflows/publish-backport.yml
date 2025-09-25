@@ -1,0 +1,25 @@
+name: Npm publish backport
+
+on:
+    workflow_dispatch:
+      inputs:
+        tag:
+          description: "npm dist tag"
+          required: true
+    
+jobs:
+  publish-npm-backport:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          registry-url: https://registry.npmjs.org
+      - run: |
+          npm ci
+          npm run build
+          ./scripts/publish-next.sh ${{ inputs.tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
