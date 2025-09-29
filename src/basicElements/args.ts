@@ -124,8 +124,6 @@ export const DEFAULT_OFFSET = 0
  *
  */
 export class Args {
-  private argsList: IParam[] = []
-
   /**
    * Constructor to either serialize or deserialize data passed from/to DApps and remote Smart contracts.
    *
@@ -139,10 +137,6 @@ export class Args {
     if (serialized.byteOffset) {
       this.serialized = new Uint8Array([...serialized])
     }
-  }
-
-  public getArgsList(): IParam[] {
-    return this.argsList
   }
 
   /**
@@ -484,14 +478,12 @@ export class Args {
   public addU8(value: U8.U8_t): this {
     this.serialized = Args.concatArrays(this.serialized, U8.toBytes(value))
     this.offset++
-    this.argsList.push({ type: ArgTypes.U8, value: value })
     return this
   }
 
   public addU16(value: U16.U16_t): this {
     this.serialized = Args.concatArrays(this.serialized, U16.toBytes(value))
     this.offset += U16.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.U16, value: value })
     return this
   }
 
@@ -505,7 +497,6 @@ export class Args {
   public addU32(value: U32.U32_t): this {
     this.serialized = Args.concatArrays(this.serialized, U32.toBytes(value))
     this.offset += U32.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.U32, value: value })
     return this
   }
 
@@ -519,7 +510,6 @@ export class Args {
   public addU64(value: U64.U64_t): this {
     this.serialized = Args.concatArrays(this.serialized, U64.toBytes(value))
     this.offset += U64.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.U64, value: value })
     return this
   }
 
@@ -533,7 +523,6 @@ export class Args {
   public addU128(bigInt: U128.U128_t): this {
     this.serialized = Args.concatArrays(this.serialized, U128.toBytes(bigInt))
     this.offset += U128.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.U128, value: bigInt })
     return this
   }
 
@@ -547,7 +536,6 @@ export class Args {
   public addU256(bigInt: U256.U256_t): this {
     this.serialized = Args.concatArrays(this.serialized, U256.toBytes(bigInt))
     this.offset += U256.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.U256, value: bigInt })
     return this
   }
 
@@ -561,7 +549,6 @@ export class Args {
   public addI8(value: I8.I8_t): this {
     this.serialized = Args.concatArrays(this.serialized, I8.toBytes(value))
     this.offset++
-    this.argsList.push({ type: ArgTypes.I8, value: value })
     return this
   }
 
@@ -575,7 +562,6 @@ export class Args {
   public addI16(value: I16.I16_t): this {
     this.serialized = Args.concatArrays(this.serialized, I16.toBytes(value))
     this.offset += I16.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.I16, value: value })
     return this
   }
 
@@ -589,7 +575,6 @@ export class Args {
   public addI32(value: I32.I32_t): this {
     this.serialized = Args.concatArrays(this.serialized, I32.toBytes(value))
     this.offset += I32.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.I32, value: value })
     return this
   }
 
@@ -603,7 +588,6 @@ export class Args {
   public addI64(value: I64.I64_t): this {
     this.serialized = Args.concatArrays(this.serialized, I64.toBytes(value))
     this.offset += I64.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.I64, value: value })
     return this
   }
 
@@ -617,7 +601,6 @@ export class Args {
   public addI128(value: I128.I128_t): this {
     this.serialized = Args.concatArrays(this.serialized, I128.toBytes(value))
     this.offset += I128.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.I128, value: value })
     return this
   }
 
@@ -631,7 +614,6 @@ export class Args {
   public addI256(value: I256.I256_t): this {
     this.serialized = Args.concatArrays(this.serialized, I256.toBytes(value))
     this.offset += I256.SIZE_BYTE
-    this.argsList.push({ type: ArgTypes.I256, value: value })
     return this
   }
 
@@ -648,7 +630,6 @@ export class Args {
       U8.toBytes(value ? 1n : 0n)
     )
     this.offset++
-    this.argsList.push({ type: ArgTypes.BOOL, value: value })
     return this
   }
 
@@ -662,7 +643,6 @@ export class Args {
   public addF32(value: number): this {
     this.serialized = Args.concatArrays(this.serialized, f32ToBytes(value))
     this.offset += BYTES_32_OFFSET
-    this.argsList.push({ type: ArgTypes.F32, value: value })
     return this
   }
 
@@ -676,7 +656,6 @@ export class Args {
   public addF64(value: number): this {
     this.serialized = Args.concatArrays(this.serialized, f64ToBytes(value))
     this.offset += BYTES_64_OFFSET
-    this.argsList.push({ type: ArgTypes.F64, value: value })
     return this
   }
 
@@ -691,9 +670,6 @@ export class Args {
     this.addU32(U32.fromNumber(array.length))
     this.serialized = Args.concatArrays(this.serialized, array)
     this.offset += array.length
-    // Remove the U32 from the argsList
-    this.argsList.pop()
-    this.argsList.push({ type: ArgTypes.UINT8ARRAY, value: array })
     return this
   }
 
@@ -722,10 +698,6 @@ export class Args {
     this.serialized = Args.concatArrays(this.serialized, strToBytes(value))
     this.offset += strToBytes(value).length
 
-    // Remove the U32 from the argsList
-    this.argsList.pop()
-    this.argsList.push({ type: ArgTypes.STRING, value: value })
-
     return this
   }
 
@@ -745,7 +717,6 @@ export class Args {
     const serializedValue = value.serialize()
     this.serialized = Args.concatArrays(this.serialized, serializedValue)
     this.offset += serializedValue.length
-    this.argsList.push({ type: ArgTypes.SERIALIZABLE, value: value })
     return this
   }
 
@@ -768,13 +739,6 @@ export class Args {
     this.addU32(U32.fromNumber(content.length))
     this.serialized = Args.concatArrays(this.serialized, content)
     this.offset += content.length
-
-    // Remove the U32 from the argsList
-    this.argsList.pop()
-    this.argsList.push({
-      type: ArgTypes.SERIALIZABLE_OBJECT_ARRAY,
-      value: arg,
-    })
     return this
   }
 
@@ -796,10 +760,6 @@ export class Args {
     this.addU32(U32.fromNumber(content.length))
     this.serialized = Args.concatArrays(this.serialized, content)
     this.offset += content.length
-
-    // Remove the U32 from the argsList
-    this.argsList.pop()
-    this.argsList.push({ type: ArgTypes.ARRAY, value: arg })
     return this
   }
 
