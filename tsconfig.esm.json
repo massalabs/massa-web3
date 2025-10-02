@@ -3,11 +3,25 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
-        "outDir": "./dist/esm/"
+        "outDir": "./dist/esm/",
+        "rootDir": "./src",
+        "declaration": true,
+        "declarationDir": "./dist/esm/",
+        "moduleResolution": "node"
     },
+    "include": [
+        "./src/**/*.ts",
+        "./src/**/*.js",
+        "./src/generated/grpc/esm/**/*.js",
+        "./src/generated/grpc/esm/**/*.d.ts"
+    ],
     "exclude": [
         "node_modules",
         "**/*.spec.ts",
-        "./examples/**/*"
+        "./examples/**/*",
+        "./src/generated/grpc/**/*.js",
+        "!./src/generated/grpc/esm/**/*.js",
+        "./src/generated/grpc/**/*.d.ts",
+        "!./src/generated/grpc/esm/**/*.d.ts"
     ]
 }

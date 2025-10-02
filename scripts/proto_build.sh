@@ -6,7 +6,7 @@ echo "Running proto_build script..."
 REPO_URL="https://github.com/massalabs/massa-proto" 
 TARGET_DIR="proto"  
 DESTINATION="tmp" 
-BRANCH="improve_datastore_keys_query"  
+BRANCH="main"  
 
 rm -rf "$DESTINATION/$TARGET_DIR"
 
@@ -47,19 +47,32 @@ mkdir -p src/generated/grpc
 
 generate_proto() {
     local proto_dir="$1"
+    local output_dir="$2"
+    local js_import_style="$3"
 
     # exclude private api proto files
     protoc $(find "$proto_dir" -name '*.proto' -not -name '*private*') \
-        --js_out=import_style=commonjs:src/generated/grpc \
+        --js_out=import_style=$js_import_style:$output_dir \
         --proto_path="$DESTINATION/$TARGET_DIR/commons" \
         --proto_path="$DESTINATION/$TARGET_DIR/third_party" \
         --proto_path="$proto_dir" \
-        --grpc-web_out=import_style=typescript,mode=grpcwebtext:src/generated/grpc
+        --grpc-web_out=import_style=typescript,mode=grpcwebtext:$output_dir
 }
 
-generate_proto "$DESTINATION/$TARGET_DIR/third_party"
-generate_proto "$DESTINATION/$TARGET_DIR/commons"
-generate_proto "$DESTINATION/$TARGET_DIR/apis/massa/api/v1"
+# Generate CommonJS version (for backward compatibility)
+echo "Generating CommonJS protobuf files..."
+generate_proto "$DESTINATION/$TARGET_DIR/third_party" "src/generated/grpc" "commonjs"
+generate_proto "$DESTINATION/$TARGET_DIR/commons" "src/generated/grpc" "commonjs"
+generate_proto "$DESTINATION/$TARGET_DIR/apis/massa/api/v1" "src/generated/grpc" "commonjs"
+
+# Generate ESM version
+echo "Generating ESM protobuf files..."
+mkdir -p src/generated/grpc/esm
+generate_proto "$DESTINATION/$TARGET_DIR/third_party" "src/generated/grpc/esm" "es6"
+generate_proto "$DESTINATION/$TARGET_DIR/commons" "src/generated/grpc/esm" "es6"
+generate_proto "$DESTINATION/$TARGET_DIR/apis/massa/api/v1" "src/generated/grpc/esm" "es6"
+
+# Note: ESM files will be handled by wrapper files during build
 
 echo "Proto build completed successfully."
 

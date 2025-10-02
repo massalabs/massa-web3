@@ -1,10 +1,25 @@
 {
-  // Extends base TypeScript configuration from 'tsconfig.json'
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    // Specifies the module system for the output bundle. "commonjs" is a standard for structuring and organizing JavaScript code.
-    "module": "commonjs",
-    // The location where the output files will be placed.
-    "outDir": "./dist/cmd/"
-  },
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "commonjs",
+        "outDir": "./dist/cmd/",
+        "rootDir": "./src",
+        "declaration": true,
+        "declarationDir": "./dist/cmd/",
+        "moduleResolution": "node"
+    },
+    "include": [
+        "./src/**/*.ts",
+        "./src/**/*.js",
+        "./src/generated/grpc/**/*.js",
+        "./src/generated/grpc/**/*.d.ts",
+        "!./src/generated/grpc/esm/**/*.js",
+        "!./src/generated/grpc/esm/**/*.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts",
+        "./examples/**/*"
+    ]
 }
