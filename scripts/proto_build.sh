@@ -1,12 +1,12 @@
 #!/bin/bash
 
-echo "Running proto_build script..."
+echo "Running proto_build script with Protobuf-ES..."
 
 #Variables
 REPO_URL="https://github.com/massalabs/massa-proto" 
 TARGET_DIR="proto"  
 DESTINATION="tmp" 
-BRANCH="main"
+BRANCH="main"  
 
 rm -rf "$DESTINATION/$TARGET_DIR"
 
@@ -45,7 +45,9 @@ cd .. || exit 1
 rm -rf src/generated/grpc
 mkdir -p src/generated/grpc
 
-generate_proto() {
+# Generate CommonJS version with gRPC client
+echo "Generating CommonJS protobuf files with gRPC client..."
+generate_proto_commonjs() {
     local proto_dir="$1"
 
     # exclude private api proto files
@@ -57,10 +59,28 @@ generate_proto() {
         --grpc-web_out=import_style=typescript,mode=grpcwebtext:src/generated/grpc
 }
 
-generate_proto "$DESTINATION/$TARGET_DIR/third_party"
-generate_proto "$DESTINATION/$TARGET_DIR/commons"
-generate_proto "$DESTINATION/$TARGET_DIR/apis/massa/api/v1"
+# Generate CommonJS files
+generate_proto_commonjs "$DESTINATION/$TARGET_DIR/third_party"
+generate_proto_commonjs "$DESTINATION/$TARGET_DIR/commons"
+generate_proto_commonjs "$DESTINATION/$TARGET_DIR/apis/massa/api/v1"
 
 echo "Proto build completed successfully."
+
+# Copy protobuf files to build directories
+echo "Copying protobuf files to build directories..."
+
+# Ensure build directories exist
+mkdir -p dist/cmd/generated/grpc
+mkdir -p dist/esm/generated/grpc
+
+# Copy CommonJS protobuf files to CMD build (exclude esm directory)
+echo "Copying CommonJS protobuf files to CMD build..."
+rsync -av --exclude='esm/' src/generated/grpc/ dist/cmd/generated/grpc/
+
+# Copy CommonJS protobuf files to ESM build (exclude esm directory)
+echo "Copying CommonJS protobuf files to ESM build..."
+rsync -av --exclude='esm/' src/generated/grpc/ dist/esm/generated/grpc/
+
+echo "Protobuf files copied successfully!"
 
 rm -rf "$DESTINATION/$TARGET_DIR"
