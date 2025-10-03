@@ -1,6 +1,6 @@
 import { NetworkName, CHAIN_ID } from '../utils'
 import {
-  DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
+  MAX_ADDRESSES_DATASTORE_KEYS_QUERY,
   Provider,
   PublicProvider,
 } from '../provider'
@@ -96,7 +96,7 @@ export class DewebIndexer extends SmartContract {
     // batch the websites addresses in DEFAULT_MAX_ARGUMENT_ARRAY_SIZE sub array to prevent exceeding max argument limit
     const batchedWebsitesAddresses = toBatch(
       websitesAddresses,
-      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
+      MAX_ADDRESSES_DATASTORE_KEYS_QUERY
     )
 
     let websitesFileLocationKeys: AddressDatastoreKeys[] = []

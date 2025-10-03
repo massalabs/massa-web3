@@ -8,10 +8,10 @@ import {
 import {
   CHAIN_ID,
   DatastoreEntry,
-  DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
   EventFilter,
   ExecuteSCReadOnlyParams,
   ExecuteSCReadOnlyResult,
+  MAX_DATASTORE_KEYS_QUERY,
   Mas,
   MAX_GAS_CALL,
   MAX_GAS_EXECUTE,
@@ -144,7 +144,7 @@ export class JsonRpcPublicProvider implements PublicProvider {
         prefix: filter.length > 0 ? filter : undefined,
         startKey,
         inclusiveStartKey: startKey ? false : true, // Exclude the start key if it's from previous batch
-        maxCount: DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
+        maxCount: MAX_DATASTORE_KEYS_QUERY,
       }
 
       const response = await this.client.getAddressesDatastoreKeys([request])
@@ -158,7 +158,7 @@ export class JsonRpcPublicProvider implements PublicProvider {
       allKeys.push(...addressKeys.keys)
 
       // If we got less than the max count, we've reached the end
-      if (addressKeys.keys.length < DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE) {
+      if (addressKeys.keys.length < MAX_DATASTORE_KEYS_QUERY) {
         hasMoreKeys = false
       } else {
         // Use the last key as start for next iteration

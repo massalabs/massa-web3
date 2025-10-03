@@ -2,6 +2,7 @@ import { isImmutable, areImmutables } from '../../src/deweb/immutable'
 import { provider, publicProvider } from './setup'
 import { CHAIN_ID } from '../../src/utils/networks'
 import { providerMock } from '../unit/mock/provider.mock'
+import { DEFAULT_MAX_ARGUMENT_ARRAY_SIZE } from '../../src/provider/constants'
 
 const immutableDewebAddressBuildnet =
   'AS12ibbPmE9L4i1D8FC3xP7e9NFtbBWNaP46s6GjnvuiXhWfLmnvW'
@@ -189,5 +190,19 @@ describe('areImmutables', () => {
 
     // Ensure it completes in reasonable time (less than 30 seconds)
     expect(endTime - startTime).toBeLessThan(30000)
+  })
+
+  test('should handle batching when addresses array size is 2*DEFAULT_MAX_ARGUMENT_ARRAY_SIZE +1', async () => {
+    const addresses = Array(2 * DEFAULT_MAX_ARGUMENT_ARRAY_SIZE + 1).fill(
+      immutableAddresses[0]
+    )
+    const results = await areImmutables(provider, addresses)
+
+    expect(Array.isArray(results)).toBe(true)
+    expect(results).toHaveLength(addresses.length)
+
+    results.forEach((result) => {
+      expect(result).toBe(true)
+    })
   })
 })

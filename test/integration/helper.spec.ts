@@ -2,8 +2,8 @@ import { getMultipleAddressesDatastoreKeys } from '../../src/client/storage'
 import { MNS_CONTRACTS } from '../../src/contracts-wrappers/mns'
 import { provider } from './setup'
 import {
-  DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
-  DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
+  MAX_ADDRESSES_DATASTORE_KEYS_QUERY,
+  MAX_DATASTORE_KEYS_QUERY,
 } from '../../src/provider/constants'
 import { DOMAIN_SEPARATOR_KEY } from '../../src/deweb/keys'
 
@@ -20,10 +20,10 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
   // Mock the constants module using jest.mock with a factory function
   jest.mock('../../src/provider/constants', () => ({
     ...jest.requireActual('../../src/provider/constants'),
-    get DEFAULT_MAX_ARGUMENT_ARRAY_SIZE() {
+    get MAX_ADDRESSES_DATASTORE_KEYS_QUERY() {
       return mockBatchSize
     },
-    get DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE() {
+    get MAX_DATASTORE_KEYS_QUERY() {
       return mockPageSize
     },
   }))
@@ -40,11 +40,9 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
 
   const resetMockConstants = () => {
     mockBatchSize.mockReturnValue(
-      originalModule.DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
+      originalModule.MAX_ADDRESSES_DATASTORE_KEYS_QUERY
     )
-    mockPageSize.mockReturnValue(
-      originalModule.DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE
-    )
+    mockPageSize.mockReturnValue(originalModule.MAX_DATASTORE_KEYS_QUERY)
   }
 
   beforeEach(() => {
@@ -80,7 +78,7 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
 
   test('should retrieve datastore keys for multiple MRC20 addresses, more than LIMIT_MAX_ARGUMENT_ARRAY_SIZE', async () => {
     // Use small batch size to test batching logic
-    setMockConstants(2, DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE)
+    setMockConstants(2, MAX_DATASTORE_KEYS_QUERY)
 
     // Create 5 address requests to test batching with batch size 2
     const addresses = Array(5).fill(usdcAddress)
@@ -114,7 +112,7 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
 
   test('should handle MNS address with huge number of keys using small page size', async () => {
     // Use small page size to test pagination logic
-    setMockConstants(DEFAULT_MAX_ARGUMENT_ARRAY_SIZE, 10)
+    setMockConstants(MAX_ADDRESSES_DATASTORE_KEYS_QUERY, 10)
 
     const params = [
       {
@@ -141,7 +139,7 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
 
   test('should handle mixed addresses: MRC20 and MNS. Important diff in keys number', async () => {
     // Test both batching and pagination together
-    setMockConstants(DEFAULT_MAX_ARGUMENT_ARRAY_SIZE, 5) // Force sequential processing and small page size
+    setMockConstants(MAX_ADDRESSES_DATASTORE_KEYS_QUERY, 5) // Force sequential processing and small page size
 
     const params = [
       {
@@ -175,6 +173,36 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
     expect(results[1]).toHaveProperty('isFinal', true)
     expect(Array.isArray(results[1].keys)).toBe(true)
     expect(results[1].keys.length).toBeGreaterThan(5) // Should be more than page size
+  })
+
+  test('2*MAX_ADDRESSES_DATASTORE_KEYS_QUERY +1 addresses, page size : 2', async () => {
+    // Should create 3 batches. For each of them, should call several times the API because the page size is only 2
+
+    // Set page size to 2; keep batch size as the original constant value
+    setMockConstants(MAX_ADDRESSES_DATASTORE_KEYS_QUERY, 2)
+
+    const count = originalModule.MAX_ADDRESSES_DATASTORE_KEYS_QUERY * 2 + 1
+    const addresses = Array(count).fill(usdcAddress)
+    const params = addresses.map((address) => ({
+      address,
+      prefix: '',
+      final: true,
+    }))
+
+    const results = await getMultipleAddressesDatastoreKeys(
+      provider.client,
+      params
+    )
+
+    expect(Array.isArray(results)).toBe(true)
+    expect(results).toHaveLength(count)
+
+    results.forEach((result) => {
+      expect(result).toHaveProperty('address', usdcAddress)
+      expect(result).toHaveProperty('isFinal', true)
+      expect(Array.isArray(result.keys)).toBe(true)
+      expect(result.keys.length).toBeGreaterThan(0)
+    })
   })
 
   test('should handle address with no keys', async () => {
