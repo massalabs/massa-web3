@@ -1,8 +1,8 @@
 import { PublicAPI } from './publicAPI'
 import { AddressDatastoreKeys } from './types'
 import {
-  DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
-  DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
+  MAX_ADDRESSES_DATASTORE_KEYS_QUERY,
+  MAX_DATASTORE_KEYS_QUERY,
 } from '../provider/constants'
 import { toBatch } from '../operation/batchOpArrayParam'
 
@@ -52,7 +52,7 @@ export async function getMultipleAddressesDatastoreKeys(
     // Batch the active indices to respect DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
     const batchedIndices = toBatch(
       activeIndices,
-      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
+      MAX_ADDRESSES_DATASTORE_KEYS_QUERY
     )
 
     // Process each batch
@@ -65,7 +65,7 @@ export async function getMultipleAddressesDatastoreKeys(
           prefix: state.prefix,
           startKey: state.startKey,
           inclusiveStartKey: state.startKey ? false : true, // Exclude start key if from previous batch
-          maxCount: DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE,
+          maxCount: MAX_DATASTORE_KEYS_QUERY,
         }
       })
 
@@ -89,7 +89,7 @@ export async function getMultipleAddressesDatastoreKeys(
           results[stateIndex].keys.push(...response.keys)
 
           // Check if we've reached the end for this address
-          if (response.keys.length < DEFAULT_GET_DATASTORE_KEYS_PAGE_SIZE) {
+          if (response.keys.length < MAX_DATASTORE_KEYS_QUERY) {
             addressStates[stateIndex].hasMoreKeys = false
           } else {
             // Set start key for next iteration

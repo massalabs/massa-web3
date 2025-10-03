@@ -165,6 +165,23 @@ describe('Deweb getMultipleSitesGlobalMetadata Integration Tests', () => {
     })
   })
 
+  test('should handle batching when addresses array size is 2*DEFAULT_MAX_ARGUMENT_ARRAY_SIZE +1', async () => {
+    const addresses = Array(2 * DEFAULT_MAX_ARGUMENT_ARRAY_SIZE + 1).fill(
+      testAddresses[0]
+    )
+    const results = await getMultipleSitesGlobalMetadata(addresses, provider)
+
+    expect(Array.isArray(results)).toBe(true)
+    expect(results).toHaveLength(addresses.length)
+
+    // Verify order is maintained
+    results.forEach((result) => {
+      const expected = expectedMetadata.get(testAddresses[0])!
+
+      expect(result).toEqual(expected)
+    })
+  })
+
   test('should handle empty address list', async () => {
     const results = await getMultipleSitesGlobalMetadata([], provider)
 

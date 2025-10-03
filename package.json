@@ -68,7 +68,6 @@
         "grpc-web": "^1.5.0",
         "lodash.isequal": "^4.5.0",
         "secure-random": "^1.1.2",
-        "tslib": "^2.8.1",
         "varint": "^6.0.0"
     },
     "devDependencies": {
@@ -97,6 +96,7 @@
         "ts-interface-checker": "^1.0.2",
         "ts-jest": "^29.1.0",
         "ts-node": "^10.9.1",
+        "ts-protoc-gen": "^0.15.0",
         "typedoc": "^0.25.7",
         "typescript": "^5.4.5",
         "wait-for-expect": "^3.0.2",

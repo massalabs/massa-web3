@@ -116,7 +116,11 @@ export async function getMultipleSitesGlobalMetadata(
       }
 
       if (
-        metadataKeysList[index].address === metadataKeysList[index - 1].address
+        // if previous address is the same as the current address
+        metadataKeysList[index].address ===
+          metadataKeysList[index - 1].address &&
+        // if the metadata is not in the previous array, add it to the previous array
+        !metadataContains(acc[acc.length - 1], metadata)
       ) {
         acc[acc.length - 1].push(metadata)
       } else {
@@ -129,4 +133,13 @@ export async function getMultipleSitesGlobalMetadata(
     .map((metadata) => extractWebsiteMetadata(metadata)) //convert metadata to ParsedMetadata
 
   return metadata
+}
+
+function metadataContains(
+  metadata: Metadata[],
+  metadataToCheck: Metadata
+): boolean {
+  return metadata.some(
+    (m) => m.key === metadataToCheck.key && m.value === metadataToCheck.value
+  )
 }
