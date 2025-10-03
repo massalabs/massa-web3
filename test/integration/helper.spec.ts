@@ -189,8 +189,6 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
       final: true,
     }))
 
-    console.log('count', count)
-
     const results = await getMultipleAddressesDatastoreKeys(
       provider.client,
       params
