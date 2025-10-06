@@ -176,17 +176,6 @@ export class Args {
     return result
   }
 
-  private nextInteger(
-    extractor: (
-      buffer: Uint8Array,
-      offset: number
-    ) => { value: bigint; offset: number }
-  ): bigint {
-    const { value, offset } = extractor(this.serialized, this.offset)
-    this.offset = offset
-    return value
-  }
-
   /**
    * Returns the next unsigned byte in the serialized byte array.
    *
@@ -196,7 +185,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextU8(): U8.U8_t {
-    return this.nextInteger(U8.fromBuffer)
+    const res = U8.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -208,7 +199,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextU16(): U16.U16_t {
-    return this.nextInteger(U16.fromBuffer)
+    const res = U16.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -220,7 +213,9 @@ export class Args {
    * @returns the deserialized number
    */
   public nextU32(): U32.U32_t {
-    return this.nextInteger(U32.fromBuffer)
+    const res = U32.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -232,7 +227,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextU64(): U64.U64_t {
-    return this.nextInteger(U64.fromBuffer)
+    const res = U64.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -244,7 +241,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextU128(): U128.U128_t {
-    return this.nextInteger(U128.fromBuffer)
+    const res = U128.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -256,7 +255,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextU256(): U256.U256_t {
-    return this.nextInteger(U256.fromBuffer)
+    const res = U256.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -268,7 +269,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextI8(): I8.I8_t {
-    return this.nextInteger(I8.fromBuffer)
+    const res = I8.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -280,7 +283,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextI16(): I16.I16_t {
-    return this.nextInteger(I16.fromBuffer)
+    const res = I16.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -292,7 +297,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextI32(): I32.I32_t {
-    return this.nextInteger(I32.fromBuffer)
+    const res = I32.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -304,7 +311,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextI64(): I64.I64_t {
-    return this.nextInteger(I64.fromBuffer)
+    const res = I64.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -316,7 +325,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextI128(): I128.I128_t {
-    return this.nextInteger(I128.fromBuffer)
+    const res = I128.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
@@ -328,7 +339,9 @@ export class Args {
    * @returns the deserialized number.
    */
   public nextI256(): I256.I256_t {
-    return this.nextInteger(I256.fromBuffer)
+    const res = I256.fromBuffer(this.serialized, this.offset)
+    this.offset = res.offset
+    return res.value
   }
 
   /**
