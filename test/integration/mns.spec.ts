@@ -86,9 +86,9 @@ describe('MNS tests', () => {
 
   test('getTargets, getOwnedDomains', async () => {
     // Alloc some domains
-    const domain1 = 'trloloooooooooooooooololololyoyyyzs1'
-    const domain2 = 'trloloooooooooooooooololololoyoyyyzs2'
-    const domain3 = 'trloloooooooooooooooololololozyoyyys3'
+    const domain1 = 'trloloooooooooooooooololololyoyyyzs1' + Date.now()
+    const domain2 = 'trloloooooooooooooooololololoyoyyyzs2' + Date.now()
+    const domain3 = 'trloloooooooooooooooololololozyoyyys3' + Date.now()
 
     const op1 = await mns.alloc(domain1, provider.address, {
       coins: 2064100000n,
