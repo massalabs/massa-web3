@@ -67,7 +67,7 @@ export class MNS extends SmartContract {
     return new MNS(provider, CHAIN_ID.Buildnet)
   }
 
-  // Resolve domain name (without ".massa") to address
+  // Resolve domain name (without ".massa") to target
   async resolve(name: string, options?: ReadSCOptions): Promise<string> {
     const res = await this.read(
       'dnsResolve',
