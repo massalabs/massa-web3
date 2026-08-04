@@ -1,5 +1,5 @@
 import Sealer from './interfaces/sealer'
-import randomUint8Array from 'secure-random'
+import { randomBytes } from '@noble/hashes/utils'
 
 import {
   PBKDF2Options,
@@ -31,8 +31,8 @@ export class PasswordSeal implements Sealer {
   public nonce: Uint8Array
 
   constructor(password: string, salt?: Uint8Array, nonce?: Uint8Array) {
-    this.salt = salt ?? randomUint8Array(SALT_SIZE_BYTES)
-    this.nonce = nonce ?? randomUint8Array(NONCE_SIZE_BYTES)
+    this.salt = salt ?? randomBytes(SALT_SIZE_BYTES)
+    this.nonce = nonce ?? randomBytes(NONCE_SIZE_BYTES)
     this.validate()
 
     this.password = password
