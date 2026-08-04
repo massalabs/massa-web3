@@ -1,11 +1,11 @@
 import { PasswordSeal } from '../../src/crypto/passwordSeal'
-import randomUint8Array from 'secure-random'
+import { randomBytes } from '@noble/hashes/utils'
 
 describe('Password Seal tests', () => {
   test('creates Sealer from env variable', async () => {
     process.env.PASSWORD = 'unsecurePassword'
-    process.env.SALT = Buffer.from(randomUint8Array(16)).toString('base64')
-    process.env.NONCE = Buffer.from(randomUint8Array(12)).toString('base64')
+    process.env.SALT = Buffer.from(randomBytes(16)).toString('base64')
+    process.env.NONCE = Buffer.from(randomBytes(12)).toString('base64')
 
     const sealer = PasswordSeal.fromEnv()
     expect(sealer).toBeDefined()
