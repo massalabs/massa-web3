@@ -71,10 +71,13 @@ describe('MNS tests', () => {
     expect(balance).toBeGreaterThan(0n)
 
     // transfer domain
+    // The updated contract makes the caller pay for the storage created for the
+    // new owner (transferRemaining), so coins must be attached. Any excess is refunded.
     operation = await mns.transferFrom(
       domain,
       provider.address,
-      account2.address.toString()
+      account2.address.toString(),
+      { coins: 100000000n }
     )
     await operation.waitFinalExecution()
 
