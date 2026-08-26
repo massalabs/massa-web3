@@ -104,9 +104,15 @@ import { StakerEntry } from '../../generated/grpc/massa/model/v1/staker_pb'
 import { NativeAmount } from '../../generated/grpc/massa/model/v1/amount_pb'
 import { PublicServiceClient } from '../../generated/grpc/PublicServiceClientPb'
 import { ClientReadableStream } from 'grpc-web'
-import { StringValue } from '../../generated/grpc/google/protobuf/wrappers_pb'
+import {
+  BoolValue,
+  BytesValue,
+  StringValue,
+  UInt32Value,
+} from '../../generated/grpc/google/protobuf/wrappers_pb'
 import { FilterBuilder } from './filterBuilder'
 import { MAX_GAS_CALL } from '../../smartContracts'
+import { MAX_DATASTORE_KEYS_QUERY } from '../constants'
 
 export class GrpcPublicProvider implements PublicProvider {
   constructor(
@@ -501,67 +507,107 @@ export class GrpcPublicProvider implements PublicProvider {
       throw new Error('Address is required')
     }
 
+    const prefix = filter
+      ? typeof filter === 'string'
+        ? strToBytes(filter)
+        : filter
+      : new Uint8Array()
+
     try {
-      const queries: ExecutionQueryRequestItem[] = []
-      const prefix = filter
-        ? typeof filter === 'string'
-          ? strToBytes(filter)
-          : filter
-        : new Uint8Array()
+      const allKeys: Uint8Array[] = []
+      let startKey: Uint8Array | undefined = undefined
 
-      const ret = new ExecutionQueryRequestItem()
-      if (final) {
-        ret.setAddressDatastoreKeysFinal(
-          new AddressDatastoreKeysFinal().setAddress(address).setPrefix(prefix)
+      // The node caps the number of keys returned by a single query, so keep
+      // querying from the last key received until we get a partial page.
+      for (;;) {
+        const keys = await this.getStorageKeysPage(
+          address,
+          prefix,
+          final,
+          startKey
         )
-      } else {
-        ret.setAddressDatastoreKeysCandidate(
-          new AddressDatastoreKeysCandidate()
-            .setAddress(address)
-            .setPrefix(prefix)
-        )
+
+        allKeys.push(...keys)
+
+        if (keys.length < MAX_DATASTORE_KEYS_QUERY) {
+          return allKeys
+        }
+
+        // Resume from the last key received, excluding it from the next page
+        startKey = keys[keys.length - 1]
       }
-
-      queries.push(ret)
-
-      const response = await this.client.queryState(
-        new QueryStateRequest().setQueriesList(queries)
-      )
-
-      if (response?.getResponsesList().length === 0) {
-        throw new Error(`No response received for address ${address}`)
-      }
-
-      const addressInfo = response.getResponsesList()[0]
-
-      if (addressInfo.hasError()) {
-        throw new Error(
-          `Query state error: ${addressInfo.getError()?.getMessage() || 'Unknown error'}`
-        )
-      }
-
-      if (addressInfo.hasResult() && addressInfo.getResult()?.hasVecBytes()) {
-        return (
-          addressInfo
-            .getResult()
-            ?.getVecBytes()
-            ?.getItemsList()
-            .map((item) =>
-              typeof item === 'string' ? strToBytes(item) : item
-            ) ?? []
-        )
-      }
-
-      throw new Error(
-        `Unexpected response type: ${addressInfo.getResponseCase()}, ` +
-          `expected 'result' with 'vecBytes' but got '${addressInfo.hasResult() ? addressInfo.getResult() : 'N/A'}'`
-      )
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to get storage keys: ${error.message}`)
       }
       throw new Error('Failed to get storage keys: Unknown error')
     }
+  }
+
+  /**
+   * Retrieves a single page of datastore keys, starting after the given key.
+   */
+  private async getStorageKeysPage(
+    address: string,
+    prefix: Uint8Array,
+    final?: boolean,
+    startKey?: Uint8Array
+  ): Promise<Uint8Array[]> {
+    const query = final
+      ? new AddressDatastoreKeysFinal()
+      : new AddressDatastoreKeysCandidate()
+
+    query
+      .setAddress(address)
+      .setPrefix(prefix)
+      .setLimit(new UInt32Value().setValue(MAX_DATASTORE_KEYS_QUERY))
+
+    if (startKey) {
+      query
+        .setStartKey(new BytesValue().setValue(startKey))
+        // Exclude the start key: it belongs to the previous page
+        .setInclusiveStartKey(new BoolValue().setValue(false))
+    }
+
+    const ret = new ExecutionQueryRequestItem()
+    if (query instanceof AddressDatastoreKeysFinal) {
+      ret.setAddressDatastoreKeysFinal(query)
+    } else {
+      ret.setAddressDatastoreKeysCandidate(query)
+    }
+
+    const response = await this.client.queryState(
+      new QueryStateRequest().setQueriesList([ret])
+    )
+
+    if (response?.getResponsesList().length === 0) {
+      throw new Error(`No response received for address ${address}`)
+    }
+
+    const addressInfo = response.getResponsesList()[0]
+
+    if (addressInfo.hasError()) {
+      throw new Error(
+        `Query state error: ${addressInfo.getError()?.getMessage() || 'Unknown error'}`
+      )
+    }
+
+    if (addressInfo.hasResult() && addressInfo.getResult()?.hasVecBytes()) {
+      return (
+        addressInfo
+          .getResult()
+          ?.getVecBytes()
+          ?.getItemsList()
+          .map((item) =>
+            typeof item === 'string' ? strToBytes(item) : item
+          ) ?? []
+      )
+    }
+
+    throw new Error(
+      `Unexpected response type: ${addressInfo.getResponseCase()}, ` +
+        `expected 'result' with 'vecBytes' but got '${addressInfo.hasResult() ? addressInfo.getResult() : 'N/A'}'`
+    )
   }
 
   /**
