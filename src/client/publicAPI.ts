@@ -20,7 +20,7 @@ import { MAX_GAS_CALL } from '../smartContracts'
 import { OperationStatus, ReadOnlyParams } from '../operation'
 import isEqual from 'lodash.isequal'
 import { Connector } from './connector'
-import { rpcTypes as t } from 'src/generated/'
+import { rpcTypes as t } from '../generated'
 import { Provider, PublicProvider } from '../provider'
 import { getPublicApiByChainId } from '../utils/networks'
 
