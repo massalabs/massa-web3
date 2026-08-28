@@ -18,6 +18,9 @@ jobs:
           npm run build
       - run: npm run fmt:check
 
+      - name: check published types
+        run: npm run check-dist-types
+
       - name: unit test
         run: npm test
 

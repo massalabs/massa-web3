@@ -20,6 +20,7 @@ jobs:
       - run: |
           npm ci
           npm run build
+          npm run check-dist-types
           npm publish --access public --tag ${{ inputs.tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}

@@ -5,6 +5,9 @@ set -e
 npm ci
 npm run build
 
+# Refuse to publish a build whose .d.ts files are broken for consumers
+npm run check-dist-types
+
 # Update the version with a prepatch, preid dev, no git tag, and no commit hooks
 npm version --preid dev --no-git-tag-version --no-commit-hooks prepatch
 

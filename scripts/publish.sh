@@ -5,6 +5,9 @@ set -e
 npm ci
 npm run build
 
+# Refuse to publish a build whose .d.ts files are broken for consumers
+npm run check-dist-types
+
 # Get the package name and current version from package.json
 PACKAGE_NAME=$(jq -r '.name' package.json)
 NEW_VERSION=$(jq -r '.version' package.json)
