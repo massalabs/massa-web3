@@ -1,0 +1,97 @@
+name: Check npm publish token
+
+# Verifies the npm_token secret is valid and can still write to this package,
+# WITHOUT publishing anything. The publish workflows only exercise the token at
+# the final `npm publish` step on main/buildnet, so an expired or downgraded
+# token stays invisible until a release fails.
+#
+# Runs on pull requests so it can be checked from a branch before merging.
+# `workflow_dispatch` is included for on-demand runs, but note it only appears
+# in the Actions UI once this file is on the default branch.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check-token:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          # Writes the .npmrc that maps NODE_AUTH_TOKEN onto the registry.
+          registry-url: https://registry.npmjs.org
+
+      # Fork PRs never receive secrets, so an empty token there is expected
+      # rather than a failure. On a branch in this repo it is a real problem.
+      - name: Check the secret is present
+        id: secret
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+        run: |
+          if [ -n "$NODE_AUTH_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "present=false" >> "$GITHUB_OUTPUT"
+          if [ "$IS_FORK" = "true" ]; then
+            echo "::notice::Fork PR - secrets are unavailable, skipping token check."
+            exit 0
+          fi
+          echo "::error::Secret 'npm_token' is unset or empty for this repository."
+          exit 1
+
+      # Definitive check: hits the registry with the token and fails on an
+      # expired, revoked or malformed credential.
+      - name: Verify the token authenticates
+        if: steps.secret.outputs.present == 'true'
+        id: whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+        run: |
+          if ! user=$(npm whoami 2>&1); then
+            echo "$user"
+            echo "::error::npm rejected the token - most likely expired or revoked."
+            exit 1
+          fi
+          echo "npm identity: $user"
+          echo "user=$user" >> "$GITHUB_OUTPUT"
+
+      # `npm whoami` passing only proves the token is valid - a read-only token
+      # authenticates fine and then 404s on publish. Confirm write access too.
+      - name: Verify the token can publish this package
+        if: steps.secret.outputs.present == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+          NPM_USER: ${{ steps.whoami.outputs.user }}
+        run: |
+          pkg=$(node -p "require('./package.json').name")
+          echo "Checking write access to $pkg as $NPM_USER"
+
+          if ! collaborators=$(npm access list collaborators "$pkg" --json 2>&1); then
+            echo "$collaborators"
+            echo "::warning::Could not list collaborators; publish rights unconfirmed."
+            exit 0
+          fi
+
+          printf '%s' "$collaborators" > collaborators.json
+          node .github/scripts/check-npm-access.mjs collaborators.json "$NPM_USER"
+
+      - name: Summary
+        if: always() && steps.secret.outputs.present == 'true'
+        run: |
+          {
+            echo "### npm publish token"
+            echo ""
+            if [ "${{ steps.whoami.outcome }}" = "success" ]; then
+              echo "Authenticated as \`${{ steps.whoami.outputs.user }}\`."
+            else
+              echo "Token failed to authenticate. Rotate \`npm_token\` in"
+              echo "Settings -> Secrets and variables -> Actions, using a new"
+              echo "**Automation** token from npmjs.com (it bypasses 2FA,"
+              echo "which CI requires)."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
