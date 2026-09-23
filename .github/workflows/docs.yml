@@ -23,9 +23,9 @@ jobs:
       - name: Deploy files
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.MASSANET_HOST }}
-          username: ${{ secrets.MASSANET_USERNAME }}
+          host: 51.195.222.250
+          username: website-deploy
           key: ${{ secrets.MASSANET_SSHKEY }}
           source: "./massa-web3"
           target: "/var/www/type-doc"
-          port: 22000
+          port: 22
