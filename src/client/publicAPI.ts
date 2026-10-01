@@ -23,6 +23,7 @@ import { Connector } from './connector'
 import { rpcTypes as t } from '../generated'
 import { Provider, PublicProvider } from '../provider'
 import { getPublicApiByChainId } from '../utils/networks'
+import { MAX_DATASTORE_KEYS_QUERY } from '../provider/constants'
 
 export class PublicAPI {
   connector: Connector
@@ -189,6 +190,19 @@ export class PublicAPI {
     }))
   }
 
+  /**
+   * Retrieves the datastore keys of a contract from `get_addresses`.
+   *
+   * @deprecated `get_addresses` returns at most `max_datastore_keys_query` keys per address (500 by default), with
+   * no way to page, and the filter is applied after that cap: keys can be missing without error. Use
+   * `JsonRpcPublicProvider.getStorageKeys` or `getMultipleAddressesDatastoreKeys`, which page through
+   * `get_addresses_datastore_keys` with the prefix applied by the node.
+   *
+   * @param contract - The contract address
+   * @param filter - Only keys starting with these bytes are returned
+   * @param final - Whether to read the final or the candidate keys
+   * @returns The keys starting with `filter`
+   */
   async getDataStoreKeys(
     contract: string,
     filter: Uint8Array = new Uint8Array(),
@@ -198,6 +212,12 @@ export class PublicAPI {
     const keys = final
       ? addrInfo.final_datastore_keys
       : addrInfo.candidate_datastore_keys
+    if (keys.length >= MAX_DATASTORE_KEYS_QUERY) {
+      console.warn(
+        `getDataStoreKeys: ${contract} returned ${keys.length} keys, the node cap of get_addresses: keys may be missing. ` +
+          'Use JsonRpcPublicProvider.getStorageKeys or getMultipleAddressesDatastoreKeys instead.'
+      )
+    }
     return keys
       .filter(
         (key) =>
