@@ -6,6 +6,7 @@ import {
 import { OperationStatus, toBatch, batchListAndCall } from '../../src/operation'
 import { blockchainClientMock } from './mock/blockchainClient.mock'
 import { providerMock } from './mock/provider.mock'
+import { Args, ArrayTypes } from '../../src/basicElements'
 
 const OPERATION_ID = 'testOperationID'
 const operation = new Operation(providerMock, OPERATION_ID)
@@ -361,5 +362,58 @@ describe('Operation batch tests', () => {
       ])
       expect(batchFunction).toHaveBeenCalledTimes(2)
     })
+  })
+})
+
+describe('getDeployedAddress', () => {
+  const DEPLOYED = 'AS12BqZEQ6sByhRLyEuf0YbQmcF2PsDdkNNG1akBJu9XcjZA1eT'
+  const deployEvent = {
+    data: Buffer.from(
+      new Args().addArray([DEPLOYED], ArrayTypes.STRING).serialize()
+    ).toString('base64'),
+    context: { is_error: false } as EventExecutionContext,
+  } as OutputEvents[number]
+
+  beforeEach(() => {
+    // the provider mock functions are shared by every test: start from a clean state
+    jest.mocked(providerMock.getEvents).mockReset()
+    jest
+      .mocked(providerMock.getOperationStatus)
+      .mockReset()
+      .mockResolvedValue(OperationStatus.Success)
+  })
+
+  test('reads the events again until the node serves them', async () => {
+    const getEvents = jest
+      .spyOn(providerMock, 'getEvents')
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([deployEvent])
+
+    const address = await operation.getDeployedAddress(true, 1000, 1)
+
+    expect(address).toBe(DEPLOYED)
+    expect(getEvents).toHaveBeenCalledTimes(3)
+    expect(getEvents).toHaveBeenLastCalledWith({
+      operationId: OPERATION_ID,
+      isFinal: true,
+    })
+  })
+
+  test('fails once the timeout is reached without events', async () => {
+    jest.spyOn(providerMock, 'getEvents').mockResolvedValue([])
+
+    await expect(operation.getDeployedAddress(false, 5, 1)).rejects.toThrow(
+      'no event received.'
+    )
+  })
+
+  test('does not read the events again when they are already there', async () => {
+    const getEvents = jest
+      .spyOn(providerMock, 'getEvents')
+      .mockResolvedValue([deployEvent])
+
+    expect(await operation.getDeployedAddress(true, 1000, 1)).toBe(DEPLOYED)
+    expect(getEvents).toHaveBeenCalledTimes(1)
   })
 })

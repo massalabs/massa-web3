@@ -6,6 +6,7 @@ import { OperationStatus } from './types'
 
 const DEFAULT_WAIT_TIMEOUT_MS = 60000
 const DEFAULT_WAIT_PERIOD_MS = 500
+const DEFAULT_EVENTS_TIMEOUT_MS = 10000
 
 /**
  * An operation object.
@@ -112,10 +113,39 @@ export class Operation {
     return this.provider.getEvents({ operationId: this.id, isFinal: false })
   }
 
-  async getDeployedAddress(waitFinal = false): Promise<string> {
-    const events = waitFinal
+  /**
+   * Gets the address of the smart contract deployed by the operation.
+   *
+   * @remarks
+   * A node can report the operation as executed slightly before it serves the operation events. The
+   * events are read again, every `period` ms, until they arrive or `timeout` ms have passed.
+   *
+   * @param waitFinal - Whether to wait for the final execution or the speculative one.
+   * @param timeout - The maximum time to wait for the events once the operation is executed.
+   * @param period - The time interval between two reads of the events.
+   *
+   * @returns The address of the deployed smart contract.
+   */
+  async getDeployedAddress(
+    waitFinal = false,
+    timeout = DEFAULT_EVENTS_TIMEOUT_MS,
+    period = DEFAULT_WAIT_PERIOD_MS
+  ): Promise<string> {
+    let events = waitFinal
       ? await this.getFinalEvents()
       : await this.getSpeculativeEvents()
+
+    for (
+      let elapsed = 0;
+      !events.length && elapsed < timeout;
+      elapsed += period
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, period))
+      events = await this.provider.getEvents({
+        operationId: this.id,
+        isFinal: waitFinal,
+      })
+    }
 
     const lastEvent = events.at(-1)
 
