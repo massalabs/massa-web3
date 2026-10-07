@@ -11,7 +11,6 @@ import {
   EventFilter,
   ExecuteSCReadOnlyParams,
   ExecuteSCReadOnlyResult,
-  MAX_DATASTORE_KEYS_QUERY,
   Mas,
   MAX_GAS_CALL,
   MAX_GAS_EXECUTE,
@@ -136,6 +135,7 @@ export class JsonRpcPublicProvider implements PublicProvider {
     const allKeys: Uint8Array[] = []
     let startKey: Uint8Array | undefined = undefined
     let hasMoreKeys = true
+    const pageSize = await this.client.getDatastoreKeysPageSize()
 
     while (hasMoreKeys) {
       const request = {
@@ -144,7 +144,7 @@ export class JsonRpcPublicProvider implements PublicProvider {
         prefix: filter.length > 0 ? filter : undefined,
         startKey,
         inclusiveStartKey: startKey ? false : true, // Exclude the start key if it's from previous batch
-        maxCount: MAX_DATASTORE_KEYS_QUERY,
+        maxCount: pageSize,
       }
 
       const response = await this.client.getAddressesDatastoreKeys([request])
@@ -158,7 +158,7 @@ export class JsonRpcPublicProvider implements PublicProvider {
       allKeys.push(...addressKeys.keys)
 
       // If we got less than the max count, we've reached the end
-      if (addressKeys.keys.length < MAX_DATASTORE_KEYS_QUERY) {
+      if (addressKeys.keys.length < pageSize) {
         hasMoreKeys = false
       } else {
         // Use the last key as start for next iteration

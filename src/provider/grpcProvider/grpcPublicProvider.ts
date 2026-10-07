@@ -119,6 +119,8 @@ import {
 import { batchListAndCall } from '../../operation/batchOpArrayParam'
 
 export class GrpcPublicProvider implements PublicProvider {
+  private datastoreKeysPageSize?: number
+
   constructor(
     public client: PublicServiceClient,
     public url: string
@@ -520,6 +522,7 @@ export class GrpcPublicProvider implements PublicProvider {
     try {
       const allKeys: Uint8Array[] = []
       let startKey: Uint8Array | undefined = undefined
+      const pageSize = await this.getDatastoreKeysPageSize()
 
       // The node caps the number of keys returned by a single query, so keep
       // querying from the last key received until we get a partial page.
@@ -527,13 +530,14 @@ export class GrpcPublicProvider implements PublicProvider {
         const keys = await this.getStorageKeysPage(
           address,
           prefix,
+          pageSize,
           final,
           startKey
         )
 
         allKeys.push(...keys)
 
-        if (keys.length < MAX_DATASTORE_KEYS_QUERY) {
+        if (keys.length < pageSize) {
           return allKeys
         }
 
@@ -549,11 +553,33 @@ export class GrpcPublicProvider implements PublicProvider {
   }
 
   /**
+   * Returns the number of keys to request per datastore keys query: {@link MAX_DATASTORE_KEYS_QUERY},
+   * lowered to the node's `max_datastore_keys_query` when the node reports a smaller limit.
+   */
+  private async getDatastoreKeysPageSize(): Promise<number> {
+    if (this.datastoreKeysPageSize === undefined) {
+      const status = (
+        await this.client.getStatus(new GetStatusRequest())
+      ).getStatus()
+      const nodeLimit = status?.hasMaxDatastoreKeysQuery()
+        ? status.getMaxDatastoreKeysQuery()
+        : 0
+      this.datastoreKeysPageSize =
+        nodeLimit > 0
+          ? Math.min(nodeLimit, MAX_DATASTORE_KEYS_QUERY)
+          : MAX_DATASTORE_KEYS_QUERY
+    }
+    return this.datastoreKeysPageSize
+  }
+
+  /**
    * Retrieves a single page of datastore keys, starting after the given key.
    */
+  // eslint-disable-next-line max-params
   private async getStorageKeysPage(
     address: string,
     prefix: Uint8Array,
+    limit: number,
     final?: boolean,
     startKey?: Uint8Array
   ): Promise<Uint8Array[]> {
@@ -564,7 +590,7 @@ export class GrpcPublicProvider implements PublicProvider {
     query
       .setAddress(address)
       .setPrefix(prefix)
-      .setLimit(new UInt32Value().setValue(MAX_DATASTORE_KEYS_QUERY))
+      .setLimit(new UInt32Value().setValue(limit))
 
     if (startKey) {
       query
@@ -985,6 +1011,9 @@ export class GrpcPublicProvider implements PublicProvider {
         BigInt(status.getMinimalFees()?.getMantissa() ?? 0)
       ),
       currentMipVersion: status.getCurrentMipVersion(),
+      maxDatastoreKeysQuery: status.hasMaxDatastoreKeysQuery()
+        ? status.getMaxDatastoreKeysQuery()
+        : undefined,
     }
 
     return nodeStatusInfo

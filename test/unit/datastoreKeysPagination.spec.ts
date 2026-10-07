@@ -29,19 +29,34 @@ function mockResponse(keys: Uint8Array[]): unknown {
   }
 }
 
-function providerWithPages(pages: Uint8Array[][]): {
+/* Mimics the GetStatusResponse shape consumed by the page size lookup */
+function mockStatus(maxDatastoreKeysQuery?: number): jest.Mock {
+  return jest.fn().mockResolvedValue({
+    getStatus: () => ({
+      hasMaxDatastoreKeysQuery: () => maxDatastoreKeysQuery !== undefined,
+      getMaxDatastoreKeysQuery: () => maxDatastoreKeysQuery ?? 0,
+    }),
+  } as never)
+}
+
+function providerWithPages(
+  pages: Uint8Array[][],
+  maxDatastoreKeysQuery?: number
+): {
   provider: GrpcPublicProvider
   queryState: jest.Mock
+  getStatus: jest.Mock
 } {
   const queryState = jest.fn()
   pages.forEach((page) =>
     queryState.mockResolvedValueOnce(mockResponse(page) as never)
   )
+  const getStatus = mockStatus(maxDatastoreKeysQuery)
   const provider = new GrpcPublicProvider(
-    { queryState } as unknown as PublicServiceClient,
+    { queryState, getStatus } as unknown as PublicServiceClient,
     'http://localhost'
   )
-  return { provider, queryState }
+  return { provider, queryState, getStatus }
 }
 
 /* Extracts the datastore keys query out of a recorded queryState call */
@@ -129,13 +144,53 @@ describe('GrpcPublicProvider.getStorageKeys', () => {
       ],
     } as never)
     const provider = new GrpcPublicProvider(
-      { queryState } as unknown as PublicServiceClient,
+      { queryState, getStatus: mockStatus() } as unknown as PublicServiceClient,
       'http://localhost'
     )
 
     await expect(
       provider.getStorageKeys(ADDRESS, new Uint8Array(), true)
     ).rejects.toThrow('Failed to get storage keys: Query state error: boom')
+  })
+
+  it('pages with the node limit when it is lower than the default', async () => {
+    const nodeLimit = 100
+    const first = keyPage(nodeLimit)
+    const second = keyPage(2, nodeLimit)
+    const { provider, queryState } = providerWithPages(
+      [first, second],
+      nodeLimit
+    )
+
+    const keys = await provider.getStorageKeys(ADDRESS, new Uint8Array(), true)
+
+    expect(queryState).toHaveBeenCalledTimes(2)
+    expect(sentQuery(queryState, 0, true).getLimit()?.getValue()).toBe(
+      nodeLimit
+    )
+    expect(keys).toEqual([...first, ...second])
+  })
+
+  it('keeps the default page size when the node limit is higher', async () => {
+    const { provider, queryState } = providerWithPages(
+      [keyPage(3)],
+      MAX_DATASTORE_KEYS_QUERY * 2
+    )
+
+    await provider.getStorageKeys(ADDRESS, new Uint8Array(), true)
+
+    expect(sentQuery(queryState, 0, true).getLimit()?.getValue()).toBe(
+      MAX_DATASTORE_KEYS_QUERY
+    )
+  })
+
+  it('reads the node status only once', async () => {
+    const { provider, getStatus } = providerWithPages([keyPage(1), keyPage(1)])
+
+    await provider.getStorageKeys(ADDRESS, new Uint8Array(), true)
+    await provider.getStorageKeys(ADDRESS, new Uint8Array(), true)
+
+    expect(getStatus).toHaveBeenCalledTimes(1)
   })
 
   it('rejects an empty address without querying', async () => {
