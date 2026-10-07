@@ -1,4 +1,4 @@
-import { Args, StorageCost, U256 } from '../basicElements'
+import { Args, MRC20BalanceCreationCost } from '../basicElements'
 import { Operation } from '../operation'
 import { Provider, PublicProvider } from '../provider'
 import { isProvider } from '../provider/helpers'
@@ -38,18 +38,22 @@ export class WMAS extends MRC20 {
     return new WMAS(provider, chainId)
   }
 
-  wrap(amount: bigint): Promise<Operation> {
+  /**
+   * Wraps `amount` MAS into `amount` WMAS.
+   *
+   * @remarks `deposit` deducts the storage cost of the caller's balance entry from the coins it receives
+   * when that entry does not exist yet, so this cost is sent on top of `amount`.
+   */
+  async wrap(amount: bigint): Promise<Operation> {
     if (!isProvider(this.provider)) {
       throw new Error('Method not available for PublicProvider')
     }
 
-    // check whether user has already created a balance entry
-    const balanceKey = 'BALANCE' + this.provider.address
-    const storageVals = this.provider.readStorage(this.address, [balanceKey])
-    const storageCost =
-      storageVals[0] === null
-        ? StorageCost.datastoreEntry(balanceKey, U256.toBytes(0n))
-        : 0n
+    const storageCost = await MRC20BalanceCreationCost(
+      this.provider,
+      this.address,
+      this.provider.address
+    )
 
     return this.provider.callSC({
       target: this.address,
