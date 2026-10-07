@@ -258,6 +258,11 @@ export class PublicStatus extends jspb.Message {
   getCurrentMipVersion(): number;
   setCurrentMipVersion(value: number): PublicStatus;
 
+  getMaxDatastoreKeysQuery(): number;
+  setMaxDatastoreKeysQuery(value: number): PublicStatus;
+  hasMaxDatastoreKeysQuery(): boolean;
+  clearMaxDatastoreKeysQuery(): PublicStatus;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PublicStatus.AsObject;
   static toObject(includeInstance: boolean, msg: PublicStatus): PublicStatus.AsObject;
@@ -281,6 +286,12 @@ export namespace PublicStatus {
     chainId: number,
     minimalFees?: massa_model_v1_amount_pb.NativeAmount.AsObject,
     currentMipVersion: number,
+    maxDatastoreKeysQuery?: number,
+  }
+
+  export enum MaxDatastoreKeysQueryCase { 
+    _MAX_DATASTORE_KEYS_QUERY_NOT_SET = 0,
+    MAX_DATASTORE_KEYS_QUERY = 15,
   }
 }
 

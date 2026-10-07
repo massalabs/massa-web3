@@ -1000,6 +1000,12 @@ export type NumberBte4OVdF = number;
  *
  */
 export type NumberYYhfgFTd = number;
+/**
+ *
+ * Max number of datastore keys returned by a single datastore key query, null if unlimited
+ *
+ */
+export type OneOfNullQu0Arl1FNumberHo1ClIqDSTrjANyd = NullQu0Arl1F | NumberHo1ClIqD;
 export interface DeferredCallsQuoteResponse {
   target_slot: Slot;
   max_gas_request: NumberHo1ClIqD;
@@ -1144,6 +1150,7 @@ export interface NodeStatus {
   chain_id: NumberBte4OVdF;
   minimal_fees?: Amount;
   current_mip_version: NumberYYhfgFTd;
+  max_datastore_keys_query?: OneOfNullQu0Arl1FNumberHo1ClIqDSTrjANyd;
 }
 export type UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS = DeferredCallsQuoteResponse[];
 export type UnorderedSetOfDeferredCallResponsewrpyYBUS = DeferredCallResponse[];

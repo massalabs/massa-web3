@@ -1,9 +1,6 @@
 import { PublicAPI } from './publicAPI'
 import { AddressDatastoreKeys } from './types'
-import {
-  MAX_ADDRESSES_DATASTORE_KEYS_QUERY,
-  MAX_DATASTORE_KEYS_QUERY,
-} from '../provider/constants'
+import { MAX_ADDRESSES_DATASTORE_KEYS_QUERY } from '../provider/constants'
 import { toBatch } from '../operation/batchOpArrayParam'
 
 export type AddressDatastoreKeysParam = {
@@ -41,6 +38,7 @@ export async function getMultipleAddressesDatastoreKeys(
     hasMoreKeys: true,
   }))
 
+  const pageSize = await client.getDatastoreKeysPageSize()
   let toContinue = true
 
   while (toContinue) {
@@ -65,7 +63,7 @@ export async function getMultipleAddressesDatastoreKeys(
           prefix: state.prefix,
           startKey: state.startKey,
           inclusiveStartKey: state.startKey ? false : true, // Exclude start key if from previous batch
-          maxCount: MAX_DATASTORE_KEYS_QUERY,
+          maxCount: pageSize,
         }
       })
 
@@ -89,7 +87,7 @@ export async function getMultipleAddressesDatastoreKeys(
           results[stateIndex].keys.push(...response.keys)
 
           // Check if we've reached the end for this address
-          if (response.keys.length < MAX_DATASTORE_KEYS_QUERY) {
+          if (response.keys.length < pageSize) {
             addressStates[stateIndex].hasMoreKeys = false
           } else {
             // Set start key for next iteration

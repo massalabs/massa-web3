@@ -62,6 +62,7 @@ export function formatNodeStatusObject(status: NodeStatus): NodeStatusInfo {
     chainId: status.chain_id,
     minimalFees: status.minimal_fees,
     currentMipVersion: status.current_mip_version,
+    maxDatastoreKeysQuery: status.max_datastore_keys_query ?? undefined,
   }
 }
 

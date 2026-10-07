@@ -1737,7 +1737,8 @@ finalStateFingerprint: jspb.Message.getFieldWithDefault(msg, 10, ""),
 config: (f = msg.getConfig()) && proto.massa.model.v1.CompactConfig.toObject(includeInstance, f),
 chainId: jspb.Message.getFieldWithDefault(msg, 12, 0),
 minimalFees: (f = msg.getMinimalFees()) && massa_model_v1_amount_pb.NativeAmount.toObject(includeInstance, f),
-currentMipVersion: jspb.Message.getFieldWithDefault(msg, 14, 0)
+currentMipVersion: jspb.Message.getFieldWithDefault(msg, 14, 0),
+maxDatastoreKeysQuery: (f = jspb.Message.getField(msg, 15)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1832,6 +1833,10 @@ proto.massa.model.v1.PublicStatus.deserializeBinaryFromReader = function(msg, re
     case 14:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setCurrentMipVersion(value);
+      break;
+    case 15:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setMaxDatastoreKeysQuery(value);
       break;
     default:
       reader.skipField();
@@ -1957,6 +1962,13 @@ proto.massa.model.v1.PublicStatus.serializeBinaryToWriter = function(message, wr
   if (f !== 0) {
     writer.writeUint32(
       14,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 15));
+  if (f != null) {
+    writer.writeUint32(
+      15,
       f
     );
   }
@@ -2327,6 +2339,42 @@ proto.massa.model.v1.PublicStatus.prototype.getCurrentMipVersion = function() {
  */
 proto.massa.model.v1.PublicStatus.prototype.setCurrentMipVersion = function(value) {
   return jspb.Message.setProto3IntField(this, 14, value);
+};
+
+
+/**
+ * optional uint32 max_datastore_keys_query = 15;
+ * @return {number}
+ */
+proto.massa.model.v1.PublicStatus.prototype.getMaxDatastoreKeysQuery = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.massa.model.v1.PublicStatus} returns this
+ */
+proto.massa.model.v1.PublicStatus.prototype.setMaxDatastoreKeysQuery = function(value) {
+  return jspb.Message.setField(this, 15, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.massa.model.v1.PublicStatus} returns this
+ */
+proto.massa.model.v1.PublicStatus.prototype.clearMaxDatastoreKeysQuery = function() {
+  return jspb.Message.setField(this, 15, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.massa.model.v1.PublicStatus.prototype.hasMaxDatastoreKeysQuery = function() {
+  return jspb.Message.getField(this, 15) != null;
 };
 
 
