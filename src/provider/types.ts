@@ -82,6 +82,8 @@ export type NodeStatusInfo = {
   chainId: number
   minimalFees?: string
   currentMipVersion?: number
+  /** Max number of keys returned by a single datastore keys query. Undefined if unlimited or not reported by the node. */
+  maxDatastoreKeysQuery?: number
 }
 
 export type Config = {

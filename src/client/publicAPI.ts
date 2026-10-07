@@ -23,7 +23,11 @@ import { Connector } from './connector'
 import { rpcTypes as t } from '../generated'
 import { Provider, PublicProvider } from '../provider'
 import { getPublicApiByChainId } from '../utils/networks'
-import { MAX_DATASTORE_KEYS_QUERY } from '../provider/constants'
+import {
+  DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
+  MAX_DATASTORE_KEYS_QUERY,
+} from '../provider/constants'
+import { batchListAndCall } from '../operation/batchOpArrayParam'
 
 export class PublicAPI {
   connector: Connector
@@ -294,8 +298,18 @@ export class PublicAPI {
     return this.connector.get_graph_interval({ start, end })
   }
 
+  /**
+   * Retrieves operations by id.
+   *
+   * @remarks The node rejects requests with more than `max_arguments` ids (128 by default), so the ids are
+   * sent in batches of {@link DEFAULT_MAX_ARGUMENT_ARRAY_SIZE}.
+   */
   async getOperations(operationIds: string[]): Promise<t.OperationInfo[]> {
-    return this.connector.get_operations(operationIds)
+    return batchListAndCall(
+      operationIds,
+      (batch) => this.connector.get_operations(batch),
+      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
+    )
   }
 
   async getOperation(
@@ -350,6 +364,22 @@ export class PublicAPI {
       throw new Error('minimal fees: not available')
     }
     return Mas.fromString(this.lastStatus.minimal_fees)
+  }
+
+  /**
+   * Returns the number of keys to request per datastore keys query.
+   *
+   * @remarks This is {@link MAX_DATASTORE_KEYS_QUERY}, lowered to the node's `max_datastore_keys_query`
+   * when the node reports a smaller limit: asking for more keys than this limit makes the query fail.
+   */
+  async getDatastoreKeysPageSize(): Promise<number> {
+    if (!this.lastStatus) {
+      await this.status()
+    }
+    const nodeLimit = this.lastStatus.max_datastore_keys_query
+    return typeof nodeLimit === 'number' && nodeLimit > 0
+      ? Math.min(nodeLimit, MAX_DATASTORE_KEYS_QUERY)
+      : MAX_DATASTORE_KEYS_QUERY
   }
 
   async getChainId(): Promise<bigint> {

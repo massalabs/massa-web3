@@ -605,6 +605,8 @@ export const NumberBte4OVdF = t.name("number");
 
 export const NumberYYhfgFTd = t.name("number");
 
+export const OneOfNullQu0Arl1FNumberHo1ClIqDSTrjANyd = t.union("NullQu0Arl1F", "NumberHo1ClIqD");
+
 export const DeferredCallsQuoteResponse = t.iface([], {
   "target_slot": "Slot",
   "max_gas_request": "NumberHo1ClIqD",
@@ -756,6 +758,7 @@ export const NodeStatus = t.iface([], {
   "chain_id": "NumberBte4OVdF",
   "minimal_fees": t.opt("Amount"),
   "current_mip_version": "NumberYYhfgFTd",
+  "max_datastore_keys_query": t.opt("OneOfNullQu0Arl1FNumberHo1ClIqDSTrjANyd"),
 });
 
 export const UnorderedSetOfDeferredCallsQuoteResponsewrpyYBUS = t.array("DeferredCallsQuoteResponse");
@@ -1040,6 +1043,7 @@ const exportedTypeSuite: t.ITypeSuite = {
   ExecutionStats,
   NumberBte4OVdF,
   NumberYYhfgFTd,
+  OneOfNullQu0Arl1FNumberHo1ClIqDSTrjANyd,
   DeferredCallsQuoteResponse,
   UnorderedSetOfNumberHo1ClIqDAokMKuEf,
   DeferredCall,
