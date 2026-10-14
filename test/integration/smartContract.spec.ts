@@ -3,7 +3,6 @@ import fs from 'fs'
 import {
   DeploySCOptions,
   MAX_GAS_CALL,
-  MAX_GAS_DEPLOYMENT,
   MIN_GAS_CALL,
   SmartContract,
 } from '../../src/smartContracts'
@@ -63,9 +62,9 @@ describe('Smart Contract', () => {
       const byteCode = fs.readFileSync(contractPath)
       const constructorArgs = new Args().addString('myName')
 
+      // Gas is estimated and the default validity is kept: a deploy using a whole block's gas
+      // with a short validity cannot be included while other runs use the same account.
       const deployOptions: DeploySCOptions = {
-        periodToLive: 2,
-        maxGas: MAX_GAS_DEPLOYMENT,
         coins: Mas.fromString('0.0016'),
       }
 

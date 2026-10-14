@@ -22,7 +22,7 @@ describe('SC Event tests', () => {
     )
     await operation.waitSpeculativeExecution()
 
-    let events: OutputEvents = []
+    const events: OutputEvents = []
 
     const filter = {
       smartContractAddress: USDC,
@@ -30,15 +30,24 @@ describe('SC Event tests', () => {
       start: currentSlot,
     }
 
+    // Concurrent runs share the test account, so other events can match the filter
     const { stopPolling } = EventPoller.start(provider, filter, (data) => {
-      events = data
+      events.push(...data)
     })
 
     await waitForExpect(() => {
-      expect(events.length).toEqual(1)
-      expect(events[0].data).toEqual('TRANSFER SUCCESS')
+      const transferEvents = events.filter(
+        (event) => event.context.origin_operation_id === operation.id
+      )
+      expect(transferEvents).toHaveLength(1)
+      expect(transferEvents[0].data).toEqual('TRANSFER SUCCESS')
     })
     stopPolling()
+
+    events.forEach((event) => {
+      expect(event.context.call_stack).toContain(provider.address)
+      expect(event.context.call_stack).toContain(USDC)
+    })
   })
 
   test('poll transfer event from operationId', async () => {

@@ -35,51 +35,31 @@ describe('Generic token wrapper tests', () => {
     expect(totalSupply).toBeGreaterThan(0n)
   })
 
+  // Recipients and spenders are new for each run: concurrent runs share the test account, so the
+  // account balance and the allowances it granted can change during a test.
   test('transfer', async () => {
     const amount = 1_000n
-    const balance = await usdcContract.balanceOf(provider.address)
+    const recipient = (await Account.generate()).address.toString()
 
-    const operation = await usdcContract.transfer(
-      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-      amount
-    )
+    const operation = await usdcContract.transfer(recipient, amount)
     await operation.waitSpeculativeExecution()
 
-    const newBalance = await usdcContract.balanceOf(provider.address)
-    expect(newBalance).toBe(balance - amount)
+    expect(await usdcContract.balanceOf(recipient)).toBe(amount)
   })
 
   test('allowance', async () => {
-    const previousAllowance = await usdcContract.allowance(
-      provider.address,
-      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
-    )
-
+    const spender = (await Account.generate()).address.toString()
     const amount = 123_000_000n
-    let operation = await usdcContract.increaseAllowance(
-      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-      amount
-    )
+
+    let operation = await usdcContract.increaseAllowance(spender, amount)
     await operation.waitSpeculativeExecution()
 
-    let newAllowance = await usdcContract.allowance(
-      provider.address,
-      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
-    )
+    expect(await usdcContract.allowance(provider.address, spender)).toBe(amount)
 
-    expect(newAllowance).toBe(previousAllowance + amount)
-
-    operation = await usdcContract.decreaseAllowance(
-      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
-      amount
-    )
+    operation = await usdcContract.decreaseAllowance(spender, amount)
     await operation.waitSpeculativeExecution()
 
-    newAllowance = await usdcContract.allowance(
-      provider.address,
-      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53'
-    )
-    expect(newAllowance).toBe(previousAllowance)
+    expect(await usdcContract.allowance(provider.address, spender)).toBe(0n)
   })
 
   test('balancesOf', async () => {
