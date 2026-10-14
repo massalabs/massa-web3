@@ -226,6 +226,9 @@ describe('Helper getMultipleAddressesDatastoreKeys', () => {
   test('should throw error with proper message when API call fails', async () => {
     // Create a mock PublicAPI that will throw an error
     const mockPublicAPI = {
+      getDatastoreKeysPageSize: jest
+        .fn()
+        .mockResolvedValue(MAX_DATASTORE_KEYS_QUERY),
       getAddressesDatastoreKeys: jest
         .fn()
         .mockRejectedValue(new Error('Network error: Connection refused')),
