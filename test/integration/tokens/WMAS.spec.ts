@@ -1,4 +1,6 @@
+import { Account } from '../../../src'
 import { WMAS } from '../../../src/contracts-wrappers'
+import { OperationStatus } from '../../../src/operation'
 import { Provider } from '../../../src/provider'
 import { mainnetProvider, provider as buildnetProvider } from './../setup'
 
@@ -59,5 +61,20 @@ describe('WMAS wrapper tests', () => {
   test('decimals', async () => {
     const decimals = await buildnetContract.decimals()
     expect(decimals).toBe(9)
+  })
+
+  test('increaseAllowance to a new spender', async () => {
+    // Creates a new allowance entry: once MIP-0002 is active, the patched WMAS reverts unless the
+    // caller pays for its storage, which increaseAllowance does by default.
+    const spender = (await Account.generate()).address.toString()
+
+    const operation = await buildnetContract.increaseAllowance(spender, 1n)
+
+    expect(await operation.waitSpeculativeExecution()).toBe(
+      OperationStatus.SpeculativeSuccess
+    )
+    expect(
+      await buildnetContract.allowance(buildnetProvider.address, spender)
+    ).toBe(1n)
   })
 })
