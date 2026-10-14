@@ -26,4 +26,7 @@ jobs:
       - name: Run integration tests
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          # Pin the JSON-RPC tests to buildnet1 (DEVN.30.2): buildnet.massa.net load-balances
+          # between nodes running different versions during the MAIN.5.1 rollout.
+          BUILDNET_RPC_URL: http://149.202.84.39:33035
         run: npm run test:integration
