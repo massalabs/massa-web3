@@ -230,10 +230,13 @@ describe('Smart Contract', () => {
     })
 
     test('Read only call with coins over gRPC', async () => {
-      // MAIN.5.1 nodes transfer the coins of a gRPC read-only call to the called function
+      // MAIN.5.1 nodes transfer the coins of a gRPC read-only call to the called function.
+      // They are spent from the caller, which must exist: without a caller, the node uses a
+      // random address that has no balance.
       const coinAmount = Mas.fromString('1')
       const result = await contractGrpcTest.read('sendCoins', undefined, {
         coins: coinAmount,
+        caller: provider.address,
       })
 
       // gRPC read-only calls return the event data base64 encoded
