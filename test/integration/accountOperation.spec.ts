@@ -1,4 +1,5 @@
 import { OperationStatus } from '../../src/operation'
+import { DEFAULT_MAX_ARGUMENT_ARRAY_SIZE } from '../../src/provider/constants'
 import { provider } from './setup'
 
 describe('AccountOperation tests', () => {
@@ -20,6 +21,21 @@ describe('AccountOperation tests', () => {
     expect(await op.waitSpeculativeExecution()).toBe(
       OperationStatus.SpeculativeSuccess
     )
+  })
+
+  test('getOperations with more ids than the node max_arguments', async () => {
+    const op = await provider.transfer(
+      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
+      1n
+    )
+    await op.waitSpeculativeExecution()
+
+    // MAIN.5.1 nodes reject get_operations with more than max_arguments (128) ids
+    const ids = Array(DEFAULT_MAX_ARGUMENT_ARRAY_SIZE * 2 + 1).fill(op.id)
+    const operations = await provider.client.getOperations(ids)
+
+    expect(operations.length).toBeGreaterThan(0)
+    operations.forEach((operation) => expect(operation.id).toBe(op.id))
   })
 
   test('not enough fee', async () => {
