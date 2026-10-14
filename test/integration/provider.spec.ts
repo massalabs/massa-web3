@@ -1,5 +1,5 @@
-import { CHAIN_ID, GrpcApiUrl, PublicApiUrl, NetworkName } from '../../src'
-import { grpcProvider, provider } from './setup'
+import { CHAIN_ID, GrpcApiUrl, NetworkName } from '../../src'
+import { buildnetRpcUrl, grpcProvider, provider } from './setup'
 import { strToBytes, U256 } from '../../src/basicElements/serializers'
 
 const USDC = 'AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL'
@@ -12,7 +12,7 @@ describe('Provider tests', () => {
       name: NetworkName.Buildnet,
       minimalFee: 10000000n,
       chainId: CHAIN_ID.Buildnet,
-      url: PublicApiUrl.Buildnet,
+      url: buildnetRpcUrl,
     })
     expect(infos_grpc).toEqual({
       name: NetworkName.Buildnet,
