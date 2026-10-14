@@ -8,8 +8,11 @@ import {
   RollOperation,
   TransferOperation,
 } from '../../src/operation'
+import { ErrorOperationSize } from '../../src/errors'
 import {
+  checkOperationSize,
   getAbsoluteExpirePeriod,
+  MAX_OPERATION_SIZE,
   OperationManager,
   PERIOD_TO_LIVE_DEFAULT,
   PERIOD_TO_LIVE_MAX,
@@ -228,6 +231,68 @@ describe('Operation manager tests', () => {
       signature: (await operationManager.sign(1n, transfer)).toString(),
     })
     expect(operationId).toBe('operationId')
+  })
+})
+
+describe('Operation size', () => {
+  // Serialized signature (65 bytes) and public key (33 bytes) counted by the node
+  const SIGNATURE_AND_PUBLIC_KEY_SIZE = 98
+
+  /* An ExecuteSC operation whose signed serialized size is `size` bytes */
+  function executeOfSignedSize(size: number): ExecuteOperation {
+    const execute = (bytecodeLength: number): ExecuteOperation => ({
+      fee: 1n,
+      type: OperationType.ExecuteSmartContractBytecode,
+      expirePeriod: 2,
+      maxGas: 3n,
+      maxCoins: 4n,
+      contractDataBinary: new Uint8Array(bytecodeLength),
+      datastore: new Map(),
+    })
+    // fixed fields and varint length prefixes around the bytecode
+    const probe = MAX_OPERATION_SIZE - 1_000
+    const overhead = OperationManager.serialize(execute(probe)).length - probe
+    const op = execute(size - overhead - SIGNATURE_AND_PUBLIC_KEY_SIZE)
+    expect(
+      OperationManager.serialize(op).length + SIGNATURE_AND_PUBLIC_KEY_SIZE
+    ).toBe(size)
+    return op
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  test('send accepts an operation of exactly the maximum size', async () => {
+    const operationManager = new OperationManager(
+      await PrivateKey.generate(),
+      blockchainClientMock
+    )
+
+    await operationManager.send(executeOfSignedSize(MAX_OPERATION_SIZE))
+
+    expect(blockchainClientMock.sendOperation).toHaveBeenCalled()
+  })
+
+  test('send rejects an operation bigger than the maximum size without calling the node', async () => {
+    const operationManager = new OperationManager(
+      await PrivateKey.generate(),
+      blockchainClientMock
+    )
+
+    await expect(
+      operationManager.send(executeOfSignedSize(MAX_OPERATION_SIZE + 1))
+    ).rejects.toThrow(ErrorOperationSize)
+    expect(blockchainClientMock.getChainId).not.toHaveBeenCalled()
+    expect(blockchainClientMock.sendOperation).not.toHaveBeenCalled()
+  })
+
+  test('checkOperationSize reports the signed size', () => {
+    expect(() =>
+      checkOperationSize(new Uint8Array(MAX_OPERATION_SIZE))
+    ).toThrow(
+      `The serialized operation size (${MAX_OPERATION_SIZE + SIGNATURE_AND_PUBLIC_KEY_SIZE} bytes) exceeds the maximum of ${MAX_OPERATION_SIZE} bytes.`
+    )
   })
 })
 

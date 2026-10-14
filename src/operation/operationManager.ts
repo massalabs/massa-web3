@@ -5,6 +5,7 @@ import { PublicAPI } from '../client'
 import { Signature } from '../basicElements/signature'
 import varint from 'varint'
 import { U64 } from '../basicElements/serializers'
+import { ErrorOperationSize } from '../errors/operationSize'
 import {
   BaseOperation,
   CallOperation,
@@ -18,6 +19,30 @@ import {
 export const PERIOD_TO_LIVE_DEFAULT = 9
 export const PERIOD_TO_LIVE_MAX = 9
 export const PERIOD_TO_LIVE_MIN = 1
+
+/**
+ * Maximum serialized size of an operation, in bytes: the node rejects bigger operations since they can
+ * never fit in a block (`MAX_BLOCK_SIZE`).
+ */
+export const MAX_OPERATION_SIZE = 300_000
+// Serialized signature (version byte + 64 bytes) and public key (version byte + 32 bytes),
+// counted by the node on top of the operation content.
+const SIGNATURE_SIZE = 65
+const PUBLIC_KEY_SIZE = 33
+
+/**
+ * Checks that a serialized operation is not bigger than {@link MAX_OPERATION_SIZE} once signed.
+ *
+ * @param data - The serialized operation content.
+ *
+ * @throws ErrorOperationSize if the signed operation is too big.
+ */
+export function checkOperationSize(data: Uint8Array): void {
+  const size = data.length + SIGNATURE_SIZE + PUBLIC_KEY_SIZE
+  if (size > MAX_OPERATION_SIZE) {
+    throw new ErrorOperationSize({ size, maxSize: MAX_OPERATION_SIZE })
+  }
+}
 
 /*
  * A class regrouping operation functions.
@@ -200,9 +225,11 @@ export class OperationManager {
     if (!this.blockchainClient) {
       throw new Error('blockchainClient is mandatory to send operations')
     }
+    const data = OperationManager.serialize(operation)
+    checkOperationSize(data)
+
     const chainId = await this.blockchainClient.getChainId()
     const signature = await this.sign(chainId, operation)
-    const data = OperationManager.serialize(operation)
     const publicKey = await this.privateKey.getPublicKey()
 
     return this.blockchainClient.sendOperation({

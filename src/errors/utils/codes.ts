@@ -4,4 +4,5 @@ export enum ErrorCodes {
   InsufficientBalance,
   MinimalFee,
   DataEntryNotFound,
+  OperationSize,
 }
