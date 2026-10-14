@@ -103,4 +103,19 @@ describe('SC Event tests', () => {
     })
     stopPolling()
   })
+
+  test('final events of an operation', async () => {
+    const operation = await usdcContract.transfer(
+      'AU1wN8rn4SkwYSTDF3dHFY4U28KtsqKL1NnEjDZhHnHEy6cEQm53',
+      1_000n
+    )
+
+    // getFinalEvents waits for the final execution, then reads the events flushed to the event cache
+    const events = await operation.getFinalEvents()
+
+    expect(events).toHaveLength(1)
+    expect(events[0].data).toEqual('TRANSFER SUCCESS')
+    expect(events[0].context.is_final).toBe(true)
+    expect(events[0].context.origin_operation_id).toBe(operation.id)
+  })
 })
