@@ -1,11 +1,13 @@
 import {
   Args,
   bytesToStr,
+  MRC20AllowanceCreationCost,
   MRC20BalanceCreationCost,
   U256,
   U8,
 } from '../basicElements'
 import { Operation } from '../operation'
+import { isProvider } from '../provider/helpers'
 import { CallSCOptions, ReadSCOptions, SmartContract } from '../smartContracts'
 import { ErrorDataEntryNotFound } from '../errors/dataEntryNotFound'
 
@@ -164,15 +166,36 @@ export class MRC20 extends SmartContract {
     return U256.fromBytes(res.value)
   }
 
+  /**
+   * Increases the amount of tokens that `spenderAddress` can spend on behalf of the caller.
+   *
+   * @remarks When `options.coins` is not set, the storage cost of the allowance entry is sent if the
+   * entry does not exist yet. Tokens from MRC20 0.1.0 (such as WMAS once MIP-0002 is active) refund the
+   * unused coins and revert if the new entry is not paid for. Older tokens pay the storage themselves
+   * and keep the coins.
+   */
   async increaseAllowance(
     spenderAddress: string,
     amount: bigint,
     options?: CallSCOptions
   ): Promise<Operation> {
+    let opts = options
+    if (!options?.coins && isProvider(this.provider)) {
+      const coins = await MRC20AllowanceCreationCost(
+        this.provider,
+        this.address,
+        this.provider.address,
+        spenderAddress
+      )
+      opts = {
+        ...options,
+        coins,
+      }
+    }
     return this.call(
       'increaseAllowance',
       new Args().addString(spenderAddress).addU256(amount),
-      options
+      opts
     )
   }
 

@@ -100,3 +100,35 @@ export async function MRC20BalanceCreationCost(
 
   return cost
 }
+
+/**
+ * Calculates the cost of creating a new MRC20 allowance entry.
+ *
+ * @param provider - The provider to use.
+ * @param tokenAddress - The address of the token.
+ * @param owner - The owner of the tokens.
+ * @param spender - The address allowed to spend the owner's tokens.
+ *
+ * @returns The cost in the smallest unit of the Massa currency, 0 if the allowance entry already exists.
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export async function MRC20AllowanceCreationCost(
+  provider: PublicProvider,
+  tokenAddress: string,
+  owner: string,
+  spender: string
+): Promise<bigint> {
+  const allowanceKey = 'ALLOWANCE' + owner + spender
+  const [actualAllowance] = await provider.readStorage(
+    tokenAddress,
+    [allowanceKey],
+    false
+  )
+
+  if (actualAllowance) {
+    return 0n
+  }
+
+  // the allowance value is a serialized u256
+  return datastoreEntry(allowanceKey, new Uint8Array(32))
+}
