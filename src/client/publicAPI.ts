@@ -304,6 +304,13 @@ export class PublicAPI {
     return this.getOperations([operationId]).then((r) => r[0])
   }
 
+  /**
+   * Returns the execution status of an operation.
+   *
+   * @remarks `in_pool` is not used to compute the status: since MAIN.5.1, nodes keep speculatively
+   * executed operations in their pool until their execution is final, so an operation can be both in
+   * the pool and executed.
+   */
   async getOperationStatus(operationId: string): Promise<OperationStatus> {
     const op = await this.getOperation(operationId)
 
@@ -317,10 +324,6 @@ export class PublicAPI {
       }
 
       throw new Error('unexpected status')
-    }
-
-    if (op.in_pool) {
-      return OperationStatus.PendingInclusion
     }
 
     if (!op.is_operation_final) {
