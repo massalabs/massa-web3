@@ -4,6 +4,11 @@ on:
   push:
     branches: [next]
 
+# Publish only the latest commit of the branch: a new push cancels the run of the previous one
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   integration-tests:
     uses: ./.github/workflows/integration-tests.yml
@@ -20,6 +25,18 @@ jobs:
           node-version: 22
           cache: "npm"
           registry-url: https://registry.npmjs.org
+      # Also covers runs that are not cancelled, such as a manual re-run of an older commit
+      - name: Check that this commit is still the head of the branch
+        id: head
+        run: |
+          HEAD_SHA=$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)
+          if [ "$HEAD_SHA" = "$GITHUB_SHA" ]; then
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "latest=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Not publishing $GITHUB_SHA: $GITHUB_REF_NAME is now at $HEAD_SHA"
+          fi
       - run: ./scripts/publish-next.sh
+        if: steps.head.outputs.latest == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
