@@ -1,11 +1,4 @@
-import {
-  Args,
-  Call,
-  MAX_GAS_EXECUTE,
-  Multicall,
-  parseMas,
-  WETHb,
-} from '../../src'
+import { Account, Args, Call, Multicall, parseMas, WETHb } from '../../src'
 import { provider, publicProvider } from './setup'
 
 describe('Multicall tests', () => {
@@ -42,9 +35,8 @@ describe('Multicall tests', () => {
 
     const token = await WETHb.fromProvider(publicProvider)
 
-    const spender = 'AS12q8aNM621smQgXVG6wHjQGjSoms3gKfkzGZgbnzjEBedC6t56F'
-
-    const currentAllowance = await token.allowance(provider.address, spender)
+    // A new spender for each run, so that concurrent runs do not change its allowance
+    const spender = (await Account.generate()).address.toString()
 
     const calls: Call[] = [
       {
@@ -63,12 +55,10 @@ describe('Multicall tests', () => {
       },
     ]
 
-    const operation = await multicall.execute(calls, {
-      maxGas: MAX_GAS_EXECUTE,
-    })
+    const operation = await multicall.execute(calls)
     await operation.waitSpeculativeExecution()
 
     const newAllowance = await token.allowance(provider.address, spender)
-    expect(newAllowance).toBe(currentAllowance + 1n)
+    expect(newAllowance).toBe(1n)
   })
 })
