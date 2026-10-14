@@ -1034,12 +1034,19 @@ export class GrpcPublicProvider implements PublicProvider {
     }
 
     call.setCallStackList([])
-    call.setFunctionCall(
-      new FunctionCall()
-        .setTargetAddress(params.target)
-        .setTargetFunction(params.func)
-        .setParameter(parameter)
-    )
+    const functionCall = new FunctionCall()
+      .setTargetAddress(params.target)
+      .setTargetFunction(params.func)
+      .setParameter(parameter)
+    if (params.coins) {
+      // Nodes older than MAIN.5.1 accept the coins but do not transfer them to the called function
+      functionCall.setCoins(
+        new NativeAmount()
+          .setMantissa(Number(params.coins))
+          .setScale(Mas.NB_DECIMALS)
+      )
+    }
+    call.setFunctionCall(functionCall)
 
     // fee
     if (params.fee) {

@@ -6,7 +6,7 @@ import {
   MIN_GAS_CALL,
   SmartContract,
 } from '../../src/smartContracts'
-import { provider, publicProvider } from './setup'
+import { grpcPublicProvider, provider, publicProvider } from './setup'
 import {
   Address,
   Args,
@@ -57,6 +57,7 @@ describe('Smart Contract', () => {
   describe('SmartContract - Call ', () => {
     let contractTest: SmartContract
     let contractPublicProviderTest: SmartContract
+    let contractGrpcTest: SmartContract
 
     beforeAll(async () => {
       const byteCode = fs.readFileSync(contractPath)
@@ -77,6 +78,11 @@ describe('Smart Contract', () => {
 
       contractPublicProviderTest = new SmartContract(
         publicProvider,
+        contractTest.address
+      )
+
+      contractGrpcTest = new SmartContract(
+        grpcPublicProvider,
         contractTest.address
       )
 
@@ -219,6 +225,19 @@ describe('Smart Contract', () => {
       })
 
       expect(result.info.events[0].data).toBe(
+        `Received ${coinAmount.toString()} coins`
+      )
+    })
+
+    test('Read only call with coins over gRPC', async () => {
+      // MAIN.5.1 nodes transfer the coins of a gRPC read-only call to the called function
+      const coinAmount = Mas.fromString('1')
+      const result = await contractGrpcTest.read('sendCoins', undefined, {
+        coins: coinAmount,
+      })
+
+      // gRPC read-only calls return the event data base64 encoded
+      expect(Buffer.from(result.info.events[0].data, 'base64').toString()).toBe(
         `Received ${coinAmount.toString()} coins`
       )
     })
