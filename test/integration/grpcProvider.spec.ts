@@ -1,6 +1,7 @@
 import {
   CHAIN_ID,
   GrpcApiUrl,
+  GrpcProvider,
   Mas,
   NetworkName,
   strToBytes,
@@ -62,6 +63,15 @@ describe('Provider GRPC tests', () => {
     expect(resp.name).toBe(NetworkName.Buildnet)
     expect(resp.chainId).toBe(CHAIN_ID.Buildnet)
     expect(resp.url).toBe(GrpcApiUrl.Buildnet)
+  })
+
+  test('mainnet getNodeStatus', async () => {
+    const mainnetProvider = GrpcProvider.mainnet()
+
+    const status = await mainnetProvider.getNodeStatus()
+
+    expect(status.chainId).toBe(Number(CHAIN_ID.Mainnet))
+    expect(mainnetProvider.url).toBe(GrpcApiUrl.Mainnet)
   })
 
   test('nextBlockBestParent', async () => {
