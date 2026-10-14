@@ -112,7 +112,11 @@ import {
 } from '../../generated/grpc/google/protobuf/wrappers_pb'
 import { FilterBuilder } from './filterBuilder'
 import { MAX_GAS_CALL } from '../../smartContracts'
-import { MAX_DATASTORE_KEYS_QUERY } from '../constants'
+import {
+  DEFAULT_MAX_ARGUMENT_ARRAY_SIZE,
+  MAX_DATASTORE_KEYS_QUERY,
+} from '../constants'
+import { batchListAndCall } from '../../operation/batchOpArrayParam'
 
 export class GrpcPublicProvider implements PublicProvider {
   constructor(
@@ -612,6 +616,9 @@ export class GrpcPublicProvider implements PublicProvider {
 
   /**
    * Reads storage values for specified keys in a smart contract
+   *
+   * @remarks The node accepts at most `max_datastore_entries_per_request` entries per request (128 by
+   * default), so the keys are sent in batches of {@link DEFAULT_MAX_ARGUMENT_ARRAY_SIZE}.
    */
   async readStorage(
     address: string,
@@ -625,10 +632,16 @@ export class GrpcPublicProvider implements PublicProvider {
       return ret
     })
 
-    const response = await this.client.getDatastoreEntries(
-      new GetDatastoreEntriesRequest().setFiltersList(filters)
+    const datastoreEntries = await batchListAndCall(
+      filters,
+      async (batch) =>
+        (
+          await this.client.getDatastoreEntries(
+            new GetDatastoreEntriesRequest().setFiltersList(batch)
+          )
+        ).getDatastoreEntriesList(),
+      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
     )
-    const datastoreEntries = response.getDatastoreEntriesList()
 
     return datastoreEntries.map((item) => {
       let value
