@@ -1,0 +1,6 @@
+{
+    "private": true,
+    "main": "../dist/cmd/grpc.js",
+    "module": "../dist/esm/grpc.js",
+    "types": "../dist/esm/grpc.d.ts"
+}
