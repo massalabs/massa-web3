@@ -28,6 +28,24 @@ function createIdStore(): { current: number; take(): number; reset(): void } {
 
 const idCache = createIdStore()
 
+// HTTP statuses of an overloaded node or of a failing gateway in front of it
+const HTTP_TOO_MANY_REQUESTS = 429
+const HTTP_BAD_GATEWAY = 502
+const HTTP_SERVICE_UNAVAILABLE = 503
+const HTTP_GATEWAY_TIMEOUT = 504
+const RETRYABLE_HTTP_STATUSES = [
+  HTTP_TOO_MANY_REQUESTS,
+  HTTP_BAD_GATEWAY,
+  HTTP_SERVICE_UNAVAILABLE,
+  HTTP_GATEWAY_TIMEOUT,
+]
+
+class RetryableResponseError extends Error {
+  constructor(public response: Response) {
+    super(`HTTP ${response.status} ${response.statusText}`)
+  }
+}
+
 export function getHttpRpcClient(
   url: string,
   opts: Partial<ClientOptions> = {}
@@ -40,7 +58,7 @@ export function getHttpRpcClient(
       endpoint: string,
       params: HttpRequestParameters
     ): Promise<HttpRequestResult> {
-      const response = await withRetry(() => {
+      const response = await withRetry(async () => {
         const init: RequestInit = {
           body: JSON.stringify({
             jsonrpc: '2.0',
@@ -51,8 +69,19 @@ export function getHttpRpcClient(
           headers,
           method: 'POST',
         }
-        return fetch(url, init)
-      }, opts.retry!)
+        const response = await fetch(url, init)
+        if (RETRYABLE_HTTP_STATUSES.includes(response.status)) {
+          throw new RetryableResponseError(response)
+        }
+        return response
+      }, opts.retry!).catch((error) => {
+        // Out of retries: report the HTTP status rather than failing to parse
+        // the error page of the gateway as JSON
+        if (error instanceof RetryableResponseError) {
+          throw new Error(`${endpoint} failed: ${error.message}`)
+        }
+        throw error
+      })
 
       const data = await response.json()
 
