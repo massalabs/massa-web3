@@ -1,8 +1,6 @@
 export * from "./deployer-bytecode"
 export * as rpcTypes from "./client-types"
 
-export * from "./grpc/PublicServiceClientPb"
-
 
 // export * from "./grpc/massa/model/v1/slot_pb"
 // export * from "./grpc/massa/model/v1/amount_pb"

@@ -1,12 +1,12 @@
 import {
   CHAIN_ID,
   GrpcApiUrl,
-  GrpcProvider,
   Mas,
   NetworkName,
   strToBytes,
   USDCe,
 } from '../../src'
+import { GrpcProvider } from '../../src/grpc'
 import {
   account,
   grpcProvider,

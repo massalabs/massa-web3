@@ -8,6 +8,9 @@
 //      tsc emit an empty `export {}` declaration over the hand-generated
 //      `*_pb.d.ts` sibling, silently stripping every gRPC type from the package.
 //
+// It also checks that the root entry point doesn't load the gRPC code, which
+// is only exposed through `@massalabs/massa-web3/grpc`.
+//
 // Run against a freshly built `dist/`. Exits non-zero with a report on failure.
 
 import { execFileSync } from 'node:child_process'
@@ -124,9 +127,10 @@ try {
     join(consumer, 'index.ts'),
     [
       "import * as web3 from '@massalabs/massa-web3'",
-      "import type { PublicServiceClient } from '@massalabs/massa-web3'",
+      "import * as grpc from '@massalabs/massa-web3/grpc'",
+      "import type { PublicServiceClient } from '@massalabs/massa-web3/grpc'",
       'type _Client = PublicServiceClient',
-      'export const exported = Object.keys(web3).length',
+      'export const exported = Object.keys(web3).length + Object.keys(grpc).length',
       '',
     ].join('\n')
   )
@@ -163,6 +167,26 @@ try {
   }
 } finally {
   rmSync(consumer, { recursive: true, force: true })
+}
+
+// --- Check 4: the root entry point must not load the gRPC code. ---
+// It lives behind `@massalabs/massa-web3/grpc` so that apps that don't use gRPC
+// neither load nor bundle it.
+const loaded = JSON.parse(
+  execFileSync(
+    process.execPath,
+    [
+      '-e',
+      `require(${JSON.stringify(join(dist, 'cmd', 'index.js'))});` +
+        'console.log(JSON.stringify(Object.keys(require.cache)))',
+    ],
+    { encoding: 'utf8' }
+  )
+)
+for (const file of loaded) {
+  if (/[\\/](generated[\\/]grpc|grpc-web|google-protobuf)[\\/]/.test(file)) {
+    fail('gRPC code loaded by the root entry point', relative(root, file))
+  }
 }
 
 if (failures.length) {

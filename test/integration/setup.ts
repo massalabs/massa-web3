@@ -1,12 +1,8 @@
 import 'dotenv/config'
 import { Account } from '../../src/account'
 import { Mas } from '../../src/basicElements'
-import {
-  JsonRpcPublicProvider,
-  JsonRpcProvider,
-  GrpcProvider,
-  GrpcPublicProvider,
-} from '../../src/provider'
+import { JsonRpcPublicProvider, JsonRpcProvider } from '../../src/provider'
+import { GrpcProvider, GrpcPublicProvider } from '../../src/grpc'
 import { PublicApiUrl } from '../../src/utils/networks'
 
 import { XMLHttpRequest } from 'xhr2'

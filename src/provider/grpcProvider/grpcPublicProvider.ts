@@ -8,13 +8,8 @@ import {
 import { Network, NetworkName, parseCallArgs } from '../../utils'
 import { CHAIN_ID } from '../../utils'
 import { Mas, strToBytes } from '../../basicElements'
-import {
-  NodeStatusInfo,
-  PublicProvider,
-  ReadSCData,
-  ReadSCParams,
-  SlotExecutionOutputFilter,
-} from '..'
+import { NodeStatusInfo, PublicProvider, ReadSCData, ReadSCParams } from '..'
+import { SlotExecutionOutputFilter } from './types'
 import { OperationStatus } from '../../operation'
 import { OutputEvents, SCOutputEvent } from '../../generated/client-types'
 import { Slot as tSlot } from '../../generated/client-types'
