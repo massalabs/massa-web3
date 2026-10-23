@@ -13,13 +13,8 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = require('../../../namespace.js');
+var proto = global.proto;
 
 var massa_model_v1_time_pb = require('../../../massa/model/v1/time_pb.js');
 goog.object.extend(proto, massa_model_v1_time_pb);
