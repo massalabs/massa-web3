@@ -29,32 +29,43 @@ export class Operation {
   /**
    * Waits for the operation to reach a specific status.
    *
+   * @remarks
+   * The status is requested one request at a time, every `period` ms. A failed status request (network
+   * error, overloaded node) does not stop the wait: the status is requested again until the timeout.
+   *
    * @param exitThreshold - The minimal status to wait for.
    * @param timeout - The maximum time to wait.
    * @param period - The time interval to check the status.
    *
    * @returns The status of the operation or NotFound if the timeout is reached.
+   * @throws The error of the last status request if it failed when the timeout is reached.
    */
-  private wait(
+  private async wait(
     exitThreshold: OperationStatus,
     timeout = DEFAULT_WAIT_TIMEOUT_MS,
     period = DEFAULT_WAIT_PERIOD_MS
   ): Promise<OperationStatus> {
-    return new Promise<OperationStatus>((resolve) => {
-      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-      let elapsedTime = 0
-      const checkStatusInterval = setInterval(async () => {
+    const deadline = Date.now() + timeout
+    for (;;) {
+      await new Promise((resolve) => setTimeout(resolve, period))
+
+      let error: unknown
+      try {
         const currentStatus = await this.getStatus()
         if (currentStatus >= exitThreshold) {
-          clearInterval(checkStatusInterval)
-          resolve(currentStatus)
-        } else if (elapsedTime >= timeout) {
-          clearInterval(checkStatusInterval)
-          resolve(OperationStatus.NotFound)
+          return currentStatus
         }
-        elapsedTime += period
-      }, period)
-    })
+      } catch (e) {
+        error = e
+      }
+
+      if (Date.now() >= deadline) {
+        if (error) {
+          throw error
+        }
+        return OperationStatus.NotFound
+      }
+    }
   }
 
   /**
@@ -64,6 +75,7 @@ export class Operation {
    * @param period - The time interval to check the status.
    *
    * @returns The status of the operation or NotFound if the timeout is reached.
+   * @throws The error of the last status request if it failed when the timeout is reached.
    */
   async waitSpeculativeExecution(
     timeout?: number,
@@ -79,6 +91,7 @@ export class Operation {
    * @param period - The time interval to check the status.
    *
    * @returns The status of the operation or NotFound if the timeout is reached.
+   * @throws The error of the last status request if it failed when the timeout is reached.
    */
   async waitFinalExecution(
     timeout?: number,

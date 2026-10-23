@@ -417,3 +417,77 @@ describe('getDeployedAddress', () => {
     expect(getEvents).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('Operation wait', () => {
+  const PERIOD = 500
+  let waitedOperation: Operation
+
+  beforeEach(() => {
+    jest.useFakeTimers()
+    waitedOperation = new Operation(providerMock, OPERATION_ID)
+  })
+  afterEach(() => {
+    jest.useRealTimers()
+    jest.restoreAllMocks()
+  })
+
+  /** Run a promise to completion, advancing fake timers */
+  async function run<T>(promise: Promise<T>): Promise<T> {
+    let done = false
+    const tracked = promise.finally(() => {
+      done = true
+    })
+    tracked.catch(() => undefined)
+    while (!done) await jest.advanceTimersByTimeAsync(PERIOD)
+    return tracked
+  }
+
+  test('keeps waiting when a status request fails', async () => {
+    jest
+      .spyOn(waitedOperation, 'getStatus')
+      .mockRejectedValueOnce(new TypeError('fetch failed'))
+      .mockResolvedValueOnce(OperationStatus.PendingInclusion)
+      .mockResolvedValue(OperationStatus.SpeculativeSuccess)
+
+    expect(await run(waitedOperation.waitSpeculativeExecution())).toBe(
+      OperationStatus.SpeculativeSuccess
+    )
+  })
+
+  test('rejects with the last error when the node stays unreachable', async () => {
+    jest
+      .spyOn(waitedOperation, 'getStatus')
+      .mockRejectedValue(new TypeError('fetch failed'))
+
+    await expect(
+      run(waitedOperation.waitSpeculativeExecution(5000, PERIOD))
+    ).rejects.toThrow('fetch failed')
+  })
+
+  test('returns NotFound once the timeout is reached', async () => {
+    jest
+      .spyOn(waitedOperation, 'getStatus')
+      .mockResolvedValue(OperationStatus.PendingInclusion)
+
+    expect(await run(waitedOperation.waitFinalExecution(5000, PERIOD))).toBe(
+      OperationStatus.NotFound
+    )
+  })
+
+  test('does not send a status request while another is pending', async () => {
+    let pending = 0
+    let maxPending = 0
+    jest.spyOn(waitedOperation, 'getStatus').mockImplementation(async () => {
+      pending++
+      maxPending = Math.max(maxPending, pending)
+      // A slow node: each request takes 4 polling periods
+      await new Promise((resolve) => setTimeout(resolve, 4 * PERIOD))
+      pending--
+      return OperationStatus.PendingInclusion
+    })
+
+    await run(waitedOperation.waitSpeculativeExecution(10_000, PERIOD))
+
+    expect(maxPending).toBe(1)
+  })
+})
