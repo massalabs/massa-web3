@@ -120,8 +120,18 @@ export class PublicAPI {
     })
   }
 
+  /**
+   * Retrieves information about addresses.
+   *
+   * @remarks The node rejects requests with more than `max_arguments` addresses (128 by default), so the
+   * addresses are sent in batches of {@link DEFAULT_MAX_ARGUMENT_ARRAY_SIZE}.
+   */
   async getMultipleAddressInfo(addresses: string[]): Promise<t.AddressInfo[]> {
-    return this.connector.get_addresses(addresses)
+    return batchListAndCall(
+      addresses,
+      (batch) => this.connector.get_addresses(batch),
+      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
+    )
   }
 
   async getAddressesBytecode(
@@ -231,6 +241,12 @@ export class PublicAPI {
       .map((key) => Uint8Array.from(key))
   }
 
+  /**
+   * Retrieves datastore entries.
+   *
+   * @remarks The entries are sent in batches of {@link DEFAULT_MAX_ARGUMENT_ARRAY_SIZE}, the limit the node
+   * applies to the equivalent gRPC request (`max_datastore_entries_per_request`, 128 by default).
+   */
   async getDatastoreEntries(
     inputs: DatastoreEntry[],
     final = true
@@ -242,7 +258,11 @@ export class PublicAPI {
         address: entry.address,
       }
     })
-    const res = await this.connector.get_datastore_entries(entriesQuery)
+    const res = await batchListAndCall(
+      entriesQuery,
+      (batch) => this.connector.get_datastore_entries(batch),
+      DEFAULT_MAX_ARGUMENT_ARRAY_SIZE
+    )
     return res.map((r: t.DatastoreEntryOutput) => {
       const val = final ? r.final_value : r.candidate_value
       return val ? Uint8Array.from(val) : null
