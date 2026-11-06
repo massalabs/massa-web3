@@ -61,6 +61,8 @@ generate_proto "$DESTINATION/$TARGET_DIR/third_party"
 generate_proto "$DESTINATION/$TARGET_DIR/commons"
 generate_proto "$DESTINATION/$TARGET_DIR/apis/massa/api/v1"
 
+node scripts/private-proto-namespace.mjs || exit 1
+
 echo "Proto build completed successfully."
 
 rm -rf "$DESTINATION/$TARGET_DIR"
